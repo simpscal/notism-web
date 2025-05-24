@@ -9,8 +9,12 @@ import prettierConfig from 'eslint-config-prettier';
 export default tseslint.config(
   { ignores: ['dist', 'node_modules', 'assets', 'styles'] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended, prettierConfig],
-    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      prettierConfig,
+    ],
+    files: ['**/*.{js,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -22,8 +26,26 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      'prettier/prettier': 'error',
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+      'prettier/prettier': [
+        'error',
+        {
+          printWidth: 80,
+          tabWidth: 2,
+          useTabs: false,
+          semi: true,
+          singleQuote: true,
+          jsxSingleQuote: true,
+          trailingComma: 'es5',
+          bracketSpacing: true,
+          bracketSameLine: false,
+          arrowParens: 'avoid',
+          endOfLine: 'lf',
+        },
+      ],
     },
   }
 );
