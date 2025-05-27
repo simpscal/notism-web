@@ -1,0 +1,27 @@
+{
+  "srcFiles": [
+    "./src/assets/icons/svg/*.svg"
+  ],
+  "outputDirectory": "./src/assets/icons/generated",
+  "exportCompleteIconSet": true,
+  "generateCompleteIconSet": true,
+  "fileName": "index",
+  "compileSources": false,
+  "interfaceName": "ISvgIcon",
+  "typeName": "SvgIconType",
+  "prefix": "icon",
+  "delimiter": "CAMEL",
+  "svgoConfig": {
+    "plugins": [
+      {
+        "name": "preset-default",
+        "params": {
+          "overrides": {
+            "removeViewBox": false
+          }
+        }
+      },
+      "removeDimensions"
+    ]
+  }
+}
