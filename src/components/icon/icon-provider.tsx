@@ -1,4 +1,7 @@
-import { type SvgIconType, completeIconSet } from '@/assets/icons/generated';
+import {
+  type SvgIconType,
+  completeIconSet,
+} from '@/app/assets/icons/generated';
 import { createContext, useCallback, useMemo, type ReactNode } from 'react';
 import type { ISvgIcon } from './icon';
 

@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { useContext } from 'react';
 import { IconContext } from './icon-provider';
-import type { SvgIconType } from '@/assets/icons/generated';
+import type { SvgIconType } from '@/app/assets/icons/generated';
 
 interface IconProps {
   name: string;
@@ -40,4 +40,4 @@ export function Icon({
   );
 }
 
-export type { ISvgIcon } from '@/assets/icons/generated';
+export type { ISvgIcon } from '@/app/assets/icons/generated';
