@@ -287,13 +287,13 @@ export class DateTimeUtil {
 **Convention**:
 
 - **camelCase**
-- Suffix the name with `Service`
+- Suffix the name with `Api`
 
 **Example**:
 
 ```javascript
-// services/user-service.ts
-export const userService = {
+// services/user.api.ts
+export const userApi = {
   getUsers: () => {
     ...
   }
