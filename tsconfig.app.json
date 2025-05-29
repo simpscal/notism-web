@@ -35,8 +35,8 @@
       "@constants/*": ["./src/shared/constants/*"],
       "@hooks": ["./src/core/hooks"],
       "@hooks/*": ["./src/core/hooks/*"],
-      "@providers": ["./src/core/providers"],
-      "@providers/*": ["./src/core/providers/*"]
+      "@contexts": ["src/core/contexts"],
+      "@contexts/*": ["src/core/contexts/*"]
     }
   },
   "include": ["src"]

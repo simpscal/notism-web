@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { useContext } from 'react';
-import { IconContext } from './icon-provider';
+import { IconContext } from './icon-context';
 import type { SvgIconType } from '@/app/assets/icons/generated';
 
 interface IconProps {
