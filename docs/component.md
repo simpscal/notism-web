@@ -409,7 +409,7 @@ function BadGrandparent() {
   const grandchildRef = useRef();
 
   const handleAction = () => {
-    // ❌ Reaching deep into component tree
+    // ❌ Reaching deep into component tree when a props approach can be used instead
     grandchildRef.current.someMethod();
   };
 
@@ -422,14 +422,29 @@ function BadGrandparent() {
   );
 }
 
-// ✅ Good: Use props and callbacks for communication
+// ✅ Good: Use props communication
 function GoodGrandparent() {
-  const [triggerAction, setTriggerAction] = useState(false);
+  const [keyword, setKeyword] = useState('');
 
   return (
     <Parent>
       <Child>
-        <Grandchild shouldPerformAction={triggerAction} />
+        <Grandchild keyword={keyword} />
+      </Child>
+    </Parent>
+  );
+}
+
+// ✅ Good: Use callbacks for communication
+function GoodGrandparent() {
+  const validationCallback = () => {
+    // Handle parent-related logics
+  };
+
+  return (
+    <Parent>
+      <Child>
+        <Grandchild validationCallback={validationCallback} />
       </Child>
     </Parent>
   );
@@ -608,7 +623,7 @@ function ProfileCard({ user }) {
 #### ❌ Avoid These Anti-Patterns
 
 - [ ] Mutating props or external state
-- [ ] Reaching deep into component tree
+- [ ] Reaching deep into component tree when a props approach can be used instead
 - [ ] Making API calls with global side effects
 - [ ] Mixing business logic with UI components
 - [ ] Promoting local state unnecessarily
