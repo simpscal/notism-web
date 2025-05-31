@@ -1,4 +1,4 @@
-# React Naming Conventions
+# Naming Conventions
 
 ## Constant
 

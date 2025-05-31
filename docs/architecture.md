@@ -1,4 +1,4 @@
-# React Project Structure - Feature Sliced Design (Adapted)
+# Project Architecture
 
 ## Structure Principles
 
@@ -318,6 +318,15 @@ export const Button = ({
   );
 };
 ```
+
+### Layout Folder
+
+Layout components that compose pages
+
+#### Layout Responsibilities
+
+- **Routing**: Handle routing for pages
+- ***
 
 ### Pages Folder
 
