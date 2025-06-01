@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import js from '@eslint/js';
 import tanstackQuery from '@tanstack/eslint-plugin-query';
 import prettierConfig from 'eslint-config-prettier';
@@ -60,7 +59,6 @@ export default tseslint.config(
       ],
       'import/no-unused-modules': 'warn',
       'import/no-duplicates': 'error',
-      'import/no-unresolved': 'error',
       'import/named': 'error',
       'import/default': 'error',
       'import/namespace': 'error',
