@@ -1,11 +1,13 @@
+/* eslint-disable import/no-unresolved */
 import js from '@eslint/js';
-import globals from 'globals';
+import tanstackQuery from '@tanstack/eslint-plugin-query';
+import prettierConfig from 'eslint-config-prettier';
+import importPlugin from 'eslint-plugin-import';
+import prettier from 'eslint-plugin-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import tanstackQuery from '@tanstack/eslint-plugin-query';
-import prettier from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
 
 export default tseslint.config(
   { ignores: ['dist', 'node_modules', 'app/assets', 'styles'] },
@@ -24,6 +26,7 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       '@tanstack/query': tanstackQuery,
+      import: importPlugin,
       prettier,
     },
     rules: {
@@ -35,6 +38,39 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+
+      // Import/Export rules
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            'parent',
+            'sibling',
+            'index',
+          ],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+        },
+      ],
+      'import/no-unused-modules': 'warn',
+      'import/no-duplicates': 'error',
+      'import/no-unresolved': 'error',
+      'import/named': 'error',
+      'import/default': 'error',
+      'import/namespace': 'error',
+      'import/no-absolute-path': 'error',
+      'import/no-self-import': 'error',
+      'import/no-cycle': 'warn',
+      'import/newline-after-import': 'error',
+      'import/no-useless-path-segments': 'error',
+
+      // Prettier rules
       'prettier/prettier': [
         'warn',
         {
