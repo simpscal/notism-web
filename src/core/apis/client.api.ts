@@ -274,7 +274,7 @@ export class ApiClient {
 
 // Create and configure API client instance
 export const apiClient = new ApiClient({
-  baseURL: process.env.REACT_APP_API_BASE_URL || 'https://api.example.com',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   defaultHeaders: {
     Accept: 'application/json',
   },
