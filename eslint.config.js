@@ -59,7 +59,6 @@ export default tseslint.config(
       ],
       'import/no-unused-modules': 'warn',
       'import/no-duplicates': 'error',
-      'import/named': 'error',
       'import/default': 'error',
       'import/namespace': 'error',
       'import/no-absolute-path': 'error',

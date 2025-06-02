@@ -1,7 +1,7 @@
+import { IconProvider } from '@/components/icon/icon-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ThemeProvider } from '@/core/contexts';
-import { IconProvider } from '@/components/icon/icon-context';
 
 function App() {
   return (
