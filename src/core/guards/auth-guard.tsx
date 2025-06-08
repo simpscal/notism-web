@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-import { PAGES } from '@/shared/constants';
+import { ROUTES } from '@/app/configs';
 import { tokenManagerUtils } from '@/shared/utils';
 
 interface AuthGuardProps {
@@ -11,21 +10,16 @@ interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const accessToken = tokenManagerUtils.getToken();
   const refreshToken = tokenManagerUtils.getRefreshToken();
-  const navigate = useNavigate();
 
   const isAuthenticated = !(
     (accessToken && tokenManagerUtils.isTokenExpired(accessToken)) ||
     (refreshToken && tokenManagerUtils.isTokenExpired(refreshToken))
   );
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(PAGES.logIn);
-    }
-  }, [isAuthenticated, navigate]);
-
   if (isAuthenticated) {
     return <>{children}</>;
+  } else {
+    return <Navigate to={ROUTES.logIn} replace />;
   }
 
   return null;
