@@ -1,3 +1,4 @@
 export const PAGES = {
-  logIn: '/login',
+  logIn: 'login',
+  about: 'about',
 };
