@@ -1,4 +1,4 @@
-export const PAGES = {
+export const ROUTES = {
   logIn: 'login',
   about: 'about',
 };
