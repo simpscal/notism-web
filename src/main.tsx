@@ -10,7 +10,7 @@ import App from './app.tsx';
 import { store } from './store';
 
 import { IconProvider } from '@/components/icon/icon-context';
-import { ThemeProvider } from '@/core/contexts';
+import { ThemeProvider, AppInitializeProvider } from '@/core/contexts';
 
 const queryClient = new QueryClient();
 
@@ -21,10 +21,12 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
           <ThemeProvider>
             <IconProvider>
-              <App />
-              {import.meta.env.DEV && (
-                <ReactQueryDevtools initialIsOpen={false} />
-              )}
+              <AppInitializeProvider>
+                <App />
+                {import.meta.env.DEV && (
+                  <ReactQueryDevtools initialIsOpen={false} />
+                )}
+              </AppInitializeProvider>
             </IconProvider>
           </ThemeProvider>
         </BrowserRouter>
