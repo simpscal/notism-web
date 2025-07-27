@@ -35,16 +35,6 @@
 │   └── 📄 index.ts
 │
 ├── 📁 components/
-│   ├── 📁 accordion/
-│   │   ├── 📄 accordion.tsx
-│   │   ├── 📄 accordion-item.tsx
-│   │   ├── 📄 accordion.module.css
-│   │   └── 📄 index.ts
-│   ├── 📁 tabs/
-│   │   ├── 📄 tabs.tsx
-│   │   ├── 📄 tab-panel.tsx
-│   │   ├── 📄 tabs.module.css
-│   │   └── 📄 index.ts
 │   ├── 📁 button/
 │   │   ├── 📄 button.tsx
 │   │   ├── 📄 button.module.css
@@ -60,11 +50,6 @@
 │   │   ├── 📄 select.tsx
 │   │   ├── 📄 checkbox.tsx
 │   │   ├── 📄 form-field.tsx
-│   │   └── 📄 index.ts
-│   ├── 📁 layout/
-│   │   ├── 📄 page-layout.tsx
-│   │   ├── 📄 sidebar.tsx
-│   │   ├── 📄 header.tsx
 │   │   └── 📄 index.ts
 │   ├── 📁 table/
 │   │   ├── 📄 table.tsx
@@ -90,7 +75,6 @@
 │   └── 📁 store/
 │       ├── 📄 root-reducer.ts
 │       ├── 📄 store.ts
-│       ├── 📄 middleware.ts
 │       └── 📄 index.ts
 │
 ├── 📁 features/
@@ -99,21 +83,17 @@
 │   │   │   ├── 📄 account-list.tsx
 │   │   │   ├── 📄 account-list-item.tsx
 │   │   │   ├── 📄 account-list-filters.tsx
-│   │   │   ├── 📄 use-account-list.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 account-create/
 │   │   │   ├── 📄 create-account-modal.tsx
 │   │   │   ├── 📄 create-account-form.tsx
-│   │   │   ├── 📄 use-create-account.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 account-update/
 │   │   │   ├── 📄 update-account-modal.tsx
 │   │   │   ├── 📄 update-account-form.tsx
-│   │   │   ├── 📄 use-update-account.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 account-delete/
 │   │   │   ├── 📄 delete-account-dialog.tsx
-│   │   │   ├── 📄 use-delete-account.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 apis/
 │   │   │   ├── 📄 account.api.ts
@@ -135,12 +115,10 @@
 │   │   ├── 📁 subscription-list/
 │   │   │   ├── 📄 subscription-list.tsx
 │   │   │   ├── 📄 subscription-card.tsx
-│   │   │   ├── 📄 use-subscription-list.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 subscription-update/
 │   │   │   ├── 📄 update-subscription-modal.tsx
 │   │   │   ├── 📄 update-subscription-form.tsx
-│   │   │   ├── 📄 use-update-subscription.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 apis/
 │   │   │   ├── 📄 subscription.api.ts
@@ -156,22 +134,18 @@
 │   ├── 📁 auth/
 │   │   ├── 📁 login/
 │   │   │   ├── 📄 login-form.tsx
-│   │   │   ├── 📄 use-login.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 logout/
 │   │   │   ├── 📄 logout-button.tsx
-│   │   │   ├── 📄 use-logout.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 register/
 │   │   │   ├── 📄 register-form.tsx
-│   │   │   ├── 📄 use-register.ts
 │   │   │   └── 📄 index.ts
 │   │   └── 📄 index.ts
 │   │
 │   ├── 📁 user-profile/
 │   │   ├── 📄 user-avatar.tsx
 │   │   ├── 📄 user-menu.tsx
-│   │   ├── 📄 use-user-profile.ts
 │   │   └── 📄 index.ts
 │   │
 │   └── 📄 index.ts
@@ -197,24 +171,19 @@
 ├── 📁 shared/
 │   ├── 📁 constants/
 │   │   ├── 📄 api-endpoints.ts
-│   │   ├── 📄 messages.ts
 │   │   ├── 📄 regex.ts
 │   │   └── 📄 index.ts
 │   ├── 📁 enums/
 │   │   ├── 📄 http-status.enum.ts
 │   │   ├── 📄 user-role.enum.ts
-│   │   ├── 📄 account-status.enum.ts
 │   │   └── 📄 index.ts
 │   ├── 📁 models/
 │   │   ├── 📄 common.types.ts
 │   │   ├── 📄 api.types.ts
-│   │   ├── 📄 pagination.types.ts
 │   │   └── 📄 index.ts
 │   ├── 📁 utils/
-│   │   ├── 📄 date-helpers.ts
 │   │   ├── 📄 formatters.ts
 │   │   ├── 📄 validators.ts
-│   │   ├── 📄 storage.ts
 │   │   └── 📄 index.ts
 │   └── 📄 index.ts
 │
@@ -326,7 +295,6 @@ Layout components that compose pages
 #### Layout Responsibilities
 
 - **Routing**: Handle routing for pages
-- ***
 
 ### Pages Folder
 
@@ -412,16 +380,15 @@ export const HomePage = () => {
 };
 ```
 
-#### Page Responsibilities:
+#### Page Responsibilities
 
 - **Composition**: Pages compose features and components together
 - **Routing**: Handle route parameters and navigation
-- **Layout**: Apply page-specific layouts and structure
 - **Authorization**: Check permissions and access control at page level
 - **Data Orchestration**: Coordinate multiple features on the same page
 - **Error Boundaries**: Handle page-level errors and loading states
 
-#### Page Best Practices:
+#### Page Best Practices
 
 ```typescript
 // ✅ Good: Page only orchestrates
@@ -534,62 +501,4 @@ export enum AccountStatusEnum {
   INACTIVE = 'INACTIVE',
   SUSPENDED = 'SUSPENDED',
 }
-```
-
-## Common Patterns
-
-### Component Composition
-
-```typescript
-// pages/accounts/accounts-page.tsx
-import { useState } from 'react';
-import { PageLayout } from '@/components/layout';
-import { Button } from '@/components/button';
-import { AccountList } from '@/features/accounts/account-list';
-import { CreateAccountModal } from '@/features/accounts/account-create';
-
-export const AccountsPage = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-  return (
-    <PageLayout title="Accounts">
-      <Button
-        variant="primary"
-        onClick={() => setIsCreateModalOpen(true)}
-      >
-        Create Account
-      </Button>
-
-      <AccountList />
-
-      <CreateAccountModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      />
-    </PageLayout>
-  );
-};
-```
-
-### Cross-Feature Components
-
-For features that are shared across multiple pages (like user-profile), place them directly under the features folder:
-
-```typescript
-// features/user-profile/user-menu.tsx
-import { Dropdown } from '@/components/dropdown';
-import { useAuth } from '@/core/hooks';
-import { useLogout } from '@/features/auth/logout';
-
-export const UserMenu = () => {
-  const { user } = useAuth();
-  const { logout } = useLogout();
-
-  return (
-    <Dropdown>
-      <Dropdown.Item>{user.name}</Dropdown.Item>
-      <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
-    </Dropdown>
-  );
-};
 ```
