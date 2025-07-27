@@ -2,9 +2,9 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { ROUTES } from '@/app/configs';
 import { AuthLayout, DefaultLayout } from '@/layouts';
-import AboutPage from '@/pages/about-page';
+import AboutPage from '@/pages/about';
 import Login from '@/pages/login';
-import NotFoundPage from '@/pages/not-found-page';
+import NotFoundPage from '@/pages/not-found';
 
 function AppRoutes() {
   return (

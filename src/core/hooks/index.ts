@@ -1,2 +1,2 @@
-export * from './use-redux';
-export * from './use-mobile';
+export * from './use-redux.hook';
+export * from './use-mobile.hook';

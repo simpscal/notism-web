@@ -1,5 +1,129 @@
 # Naming Conventions
 
+## File Naming
+
+### General Rules
+
+- Use **kebab-case** for all file names
+- Use descriptive, meaningful names that clearly indicate the file's purpose
+- Avoid abbreviations unless they are widely understood
+- Keep file names concise but descriptive
+
+### File Extensions
+
+- **TypeScript files**: `.ts`
+- **TypeScript React components**: `.tsx`
+- **Style files**: `.css`
+- **Test files**: `.test.ts`, `.test.tsx`
+
+### Layer-Specific Naming
+
+#### Shared Layer Files
+
+**Constants**:
+
+- Pattern: `{domain}.constants.ts`
+- Examples: `api.constants.ts`, `validation.constants.ts`, `theme.constants.ts`
+
+**Enums**:
+
+- Pattern: `{domain}.enums.ts`
+- Examples: `user.enums.ts`, `notification.enums.ts`, `status.enums.ts`
+
+**Models**:
+
+- Pattern: `{entity}.models.ts`
+- Examples: `user.models.ts`, `product.models.ts`, `order.models.ts`
+
+**Utils**:
+
+- Pattern: `{purpose}.utils.ts`
+- Examples: `date.utils.ts`, `validation.utils.ts`, `format.utils.ts`
+
+#### Core Layer Files
+
+**Hooks**:
+
+- Pattern: `use-{purpose}.hook.ts`
+- Examples: `use-auth.hook.ts`, `use-local-storage.hook.ts`, `use-api.hook.ts`
+
+**Contexts**:
+
+- Pattern: `{domain}.context.tsx`
+- Examples: `auth.context.tsx`, `theme.context.tsx`, `notification.context.tsx`
+
+**Guards**:
+
+- Pattern: `{type}.guard.tsx`
+- Examples: `auth.guard.tsx`, `role.guard.tsx`, `permission.guard.tsx`
+
+**APIs**:
+
+- Pattern: `{service}.api.ts`
+- Examples: `user.api.ts`, `product.api.ts`, `auth.api.ts`
+
+**Redux**:
+
+- **Slices**: `{domain}.slice.ts`
+- **Selectors**: `{domain}.selectors.ts` (optional)
+- Examples: `auth.slice.ts`, `user.slice.ts`, `product.selectors.ts`
+
+#### Feature Layer Files
+
+**Components**:
+
+- Pattern: `{component-name}.tsx`
+- Examples: `user-profile.tsx`, `product-card.tsx`
+
+**Pages**:
+
+- Pattern: `{page-name}.tsx`
+- Examples: `home.tsx`, `user-profile.tsx`, `product-detail.tsx`
+
+**Layouts**:
+
+- Pattern: `{layout-name}.tsx`
+- Examples: `main.tsx`, `auth.tsx`, `dashboard.tsx`
+
+### Special Files
+
+**Index Files**:
+
+- Always named `index.ts` for TypeScript files, `index.tsx` for React components
+- Used for barrel exports in each directory
+- Should re-export all public APIs from the directory
+
+**Configuration Files**:
+
+- Pattern: `{tool}.config.{ext}`
+- Examples: `vite.config.ts`, `tailwind.config.js`, `eslint.config.js`
+
+**Test Files**:
+
+- Pattern: `{file-name}.test.{ext}`
+- Examples: `user.api.test.ts`, `auth.guard.test.tsx`
+
+### Examples
+
+```text
+✅ Good file names:
+user.models.ts
+use-auth.hook.ts
+product-card.component.tsx
+user-profile.page.tsx
+api.constants.ts
+date.utils.ts
+auth.context.tsx
+
+❌ Bad file names:
+User.ts (PascalCase)
+userModels.ts (camelCase)
+user_models.ts (snake_case)
+UserAPI.ts (mixed case)
+utils.ts (too generic)
+helper.ts (unclear purpose)
+```
+
 ## Constant
 
 **Convention**:
@@ -91,7 +215,7 @@ interface UserCardProps {
 
 - **camelCase**
 - Prefix the name with `on`
-- `[on + Action + Target]` or `[on + Target + Action]`
+- `[on + Action + Target]`
 
 **Example**:
 
@@ -127,7 +251,7 @@ const useAuth = () => {
 
 - **camelCase**
 - State setter prefixed with `set` + PascalCase state name
-- Boolean state prefixed with `is`, `has`, `should`, or `can`
+- Boolean state prefixed with `is`
 
 **Example**:
 
@@ -271,7 +395,7 @@ const _validateForm = (data: FormDataType) => {
 **Convention**:
 
 - Place utilities in utils folder
-- Suffix the name with `Util` or descriptive name
+- Suffix the name with `Util`
 
 **Example**:
 
@@ -305,17 +429,14 @@ export const userApi = {
 **Convention**:
 
 - **UPPERCASE**
-- Prefix with `REACT_APP_` (for Create React App) or `VITE_` (for Vite)
+- Prefix with `VITE_`
 - Words separated by `_`
 
 **Example**:
 
 ```bash
 # .env
-REACT_APP_API_BASE_URL=https://api.example.com
-REACT_APP_ENVIRONMENT=development
-
-# Vite
+VITE_API_BASE_URL=https://api.example.com
 VITE_API_KEY=your-api-key
 VITE_ENVIRONMENT=development
 ```
@@ -324,9 +445,7 @@ VITE_ENVIRONMENT=development
 
 **Convention**:
 
-- **kebab-case** for CSS classes
-- **camelCase** for CSS-in-JS or styled-components
-- **BEM methodology** for complex components
+- **kebab-case**
 
 ## Folder
 
