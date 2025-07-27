@@ -13,190 +13,56 @@
 
 ## Project Structure
 
-```
+```text
 📁 src/
-├── 📁 app/
-│   ├── 📁 assets/
-│   │   ├── 📁 images/
-│   │   │   └── 📄 logo.svg
-│   │   ├── 📁 fonts/
-│   │   │   └── 📄 inter.woff2
-│   │   └── 📁 icons/
-│   │       └── 📄 sprite.svg
-│   ├── 📁 config/
-│   │   ├── 📄 app.config.ts
-│   │   ├── 📄 api.config.ts
-│   │   ├── 📄 routes.config.ts
-│   │   └── 📄 index.ts
-│   ├── 📁 styles/
-│   │   ├── 📄 globals.css
-│   │   ├── 📄 variables.css
-│   │   └── 📄 index.css
-│   └── 📄 index.ts
+├── 📁 app/          # Application configuration and assets
+│   ├── 📁 assets/   # Images, fonts, icons
+│   ├── 📁 config/   # App, API, routes configuration
+│   └── 📁 styles/   # Global styles
 │
-├── 📁 components/
-│   ├── 📁 button/
-│   │   ├── 📄 button.tsx
-│   │   ├── 📄 button.module.css
-│   │   └── 📄 index.ts
-│   ├── 📁 modal/
-│   │   ├── 📄 modal.tsx
-│   │   ├── 📄 modal-header.tsx
-│   │   ├── 📄 modal-body.tsx
-│   │   ├── 📄 modal.module.css
-│   │   └── 📄 index.ts
-│   ├── 📁 form/
-│   │   ├── 📄 input.tsx
-│   │   ├── 📄 select.tsx
-│   │   ├── 📄 checkbox.tsx
-│   │   ├── 📄 form-field.tsx
-│   │   └── 📄 index.ts
-│   ├── 📁 table/
-│   │   ├── 📄 table.tsx
-│   │   ├── 📄 table-row.tsx
-│   │   ├── 📄 table-cell.tsx
-│   │   └── 📄 index.ts
-│   └── 📄 index.ts
+├── 📁 pages/        # Complete application pages
+│   ├── 📁 accounts/
+│   ├── 📁 auth/
+│   └── ...
 │
-├── 📁 core/
-│   ├── 📁 hooks/
-│   │   ├── 📄 use-auth.ts
-│   │   ├── 📄 use-permissions.ts
-│   │   ├── 📄 use-api.ts
-│   │   └── 📄 index.ts
-│   ├── 📁 context/
-│   │   ├── 📄 auth-context.tsx
-│   │   ├── 📄 theme-context.tsx
-│   │   └── 📄 index.ts
-│   ├── 📁 apis/
-│   │   ├── 📄 api-client.api.ts
-│   │   ├── 📄 auth.api.ts
-│   │   └── 📄 index.ts
-│   └── 📁 store/
-│       ├── 📄 root-reducer.ts
-│       ├── 📄 store.ts
-│       └── 📄 index.ts
-│
-├── 📁 features/
+├── 📁 features/     # Business logic and features
 │   ├── 📁 accounts/
 │   │   ├── 📁 account-list/
-│   │   │   ├── 📄 account-list.tsx
-│   │   │   ├── 📄 account-list-item.tsx
-│   │   │   ├── 📄 account-list-filters.tsx
-│   │   │   └── 📄 index.ts
 │   │   ├── 📁 account-create/
-│   │   │   ├── 📄 create-account-modal.tsx
-│   │   │   ├── 📄 create-account-form.tsx
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 account-update/
-│   │   │   ├── 📄 update-account-modal.tsx
-│   │   │   ├── 📄 update-account-form.tsx
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 account-delete/
-│   │   │   ├── 📄 delete-account-dialog.tsx
-│   │   │   └── 📄 index.ts
 │   │   ├── 📁 apis/
-│   │   │   ├── 📄 account.api.ts
-│   │   │   └── 📄 index.ts
 │   │   ├── 📁 models/
-│   │   │   ├── 📄 account.types.ts
-│   │   │   ├── 📄 account.schema.ts
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 constants/
-│   │   │   ├── 📄 account-constants.ts
-│   │   │   └── 📄 index.ts
 │   │   ├── 📁 store/
-│   │   │   ├── 📄 account-slice.ts
-│   │   │   ├── 📄 account-selectors.ts
-│   │   │   └── 📄 index.ts
-│   │   └── 📄 index.ts
-│   │
-│   ├── 📁 subscriptions/
-│   │   ├── 📁 subscription-list/
-│   │   │   ├── 📄 subscription-list.tsx
-│   │   │   ├── 📄 subscription-card.tsx
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 subscription-update/
-│   │   │   ├── 📄 update-subscription-modal.tsx
-│   │   │   ├── 📄 update-subscription-form.tsx
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 apis/
-│   │   │   ├── 📄 subscription.api.ts
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 models/
-│   │   │   ├── 📄 subscription.types.ts
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 store/
-│   │   │   ├── 📄 subscription-slice.ts
-│   │   │   └── 📄 index.ts
-│   │   └── 📄 index.ts
-│   │
+│   │   └── ...
 │   ├── 📁 auth/
-│   │   ├── 📁 login/
-│   │   │   ├── 📄 login-form.tsx
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 logout/
-│   │   │   ├── 📄 logout-button.tsx
-│   │   │   └── 📄 index.ts
-│   │   ├── 📁 register/
-│   │   │   ├── 📄 register-form.tsx
-│   │   │   └── 📄 index.ts
-│   │   └── 📄 index.ts
-│   │
-│   ├── 📁 user-profile/
-│   │   ├── 📄 user-avatar.tsx
-│   │   ├── 📄 user-menu.tsx
-│   │   └── 📄 index.ts
-│   │
-│   └── 📄 index.ts
+│   └── ...
 │
-├── 📁 pages/
-│   ├── 📁 accounts/
-│   │   ├── 📄 accounts-page.tsx
-│   │   ├── 📄 account-details-page.tsx
-│   │   └── 📄 index.ts
-│   ├── 📁 subscriptions/
-│   │   ├── 📄 subscriptions-page.tsx
-│   │   ├── 📄 subscription-details-page.tsx
-│   │   └── 📄 index.ts
-│   ├── 📁 auth/
-│   │   ├── 📄 login-page.tsx
-│   │   ├── 📄 register-page.tsx
-│   │   └── 📄 index.ts
-│   ├── 📄 access-denied-page.tsx
-│   ├── 📄 no-access-page.tsx
-│   ├── 📄 home-page.tsx
-│   └── 📄 index.ts
+├── 📁 components/   # Reusable UI components
+│   ├── 📁 button/
+│   ├── 📁 modal/
+│   ├── 📁 form/
+│   └── ...
 │
-├── 📁 shared/
+├── 📁 core/         # React-specific shared resources
+│   ├── 📁 hooks/
+│   ├── 📁 context/
+│   ├── 📁 apis/
+│   └── 📁 store/
+│
+├── 📁 shared/       # TypeScript utilities and types
 │   ├── 📁 constants/
-│   │   ├── 📄 api-endpoints.ts
-│   │   ├── 📄 regex.ts
-│   │   └── 📄 index.ts
 │   ├── 📁 enums/
-│   │   ├── 📄 http-status.enum.ts
-│   │   ├── 📄 user-role.enum.ts
-│   │   └── 📄 index.ts
 │   ├── 📁 models/
-│   │   ├── 📄 common.types.ts
-│   │   ├── 📄 api.types.ts
-│   │   └── 📄 index.ts
-│   ├── 📁 utils/
-│   │   ├── 📄 formatters.ts
-│   │   ├── 📄 validators.ts
-│   │   └── 📄 index.ts
-│   └── 📄 index.ts
+│   └── 📁 utils/
 │
 ├── 📄 main.tsx
-├── 📄 router.tsx
-└── 📄 vite-env.d.ts
+└── 📄 app.tsx
 ```
 
 ## Import Rules
 
 ### Allowed Imports (↓ can import from ↓)
 
-```
+```text
 pages      → features, components, core, shared, app/config
 features   → components, core, shared, app/config
 components → shared, core, app/assets
@@ -290,11 +156,67 @@ export const Button = ({
 
 ### Layout Folder
 
-Layout components that compose pages
+Layout components that provide structural containers for pages.
 
 #### Layout Responsibilities
 
-- **Routing**: Handle routing for pages
+- **Page Containers**: Provide consistent structural containers that accommodate multiple pages
+- **Layout Consistency**: Ensure consistent spacing, positioning, and visual structure across pages
+- **Responsive Structure**: Handle responsive layout behavior and breakpoints
+
+#### Layout Examples
+
+```typescript
+// components/layout/page-layout.tsx
+import { ReactNode } from 'react';
+import { Header } from './header';
+import { Footer } from './footer';
+import { Sidebar } from './sidebar';
+
+interface PageLayoutProps {
+  children: ReactNode;
+  title?: string;
+  showSidebar?: boolean;
+  headerActions?: ReactNode;
+}
+
+export const PageLayout = ({
+  children,
+  title,
+  showSidebar = true,
+  headerActions
+}: PageLayoutProps) => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header title={title} actions={headerActions} />
+
+      <div className="flex flex-1">
+        {showSidebar && <Sidebar />}
+
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+
+      <Footer />
+    </div>
+  );
+};
+
+// components/layout/auth-layout.tsx
+export const AuthLayout = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <img src="/logo.svg" alt="Logo" className="mx-auto h-12 w-auto" />
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+};
+```
 
 ### Pages Folder
 
@@ -501,4 +423,199 @@ export enum AccountStatusEnum {
   INACTIVE = 'INACTIVE',
   SUSPENDED = 'SUSPENDED',
 }
+```
+
+#### Shared Layer Dependencies
+
+**Allowed Dependencies (Higher can depend on Lower):**
+
+```text
+utils     → models, enums, constants
+models    → enums, constants
+enums     → constants
+constants → (no internal dependencies)
+```
+
+**Examples:**
+
+```typescript
+// shared/constants/app.constants.ts
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+export const API_TIMEOUT = 30000;
+
+// shared/enums/status.enums.ts
+import { API_TIMEOUT } from '../constants';
+
+export enum StatusEnum {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
+// shared/models/user.model.ts
+import { StatusEnum } from '../enums';
+
+export interface IUser {
+  id: string;
+  name: string;
+  status: StatusEnum;
+}
+
+// shared/utils/user.utils.ts
+import { IUser } from '../models';
+import { StatusEnum } from '../enums';
+import { MAX_FILE_SIZE } from '../constants';
+
+export const isActiveUser = (user: IUser): boolean => {
+  return user.status === StatusEnum.ACTIVE;
+};
+```
+
+### Core Folder
+
+React-specific shared resources for hooks, contexts, guards, and APIs:
+
+```typescript
+// core/hooks/use-auth.ts
+import { useState, useEffect } from 'react';
+import { apiClient } from '../apis';
+import { IUser } from '@/shared/models';
+
+export const useAuth = () => {
+  const [user, setUser] = useState<IUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const login = async (credentials: LoginCredentials) => {
+    const response = await apiClient.post('/auth/login', credentials);
+    setUser(response.data.user);
+  };
+
+  return { user, login, loading };
+};
+
+// core/contexts/auth-context.tsx
+import { createContext, ReactNode } from 'react';
+import { useAuth } from '../hooks';
+import { IUser } from '@/shared/models';
+
+interface IAuthContext {
+  user: IUser | null;
+  login: (credentials: LoginCredentials) => Promise<void>;
+}
+
+export const AuthContext = createContext<IAuthContext | null>(null);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const auth = useAuth();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+};
+
+// core/guards/auth-guard.tsx
+import { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../contexts';
+import { ROUTES } from '@/app/config';
+
+export const AuthGuard = ({ children }: { children: ReactNode }) => {
+  const auth = useContext(AuthContext);
+
+  if (!auth?.user) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// core/apis/client.api.ts
+import { tokenManagerUtils } from '@/shared/utils';
+
+export interface IApiResponse<T = any> {
+  data: T;
+  status: number;
+  statusText: string;
+}
+
+export class ApiClient {
+  private getAuthHeaders() {
+    const token = tokenManagerUtils.getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+}
+```
+
+#### Core Layer Dependencies
+
+**Allowed Dependencies (Higher can depend on Lower):**
+
+```text
+guards   → hooks, contexts, apis, shared, app/config
+contexts → hooks, apis, shared, app/config
+hooks    → apis, shared, app/config
+apis     → shared, app/config
+```
+
+**Examples:**
+
+```typescript
+// core/apis/client.api.ts
+import { tokenManagerUtils } from '@/shared/utils';
+
+export interface IApiResponse<T = any> {
+  data: T;
+  status: number;
+  statusText: string;
+}
+
+export class ApiClient {
+  private getAuthHeaders() {
+    const token = tokenManagerUtils.getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+}
+
+// core/hooks/use-auth.ts
+import { apiClient } from '../apis';
+import { IUser } from '@/shared/models';
+
+export const useAuth = () => {
+  const [user, setUser] = useState<IUser | null>(null);
+
+  const login = async (credentials: LoginCredentials) => {
+    const response = await apiClient.post('/auth/login', credentials);
+    setUser(response.data.user);
+  };
+
+  return { user, login };
+};
+
+// core/contexts/auth-context.tsx
+import { useAuth } from '../hooks';
+import { IUser } from '@/shared/models';
+
+interface IAuthContext {
+  user: IUser | null;
+  login: (credentials: LoginCredentials) => Promise<void>;
+}
+
+export const AuthContext = createContext<IAuthContext | null>(null);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const auth = useAuth();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+};
+
+// core/guards/auth-guard.tsx
+import { useContext } from 'react';
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../contexts';
+import { ROUTES } from '@/app/config';
+
+export const AuthGuard = ({ children }: { children: ReactNode }) => {
+  const auth = useContext(AuthContext);
+
+  if (!auth?.user) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
+  }
+
+  return <>{children}</>;
+};
 ```
