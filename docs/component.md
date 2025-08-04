@@ -232,98 +232,6 @@ function Modal() {
 }
 ```
 
-### API Request Responsibilities
-
-#### ✅ Appropriate API Usage
-
-##### Fetch Data for Component's Purpose
-
-```javascript
-function UserProfile({ userId }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // ✅ Fetching data relevant to this component
-    async function fetchUser() {
-      setLoading(true);
-      try {
-        const userData = await api.getUser(userId);
-        setUser(userData);
-      } catch (error) {
-        console.error('Failed to fetch user:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchUser();
-  }, [userId]);
-
-  if (loading) return <div>Loading...</div>;
-
-  return <div>{user?.name}</div>;
-}
-```
-
-##### Read-Only Operations
-
-```javascript
-function SearchResults({ query }) {
-  const [results, setResults] = useState([]);
-
-  useEffect(() => {
-    // ✅ Safe read-only API call
-    api.search(query).then(setResults);
-  }, [query]);
-
-  return (
-    <div>
-      {results.map(item => (
-        <SearchItem key={item.id} item={item} />
-      ))}
-    </div>
-  );
-}
-```
-
-#### ❌ API Operations to Avoid
-
-##### Side Effects That Affect Other Components
-
-```javascript
-function BadNotificationButton() {
-  const handleClick = async () => {
-    // ❌ This API call affects global state that other components depend on
-    await api.markAllNotificationsAsRead();
-    // Other components displaying notifications won't know about this change
-  };
-
-  return <button onClick={handleClick}>Mark All Read</button>;
-}
-
-function GoodNotificationButton({ onMarkAllRead }) {
-  // ✅ Delegate the side effect to parent
-  return <button onClick={onMarkAllRead}>Mark All Read</button>;
-}
-```
-
-##### Unrelated Data Mutations
-
-```javascript
-function UserCard({ user }) {
-  const handlePromote = async () => {
-    // ❌ Bad: This component shouldn't handle user promotion
-    await api.promoteUser(user.id);
-    await api.sendPromotionEmail(user.id);
-    await api.updateUserPermissions(user.id, newPermissions);
-  };
-
-  // This component should only display user info
-  return <div>{user.name}</div>;
-}
-```
-
 ### Component Scope and Communication
 
 #### ✅ Proper Scope Management
@@ -364,37 +272,6 @@ function TodoList({ onListChange }) {
       {todos.map(todo => (
         <TodoItem key={todo.id} todo={todo} />
       ))}
-    </div>
-  );
-}
-```
-
-##### Interface-Based Communication
-
-```javascript
-// ✅ Define common interface for similar components
-interface MediaPlayerProps {
-  src: string;
-  onPlay: () => void;
-  onPause: () => void;
-  onEnd: () => void;
-}
-
-function VideoPlayer({ src, onPlay, onPause, onEnd }: MediaPlayerProps) {
-  // Video-specific implementation
-}
-
-function AudioPlayer({ src, onPlay, onPause, onEnd }: MediaPlayerProps) {
-  // Audio-specific implementation
-}
-
-function MediaContainer() {
-  const handlePlay = () => console.log('Media started');
-
-  return (
-    <div>
-      <VideoPlayer src="video.mp4" onPlay={handlePlay} onPause={...} onEnd={...} />
-      <AudioPlayer src="audio.mp3" onPlay={handlePlay} onPause={...} onEnd={...} />
     </div>
   );
 }
@@ -495,32 +372,6 @@ function OrderForm() {
 }
 ```
 
-##### Reusable and Configurable
-
-```javascript
-// ✅ Flexible, reusable component
-function DataTable({
-  data,
-  columns,
-  onSort,
-  onFilter,
-  emptyMessage = 'No data available',
-}) {
-  return (
-    <div className='data-table'>
-      <TableHeader columns={columns} onSort={onSort} />
-      <TableFilters columns={columns} onFilter={onFilter} />
-
-      {data.length > 0 ? (
-        <TableBody data={data} columns={columns} />
-      ) : (
-        <div className='empty-state'>{emptyMessage}</div>
-      )}
-    </div>
-  );
-}
-```
-
 #### ❌ UI Components to Avoid
 
 ##### Business Logic in UI
@@ -549,19 +400,6 @@ function BadProductCard({ product }) {
       <img src={product.image} alt={product.name} />
       <h3>{product.name}</h3>
       <button onClick={handleAddToCart}>Add to Cart</button>
-    </div>
-  );
-}
-
-// ✅ Good: Pure UI component
-function GoodProductCard({ product, onAddToCart, isInCart }) {
-  return (
-    <div className='product-card'>
-      <img src={product.image} alt={product.name} />
-      <h3>{product.name}</h3>
-      <button onClick={() => onAddToCart(product)} disabled={isInCart}>
-        {isInCart ? 'In Cart' : 'Add to Cart'}
-      </button>
     </div>
   );
 }
