@@ -6,14 +6,11 @@
 
 1. **Imports**
 2. **Types/Interfaces**
-3. **Component function**
+3. **Component**
 4. **Hooks**
-5. **Actions** (server → client)
-6. **Event handlers**
-7. **Utilities**
-8. **Early returns**
-9. **Render helpers**
-10. **Main render** (always last)
+5. **Event handlers**
+6. **Early returns**
+7. **Main render** (always last)
 
 ### Examples
 
