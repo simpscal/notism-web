@@ -103,27 +103,6 @@
 - Pattern: `{file-name}.test.{ext}`
 - Examples: `user.api.test.ts`, `auth.guard.test.tsx`
 
-### Examples
-
-```text
-✅ Good file names:
-user.models.ts
-use-auth.hook.ts
-product-card.component.tsx
-user-profile.page.tsx
-api.constants.ts
-date.utils.ts
-auth.context.tsx
-
-❌ Bad file names:
-User.ts (PascalCase)
-userModels.ts (camelCase)
-user_models.ts (snake_case)
-UserAPI.ts (mixed case)
-utils.ts (too generic)
-helper.ts (unclear purpose)
-```
-
 ## Constant
 
 **Convention**:
@@ -214,17 +193,17 @@ interface UserCardProps {
 **Convention**:
 
 - **camelCase**
-- Prefix the name with `on`
-- `[on + Action + Target]`
+- Prefix the name with `handle`
+- `[handle + Action + Target]`
 
 **Example**:
 
 ```javascript
-const onSubmitForm = (event: React.FormEvent) => {
+const handleFormSubmit = (event: React.FormEvent) => {
   ...
 };
 
-const onUserDeleted = (userId: string) => {
+const handleUserDeleted = (userId: string) => {
   ...
 };
 ```
@@ -251,7 +230,7 @@ const useAuth = () => {
 
 - **camelCase**
 - State setter prefixed with `set` + PascalCase state name
-- Boolean state prefixed with `is`
+- Boolean state prefixed with `is`, `has`, `can`, `should`, etc.
 
 **Example**:
 
