@@ -4,7 +4,7 @@ services:
   react-dev:
     build:
       context: .
-    container_name: react-template-dev
+    container_name: notism-dev
     volumes:
       - ./:/app
       - /app/node_modules
