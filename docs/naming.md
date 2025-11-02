@@ -241,6 +241,45 @@ const [hasError, setHasError] = useState(false);
 const [canSubmit, setCanSubmit] = useState(false);
 ```
 
+## Boolean Variables
+
+**Convention**:
+
+- **camelCase**
+- Prefixed with `is`, `has`, `can`, `should`, `will`, `did`, etc.
+- Use descriptive names that form a question when read
+
+**Common Prefixes**:
+
+- **`is`** - For states or conditions (e.g., `isLoading`, `isActive`, `isVisible`)
+- **`has`** - For possession or presence (e.g., `hasError`, `hasPermission`, `hasChildren`)
+- **`can`** - For ability or permission (e.g., `canEdit`, `canDelete`, `canSubmit`)
+- **`should`** - For conditions or recommendations (e.g., `shouldRender`, `shouldUpdate`)
+- **`will`** - For future actions (e.g., `willRedirect`, `willClose`)
+- **`did`** - For past actions (e.g., `didMount`, `didLoad`)
+
+**Example**:
+
+```javascript
+// State booleans
+const [isLoading, setIsLoading] = useState(false);
+const [isOpen, setIsOpen] = useState(false);
+const [isDisabled, setIsDisabled] = useState(false);
+const [isShowPassword, setIsShowPassword] = useState(false);
+
+// Computed booleans
+const hasErrors = errors.length > 0;
+const canSubmit = !isLoading && isValid;
+const shouldShowMessage = isError && !isLoading;
+
+// Props booleans
+interface ButtonProps {
+  isLoading?: boolean;
+  isDisabled?: boolean;
+  hasIcon?: boolean;
+}
+```
+
 ## Ref Variables
 
 **Convention**:
