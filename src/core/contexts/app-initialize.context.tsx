@@ -21,7 +21,7 @@ export function AppInitializeProvider({
     // Simulate an initialization process
     setTimeout(() => {
       setIsInitialized(true);
-    }, 5000);
+    }, 1000);
   }, []);
 
   return (
