@@ -25,18 +25,18 @@
 
     "paths": {
       "@/*": ["./src/*"],
-      "@utils": ["./src/shared/utils"],
-      "@utils/*": ["./src/shared/utils/*"],
-      "@models": ["./src/shared/models"],
-      "@models/*": ["./src/shared/models/*"],
-      "@enums": ["./src/shared/enums"],
-      "@enums/*": ["./src/shared/enums/*"],
-      "@constants": ["./src/shared/constants"],
-      "@constants/*": ["./src/shared/constants/*"],
-      "@hooks": ["./src/core/hooks"],
-      "@hooks/*": ["./src/core/hooks/*"],
-      "@contexts": ["src/core/contexts"],
-      "@contexts/*": ["src/core/contexts/*"]
+      "@/utils": ["./src/shared/utils"],
+      "@/utils/*": ["./src/shared/utils/*"],
+      "@/models": ["./src/shared/models"],
+      "@/models/*": ["./src/shared/models/*"],
+      "@/enums": ["./src/shared/enums"],
+      "@/enums/*": ["./src/shared/enums/*"],
+      "@/constants": ["./src/shared/constants"],
+      "@/constants/*": ["./src/shared/constants/*"],
+      "@/hooks": ["./src/core/hooks"],
+      "@/hooks/*": ["./src/core/hooks/*"],
+      "@/contexts": ["src/core/contexts"],
+      "@/contexts/*": ["src/core/contexts/*"]
     }
   },
   "include": ["src"]
