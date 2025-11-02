@@ -7,6 +7,10 @@ export type ISvgIconNameSubset<T extends Readonly<ISvgIcon[]>> =
 
 export * from './build/icon-arrow-right.icon';
 export * from './build/icon-close.icon';
+export * from './build/icon-eye-off.icon';
+export * from './build/icon-eye.icon';
+export * from './build/icon-github.icon';
+export * from './build/icon-google.icon';
 export * from './build/icon-menu.icon';
 export * from './build/icon-user.icon';
 export * from './build/complete-icon-set';
