@@ -7,6 +7,9 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   envPrefix: ['VITE_', 'REACT_APP_'],
+  server: {
+    port: 4200,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
