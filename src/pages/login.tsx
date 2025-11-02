@@ -1,24 +1,48 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { Icon } from '@/components/icon/icon';
 import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { useInput } from '@/core/hooks';
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: 'Email is required' })
+    .email({ message: 'Please enter a valid email address' }),
+  password: z
+    .string()
+    .min(1, { message: 'Password is required' })
+    .min(8, { message: 'Password must be at least 8 characters' }),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 function Login() {
-  const [email, bindEmail] = useInput('');
-  const [password, bindPassword] = useInput('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const {
+    formState: { errors },
+  } = form;
+
+  const handleFormSubmit = async (_values: LoginFormValues) => {
     setIsLoading(true);
 
     // TODO: Implement API call
-    console.log('Login attempt:', { email, password });
 
     // Simulate API call
     setTimeout(() => {
@@ -35,23 +59,19 @@ function Login() {
   ) => {
     e.preventDefault();
     // TODO: Navigate to forgot password page
-    console.log('Forgot password clicked');
   };
 
   const handleGoogleLogin = () => {
     // TODO: Implement Google OAuth login
-    console.log('Google login clicked');
   };
 
   const handleGithubLogin = () => {
     // TODO: Implement GitHub OAuth login
-    console.log('GitHub login clicked');
   };
 
   const handleSignUpClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     // TODO: Navigate to sign up page
-    console.log('Sign up clicked');
   };
 
   return (
@@ -65,26 +85,30 @@ function Login() {
       </div>
 
       {/* Login Form */}
-      <form onSubmit={handleFormSubmit} className='space-y-4'>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-4'>
         {/* Email Field */}
-        <div className='space-y-2'>
-          <Label htmlFor='email'>Email</Label>
+        <Field data-invalid={!!errors.email}>
+          <FieldLabel htmlFor='email'>Email</FieldLabel>
           <Input
             id='email'
             type='email'
             placeholder='name@example.com'
-            {...bindEmail}
-            required
-            disabled={isLoading}
             autoComplete='email'
-            className='w-full'
+            disabled={isLoading}
+            {...form.register('email')}
           />
-        </div>
+          {errors.email && (
+            <FieldError>
+              {errors.email.message}
+            </FieldError>
+          )}
+        </Field>
+
 
         {/* Password Field */}
-        <div className='space-y-2'>
+        <Field data-invalid={!!errors.password}>
           <div className='flex items-center justify-between'>
-            <Label htmlFor='password'>Password</Label>
+            <FieldLabel htmlFor='password'>Password</FieldLabel>
             <a
               href='#'
               className='text-sm text-primary hover:underline'
@@ -98,11 +122,9 @@ function Login() {
               id='password'
               type={isPasswordVisible ? 'text' : 'password'}
               placeholder='Enter your password'
-              {...bindPassword}
-              required
-              disabled={isLoading}
               autoComplete='current-password'
-              className='w-full pr-10'
+              disabled={isLoading}
+              {...form.register('password')}
             />
             <Button
               type='button'
@@ -112,10 +134,18 @@ function Login() {
               className='absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-muted-foreground hover:text-foreground'
               disabled={isLoading}
             >
-              <Icon name={isPasswordVisible ? 'eyeOff' : 'eye'} size={16} />
+              <Icon
+                name={isPasswordVisible ? 'eyeOff' : 'eye'}
+                size={16}
+              />
             </Button>
           </div>
-        </div>
+          {errors.password && (
+            <FieldError>
+              {errors.password.message}
+            </FieldError>
+          )}
+        </Field>
 
         {/* Submit Button */}
         <Button type='submit' className='w-full' disabled={isLoading}>
