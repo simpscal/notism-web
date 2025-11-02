@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { Icon } from '@/components/icon/icon';
@@ -8,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { authApi, useAuthSuccess } from '@/features/auth';
+import { ROUTES } from '@/app/configs';
 
 const loginSchema = z.object({
   email: z
@@ -23,6 +26,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 function Login() {
+  const navigate = useNavigate();
+  const { handleAuthSuccess } = useAuthSuccess();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,15 +44,17 @@ function Login() {
     formState: { errors },
   } = form;
 
-  const handleFormSubmit = async (_values: LoginFormValues) => {
+  const handleFormSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
 
-    // TODO: Implement API call
+    const viewModel = await authApi.login({
+      email: values.email,
+      password: values.password,
+    });
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    handleAuthSuccess(viewModel, 'Login successful! Welcome back.');
+
+    navigate(ROUTES.about);
   };
 
   const handlePasswordVisibilityToggle = () => {
@@ -58,20 +65,16 @@ function Login() {
     e: React.MouseEvent<HTMLAnchorElement>
   ) => {
     e.preventDefault();
-    // TODO: Navigate to forgot password page
   };
 
   const handleGoogleLogin = () => {
-    // TODO: Implement Google OAuth login
   };
 
   const handleGithubLogin = () => {
-    // TODO: Implement GitHub OAuth login
   };
 
   const handleSignUpClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    // TODO: Navigate to sign up page
   };
 
   return (
