@@ -1,0 +1,19 @@
+{
+  // Enable CodeLens to show references above variables, functions, classes, etc.
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  "javascript.referencesCodeLens.enabled": true,
+  "javascript.referencesCodeLens.showOnAllFunctions": true,
+
+  // Enable implementation CodeLens
+  "typescript.implementationsCodeLens.enabled": true,
+  "javascript.implementationsCodeLens.enabled": true,
+
+  // Show reference count inline (if you want even more visibility)
+  "editor.codeLens": true,
+
+  // Optional: Configure which symbols show references
+  "editor.gotoLocation.multipleReferences": "peek",
+  "editor.gotoLocation.multipleDefinitions": "peek",
+  "editor.gotoLocation.multipleImplementations": "peek"
+}
