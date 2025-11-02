@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { ROUTES } from '@/app/configs';
 import { AuthLayout, DefaultLayout } from '@/layouts';
 import AboutPage from '@/pages/about';
 import Login from '@/pages/login';
@@ -12,11 +11,11 @@ function AppRoutes() {
       <Route index element={<DefaultLayout />}></Route>
 
       <Route path='auth' element={<AuthLayout />}>
-        <Route index element={<Navigate replace to={ROUTES.logIn} />} />
-        <Route path={ROUTES.logIn} element={<Login />} />
+        <Route index element={<Navigate replace to='login' />} />
+        <Route path='login' element={<Login />} />
       </Route>
 
-      <Route path={ROUTES.about} element={<AboutPage />} />
+      <Route path='about' element={<AboutPage />} />
       <Route path='*' element={<NotFoundPage />} />
     </Routes>
   );
