@@ -2,6 +2,7 @@ import { useContext } from 'react';
 
 import AppRoutes from './app.routes';
 
+import { Toaster } from '@/components/ui/sonner';
 import Spinner from '@/components/ui/spinner';
 import { AppInitializeContext } from '@/core/contexts';
 
@@ -16,7 +17,12 @@ function App() {
     );
   }
 
-  return <AppRoutes />;
+  return (
+    <>
+      <AppRoutes />
+      <Toaster />
+    </>
+  );
 }
 
 export default App;

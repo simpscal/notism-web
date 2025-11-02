@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import './app/assets/styles/index.css';
 import { BrowserRouter } from 'react-router-dom';
 
-import App from './App.tsx';
+import App from './app.tsx';
 import { store } from './store';
 
 import { IconProvider } from '@/components/icon/icon-context';

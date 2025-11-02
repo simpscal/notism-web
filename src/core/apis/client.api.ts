@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { toast } from 'sonner';
+
 import { tokenManagerUtils } from '@/shared/utils';
 
 export interface ApiResponse<T = any> {
@@ -180,12 +182,14 @@ export class ApiClient {
         : ((await response.text()) as T);
 
     if (!response.ok) {
-      throw {
+      const error = {
         message:
           (data as any)?.message || response.statusText || 'Request failed',
         status: response.status,
         data,
       } as ApiError;
+
+      throw error;
     }
 
     return data;
@@ -331,6 +335,75 @@ apiClient.addRequestInterceptor(async (config: RequestConfig) => {
   }
 
   return config;
+});
+
+// Global error handling interceptor
+apiClient.addResponseInterceptor(async (response: Response) => {
+  if (!response.ok) {
+    const status = response.status;
+
+    if (status === 401) {
+      return response;
+    }
+
+    let errorMessage = response.statusText || 'Request failed';
+    try {
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.clone().json();
+        errorMessage = errorData?.message || errorMessage;
+      }
+    } catch {
+      // If parsing fails, use default message
+    }
+
+    let errorTitle = 'Error';
+    let errorDescription = errorMessage;
+
+    switch (status) {
+      case 400:
+        errorTitle = 'Bad Request';
+        errorDescription =
+          errorMessage || 'The request was invalid. Please check your input.';
+        break;
+      case 403:
+        errorTitle = 'Forbidden';
+        errorDescription =
+          errorMessage || 'You do not have permission to perform this action.';
+        break;
+      case 404:
+        errorTitle = 'Not Found';
+        errorDescription =
+          errorMessage || 'The requested resource was not found.';
+        break;
+      case 500:
+        errorTitle = 'Server Error';
+        errorDescription =
+          errorMessage ||
+          'An unexpected error occurred. Please try again later.';
+        break;
+      case 503:
+        errorTitle = 'Service Unavailable';
+        errorDescription =
+          errorMessage ||
+          'The service is temporarily unavailable. Please try again later.';
+        break;
+      default:
+        if (status >= 500) {
+          errorTitle = 'Server Error';
+          errorDescription =
+            errorMessage ||
+            'An unexpected error occurred. Please try again later.';
+        }
+        break;
+    }
+
+    toast.error(errorTitle, {
+      description: errorDescription,
+    });
+  }
+
+  return response;
 });
 
 // Add request logging in development
