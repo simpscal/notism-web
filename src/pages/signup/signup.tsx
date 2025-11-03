@@ -73,9 +73,6 @@ function Signup() {
                 toast.success('Account created successfully! Welcome aboard.');
                 navigate(ROUTES.about);
             })
-            .catch(() => {
-                toast.error('Signup failed. Please try again.');
-            })
             .finally(() => {
                 setIsLoading(false);
             });
