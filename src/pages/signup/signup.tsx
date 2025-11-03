@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { loginApi } from './login/apis';
+import { signupApi } from './apis';
 
 import { ROUTES } from '@/app/configs';
 import { Icon } from '@/components/icon/icon';
@@ -16,7 +16,9 @@ import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { authSuccess } from '@/store/auth/auth.slice';
 
-const loginSchema = z.object({
+const signupSchema = z.object({
+    firstName: z.string().min(1, { message: 'First name is required' }),
+    lastName: z.string().min(1, { message: 'Last name is required' }),
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
     password: z
         .string()
@@ -24,19 +26,21 @@ const loginSchema = z.object({
         .min(8, { message: 'Password must be at least 8 characters' }),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type SignupFormValues = z.infer<typeof signupSchema>;
 
-function Login() {
+function Signup() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const form = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
+    const form = useForm<SignupFormValues>({
+        resolver: zodResolver(signupSchema),
         mode: 'onChange',
         defaultValues: {
+            firstName: '',
+            lastName: '',
             email: '',
             password: '',
         },
@@ -46,32 +50,31 @@ function Login() {
         formState: { errors },
     } = form;
 
-    const handleFormSubmit = async (values: LoginFormValues) => {
+    const handleFormSubmit = async (values: SignupFormValues) => {
         setIsLoading(true);
 
-        loginApi
-            .login({
+        signupApi
+            .signup({
+                firstName: values.firstName,
+                lastName: values.lastName,
                 email: values.email,
                 password: values.password,
             })
             .then(data => {
                 dispatch(
                     authSuccess({
-                        user: {
-                            id: data.userId,
-                            email: data.email,
-                            firstName: data.firstName,
-                            lastName: data.lastName,
-                            role: data.role,
-                        },
+                        user: data.user,
                         accessToken: data.token,
                         refreshToken: data.refreshToken,
                     })
                 );
             })
             .then(() => {
-                toast.success('Login successful! Welcome back.');
+                toast.success('Account created successfully! Welcome aboard.');
                 navigate(ROUTES.about);
+            })
+            .catch(() => {
+                toast.error('Signup failed. Please try again.');
             })
             .finally(() => {
                 setIsLoading(false);
@@ -82,24 +85,51 @@ function Login() {
         setIsPasswordVisible(!isPasswordVisible);
     };
 
-    const handleForgotPasswordClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-    };
+    const handleGoogleSignup = () => {};
 
-    const handleGoogleLogin = () => {};
-
-    const handleGithubLogin = () => {};
+    const handleGithubSignup = () => {};
 
     return (
         <div className='space-y-6'>
             {/* Header */}
             <div className='space-y-2 text-center'>
-                <h1 className='text-2xl font-semibold tracking-tight'>Welcome back</h1>
-                <p className='text-sm text-muted-foreground'>Enter your credentials to access your account</p>
+                <h1 className='text-2xl font-semibold tracking-tight'>Create an account</h1>
+                <p className='text-sm text-muted-foreground'>Enter your details to get started</p>
             </div>
 
-            {/* Login Form */}
+            {/* Signup Form */}
             <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-4'>
+                {/* Name Fields */}
+                <div className='grid grid-cols-2 gap-4'>
+                    {/* First Name Field */}
+                    <Field data-invalid={!!errors.firstName}>
+                        <FieldLabel htmlFor='firstName'>First Name</FieldLabel>
+                        <Input
+                            id='firstName'
+                            type='text'
+                            placeholder='John'
+                            autoComplete='given-name'
+                            disabled={isLoading}
+                            {...form.register('firstName')}
+                        />
+                        {errors.firstName && <FieldError>{errors.firstName.message}</FieldError>}
+                    </Field>
+
+                    {/* Last Name Field */}
+                    <Field data-invalid={!!errors.lastName}>
+                        <FieldLabel htmlFor='lastName'>Last Name</FieldLabel>
+                        <Input
+                            id='lastName'
+                            type='text'
+                            placeholder='Doe'
+                            autoComplete='family-name'
+                            disabled={isLoading}
+                            {...form.register('lastName')}
+                        />
+                        {errors.lastName && <FieldError>{errors.lastName.message}</FieldError>}
+                    </Field>
+                </div>
+
                 {/* Email Field */}
                 <Field data-invalid={!!errors.email}>
                     <FieldLabel htmlFor='email'>Email</FieldLabel>
@@ -116,22 +146,13 @@ function Login() {
 
                 {/* Password Field */}
                 <Field data-invalid={!!errors.password}>
-                    <div className='flex items-center justify-between'>
-                        <FieldLabel htmlFor='password'>Password</FieldLabel>
-                        <a
-                            href='#'
-                            className='text-sm text-primary hover:underline'
-                            onClick={handleForgotPasswordClick}
-                        >
-                            Forgot password?
-                        </a>
-                    </div>
+                    <FieldLabel htmlFor='password'>Password</FieldLabel>
                     <div className='relative'>
                         <Input
                             id='password'
                             type={isPasswordVisible ? 'text' : 'password'}
-                            placeholder='Enter your password'
-                            autoComplete='current-password'
+                            placeholder='Create a password'
+                            autoComplete='new-password'
                             disabled={isLoading}
                             {...form.register('password')}
                         />
@@ -151,7 +172,7 @@ function Login() {
 
                 {/* Submit Button */}
                 <Button type='submit' className='w-full' disabled={isLoading}>
-                    {isLoading ? 'Signing in...' : 'Sign in'}
+                    {isLoading ? 'Creating account...' : 'Sign up'}
                 </Button>
             </form>
 
@@ -165,27 +186,27 @@ function Login() {
                 </div>
             </div>
 
-            {/* Social Login Buttons */}
+            {/* Social Signup Buttons */}
             <div className='grid grid-cols-2 gap-3'>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGoogleLogin}>
+                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGoogleSignup}>
                     <Icon name='google' size={16} />
                     Google
                 </Button>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGithubLogin}>
+                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGithubSignup}>
                     <Icon name='github' size={16} />
                     GitHub
                 </Button>
             </div>
 
-            {/* Sign Up Link */}
+            {/* Back to Login Link */}
             <div className='text-center text-sm'>
-                <span className='text-muted-foreground'>Don't have an account? </span>
+                <span className='text-muted-foreground'>Already have an account? </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.signUp}`}>Sign up</Link>
+                    <Link to={`/${ROUTES.logIn}`}>Sign in</Link>
                 </Button>
             </div>
         </div>
     );
 }
 
-export default Login;
+export default Signup;

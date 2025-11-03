@@ -1,4 +1,5 @@
 export const ROUTES = {
-  logIn: 'auth/login',
-  about: 'about',
+    logIn: 'auth/login',
+    signUp: 'auth/signup',
+    about: 'about',
 };

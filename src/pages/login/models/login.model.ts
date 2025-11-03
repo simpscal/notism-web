@@ -1,4 +1,4 @@
-import { UserVM } from './user.model';
+import { UserVM } from '@/features/auth/models';
 
 export class LoginRM {
     email!: string;

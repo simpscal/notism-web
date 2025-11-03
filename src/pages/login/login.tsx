@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { loginApi } from './login/apis';
+import { loginApi } from './apis';
 
 import { ROUTES } from '@/app/configs';
 import { Icon } from '@/components/icon/icon';
@@ -57,13 +57,7 @@ function Login() {
             .then(data => {
                 dispatch(
                     authSuccess({
-                        user: {
-                            id: data.userId,
-                            email: data.email,
-                            firstName: data.firstName,
-                            lastName: data.lastName,
-                            role: data.role,
-                        },
+                        user: data.user,
                         accessToken: data.token,
                         refreshToken: data.refreshToken,
                     })
