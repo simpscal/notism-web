@@ -1,38 +1,52 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { UserVM } from '@/shared/models';
+import { UserVM } from '@/features/auth/models';
+import { tokenManagerUtils } from '@/shared/utils';
 
-export interface AuthState {
-  user: UserVM | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
+export interface IAuthState {
+    user: UserVM | null;
 }
 
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
+const INITIAL_STATE: IAuthState = {
+    user: null,
 };
 
 const authSlice = createSlice({
-  name: 'auth',
-  initialState,
-  reducers: {
-    setUser: (state, action: PayloadAction<UserVM>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
-      state.error = null;
+    name: 'auth',
+    initialState: INITIAL_STATE,
+    reducers: {
+        authSuccess: (
+            state,
+            action: PayloadAction<{
+                user: UserVM;
+                accessToken: string;
+                refreshToken: string;
+            }>
+        ) => {
+            state.user = action.payload.user;
+            tokenManagerUtils.setToken(action.payload.accessToken);
+            tokenManagerUtils.setRefreshToken(action.payload.refreshToken);
+        },
+
+        setUser: (state, action: PayloadAction<UserVM>) => {
+            state.user = action.payload;
+        },
+
+        updateUser: (state, action: PayloadAction<Partial<UserVM>>) => {
+            if (state.user) {
+                state.user = {
+                    ...state.user,
+                    ...action.payload,
+                };
+            }
+        },
+
+        clearUser: state => {
+            state.user = null;
+        },
     },
-    clearUser: state => {
-      state.user = null;
-      state.isAuthenticated = false;
-      state.error = null;
-    },
-  },
 });
 
-export const { setUser, clearUser } = authSlice.actions;
+export const { authSuccess, setUser, updateUser, clearUser } = authSlice.actions;
 
 export default authSlice.reducer;
