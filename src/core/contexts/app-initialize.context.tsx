@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useState } from 'react';
 
 type AppInitializeProviderProps = {
     children: React.ReactNode;
@@ -6,21 +6,35 @@ type AppInitializeProviderProps = {
 
 type AppInitializeContextState = {
     isInitialized: boolean;
+    initialize: () => Promise<void>;
 };
 
-export const AppInitializeContext = createContext<AppInitializeContextState>({
+const AppInitializeContext = createContext<AppInitializeContextState>({
     isInitialized: false,
+    initialize: async () => {},
 });
 
-export function AppInitializeProvider({ children }: AppInitializeProviderProps) {
+function AppInitializeProvider({ children }: AppInitializeProviderProps) {
     const [isInitialized, setIsInitialized] = useState(false);
+    const [isInitializing, setIsInitializing] = useState(false);
 
-    useEffect(() => {
+    const initialize = useCallback(async () => {
+        if (isInitialized || isInitializing) {
+            return;
+        }
+
+        setIsInitializing(true);
+
         // Simulate an initialization process
-        setTimeout(() => {
-            setIsInitialized(true);
-        }, 1000);
-    }, []);
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-    return <AppInitializeContext.Provider value={{ isInitialized }}>{children}</AppInitializeContext.Provider>;
+        setIsInitialized(true);
+        setIsInitializing(false);
+    }, [isInitialized, isInitializing]);
+
+    return (
+        <AppInitializeContext.Provider value={{ isInitialized, initialize }}>{children}</AppInitializeContext.Provider>
+    );
 }
+
+export { AppInitializeContext, AppInitializeProvider };
