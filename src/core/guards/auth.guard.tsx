@@ -4,23 +4,23 @@ import { ROUTES } from '@/app/configs';
 import { tokenManagerUtils } from '@/shared/utils';
 
 interface AuthGuardProps {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 export function AuthGuard({ children }: AuthGuardProps) {
-  const accessToken = tokenManagerUtils.getToken();
-  const refreshToken = tokenManagerUtils.getRefreshToken();
+    const accessToken = tokenManagerUtils.getToken();
+    const refreshToken = tokenManagerUtils.getRefreshToken();
 
-  const isAuthenticated = !(
-    (accessToken && tokenManagerUtils.isTokenExpired(accessToken)) ||
-    (refreshToken && tokenManagerUtils.isTokenExpired(refreshToken))
-  );
+    const isAuthenticated = !(
+        (accessToken && tokenManagerUtils.isTokenExpired(accessToken)) ||
+        (refreshToken && tokenManagerUtils.isTokenExpired(refreshToken))
+    );
 
-  if (isAuthenticated) {
-    return <>{children}</>;
-  } else {
-    return <Navigate to={ROUTES.logIn} replace />;
-  }
+    if (isAuthenticated) {
+        return <>{children}</>;
+    } else {
+        return <Navigate to={ROUTES.logIn} replace />;
+    }
 
-  return null;
+    return null;
 }

@@ -5,20 +5,20 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  envPrefix: ['VITE_', 'REACT_APP_'],
-  server: {
-    port: 4200,
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@/utils': path.resolve(__dirname, './src/shared/utils'),
-      '@/models': path.resolve(__dirname, './src/shared/models'),
-      '@/enums': path.resolve(__dirname, './src/shared/enums'),
-      '@/constants': path.resolve(__dirname, './src/shared/constants'),
-      '@/hooks': path.resolve(__dirname, './src/core/hooks'),
-      '@/providers': path.resolve(__dirname, './src/core/providers'),
+    plugins: [react(), tailwindcss()],
+    envPrefix: ['VITE_', 'REACT_APP_'],
+    server: {
+        port: 4200,
     },
-  },
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src'),
+            '@/utils': path.resolve(__dirname, './src/shared/utils'),
+            '@/models': path.resolve(__dirname, './src/shared/models'),
+            '@/enums': path.resolve(__dirname, './src/shared/enums'),
+            '@/constants': path.resolve(__dirname, './src/shared/constants'),
+            '@/hooks': path.resolve(__dirname, './src/core/hooks'),
+            '@/providers': path.resolve(__dirname, './src/core/providers'),
+        },
+    },
 });

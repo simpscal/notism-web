@@ -10,12 +10,12 @@ import { iconUser } from './icon-user.icon';
 import { ISvgIcon } from './my-icons.model';
 
 export const completeIconSet: ISvgIcon[] = [
-  iconArrowRight as ISvgIcon,
-  iconClose as ISvgIcon,
-  iconEyeOff as ISvgIcon,
-  iconEye as ISvgIcon,
-  iconGithub as ISvgIcon,
-  iconGoogle as ISvgIcon,
-  iconMenu as ISvgIcon,
-  iconUser as ISvgIcon,
+    iconArrowRight as ISvgIcon,
+    iconClose as ISvgIcon,
+    iconEyeOff as ISvgIcon,
+    iconEye as ISvgIcon,
+    iconGithub as ISvgIcon,
+    iconGoogle as ISvgIcon,
+    iconMenu as ISvgIcon,
+    iconUser as ISvgIcon,
 ];

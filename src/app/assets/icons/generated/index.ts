@@ -2,8 +2,7 @@
 
 import type { ISvgIcon } from './build/my-icons.model';
 
-export type ISvgIconNameSubset<T extends Readonly<ISvgIcon[]>> =
-  T[number]['name'];
+export type ISvgIconNameSubset<T extends Readonly<ISvgIcon[]>> = T[number]['name'];
 
 export * from './build/icon-arrow-right.icon';
 export * from './build/icon-close.icon';

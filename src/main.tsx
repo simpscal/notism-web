@@ -15,22 +15,20 @@ import { ThemeProvider, AppInitializeProvider } from '@/core/contexts';
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ThemeProvider>
-            <IconProvider>
-              <AppInitializeProvider>
-                <App />
-                {import.meta.env.DEV && (
-                  <ReactQueryDevtools initialIsOpen={false} />
-                )}
-              </AppInitializeProvider>
-            </IconProvider>
-          </ThemeProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </Provider>
-  </StrictMode>
+    <StrictMode>
+        <Provider store={store}>
+            <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                    <ThemeProvider>
+                        <IconProvider>
+                            <AppInitializeProvider>
+                                <App />
+                                {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+                            </AppInitializeProvider>
+                        </IconProvider>
+                    </ThemeProvider>
+                </BrowserRouter>
+            </QueryClientProvider>
+        </Provider>
+    </StrictMode>
 );
