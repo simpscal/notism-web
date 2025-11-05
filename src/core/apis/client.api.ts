@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from 'sonner';
 
+import { API_ENDPOINTS } from '@/shared/constants';
 import { tokenManagerUtils } from '@/shared/utils';
 
 export interface ApiResponse<T = any> {
@@ -247,7 +248,7 @@ export class ApiClient {
         this._isRefreshing = true;
 
         try {
-            const response = await fetch(`${this._baseURL}/auth/refresh`, {
+            const response = await fetch(`${this._baseURL}/${API_ENDPOINTS.AUTH.REFRESH}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
