@@ -1,5 +1,4 @@
 const TOKEN_KEY = 'access-token';
-const REFRESH_TOKEN_KEY = 'refreshToken';
 
 export const tokenManagerUtils = {
     getToken: () => localStorage.getItem(TOKEN_KEY),
@@ -8,15 +7,8 @@ export const tokenManagerUtils = {
 
     removeToken: () => localStorage.removeItem(TOKEN_KEY),
 
-    getRefreshToken: () => localStorage.getItem(REFRESH_TOKEN_KEY),
-
-    setRefreshToken: (token: string) => localStorage.setItem(REFRESH_TOKEN_KEY, token),
-
-    removeRefreshToken: () => localStorage.removeItem(REFRESH_TOKEN_KEY),
-
     clearAll: () => {
         localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
     },
 
     isTokenExpired: (token: string) => {

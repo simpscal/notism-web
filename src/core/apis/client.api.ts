@@ -246,19 +246,13 @@ export class ApiClient {
 
         this._isRefreshing = true;
 
-        const refreshToken = tokenManagerUtils.getRefreshToken();
-
-        if (!refreshToken || tokenManagerUtils.isTokenExpired(refreshToken)) {
-            this._handleTokenError();
-        }
-
         try {
             const response = await fetch(`${this._baseURL}/auth/refresh`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ refreshToken }),
+                body: undefined,
             });
 
             if (!response.ok) {
@@ -271,7 +265,6 @@ export class ApiClient {
             }
 
             tokenManagerUtils.setToken(data.accessToken);
-            tokenManagerUtils.setRefreshToken(data.refreshToken);
 
             this._failedQueue.forEach(request => {
                 request.resolve(this._request(request.originalEndpoint, request.originalConfig));

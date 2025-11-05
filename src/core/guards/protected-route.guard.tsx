@@ -11,11 +11,8 @@ export function ProtectedRoute() {
     const { isInitialized, initialize } = useContext(AppInitializeContext);
     const user = useAppSelector(state => state.auth.user);
     const accessToken = tokenManagerUtils.getToken();
-    const refreshToken = tokenManagerUtils.getRefreshToken();
 
-    const hasValidToken =
-        (accessToken && !tokenManagerUtils.isTokenExpired(accessToken)) ||
-        (refreshToken && !tokenManagerUtils.isTokenExpired(refreshToken));
+    const hasValidToken = accessToken && !tokenManagerUtils.isTokenExpired(accessToken);
 
     const isAuthenticated = hasValidToken && user !== null;
 

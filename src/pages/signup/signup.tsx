@@ -65,7 +65,6 @@ function Signup() {
                     authSuccess({
                         user: data.user,
                         accessToken: data.token,
-                        refreshToken: data.refreshToken,
                     })
                 );
             })

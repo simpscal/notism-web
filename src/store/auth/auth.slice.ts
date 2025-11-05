@@ -20,12 +20,10 @@ const authSlice = createSlice({
             action: PayloadAction<{
                 user: UserVM;
                 accessToken: string;
-                refreshToken: string;
             }>
         ) => {
             state.user = action.payload.user;
             tokenManagerUtils.setToken(action.payload.accessToken);
-            tokenManagerUtils.setRefreshToken(action.payload.refreshToken);
         },
 
         setUser: (state, action: PayloadAction<UserVM>) => {
