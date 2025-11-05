@@ -41,6 +41,7 @@ const authSlice = createSlice({
 
         clearAuth: state => {
             state.auth = null;
+            tokenManagerUtils.clearAll();
         },
     },
 });
