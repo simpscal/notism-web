@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { UserVM } from '@/features/auth/models';
+import { AuthVM } from '@/features/auth/models';
 import { tokenManagerUtils } from '@/shared/utils';
 
 export interface IAuthState {
-    user: UserVM | null;
+    auth: AuthVM | null;
 }
 
 const INITIAL_STATE: IAuthState = {
-    user: null,
+    auth: null,
 };
 
 const authSlice = createSlice({
@@ -18,33 +18,33 @@ const authSlice = createSlice({
         authSuccess: (
             state,
             action: PayloadAction<{
-                user: UserVM;
+                user: AuthVM;
                 accessToken: string;
             }>
         ) => {
-            state.user = action.payload.user;
+            state.auth = action.payload.user;
             tokenManagerUtils.setToken(action.payload.accessToken);
         },
 
-        setUser: (state, action: PayloadAction<UserVM>) => {
-            state.user = action.payload;
+        setAuth: (state, action: PayloadAction<AuthVM>) => {
+            state.auth = action.payload;
         },
 
-        updateUser: (state, action: PayloadAction<Partial<UserVM>>) => {
-            if (state.user) {
-                state.user = {
-                    ...state.user,
+        updateAuth: (state, action: PayloadAction<Partial<AuthVM>>) => {
+            if (state.auth) {
+                state.auth = {
+                    ...state.auth,
                     ...action.payload,
                 };
             }
         },
 
-        clearUser: state => {
-            state.user = null;
+        clearAuth: state => {
+            state.auth = null;
         },
     },
 });
 
-export const { authSuccess, setUser, updateUser, clearUser } = authSlice.actions;
+export const { authSuccess, setAuth: setUser, updateAuth: updateUser, clearAuth: clearUser } = authSlice.actions;
 
 export default authSlice.reducer;

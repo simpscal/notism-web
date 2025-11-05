@@ -70,7 +70,7 @@ function Signup() {
             })
             .then(() => {
                 toast.success('Account created successfully! Welcome aboard.');
-                navigate(ROUTES.about);
+                navigate(`/${ROUTES.about}`);
             })
             .finally(() => {
                 setIsLoading(false);

@@ -64,7 +64,7 @@ function Login() {
             })
             .then(() => {
                 toast.success('Login successful! Welcome back.');
-                navigate(ROUTES.about);
+                navigate(`/${ROUTES.about}`);
             })
             .finally(() => {
                 setIsLoading(false);

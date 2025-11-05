@@ -1,4 +1,4 @@
-export class UserVM {
+export class AuthVM {
     id!: string;
     email!: string;
     firstName!: string;

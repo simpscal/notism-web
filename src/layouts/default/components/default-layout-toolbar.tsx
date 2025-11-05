@@ -8,10 +8,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { UserVM } from '@/features/auth/models';
+import { AuthVM } from '@/features/auth/models';
 
 interface DefaultLayoutToolbarProps {
-    user: UserVM | null;
+    user: AuthVM | null;
     onLogout: () => void;
 }
 

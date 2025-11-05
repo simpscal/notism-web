@@ -5,7 +5,7 @@ import { DefaultLayoutToolbar } from './components';
 import { useAppSelector } from '@/core/hooks';
 
 function DefaultLayout() {
-    const user = useAppSelector(state => state.auth.user);
+    const user = useAppSelector(state => state.auth.auth);
 
     const handleLogout = () => {};
 
