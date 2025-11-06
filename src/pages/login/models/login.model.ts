@@ -1,4 +1,4 @@
-import { AuthVM } from '@/features/auth/models';
+import { UserProfileVM } from '@/features/user/models';
 
 export class LoginRM {
     email!: string;
@@ -6,7 +6,7 @@ export class LoginRM {
 }
 
 export class LoginVM {
-    user!: AuthVM;
+    user!: UserProfileVM;
     token!: string;
     expiresAt!: string;
     refreshToken!: string;

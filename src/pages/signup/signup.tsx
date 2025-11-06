@@ -14,7 +14,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { authSuccess } from '@/store/auth/auth.slice';
+import { authService } from '@/features/auth/services';
 
 const signupSchema = z.object({
     firstName: z.string().min(1, { message: 'First name is required' }),
@@ -61,12 +61,7 @@ function Signup() {
                 password: values.password,
             })
             .then(data => {
-                dispatch(
-                    authSuccess({
-                        user: data.user,
-                        accessToken: data.token,
-                    })
-                );
+                authService.authenticate(dispatch, data.token, data.user);
             })
             .then(() => {
                 toast.success('Account created successfully! Welcome aboard.');

@@ -6,16 +6,16 @@ import { DefaultLayoutToolbar } from './components';
 import { ROUTES } from '@/app/configs';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { authApi } from '@/features/auth/apis';
-import { clearUser } from '@/store/auth/auth.slice';
+import { authService } from '@/features/auth/services';
 
 function DefaultLayout() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const user = useAppSelector(state => state.auth.auth);
+    const user = useAppSelector(state => state.user.user);
 
     const handleLogout = async () => {
         await authApi.logout();
-        dispatch(clearUser());
+        authService.logout(dispatch);
         toast.success('Logged out successfully');
         navigate(`/${ROUTES.logIn}`);
     };

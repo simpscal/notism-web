@@ -8,10 +8,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { AuthVM } from '@/features/auth/models';
+import { UserProfileVM } from '@/features/user/models';
 
 interface DefaultLayoutToolbarProps {
-    user: AuthVM | null;
+    user: UserProfileVM | null;
     onLogout: () => void;
 }
 
@@ -37,7 +37,7 @@ function DefaultLayoutToolbar({ user, onLogout }: DefaultLayoutToolbarProps) {
                         <DropdownMenuTrigger asChild>
                             <Button variant='ghost' className='relative h-10 w-10 rounded-full'>
                                 <Avatar className='h-10 w-10'>
-                                    <AvatarImage src='' alt={user?.email} />
+                                    <AvatarImage src={user?.avatarUrl || ''} alt={user?.email} />
                                     <AvatarFallback className='bg-primary text-primary-foreground'>
                                         {getUserInitials()}
                                     </AvatarFallback>

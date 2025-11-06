@@ -14,7 +14,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { authSuccess } from '@/store/auth/auth.slice';
+import { authService } from '@/features/auth/services';
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
@@ -55,12 +55,7 @@ function Login() {
                 password: values.password,
             })
             .then(data => {
-                dispatch(
-                    authSuccess({
-                        user: data.user,
-                        accessToken: data.token,
-                    })
-                );
+                authService.authenticate(dispatch, data.token, data.user);
             })
             .then(() => {
                 toast.success('Login successful! Welcome back.');
