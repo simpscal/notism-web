@@ -37,7 +37,13 @@ export interface Interceptors {
 
 export class ApiClient {
     private _baseURL: string;
-    private _defaultHeaders: Record<string, string>;
+    private _defaultHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    };
+    private _defaultFormDataHeaders: Record<string, string> = {
+        Accept: 'application/json',
+    };
     private _interceptors: Interceptors;
     private _failedQueue: {
         resolve: (value: unknown) => void;
@@ -49,10 +55,6 @@ export class ApiClient {
 
     constructor(config: ApiClientConfig = {}) {
         this._baseURL = config.baseURL || '';
-        this._defaultHeaders = {
-            'Content-Type': 'application/json',
-            ...config.defaultHeaders,
-        };
         this._interceptors = {
             request: [],
             response: [],
@@ -103,6 +105,30 @@ export class ApiClient {
 
     async delete<T = any>(endpoint: string, options: RequestConfig = {}) {
         return this._request<T>(endpoint, { ...options, method: 'DELETE' });
+    }
+
+    async postFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}) {
+        return this._request<T>(endpoint, {
+            ...options,
+            method: 'POST',
+            body: formData,
+        });
+    }
+
+    async putFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}) {
+        return this._request<T>(endpoint, {
+            ...options,
+            method: 'PUT',
+            body: formData,
+        });
+    }
+
+    async patchFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}) {
+        return this._request<T>(endpoint, {
+            ...options,
+            method: 'PATCH',
+            body: formData,
+        });
     }
 
     /**
@@ -185,12 +211,19 @@ export class ApiClient {
     private async _request<T = any>(endpoint: string, options: RequestConfig = {}) {
         const { params, ...requestOptions } = options;
 
+        const isFormData = requestOptions.body instanceof FormData;
+
         let config: RequestConfig = {
             ...requestOptions,
-            headers: {
-                ...this._defaultHeaders,
-                ...requestOptions.headers,
-            },
+            headers: isFormData
+                ? {
+                      ...this._defaultFormDataHeaders,
+                      ...requestOptions.headers,
+                  }
+                : {
+                      ...this._defaultHeaders,
+                      ...requestOptions.headers,
+                  },
         };
 
         config = await this._applyRequestInterceptors(config);
