@@ -1,11 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { ProtectedRoute } from '@/core/guards';
+import { ProtectedRoute, ResetPasswordRouteGuard } from '@/core/guards';
 import { AuthLayout } from '@/layouts/auth';
 import { DefaultLayout } from '@/layouts/default';
 import AboutPage from '@/pages/about';
 import Login from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
+import { RequestResetPasswordPage } from '@/pages/request-reset-password';
+import { ResetPasswordPage } from '@/pages/reset-password';
 import Signup from '@/pages/signup';
 
 function AppRoutes() {
@@ -19,6 +21,15 @@ function AppRoutes() {
                 <Route index element={<Navigate replace to='login' />} />
                 <Route path='login' element={<Login />} />
                 <Route path='signup' element={<Signup />} />
+                <Route path='request-reset-password' element={<RequestResetPasswordPage />} />
+                <Route
+                    path='reset-password'
+                    element={
+                        <ResetPasswordRouteGuard>
+                            <ResetPasswordPage />
+                        </ResetPasswordRouteGuard>
+                    }
+                />
             </Route>
 
             {/* Protected Routes - Requires Authentication */}

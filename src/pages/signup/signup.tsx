@@ -12,6 +12,7 @@ import { Icon } from '@/components/icon/icon';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { authService } from '@/features/auth/services';
@@ -32,7 +33,6 @@ function Signup() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<SignupFormValues>({
@@ -70,10 +70,6 @@ function Signup() {
             .finally(() => {
                 setIsLoading(false);
             });
-    };
-
-    const handlePasswordVisibilityToggle = () => {
-        setIsPasswordVisible(!isPasswordVisible);
     };
 
     const handleGoogleSignup = () => {};
@@ -138,26 +134,13 @@ function Signup() {
                 {/* Password Field */}
                 <Field data-invalid={!!errors.password}>
                     <FieldLabel htmlFor='password'>Password</FieldLabel>
-                    <div className='relative'>
-                        <Input
-                            id='password'
-                            type={isPasswordVisible ? 'text' : 'password'}
-                            placeholder='Create a password'
-                            autoComplete='new-password'
-                            disabled={isLoading}
-                            {...form.register('password')}
-                        />
-                        <Button
-                            type='button'
-                            variant='ghost'
-                            size='sm'
-                            onClick={handlePasswordVisibilityToggle}
-                            className='absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-muted-foreground hover:text-foreground'
-                            disabled={isLoading}
-                        >
-                            <Icon name={isPasswordVisible ? 'eyeOff' : 'eye'} size={16} />
-                        </Button>
-                    </div>
+                    <PasswordInput
+                        id='password'
+                        placeholder='Create a password'
+                        autoComplete='new-password'
+                        disabled={isLoading}
+                        {...form.register('password')}
+                    />
                     {errors.password && <FieldError>{errors.password.message}</FieldError>}
                 </Field>
 

@@ -12,6 +12,7 @@ import { Icon } from '@/components/icon/icon';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { authService } from '@/features/auth/services';
@@ -30,7 +31,6 @@ function Login() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<LoginFormValues>({
@@ -66,14 +66,6 @@ function Login() {
             });
     };
 
-    const handlePasswordVisibilityToggle = () => {
-        setIsPasswordVisible(!isPasswordVisible);
-    };
-
-    const handleForgotPasswordClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-    };
-
     const handleGoogleLogin = () => {};
 
     const handleGithubLogin = () => {};
@@ -106,34 +98,17 @@ function Login() {
                 <Field data-invalid={!!errors.password}>
                     <div className='flex items-center justify-between'>
                         <FieldLabel htmlFor='password'>Password</FieldLabel>
-                        <a
-                            href='#'
-                            className='text-sm text-primary hover:underline'
-                            onClick={handleForgotPasswordClick}
-                        >
-                            Forgot password?
-                        </a>
-                    </div>
-                    <div className='relative'>
-                        <Input
-                            id='password'
-                            type={isPasswordVisible ? 'text' : 'password'}
-                            placeholder='Enter your password'
-                            autoComplete='current-password'
-                            disabled={isLoading}
-                            {...form.register('password')}
-                        />
-                        <Button
-                            type='button'
-                            variant='ghost'
-                            size='sm'
-                            onClick={handlePasswordVisibilityToggle}
-                            className='absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-muted-foreground hover:text-foreground'
-                            disabled={isLoading}
-                        >
-                            <Icon name={isPasswordVisible ? 'eyeOff' : 'eye'} size={16} />
+                        <Button variant='link' className='p-0 h-auto text-sm font-medium' asChild>
+                            <Link to={`/${ROUTES.requestResetPassword}`}>Forgot password?</Link>
                         </Button>
                     </div>
+                    <PasswordInput
+                        id='password'
+                        placeholder='Enter your password'
+                        autoComplete='current-password'
+                        disabled={isLoading}
+                        {...form.register('password')}
+                    />
                     {errors.password && <FieldError>{errors.password.message}</FieldError>}
                 </Field>
 
