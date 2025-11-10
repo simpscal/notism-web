@@ -1,15 +1,12 @@
 name: Deploy to AWS S3
 
 on:
-    pull_request:
-        types: [closed]
+    push:
         branches:
-            - dev
-            - main
+            - feat/test-deployment
 
 jobs:
     deploy:
-        if: github.event.pull_request.merged == true
         runs-on: ubuntu-latest
 
         steps:
@@ -24,14 +21,8 @@ jobs:
             - name: Install dependencies
               run: bun install --frozen-lockfile
 
-            - name: Determine build command
-              id: build-cmd
-              run: |
-                  if [ "${{ github.base_ref }}" == "main" ]; then
-                    bun run build:prod
-                  elif [ "${{ github.base_ref }}" == "dev" ]; then
-                    bun run build:dev
-                  fi
+            - name: Build project (dev)
+              run: bun run build:dev
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
@@ -43,9 +34,9 @@ jobs:
             - name: Determine S3 bucket
               id: bucket
               run: |
-                  if [ "${{ github.base_ref }}" == "main" ]; then
+                  if [ "${{ github.ref }}" == "refs/heads/main" ]; then
                     echo "bucket=${{ secrets.S3_BUCKET_PROD }}" >> $GITHUB_OUTPUT
-                  elif [ "${{ github.base_ref }}" == "dev" ]; then
+                  elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
                     echo "bucket=${{ secrets.S3_BUCKET_DEV }}" >> $GITHUB_OUTPUT
                   fi
 
@@ -82,6 +73,6 @@ jobs:
             - name: Deployment summary
               run: |
                   echo "✅ Deployment successful!"
-                  echo "Branch: ${{ github.base_ref }}"
+                  echo "Branch: ${{ github.ref_name }}"
                   echo "S3 Bucket: ${{ steps.bucket.outputs.bucket }}"
                   echo "Commit: ${{ github.sha }}"
