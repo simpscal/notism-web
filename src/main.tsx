@@ -11,7 +11,7 @@ import { store } from './store';
 
 import { IconProvider } from '@/components/icon/icon-context';
 import { ThemeProvider } from '@/core/contexts';
-
+//
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
