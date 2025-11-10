@@ -18,7 +18,7 @@ export default defineConfig({
             '@/enums': path.resolve(__dirname, './src/shared/enums'),
             '@/constants': path.resolve(__dirname, './src/shared/constants'),
             '@/hooks': path.resolve(__dirname, './src/core/hooks'),
-            '@/providers': path.resolve(__dirname, './src/core/providers'),
+            '@/contexts': path.resolve(__dirname, './src/core/contexts'),
         },
     },
 });
