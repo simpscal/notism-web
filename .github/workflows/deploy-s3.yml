@@ -1,16 +1,15 @@
 name: Deploy to AWS S3
 
 on:
-    pull_request:
-        types: [closed]
+    push:
         branches:
             - dev
             - main
 
 jobs:
     deploy:
-        if: github.event.pull_request.merged == true
         runs-on: ubuntu-latest
+        environment: ${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
 
         steps:
             - name: Checkout code
@@ -27,9 +26,9 @@ jobs:
             - name: Determine build command
               id: build-cmd
               run: |
-                  if [ "${{ github.base_ref }}" == "main" ]; then
+                  if [ "${{ github.ref }}" == "refs/heads/main" ]; then
                     bun run build:prod
-                  elif [ "${{ github.base_ref }}" == "dev" ]; then
+                  elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
                     bun run build:dev
                   fi
 
@@ -40,22 +39,13 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
-            - name: Determine S3 bucket
-              id: bucket
-              run: |
-                  if [ "${{ github.base_ref }}" == "main" ]; then
-                    echo "bucket=${{ secrets.S3_BUCKET_PROD }}" >> $GITHUB_OUTPUT
-                  elif [ "${{ github.base_ref }}" == "dev" ]; then
-                    echo "bucket=${{ secrets.S3_BUCKET_DEV }}" >> $GITHUB_OUTPUT
-                  fi
-
             - name: Remove old files from S3
               run: |
-                  aws s3 rm s3://${{ steps.bucket.outputs.bucket }} --recursive
+                  aws s3 rm s3://${{ secrets.S3_BUCKET }} --recursive
 
             - name: Upload files to S3 (HTML files)
               run: |
-                  aws s3 sync dist/ s3://${{ steps.bucket.outputs.bucket }} \
+                  aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} \
                     --exclude "*.css" \
                     --exclude "*.js" \
                     --cache-control "no-cache" \
@@ -63,7 +53,7 @@ jobs:
 
             - name: Upload CSS and JS files with cache
               run: |
-                  aws s3 sync dist/ s3://${{ steps.bucket.outputs.bucket }} \
+                  aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} \
                     --exclude "*" \
                     --include "*.css" \
                     --include "*.js" \
@@ -82,6 +72,6 @@ jobs:
             - name: Deployment summary
               run: |
                   echo "✅ Deployment successful!"
-                  echo "Branch: ${{ github.base_ref }}"
-                  echo "S3 Bucket: ${{ steps.bucket.outputs.bucket }}"
+                  echo "Branch: ${{ github.ref_name }}"
+                  echo "S3 Bucket: ${{ secrets.S3_BUCKET }}"
                   echo "Commit: ${{ github.sha }}"
