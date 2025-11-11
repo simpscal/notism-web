@@ -33,12 +33,7 @@ jobs:
 
             - name: Determine S3 bucket
               id: bucket
-              run: |
-                  if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-                    echo "bucket=${{ secrets.S3_BUCKET_PROD }}" >> $GITHUB_OUTPUT
-                  elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
-                    echo "bucket=${{ secrets.S3_BUCKET_DEV }}" >> $GITHUB_OUTPUT
-                  fi
+              run: echo "bucket=${{ secrets.S3_BUCKET_DEV }}" >> $GITHUB_OUTPUT
 
             - name: Remove old files from S3
               run: |
