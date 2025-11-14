@@ -60,6 +60,9 @@ jobs:
         runs-on: ubuntu-latest
         environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
         timeout-minutes: 10
+        permissions:
+            id-token: write
+            contents: read
 
         steps:
             - name: Download build artifacts
