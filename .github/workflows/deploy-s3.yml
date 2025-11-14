@@ -16,10 +16,9 @@ on:
             - '.github/workflows/deploy-s3.yml'
 
 jobs:
-    deploy:
+    build:
         runs-on: ubuntu-latest
-        environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
-        timeout-minutes: 15
+        timeout-minutes: 10
 
         steps:
             - name: Checkout code
@@ -41,11 +40,39 @@ jobs:
                     bun run build:dev
                   fi
 
+            - name: Verify build output
+              run: |
+                  if [ ! -d "dist" ] || [ -z "$(ls -A dist)" ]; then
+                    echo "❌ Build failed: dist directory is empty or missing"
+                    exit 1
+                  fi
+                  echo "✅ Build output verified"
+
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: dist-${{ github.sha }}
+                  path: dist/
+                  retention-days: 1
+
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+        timeout-minutes: 10
+
+        steps:
+            - name: Download build artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist-${{ github.sha }}
+                  path: dist/
+
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
               with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  # OIDC: Uses IAM role instead of long-lived access keys
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
             - name: Upload to S3
