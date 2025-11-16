@@ -11,4 +11,7 @@ export const API_ENDPOINTS = {
     USER: {
         PROFILE: (userId: string) => `users/${userId}/profile`,
     },
+    STORAGE: {
+        PRESIGNED_URL_UPLOAD: 'storage/presigned-url/upload',
+    },
 } as const;

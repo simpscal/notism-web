@@ -6,6 +6,7 @@ import { DefaultLayout } from '@/layouts/default';
 import AboutPage from '@/pages/about';
 import Login from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
+import Profile from '@/pages/profile';
 import { RequestResetPasswordPage } from '@/pages/request-reset-password';
 import { ResetPasswordPage } from '@/pages/reset-password';
 import Signup from '@/pages/signup';
@@ -35,8 +36,9 @@ function AppRoutes() {
             {/* Protected Routes - Requires Authentication */}
             <Route element={<ProtectedRoute />}>
                 <Route element={<DefaultLayout />}>
-                    <Route index element={<Navigate replace to='about' />} />
+                    <Route index element={<Navigate replace to='profile' />} />
                     <Route path='about' element={<AboutPage />} />
+                    <Route path='profile' element={<Profile />} />
                 </Route>
             </Route>
 

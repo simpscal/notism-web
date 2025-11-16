@@ -59,7 +59,7 @@ function Login() {
             })
             .then(() => {
                 toast.success('Login successful! Welcome back.');
-                navigate(`/${ROUTES.about}`);
+                navigate(`/${ROUTES.profile}`);
             })
             .finally(() => {
                 setIsLoading(false);

@@ -4,4 +4,5 @@ export const ROUTES = {
     requestResetPassword: 'auth/request-reset-password',
     resetPassword: 'auth/reset-password',
     about: 'about',
+    profile: 'profile',
 };

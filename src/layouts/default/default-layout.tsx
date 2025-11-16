@@ -21,9 +21,9 @@ function DefaultLayout() {
     };
 
     return (
-        <div className='min-h-screen flex flex-col'>
+        <div className='h-screen flex flex-col'>
             <DefaultLayoutToolbar user={user} onLogout={handleLogout} />
-            <main className='flex-1'>
+            <main className='flex-grow'>
                 <Outlet />
             </main>
         </div>

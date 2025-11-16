@@ -65,7 +65,7 @@ function Signup() {
             })
             .then(() => {
                 toast.success('Account created successfully! Welcome aboard.');
-                navigate(`/${ROUTES.about}`);
+                navigate(`/${ROUTES.profile}`);
             })
             .finally(() => {
                 setIsLoading(false);

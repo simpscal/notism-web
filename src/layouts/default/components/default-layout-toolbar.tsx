@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom';
+
+import { ROUTES } from '@/app/configs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -54,7 +57,9 @@ function DefaultLayoutToolbar({ user, onLogout }: DefaultLayoutToolbarProps) {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Profile</DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to={`/${ROUTES.profile}`}>Profile</Link>
+                            </DropdownMenuItem>
                             <DropdownMenuItem>Settings</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
