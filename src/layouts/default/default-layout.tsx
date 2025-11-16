@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { DefaultLayoutToolbar } from './components';
+import { DefaultLayoutToolbar, SettingsDialog } from './components';
 
 import { ROUTES } from '@/app/configs';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
@@ -12,6 +13,7 @@ function DefaultLayout() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.user.user);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const handleLogout = async () => {
         await authApi.logout();
@@ -20,12 +22,17 @@ function DefaultLayout() {
         navigate(`/${ROUTES.logIn}`);
     };
 
+    const handleSettingsClick = () => {
+        setIsSettingsOpen(true);
+    };
+
     return (
         <div className='h-screen flex flex-col'>
-            <DefaultLayoutToolbar user={user} onLogout={handleLogout} />
+            <DefaultLayoutToolbar user={user} onLogout={handleLogout} onSettingsClick={handleSettingsClick} />
             <main className='flex-grow'>
                 <Outlet />
             </main>
+            <SettingsDialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
         </div>
     );
 }

@@ -16,9 +16,10 @@ import { UserProfileVM } from '@/features/user/models';
 interface DefaultLayoutToolbarProps {
     user: UserProfileVM | null;
     onLogout: () => void;
+    onSettingsClick: () => void;
 }
 
-function DefaultLayoutToolbar({ user, onLogout }: DefaultLayoutToolbarProps) {
+function DefaultLayoutToolbar({ user, onLogout, onSettingsClick }: DefaultLayoutToolbarProps) {
     const getUserInitials = () => {
         if (!user) return 'U';
         const firstInitial = user.firstName?.[0] || '';
@@ -60,7 +61,7 @@ function DefaultLayoutToolbar({ user, onLogout }: DefaultLayoutToolbarProps) {
                             <DropdownMenuItem asChild>
                                 <Link to={`/${ROUTES.profile}`}>Profile</Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Settings</DropdownMenuItem>
+                            <DropdownMenuItem onClick={onSettingsClick}>Settings</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
                         </DropdownMenuContent>
