@@ -32,7 +32,7 @@ function DefaultLayoutToolbar({ user, onLogout, onSettingsClick }: DefaultLayout
             <div className='flex h-16 items-center justify-between px-4 md:px-6'>
                 {/* Logo/Brand */}
                 <div className='flex items-center gap-2'>
-                    <h1 className='text-xl font-bold'>Notism</h1>
+                    <h1 className='text-xl font-bold text-primary'>Notism</h1>
                 </div>
 
                 {/* Right side - User Avatar */}

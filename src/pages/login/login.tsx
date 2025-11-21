@@ -16,6 +16,7 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { authService } from '@/features/auth/services';
+import { oauthApi, OAuthProviderType } from '@/features/oauth';
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
@@ -66,9 +67,18 @@ function Login() {
             });
     };
 
-    const handleGoogleLogin = () => {};
+    const handleOAuthLogin = (provider: OAuthProviderType) => {
+        setIsLoading(true);
 
-    const handleGithubLogin = () => {};
+        oauthApi
+            .getOAuthRedirect(provider)
+            .then(data => {
+                window.location.href = data.redirectUrl;
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
 
     return (
         <div className='space-y-6'>
@@ -130,11 +140,11 @@ function Login() {
 
             {/* Social Login Buttons */}
             <div className='grid grid-cols-2 gap-3'>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGoogleLogin}>
+                <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('google')}>
                     <Icon name='google' size={16} />
                     Google
                 </Button>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGithubLogin}>
+                <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('github')}>
                     <Icon name='github' size={16} />
                     GitHub
                 </Button>

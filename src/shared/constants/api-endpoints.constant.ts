@@ -7,6 +7,8 @@ export const API_ENDPOINTS = {
         RELOAD: 'auth/reload',
         REQUEST_PASSWORD_RESET: 'auth/request-password-reset',
         RESET_PASSWORD: 'auth/reset-password',
+        OAUTH_REDIRECT: (provider: string) => `auth/${provider}/redirect`,
+        OAUTH_CALLBACK: (provider: string) => `auth/${provider}/callback`,
     },
     USER: {
         PROFILE: (userId: string) => `users/${userId}/profile`,

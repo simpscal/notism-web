@@ -6,6 +6,8 @@ import { DefaultLayout } from '@/layouts/default';
 import AboutPage from '@/pages/about';
 import Login from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
+import OAuthCallback from '@/pages/oauth-callback';
+import { OAuthCallbackRouteGuard } from '@/pages/oauth-callback/guards';
 import Profile from '@/pages/profile';
 import { RequestResetPasswordPage } from '@/pages/request-reset-password';
 import { ResetPasswordPage } from '@/pages/reset-password';
@@ -29,6 +31,14 @@ function AppRoutes() {
                         <ResetPasswordRouteGuard>
                             <ResetPasswordPage />
                         </ResetPasswordRouteGuard>
+                    }
+                />
+                <Route
+                    path='oauth/:provider/callback'
+                    element={
+                        <OAuthCallbackRouteGuard>
+                            <OAuthCallback />
+                        </OAuthCallbackRouteGuard>
                     }
                 />
             </Route>
