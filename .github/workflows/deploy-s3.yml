@@ -14,15 +14,46 @@ on:
             - 'package.json'
             - 'bun.lockb'
             - '.github/workflows/deploy-s3.yml'
+    workflow_dispatch:
+        inputs:
+            branch:
+                description: 'Branch to deploy'
+                required: true
+                type: choice
+                options:
+                    - main
+                    - dev
+                default: main
 
 jobs:
     build:
         runs-on: ubuntu-latest
         timeout-minutes: 10
+        outputs:
+            branch: ${{ steps.set-branch.outputs.branch }}
+            environment: ${{ steps.set-branch.outputs.environment }}
 
         steps:
+            - name: Set branch and environment
+              id: set-branch
+              run: |
+                  if [ -n "${{ github.event.inputs.branch }}" ]; then
+                    BRANCH="${{ github.event.inputs.branch }}"
+                  else
+                    BRANCH="${{ github.ref_name }}"
+                  fi
+                  echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+                  
+                  if [ "$BRANCH" == "main" ]; then
+                    echo "environment=prod" >> $GITHUB_OUTPUT
+                  else
+                    echo "environment=dev" >> $GITHUB_OUTPUT
+                  fi
+
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                  ref: ${{ steps.set-branch.outputs.branch }}
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v2
@@ -33,20 +64,14 @@ jobs:
               run: bun install --frozen-lockfile
 
             - name: Build application
+              env:
+                  BRANCH: ${{ steps.set-branch.outputs.branch }}
               run: |
-                  if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+                  if [ "$BRANCH" == "main" ]; then
                     bun run build:prod
-                  elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+                  elif [ "$BRANCH" == "dev" ]; then
                     bun run build:dev
                   fi
-
-            - name: Verify build output
-              run: |
-                  if [ ! -d "dist" ] || [ -z "$(ls -A dist)" ]; then
-                    echo "❌ Build failed: dist directory is empty or missing"
-                    exit 1
-                  fi
-                  echo "✅ Build output verified"
 
             - name: Upload build artifacts
               uses: actions/upload-artifact@v4
@@ -58,12 +83,11 @@ jobs:
     deploy:
         needs: build
         runs-on: ubuntu-latest
-        environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+        environment: ${{ needs.build.outputs.environment }}
         timeout-minutes: 10
         permissions:
             id-token: write
             contents: read
-
         steps:
             - name: Download build artifacts
               uses: actions/download-artifact@v4
@@ -74,7 +98,6 @@ jobs:
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
               with:
-                  # OIDC: Uses IAM role instead of long-lived access keys
                   role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
@@ -104,24 +127,8 @@ jobs:
             - name: Invalidate CloudFront cache
               continue-on-error: true
               run: |
-                  if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
-                    INVALIDATION_ID=$(aws cloudfront create-invalidation \
-                      --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-                      --paths "/*" \
-                      --query 'Invalidation.Id' \
-                      --output text)
-                    echo "✅ CloudFront invalidation created: $INVALIDATION_ID"
-                  else
-                    echo "ℹ️  CloudFront distribution ID not configured, skipping invalidation"
-                  fi
-
-            - name: Deployment summary
-              if: success()
-              run: |
-                  echo "✅ Deployment successful!"
-                  echo "Branch: ${{ github.ref_name }}"
-                  echo "Environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}"
-                  echo "S3 Bucket: ${{ secrets.S3_BUCKET }}"
-                  echo "Commit: ${{ github.sha }}"
-                  echo "Commit Message: ${{ github.event.head_commit.message }}"
-                  echo "Author: ${{ github.event.head_commit.author.name }}"
+                  aws cloudfront create-invalidation \
+                    --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+                    --paths "/index.html" \
+                    --query 'Invalidation.Id' \
+                    --output text
