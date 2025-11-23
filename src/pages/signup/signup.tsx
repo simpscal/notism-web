@@ -16,15 +16,13 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { authService } from '@/features/auth/services';
+import { passwordSchema } from '@/shared/utils/password-validation.utils';
 
 const signupSchema = z.object({
     firstName: z.string().min(1, { message: 'First name is required' }),
     lastName: z.string().min(1, { message: 'Last name is required' }),
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
-    password: z
-        .string()
-        .min(1, { message: 'Password is required' })
-        .min(8, { message: 'Password must be at least 8 characters' }),
+    password: passwordSchema,
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;

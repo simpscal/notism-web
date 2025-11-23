@@ -17,13 +17,11 @@ import { Separator } from '@/components/ui/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { authService } from '@/features/auth/services';
 import { oauthApi, OAuthProviderType } from '@/features/oauth';
+import { passwordSchema } from '@/shared/utils/password-validation.utils';
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
-    password: z
-        .string()
-        .min(1, { message: 'Password is required' })
-        .min(8, { message: 'Password must be at least 8 characters' }),
+    password: passwordSchema,
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
