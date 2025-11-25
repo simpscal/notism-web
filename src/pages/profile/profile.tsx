@@ -69,7 +69,7 @@ function Profile() {
         setIsLoading(true);
 
         const updateProfile = (avatarUrl: string | null) => {
-            return userApi.updateProfile(user.id, {
+            return userApi.updateProfile({
                 firstName: values.firstName,
                 lastName: values.lastName,
                 avatarUrl,

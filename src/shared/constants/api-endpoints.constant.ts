@@ -11,7 +11,7 @@ export const API_ENDPOINTS = {
         OAUTH_CALLBACK: (provider: string) => `auth/${provider}/callback`,
     },
     USER: {
-        PROFILE: (userId: string) => `users/${userId}/profile`,
+        PROFILE: 'users/profile',
     },
     STORAGE: {
         PRESIGNED_URL_UPLOAD: 'storage/presigned-url/upload',
