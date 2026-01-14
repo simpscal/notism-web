@@ -1,2 +1,2 @@
-export * from './protected-route.guard';
+export * from './auth-route.guard';
 export * from './reset-password-route.guard';

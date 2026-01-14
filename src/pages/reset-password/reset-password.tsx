@@ -8,9 +8,9 @@ import { z } from 'zod';
 import { resetPassword } from './apis/reset-password.api';
 
 import { ROUTES } from '@/app/configs';
-import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { PasswordInput } from '@/components/ui/password-input';
+import { Button } from '@/components/button';
+import { Field, FieldError, FieldLabel } from '@/components/field';
+import { PasswordInput } from '@/components/password-input';
 
 const resetPasswordSchema = z
     .object({

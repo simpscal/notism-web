@@ -3,10 +3,10 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { ROUTES } from '@/app/configs';
-import Spinner from '@/components/ui/spinner';
+import Spinner from '@/components/spinner';
 import { useAppDispatch } from '@/core/hooks';
-import { authService } from '@/features/auth/services';
 import { oauthApi, OAuthProviderType } from '@/features/oauth';
+import { setAuth } from '@/store/auth/auth.slice';
 
 function OAuthCallback() {
     const navigate = useNavigate();
@@ -22,7 +22,7 @@ function OAuthCallback() {
         oauthApi
             .handleOAuthCallback(provider, { code, state: state || undefined })
             .then(data => {
-                authService.authenticate(dispatch, data.token, data.user);
+                dispatch(setAuth(data.token, data.user));
             })
             .then(() => {
                 toast.success('Login successful! Welcome back.');

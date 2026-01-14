@@ -1,13 +1,13 @@
+import { API_ENDPOINTS } from '@/app/constants';
 import { apiClient } from '@/core/apis/client.api';
-import { UpdateProfileRM, UserProfileVM } from '@/features/user/models';
-import { API_ENDPOINTS } from '@/shared/constants';
+import { UpdateProfileRM, UserProfileViewModel } from '@/features/user/models';
 
 export const userApi = {
     getProfile: async () => {
-        return apiClient.get<UserProfileVM>(API_ENDPOINTS.USER.PROFILE);
+        return apiClient.get<UserProfileViewModel>(API_ENDPOINTS.USER.PROFILE);
     },
 
     updateProfile: async (data: UpdateProfileRM) => {
-        return apiClient.put<UserProfileVM>(API_ENDPOINTS.USER.PROFILE, data);
+        return apiClient.put<UserProfileViewModel>(API_ENDPOINTS.USER.PROFILE, data);
     },
 };

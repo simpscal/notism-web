@@ -1,4 +1,4 @@
-export interface UserProfileVM {
+export interface UserProfileViewModel {
     id: string;
     firstName: string;
     lastName: string;

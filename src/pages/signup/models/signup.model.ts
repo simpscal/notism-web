@@ -1,4 +1,4 @@
-import { UserProfileVM } from '@/features/user/models';
+import { UserProfileViewModel } from '@/features/user/models';
 
 export class SignupRM {
     email!: string;
@@ -8,7 +8,7 @@ export class SignupRM {
 }
 
 export class SignupVM {
-    user!: UserProfileVM;
+    user!: UserProfileViewModel;
     token!: string;
     expiresAt!: string;
     refreshToken!: string;

@@ -7,9 +7,9 @@ import { z } from 'zod';
 import { requestResetPassword } from './apis/request-reset-password.api';
 
 import { ROUTES } from '@/app/configs';
-import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/button';
+import { Field, FieldError, FieldLabel } from '@/components/field';
+import { Input } from '@/components/input';
 
 const requestResetPasswordSchema = z.object({
     email: z.string().min(1, 'Email is required').email('Invalid email format'),

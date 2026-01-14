@@ -1,6 +1,6 @@
+import { API_ENDPOINTS } from '@/app/constants';
 import { apiClient } from '@/core/apis/client.api';
-import { UserProfileVM } from '@/features/user/models';
-import { API_ENDPOINTS } from '@/shared/constants';
+import { UserProfileViewModel } from '@/features/user/models';
 
 export const authApi = {
     logout: async () => {
@@ -8,6 +8,6 @@ export const authApi = {
     },
 
     reload: async () => {
-        return apiClient.get<UserProfileVM>(API_ENDPOINTS.AUTH.RELOAD);
+        return apiClient.get<UserProfileViewModel>(API_ENDPOINTS.AUTH.RELOAD);
     },
 };

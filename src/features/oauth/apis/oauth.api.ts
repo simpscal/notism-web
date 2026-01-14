@@ -1,7 +1,7 @@
 import { OAuthCallbackRM, OAuthCallbackVM, OAuthProviderType, OAuthRedirectVM } from '../models';
 
+import { API_ENDPOINTS } from '@/app/constants';
 import { apiClient } from '@/core/apis';
-import { API_ENDPOINTS } from '@/shared/constants';
 
 export const oauthApi = {
     getOAuthRedirect: (provider: OAuthProviderType) => {

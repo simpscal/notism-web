@@ -8,16 +8,17 @@ import { z } from 'zod';
 import { loginApi } from './apis';
 
 import { ROUTES } from '@/app/configs';
-import { Icon } from '@/components/icon/icon';
-import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
-import { Separator } from '@/components/ui/separator';
+import { passwordSchema } from '@/app/utils/password-validation.utils';
+import { Button } from '@/components/button';
+import { Field, FieldError, FieldLabel } from '@/components/field';
+import GithubLogo from '@/components/github-logo';
+import GoogleLogo from '@/components/google-logo';
+import { Input } from '@/components/input';
+import { PasswordInput } from '@/components/password-input';
+import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { authService } from '@/features/auth/services';
 import { oauthApi, OAuthProviderType } from '@/features/oauth';
-import { passwordSchema } from '@/shared/utils/password-validation.utils';
+import { setAuth } from '@/store/auth/auth.slice';
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
@@ -54,7 +55,7 @@ function Login() {
                 password: values.password,
             })
             .then(data => {
-                authService.authenticate(dispatch, data.token, data.user);
+                dispatch(setAuth(data.token, data.user));
             })
             .then(() => {
                 toast.success('Login successful! Welcome back.');
@@ -139,11 +140,11 @@ function Login() {
             {/* Social Login Buttons */}
             <div className='grid grid-cols-2 gap-3'>
                 <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('google')}>
-                    <Icon name='google' size={16} />
+                    <GoogleLogo className='h-4 w-4' />
                     Google
                 </Button>
                 <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('github')}>
-                    <Icon name='github' size={16} />
+                    <GithubLogo className='h-4 w-4' />
                     GitHub
                 </Button>
             </div>

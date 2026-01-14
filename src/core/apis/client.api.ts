@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from 'sonner';
 
-import { API_ENDPOINTS } from '@/shared/constants';
-import { tokenManagerUtils } from '@/shared/utils';
+import { ROUTES } from '@/app/configs';
+import { API_ENDPOINTS, TOKEN_KEYS } from '@/app/constants';
+import { tokenManagerUtils } from '@/app/utils';
+import { navigationUtils } from '@/app/utils/navigation.utils';
 
 export interface ApiResponse<T = any> {
     data: T;
@@ -215,6 +217,7 @@ export class ApiClient {
 
         let config: RequestConfig = {
             ...requestOptions,
+            credentials: 'include',
             headers: isFormData
                 ? {
                       ...this._defaultFormDataHeaders,
@@ -283,8 +286,10 @@ export class ApiClient {
         try {
             const response = await fetch(`${this._baseURL}/${API_ENDPOINTS.AUTH.REFRESH}`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
+                    [TOKEN_KEYS.XSRF_TOKEN]: tokenManagerUtils.getXsrfToken() || '',
                 },
                 body: undefined,
             });
@@ -294,11 +299,11 @@ export class ApiClient {
             }
 
             const data = await response.json();
-            if (!data.accessToken) {
+            if (!data.token) {
                 this._handleTokenError();
             }
 
-            tokenManagerUtils.setToken(data.accessToken);
+            tokenManagerUtils.setToken(data.token);
 
             this._failedQueue.forEach(request => {
                 request.resolve(this._request(request.originalEndpoint, request.originalConfig));
@@ -315,7 +320,7 @@ export class ApiClient {
 
     private _handleTokenError() {
         tokenManagerUtils.clearAll();
-        window.location.href = '/login';
+        navigationUtils.navigate(`/${ROUTES.logIn}`, { replace: true });
 
         throw new Error('Unauthorized: please log in again');
     }
@@ -336,7 +341,23 @@ apiClient.addRequestInterceptor(async (config: RequestConfig) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Attach XSRF token to all requests
+    const xsrfToken = tokenManagerUtils.getXsrfToken();
+    if (xsrfToken && config.headers) {
+        config.headers[TOKEN_KEYS.XSRF_TOKEN] = xsrfToken;
+    }
+
     return config;
+});
+
+// XSRF token extraction interceptor
+apiClient.addResponseInterceptor(async (response: Response) => {
+    const xsrfToken = response.headers.get(TOKEN_KEYS.XSRF_TOKEN);
+    if (xsrfToken) {
+        tokenManagerUtils.setXsrfToken(xsrfToken);
+    }
+
+    return response;
 });
 
 // Global error handling interceptor

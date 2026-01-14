@@ -8,15 +8,16 @@ import { z } from 'zod';
 import { signupApi } from './apis';
 
 import { ROUTES } from '@/app/configs';
-import { Icon } from '@/components/icon/icon';
-import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
-import { Separator } from '@/components/ui/separator';
+import { passwordSchema } from '@/app/utils/password-validation.utils';
+import { Button } from '@/components/button';
+import { Field, FieldError, FieldLabel } from '@/components/field';
+import GithubLogo from '@/components/github-logo';
+import GoogleLogo from '@/components/google-logo';
+import { Input } from '@/components/input';
+import { PasswordInput } from '@/components/password-input';
+import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { authService } from '@/features/auth/services';
-import { passwordSchema } from '@/shared/utils/password-validation.utils';
+import { setAuth } from '@/store/auth/auth.slice';
 
 const signupSchema = z.object({
     firstName: z.string().min(1, { message: 'First name is required' }),
@@ -59,7 +60,7 @@ function Signup() {
                 password: values.password,
             })
             .then(data => {
-                authService.authenticate(dispatch, data.token, data.user);
+                dispatch(setAuth(data.token, data.user));
             })
             .then(() => {
                 toast.success('Account created successfully! Welcome aboard.');
@@ -161,11 +162,11 @@ function Signup() {
             {/* Social Signup Buttons */}
             <div className='grid grid-cols-2 gap-3'>
                 <Button type='button' variant='outline' disabled={isLoading} onClick={handleGoogleSignup}>
-                    <Icon name='google' size={16} />
+                    <GoogleLogo className='h-4 w-4' />
                     Google
                 </Button>
                 <Button type='button' variant='outline' disabled={isLoading} onClick={handleGithubSignup}>
-                    <Icon name='github' size={16} />
+                    <GithubLogo className='h-4 w-4' />
                     GitHub
                 </Button>
             </div>

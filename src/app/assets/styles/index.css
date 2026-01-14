@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './scrollbar.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -114,7 +115,23 @@
     * {
         @apply border-border outline-ring/50;
     }
+    html,
+    body {
+        @apply h-full overflow-hidden;
+    }
     body {
         @apply bg-background text-foreground;
+    }
+
+    /* Cursor pointer for interactive elements */
+    button,
+    a,
+    [role='button'],
+    [role='link'],
+    input[type='button'],
+    input[type='submit'],
+    input[type='reset'],
+    label[for] {
+        @apply cursor-pointer;
     }
 }

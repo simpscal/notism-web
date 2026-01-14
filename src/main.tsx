@@ -9,7 +9,6 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './app.tsx';
 import { store } from './store';
 
-import { IconProvider } from '@/components/icon/icon-context';
 import { ThemeProvider } from '@/core/contexts';
 
 const queryClient = new QueryClient();
@@ -20,10 +19,8 @@ createRoot(document.getElementById('root')!).render(
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
                     <ThemeProvider>
-                        <IconProvider>
-                            <App />
-                            {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-                        </IconProvider>
+                        <App />
+                        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
                     </ThemeProvider>
                 </BrowserRouter>
             </QueryClientProvider>

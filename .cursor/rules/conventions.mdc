@@ -1,0 +1,299 @@
+---
+alwaysApply: true
+---
+
+# Project Conventions - Cursor Agent Rules
+
+**IMPORTANT**: These rules are MANDATORY. Always follow them when writing or modifying code in this project.
+
+All conventions are defined in detail in the following files. Refer to them for complete specifications:
+
+## Convention Files
+
+1. **Architecture Conventions**: `docs/conventions/architecture.md`
+   - Layer hierarchy and structure
+   - Import rules (STRICT - MUST FOLLOW)
+   - Folder responsibilities (pages, features, components, core, shared, app)
+
+2. **Naming Conventions**: `docs/conventions/naming.md`
+   - File naming patterns
+   - Component, interface, type, enum naming
+   - Function, variable, constant naming
+   - Hook, context, API, service naming
+
+3. **Model Conventions**: `docs/conventions/model.md`
+   - ViewModel, RequestModel, ResponseModel patterns
+   - BaseModel structure
+   - Model naming and structure conventions
+
+4. **Component Conventions**: `docs/conventions/component.md`
+   - Component order (MUST FOLLOW)
+   - Component memoization requirements
+   - Component responsibilities and best practices
+
+## Quick Reference - Critical Rules
+
+### Import Rules (STRICT)
+
+```text
+pages      → features, components, core, shared, app/config
+features   → components, core, shared, app/config
+components → shared, core, app/assets
+core       → shared, app/config
+shared     → (no imports from other layers)
+app        → (no imports from other layers)
+```
+
+**NEVER**:
+
+- Import from higher layers
+- Create circular dependencies
+
+### Component Order (MUST FOLLOW)
+
+1. Imports (including `memo` from 'react')
+2. Types/Interfaces
+3. Component Definition
+4. Hooks
+5. Event handlers
+6. Early returns
+7. Main render (always last)
+8. Export (wrapped with `memo`)
+
+### Key Naming Patterns
+
+- **Files**: kebab-case (e.g., `user-profile.tsx`, `auth.service.ts`)
+- **Components**: PascalCase (e.g., `UserCard`, `HeroSection`)
+- **Component Props**: `{ComponentName}Props` (NO `I` prefix)
+- **General Interfaces**: `I{Name}` (with `I` prefix)
+- **Models**: `{Entity}ViewModel`, `{Entity}RequestModel`, `{Entity}ResponseModel`
+- **Hooks**: `use{Name}` (camelCase, file: `use-{name}.hook.ts`)
+- **Functions**: camelCase, verb-noun pattern
+- **Event Handlers**: `handle{Action}{Target}` (camelCase)
+- **Constants**: UPPERCASE_SNAKE_CASE
+- **APIs**: `{domain}Api` (camelCase + Api suffix)
+- **Services**: `{domain}Service` (camelCase + Service suffix)
+
+### Layer Responsibilities
+
+- **pages**: Page-specific business logic, route mapping, composition
+- **features**: Shared business logic reused across pages
+- **components**: Pure UI components, no business logic
+- **core**: React-specific shared resources (hooks, contexts, guards, APIs)
+- **shared**: TypeScript utilities, types, constants, enums (no React dependencies)
+
+## TanStack Query API Call Conventions
+
+**MANDATORY**: All API calls MUST use TanStack Query hooks (`useQuery` or `useMutation`). NEVER make direct API calls in components or pages.
+
+### Architecture Pattern
+
+1. **API Layer** (`src/features/{feature}/apis/` or `src/core/apis/`): Define pure API functions that return promises
+2. **Hook Layer** (`src/core/hooks/` or `src/features/{feature}/hooks/`): Wrap API functions with TanStack Query hooks
+3. **Component/Page Layer**: Use hooks, never call APIs directly
+
+### When to Use useQuery vs useMutation
+
+- **useQuery**: For GET requests (fetching data)
+  - User profiles, lists, details, search results
+  - Data that can be cached and refetched
+- **useMutation**: For POST, PUT, PATCH, DELETE requests (modifying data)
+  - Login, signup, create, update, delete operations
+  - Any operation that changes server state
+
+### Query Keys
+
+- **Structure**: Hierarchical arrays with `as const` for type safety
+- **Pattern**: `['entity', 'action', ...params]`
+- **Examples**:
+
+  ```typescript
+  const QUERY_KEY = ['user', 'reload'] as const;
+  const QUERY_KEY_LIST = ['accounts', 'list'] as const;
+  const QUERY_KEY_DETAIL = (id: string) => ['account', 'detail', id] as const;
+  ```
+
+### Hook Naming
+
+- **Query Hooks**: `use{Entity}{Action}` (e.g., `useReloadUser`, `useGetAccount`, `useListAccounts`)
+- **Mutation Hooks**: `use{Action}{Entity}` (e.g., `useLogin`, `useCreateAccount`, `useUpdateProfile`)
+- **File Naming**: `use-{name}.hook.ts` (e.g., `use-reload-user.hook.ts`, `use-login.hook.ts`)
+
+### Hook Location
+
+- **App-wide hooks**: `src/core/hooks/` (e.g., `use-reload-user.hook.ts`)
+- **Feature-specific hooks**: `src/features/{feature}/hooks/` (e.g., `src/features/auth/hooks/use-login.hook.ts`)
+
+### Converting Traditional API Calls
+
+#### ❌ BAD: Direct API calls in components
+
+```typescript
+// ❌ DON'T DO THIS
+function Login() {
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const handleSubmit = async (values: LoginFormValues) => {
+        setIsLoading(true);
+        try {
+            const data = await loginApi.login(values);
+            authService.authenticate(dispatch, data.token, data.user);
+            toast.success('Login successful!');
+            navigate('/profile');
+        } catch (error) {
+            toast.error('Login failed');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+}
+```
+
+#### ✅ GOOD: Using TanStack Query mutation hook
+
+```typescript
+// ✅ DO THIS: Create a hook
+// src/features/auth/hooks/use-login.hook.ts
+import { useMutation } from '@tanstack/react-query';
+import { useAppDispatch } from '@/core/hooks';
+import { loginApi } from '@/features/auth/apis/login.api';
+import { authService } from '@/features/auth/services/auth.service';
+
+export function useLogin() {
+    const dispatch = useAppDispatch();
+
+    const mutation = useMutation({
+        mutationFn: (credentials: LoginRM) => loginApi.login(credentials),
+        onSuccess: (data) => {
+            authService.authenticate(dispatch, data.token, data.user);
+        },
+    });
+
+    return {
+        login: mutation.mutate,
+        loginAsync: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+        isError: mutation.isError,
+        error: mutation.error,
+    };
+}
+
+// ✅ Use the hook in component
+function Login() {
+    const navigate = useNavigate();
+    const { login, isLoading, error } = useLogin();
+
+    const handleSubmit = (values: LoginFormValues) => {
+        login(values, {
+            onSuccess: () => {
+                toast.success('Login successful!');
+                navigate('/profile');
+            },
+            onError: () => {
+                toast.error('Login failed');
+            },
+        });
+    };
+}
+```
+
+### useQuery Hook Pattern
+
+```typescript
+// src/core/hooks/use-reload-user.hook.ts
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from './use-redux.hook';
+import { authApi } from '@/features/auth/apis/auth.api';
+import { setUser } from '@/store/user/user.slice';
+
+const QUERY_KEY = ['user', 'reload'] as const;
+
+export function useReloadUser() {
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(state => state.user.user);
+
+    const query = useQuery({
+        queryKey: QUERY_KEY,
+        queryFn: () => authApi.reload(),
+        enabled: Boolean(hasValidToken && !user),
+        retry: false,
+    });
+
+    useEffect(() => {
+        if (query.data) {
+            dispatch(setUser(query.data));
+        }
+    }, [query.data, dispatch]);
+
+    return {
+        user,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        error: query.error,
+    };
+}
+```
+
+### useMutation Hook Pattern
+
+```typescript
+// src/features/accounts/hooks/use-create-account.hook.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAppDispatch } from '@/core/hooks';
+import { accountApi } from '@/features/accounts/apis/account.api';
+import { addAccount } from '@/store/accounts/accounts.slice';
+
+const QUERY_KEY_LIST = ['accounts', 'list'] as const;
+
+export function useCreateAccount() {
+    const dispatch = useAppDispatch();
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: (data: CreateAccountRequestModel) => accountApi.create(data),
+        onSuccess: (data) => {
+            dispatch(addAccount(data));
+            queryClient.invalidateQueries({ queryKey: QUERY_KEY_LIST });
+        },
+    });
+
+    return {
+        create: mutation.mutate,
+        createAsync: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+        isError: mutation.isError,
+        error: mutation.error,
+    };
+}
+```
+
+### Best Practices
+
+1. **Never call APIs directly**: Always wrap API calls in TanStack Query hooks
+2. **Separate concerns**: API files contain pure functions, hooks contain React Query logic
+3. **Return objects**: Always return an object from hooks, never arrays
+4. **Type safety**: Type all query functions and return values
+5. **Error handling**: Handle errors in hooks or via callbacks
+6. **Loading states**: Expose `isLoading`/`isPending` from hooks
+7. **Cache invalidation**: Invalidate related queries after mutations
+8. **Conditional fetching**: Use `enabled` option to prevent unnecessary calls
+9. **Redux sync**: Only sync to Redux when data needs global access
+10. **Query key consistency**: Use consistent patterns across the app
+
+### Migration Checklist
+
+When converting traditional API calls:
+
+- [ ] Create a hook file following naming convention
+- [ ] Wrap API call with `useQuery` or `useMutation`
+- [ ] Define query key constant
+- [ ] Move loading state to hook return value
+- [ ] Move error handling to hook
+- [ ] Update component to use hook instead of direct API call
+- [ ] Remove manual `useState` for loading/error states
+- [ ] Add cache invalidation if needed (for mutations)
+
+---
+
+**For complete details, examples, and best practices, refer to the convention files listed above.**

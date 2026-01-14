@@ -1,9 +1,16 @@
+import { toast } from 'sonner';
+
+import { API_ENDPOINTS } from '@/app/constants';
+import { PresignedUrlUploadEnum } from '@/app/enums';
 import { apiClient } from '@/core/apis/client.api';
-import { API_ENDPOINTS } from '@/shared/constants';
 
 export const storageApi = {
-    getPresignedUrl: async (filename: string, contentType: string): Promise<{ uploadUrl: string; fileKey: string }> => {
-        return apiClient.post(API_ENDPOINTS.STORAGE.PRESIGNED_URL_UPLOAD, {
+    getPresignedUrl: async (
+        filename: string,
+        contentType: string,
+        presignedUrlType: PresignedUrlUploadEnum
+    ): Promise<{ uploadUrl: string; fileKey: string }> => {
+        return apiClient.post(API_ENDPOINTS.STORAGE.PRESIGNED_URL_UPLOAD(presignedUrlType), {
             filename,
             contentType,
         });
@@ -19,7 +26,7 @@ export const storageApi = {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to upload file to presigned URL');
+            toast.error('Failed to upload file to presigned URL');
         }
 
         return response;

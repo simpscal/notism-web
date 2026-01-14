@@ -1,7 +1,7 @@
 import { SignupRM, SignupVM } from '../models';
 
+import { API_ENDPOINTS } from '@/app/constants';
 import { apiClient } from '@/core/apis';
-import { API_ENDPOINTS } from '@/shared/constants';
 
 export const signupApi = {
     signup: (credentials: SignupRM) => {
