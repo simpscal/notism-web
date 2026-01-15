@@ -9,17 +9,16 @@ A modern web application built with React, TypeScript, and Vite. Notism provides
 - 🔄 **State Management** - Powered by Redux Toolkit and React Query
 - 📱 **Responsive** - Works on all device sizes
 - 🛠 **Developer Experience**
-  - TypeScript for type safety
-  - ESLint + Prettier for code quality
-  - Husky for git hooks
-  - Commit linting
+    - TypeScript for type safety
+    - ESLint + Prettier for code quality
+    - Husky for git hooks
 - 🎛 **Modern Stack**
-  - React 19
-  - React Router v7
-  - Tailwind CSS v4
-  - Radix UI components
-  - Date-fns for date handling
-  - Zod for schema validation
+    - React 19
+    - React Router v7
+    - Tailwind CSS v4
+    - Radix UI components
+    - Date-fns for date handling
+    - Zod for schema validation
 
 ---
 
@@ -27,14 +26,16 @@ A modern web application built with React, TypeScript, and Vite. Notism provides
 
 ```
 src/
-  app/         # App configuration and global styles
-  components/  # Reusable UI components
-  core/        # Core functionality (APIs, contexts, guards)
-  features/    # Feature-based modules
-  public/      # Static assets
+├── app/          # App configuration, constants, enums, utilities
+├── layouts/      # Layout components for page containers
+├── pages/        # Application pages with route mapping
+├── features/     # Shared business logic and feature components
+├── components/   # Reusable UI components
+├── core/         # React-specific shared resources (hooks, contexts, guards, APIs)
+└── store/        # Global state management (Redux)
 ```
 
-Detailed documentation is available in the `docs/` directory.
+For detailed architecture documentation, see [docs/rules/architecture.md](docs/rules/architecture.md).
 
 ---
 
@@ -128,19 +129,22 @@ See `.env.example` for reference.
 - All environment variables must be prefixed with `VITE_` (see `.env.example`).
 - Example:
 
-  ```env
-  VITE_API_BASE_URL=https://api.example.com
-  VITE_ENVIRONMENT=development
-  ```
+    ```env
+    VITE_API_BASE_URL=https://api.example.com
+    VITE_ENVIRONMENT=development
+    ```
 
 ---
 
-## Conventions & Best Practices
+## 📚 Rules & Conventions
 
-- **Component, model, and naming conventions** are documented in [`docs/`](docs/)
-- **Architecture and folder responsibilities**: [`docs/architecture.md`](docs/architecture.md)
-- **Component patterns and responsibilities**: [`docs/component.md`](docs/component.md)
-- **Naming conventions**: [`docs/naming.md`](docs/naming.md)
-- **Model conventions**: [`docs/model.md`](docs/model.md)
+This project follows strict architectural and coding conventions. Please review these documents before contributing:
+
+| Document                                       | Description                                                                   |
+| ---------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Architecture](docs/rules/architecture.md)     | Layer hierarchy, project structure, import rules, and folder responsibilities |
+| [Naming](docs/rules/naming.md)                 | File, component, function, and variable naming conventions                    |
+| [Model](docs/rules/model.md)                   | ViewModel, RequestModel, and ResponseModel patterns                           |
+| [Best Practices](docs/rules/best-practices.md) | Code examples for components, TanStack Query, hooks, and more                 |
 
 ---
