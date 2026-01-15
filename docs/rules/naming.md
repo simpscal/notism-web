@@ -22,8 +22,7 @@ This document defines the naming conventions used throughout the React applicati
 - [Callback Function Props](#callback-function-props)
 - [Private Functions/Methods](#private-functionsmethods)
 - [Utilities](#utilities)
-- [API Services](#api-services)
-- [Business Services](#business-services)
+- [APIs](#apis)
 - [Models](#models)
 - [Redux](#redux)
 - [Functions](#functions)
@@ -605,7 +604,7 @@ export function formatYear(year: number): string {
 }
 ```
 
-## API Services
+## APIs
 
 **Convention**:
 
@@ -639,41 +638,6 @@ export const userApi = {
         // ...
     },
 };
-```
-
-## Business Services
-
-**Convention**:
-
-- **camelCase**
-- Suffix the name with `Service`
-- File naming: `{domain}.service.ts`
-- Contains business logic and orchestrates API calls, state management, etc.
-- Export as an object with methods
-
-**Example**:
-
-```typescript
-// services/auth.service.ts
-export const authService = {
-    /**
-     * Handle successful authentication (login/signup)
-     * Orchestrates storing token and user profile
-     */
-    authenticate(dispatch: AppDispatch, token: string, user: UserProfileVM) {
-        dispatch(setToken(token));
-        dispatch(setUser(user));
-    },
-
-    /**
-     * Handle user logout
-     * Orchestrates clearing all authentication and user data
-     */
-    logout(dispatch: AppDispatch) {
-        dispatch(clearToken());
-        dispatch(clearUser());
-    },
-} as const;
 ```
 
 ## Models
