@@ -24,12 +24,13 @@ This document describes the architectural methodology and structure principles. 
 
 ### Layer Hierarchy
 
-1. **app** - Application configuration, assets, constants, enums, and utilities
+1. **layouts** - Layout components that provide structural containers for pages
 2. **pages** - Complete application pages with page-specific business logic and route mapping
 3. **features** - Shared business logic and features used across the application
 4. **components** - Reusable UI components
 5. **core** - React-specific shared resources
 6. **store** - Global application state management
+7. **app** - Application configuration, assets, constants, enums, and utilities
 
 ### Layer Dependencies Diagram
 
@@ -37,13 +38,22 @@ The following diagram illustrates the dependency relationships between layers. A
 
 ```mermaid
 graph TD
-    App[app]
+    Layouts[layouts]
     Pages[pages]
     Features[features]
     Components[components]
     Core[core]
     Store[store]
+    App[app]
 
+    Layouts -->|imports| Pages
+    Layouts -->|imports| Features
+    Layouts -->|imports| Components
+    Layouts -->|imports| Core
+    Layouts -->|imports| Store
+    Layouts -->|imports| App
+
+    Pages -.->|imports layout store| Layouts
     Pages -->|imports| Features
     Pages -->|imports| Components
     Pages -->|imports| Core
@@ -62,19 +72,22 @@ graph TD
 
     Store -->|imports| App
 
-    style App fill:#e1f5ff
+    style Layouts fill:#f5ffe1
     style Pages fill:#fff4e1
     style Features fill:#ffe1f5
     style Components fill:#e1ffe1
     style Core fill:#f5e1ff
     style Store fill:#e1ffff
+    style App fill:#e1f5ff
 ```
 
 **Key Rules:**
 
 - **Downward dependencies only**: Higher layers can import from lower layers, but not the reverse
 - **No circular dependencies**: Each layer must maintain a clear dependency hierarchy
-- **Store is accessible**: Both `pages` and `features` can access the global store
+- **Layouts is top-most**: Layouts can import pages for routing configuration
+- **Pages can access layout store**: Pages can only import the store from layouts, not other layout artifacts
+- **Store is accessible**: `layouts`, `pages`, and `features` can access the global store
 - **App is foundational**: All layers can depend on `app` (configs, constants, enums, utils), but `app` has no dependencies
 
 ---
@@ -113,6 +126,14 @@ graph TD
 │   ├── 📁 auth/
 │   └── ...
 │
+├── 📁 layouts/      # Layout components
+│   ├── 📁 client/
+│   │   ├── 📁 store/      # Layout-specific state (optional)
+│   │   ├── 📁 components/ # Layout-specific components
+│   │   └── ...
+│   ├── 📁 auth/
+│   └── ...
+│
 ├── 📁 components/   # Reusable UI components
 │   ├── 📁 button/
 │   ├── 📁 modal/
@@ -139,7 +160,8 @@ graph TD
 ## Import Rules
 
 ```text
-pages      → features, components, core, store, app
+layouts    → pages, features, components, core, store, app
+pages      → layouts (store only), features, components, core, store, app
 features   → components, core, store, app
 components → core, app
 core       → app
@@ -192,7 +214,7 @@ Pure UI components without business logic.
 
 ---
 
-### Layout Folder
+### Layouts Folder
 
 Layout components that provide structural containers for pages.
 
@@ -207,6 +229,16 @@ Layout components that provide structural containers for pages.
 - Similar to components - no business logic
 - Focus on structural concerns (header, footer, sidebar, content area)
 - May contain navigation components
+
+**Layout Store:**
+
+Layouts can have their own store at `src/layouts/{layout}/store/` for layout-specific state management.
+
+**Layout Store Access Rules:**
+
+- If a layout has a store, only the **top-most page component** matching the route can access that layout's store
+- Child components within the page should NOT directly access the layout store
+- Data from layout store should be passed down via props to child components
 
 ---
 
@@ -237,6 +269,12 @@ For complex page-specific state that needs to be managed with Redux, create a pa
 - State is complex and benefits from Redux patterns
 - State needs to persist across page remounts
 - State management logic is too complex for `useState` or `useReducer`
+
+**Page Store Access Rules:**
+
+- If a page has a store, **components within that page** can access the page store
+- Components outside the page folder should NOT access the page store
+- Feature components used within the page should receive data via props, not by directly accessing the page store
 
 **When NOT to use Page Store:**
 
