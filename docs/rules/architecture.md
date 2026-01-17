@@ -1,7 +1,5 @@
 # Project Architecture
 
-This document describes the architectural methodology and structure principles. For code examples and implementation patterns, see [best-practices.md](./best-practices.md).
-
 ## Table of Contents
 
 - [Structure Principles](#structure-principles)
@@ -10,9 +8,10 @@ This document describes the architectural methodology and structure principles. 
 - [Project Structure](#project-structure)
 - [Import Rules](#import-rules)
 - [Folder Responsibilities](#folder-responsibilities)
+    - [APIs Folder](#apis-folder)
     - [App Folder](#app-folder)
     - [Components Folder](#components-folder)
-    - [Layout Folder](#layout-folder)
+    - [Layout Folder](#layouts-folder)
     - [Pages Folder](#pages-folder)
     - [Features Folder](#features-folder)
     - [Core Folder](#core-folder)
@@ -26,11 +25,12 @@ This document describes the architectural methodology and structure principles. 
 
 1. **layouts** - Layout components that provide structural containers for pages
 2. **pages** - Complete application pages with page-specific business logic and route mapping
-3. **features** - Shared business logic and features used across the application
+3. **features** - Shared business logic, ViewModels, and features used across the application
 4. **components** - Reusable UI components
-5. **core** - React-specific shared resources
+5. **core** - React-specific shared resources (hooks, contexts, guards)
 6. **store** - Global application state management
-7. **app** - Application configuration, assets, constants, enums, and utilities
+7. **apis** - API client, API functions, request models, and response models
+8. **app** - Application configuration, assets, constants, enums, and utilities
 
 ### Layer Dependencies Diagram
 
@@ -44,6 +44,7 @@ graph TD
     Components[components]
     Core[core]
     Store[store]
+    APIs[apis]
     App[app]
 
     Layouts -->|imports| Pages
@@ -51,6 +52,7 @@ graph TD
     Layouts -->|imports| Components
     Layouts -->|imports| Core
     Layouts -->|imports| Store
+    Layouts -->|imports| APIs
     Layouts -->|imports| App
 
     Pages -.->|imports layout store| Layouts
@@ -58,19 +60,25 @@ graph TD
     Pages -->|imports| Components
     Pages -->|imports| Core
     Pages -->|imports| Store
+    Pages -->|imports| APIs
     Pages -->|imports| App
 
     Features -->|imports| Components
     Features -->|imports| Core
     Features -->|imports| Store
+    Features -->|imports| APIs
     Features -->|imports| App
 
     Components -->|imports| Core
     Components -->|imports| App
 
+    Core -->|imports| APIs
     Core -->|imports| App
 
+    Store -->|imports| Features
     Store -->|imports| App
+
+    APIs -->|imports| App
 
     style Layouts fill:#f5ffe1
     style Pages fill:#fff4e1
@@ -78,6 +86,7 @@ graph TD
     style Components fill:#e1ffe1
     style Core fill:#f5e1ff
     style Store fill:#e1ffff
+    style APIs fill:#ffe1e1
     style App fill:#e1f5ff
 ```
 
@@ -88,6 +97,7 @@ graph TD
 - **Layouts is top-most**: Layouts can import pages for routing configuration
 - **Pages can access layout store**: Pages can only import the store from layouts, not other layout artifacts
 - **Store is accessible**: `layouts`, `pages`, and `features` can access the global store
+- **APIs is centralized**: All API calls, request models, and response models are in `apis`
 - **App is foundational**: All layers can depend on `app` (configs, constants, enums, utils), but `app` has no dependencies
 
 ---
@@ -96,6 +106,19 @@ graph TD
 
 ```text
 📁 src/
+├── 📁 apis/         # API client, API functions, and models
+│   ├── 📁 models/   # Request and response models
+│   │   ├── 📄 auth.model.ts
+│   │   ├── 📄 oauth.model.ts
+│   │   ├── 📄 user.model.ts
+│   │   └── 📄 index.ts
+│   ├── 📄 client.ts      # API client with interceptors
+│   ├── 📄 auth.api.ts    # Auth API functions
+│   ├── 📄 oauth.api.ts   # OAuth API functions
+│   ├── 📄 user.api.ts    # User API functions
+│   ├── 📄 storage.api.ts # Storage API functions
+│   └── 📄 index.ts       # Barrel exports
+│
 ├── 📁 app/          # Application configuration, assets, constants, enums, and utilities
 │   ├── 📁 assets/   # Images, fonts, icons
 │   ├── 📁 configs/  # App, API, routes configuration
@@ -105,25 +128,19 @@ graph TD
 │   └── 📁 styles/   # Global styles
 │
 ├── 📁 pages/        # Complete application pages
-│   ├── 📁 accounts/
-│   │   ├── 📁 store/  # Page-specific state (optional)
-│   │   ├── 📁 models/ # Page-specific models (optional)
-│   │   ├── 📁 enums/  # Page-specific enums (optional)
+│   ├── 📁 login/
+│   ├── 📁 signup/
+│   ├── 📁 profile/
+│   │   ├── 📁 components/ # Page-specific components
 │   │   └── ...
-│   ├── 📁 auth/
 │   └── ...
 │
-├── 📁 features/     # Business logic and features
-│   ├── 📁 accounts/
-│   │   ├── 📁 components/    # Feature components
-│   │   │   ├── 📁 account-list/
-│   │   │   ├── 📁 account-create/
-│   │   │   └── ...
-│   │   ├── 📁 apis/          # APIs for the feature domain
-│   │   ├── 📁 models/        # Feature-specific models (optional)
-│   │   ├── 📁 enums/         # Feature-specific enums (optional)
+├── 📁 features/     # Business logic, ViewModels, and features
+│   ├── 📁 user/
+│   │   ├── 📁 models/     # ViewModels for UI
+│   │   │   ├── 📄 user.model.ts
+│   │   │   └── 📄 index.ts
 │   │   └── ...
-│   ├── 📁 auth/
 │   └── ...
 │
 ├── 📁 layouts/      # Layout components
@@ -135,15 +152,14 @@ graph TD
 │   └── ...
 │
 ├── 📁 components/   # Reusable UI components
-│   ├── 📁 button/
-│   ├── 📁 modal/
-│   ├── 📁 form/
+│   ├── 📄 button.tsx
+│   ├── 📄 input.tsx
+│   ├── 📄 modal.tsx
 │   └── ...
 │
 ├── 📁 core/         # React-specific shared resources
 │   ├── 📁 hooks/
 │   ├── 📁 contexts/
-│   ├── 📁 apis/
 │   └── 📁 guards/
 │
 ├── 📁 store/        # Global application state management
@@ -160,18 +176,43 @@ graph TD
 ## Import Rules
 
 ```text
-layouts    → pages, features, components, core, store, app
-pages      → layouts (store only), features, components, core, store, app
-features   → components, core, store, app
+layouts    → pages, features, components, core, store, apis, app
+pages      → layouts (store only), features, components, core, store, apis, app
+features   → components, core, store, apis, app
 components → core, app
-core       → app
-store      → app
+core       → apis, app
+store      → features (models only), app
+apis       → app
 app        → (no imports from other layers)
 ```
 
 ---
 
 ## Folder Responsibilities
+
+### APIs Folder
+
+Centralized location for all API-related code including the API client, API functions, request models, and response models.
+
+**Contents:**
+
+- **client.ts**: API client with interceptors, authentication, and error handling
+- **{domain}.api.ts**: API functions organized by domain (auth, user, oauth, storage)
+- **models/**: Request and response model interfaces
+    - **{domain}.model.ts**: Models for each API domain
+
+**Model Types (in `apis/models/`):**
+
+- **RequestModel**: Data sent to the API (e.g., `LoginRequestModel`, `SignupRequestModel`)
+- **ResponseModel**: Data received from the API (e.g., `AuthResponseModel`, `UserProfileResponseModel`)
+
+**Rules:**
+
+- Can only import from `app` (constants, configs, utils)
+- Contains no React code
+- All API functions should be pure async functions
+
+---
 
 ### App Folder
 
@@ -222,7 +263,6 @@ Layout components that provide structural containers for pages.
 
 - **Page Containers**: Provide consistent structural containers that accommodate multiple pages
 - **Layout Consistency**: Ensure consistent spacing, positioning, and visual structure across pages
-- **Responsive Structure**: Handle responsive layout behavior and breakpoints
 
 **Rules:**
 
@@ -257,9 +297,8 @@ Complete page components that compose features and components. Pages can contain
 
 **Rules:**
 
-- Can import from `features`, `components`, `core`, `store`, and `app`
-- Page-specific models can be defined locally in the page folder if reusability is uncertain
-- APIs should be located in `features`, not in `pages` - pages should import APIs from features
+- Can import from `features`, `components`, `core`, `store`, `apis`, and `app`
+- Page-specific components can be defined locally in the page folder
 - Reusable business logic should be moved to `features`
 
 **Page Store:**
@@ -286,52 +325,44 @@ For complex page-specific state that needs to be managed with Redux, create a pa
 
 ### Features Folder
 
-Business logic and feature-specific components that are **shared across the application**. Features accommodate reusable business logic that can be used by multiple pages or components.
+Business logic, ViewModels, and feature-specific components that are **shared across the application**. Features accommodate reusable business logic that can be used by multiple pages or components.
 
 **Responsibilities:**
 
+- **ViewModels**: Define ViewModels for UI representation (transformed from API response models)
 - **Shared Business Logic**: Accommodate business logic that is reused across multiple pages or components
 - **Reusable Components**: Feature-specific components that can be composed in different pages
-- **API Integration**: Handle API calls and data transformation for the feature
 - **Business Rules**: Implement business rules and validation logic that applies to the feature
 
 **Rules:**
 
-- Can import from `components`, `core`, `store`, and `app`
+- Can import from `components`, `core`, `store`, `apis`, and `app`
 - Should contain logic that is reused across multiple pages
 - Page-specific logic should remain in the page folder
 
-**API Location:**
+**ViewModel Pattern:**
 
-- All APIs related to features should be located in the `features` directory, not in `pages`
-- API models (request/response types) should be simple raw objects without complex model definitions
-- Pages should import and use APIs from `features` rather than defining their own
+ViewModels represent data as used in the UI, potentially transformed from API response models:
+
+- **Twin models** (identical to response): Can be a type alias or duplicate interface
+- **Transformed models**: Map response data to UI-specific structure
 
 **Encapsulation:**
 
-- Features should focus on sharing business logic primarily via **components**
-- Minimize the sharing of individual artifacts (models, enums, types, etc.) except for APIs
+- Features should focus on sharing business logic primarily via **components** and **ViewModels**
 - If a feature needs to expose functionality, prefer exposing it through a component or hook rather than raw types/models
-
-**Model Definitions:**
-
-- Features can accommodate their own `models/`, `enums/`, and interfaces when needed for the feature domain
-- If pages or other features contain feature-like models but their reusability is uncertain, it is acceptable to define those models locally within the `pages` or other `features` directory
-- Only promote models to a shared feature level when they are clearly reused across multiple consumers
-- Avoid premature abstraction - keep models local until reuse is proven
 
 ---
 
 ### Core Folder
 
-React-specific shared resources for hooks, contexts, guards, and APIs.
+React-specific shared resources for hooks, contexts, and guards.
 
 **Contents:**
 
 - **hooks/**: Reusable React hooks
 - **contexts/**: React context providers
 - **guards/**: Route guards and authentication wrappers
-- **apis/**: API client and base API utilities
 
 **Core Layer Dependencies (Higher can depend on Lower):**
 
@@ -339,12 +370,11 @@ React-specific shared resources for hooks, contexts, guards, and APIs.
 guards   → hooks, contexts, apis, app
 contexts → hooks, apis, app
 hooks    → apis, app
-apis     → app
 ```
 
 **Rules:**
 
-- Can only import from `app`
+- Can import from `apis` and `app`
 - Contains React-specific utilities
 - Should not contain feature-specific business logic
 
@@ -391,12 +421,12 @@ Global application state management using Redux Toolkit. The store manages appli
     - **Global Store** (`src/store/`): State shared across multiple pages (auth, user, theme, etc.)
     - **Page Store** (`src/pages/{page}/store/`): Page-specific state that is only used within that page
 
-8. **Import Rules**: Store can import from `app` only. Store should NOT import from `pages`, `features`, `components`, or `core`.
+8. **Import Rules**: Store can import from `features` (models only) and `app`. Store should NOT import from `pages`, `components`, or `core`.
 
 9. **Cross-Slice Actions**: Store slices can dispatch actions from other slices, but must ensure unidirectional flow to prevent circular dependencies.
 
 **Store Layer Dependencies:**
 
 ```text
-store → app
+store → features (models only), app
 ```
