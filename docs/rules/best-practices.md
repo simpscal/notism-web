@@ -637,20 +637,23 @@ const DeleteAccountButton = ({ accountId }: { accountId: string }) => {
 
 #### Mutation Hook with Business Logic
 
-When mutations have additional business logic, wrap them in a custom hook:
+When mutations have additional business logic that needs to be reused, wrap them in a custom hook:
 
 ```typescript
-// features/accounts/hooks/use-create-account.hook.ts
+// core/hooks/use-create-account.hook.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { accountApi, CreateAccountRequestModel } from '@/apis';
+import { useAppDispatch } from './use-redux.hook';
+import { addAccount } from '@/store/accounts/accounts.slice';
+
 export function useCreateAccount() {
     const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: (data: CreateAccountRM) => accountApi.create(data),
+        mutationFn: (data: CreateAccountRequestModel) => accountApi.create(data),
         onSuccess: account => {
-            // Business logic: Update Redux store
             dispatch(addAccount(account));
-            // Business logic: Invalidate cache
             queryClient.invalidateQueries({ queryKey: ['accounts', 'list'] });
         },
     });
@@ -668,7 +671,7 @@ export function useCreateAccount() {
 const CreateAccountModal = () => {
     const { create, isPending } = useCreateAccount();
 
-    const handleSubmit = (values: CreateAccountRM) => {
+    const handleSubmit = (values: CreateAccountRequestModel) => {
         create(values, {
             onSuccess: () => {
                 toast.success('Account created!');
@@ -953,65 +956,132 @@ const AccountsInfiniteList = () => {
 
 ## API and Hook Patterns
 
+APIs are centralized in `src/apis/` and should be called directly using TanStack Query (`useQuery`/`useMutation`) in components and pages. Only create custom hooks when there's additional business logic that needs to be reused.
+
 ### When to Use Hooks vs Direct API Calls
 
-| Scenario                                    | Use Hook?                           |
-| ------------------------------------------- | ----------------------------------- |
-| API call + Redux dispatch                   | ✅ Yes                              |
-| API call + cache invalidation               | ✅ Yes                              |
-| API call + data transformation              | ✅ Yes                              |
-| API call + side effects (toast, navigation) | ✅ Yes                              |
-| API call + complex error handling           | ✅ Yes                              |
-| Simple API call only                        | ❌ No - use TanStack Query directly |
+| Scenario                                     | Use Hook?                           | Location                             |
+| -------------------------------------------- | ----------------------------------- | ------------------------------------ |
+| API call + Redux dispatch                    | ✅ Yes                              | `core/hooks/` or `features/*/hooks/` |
+| API call + cache invalidation (reusable)     | ✅ Yes                              | `core/hooks/` or `features/*/hooks/` |
+| API call + data transformation (reusable)    | ✅ Yes                              | `core/hooks/` or `features/*/hooks/` |
+| API call + complex error handling (reusable) | ✅ Yes                              | `core/hooks/` or `features/*/hooks/` |
+| Simple API call only                         | ❌ No - use TanStack Query directly | Component/Page                       |
+| API call with component-specific callbacks   | ❌ No - use TanStack Query directly | Component/Page                       |
 
 ### API Layer Examples
 
+All APIs are centralized in `src/apis/` folder with models in `src/apis/models/`.
+
 ```typescript
-// features/accounts/apis/account.api.ts
+// apis/account.api.ts
+import { apiClient } from './client';
+import { CreateAccountRequestModel, AccountResponseModel } from './models';
+
 export const accountApi = {
-    create: async (data: CreateAccountRequestModel) => {
-        const response = await apiClient.post('/accounts', data);
-        return response.data;
-    },
-    list: async () => {
-        const response = await apiClient.get('/accounts');
-        return response.data;
-    },
-    getById: async (id: string) => {
-        const response = await apiClient.get(`/accounts/${id}`);
-        return response.data;
-    },
-    delete: async (id: string) => {
-        const response = await apiClient.delete(`/accounts/${id}`);
-        return response.data;
-    },
+    create: (data: CreateAccountRequestModel): Promise<AccountResponseModel> => apiClient.post('/accounts', data),
+
+    list: (): Promise<AccountResponseModel[]> => apiClient.get('/accounts'),
+
+    getById: (id: string): Promise<AccountResponseModel> => apiClient.get(`/accounts/${id}`),
+
+    delete: (id: string): Promise<void> => apiClient.delete(`/accounts/${id}`),
 };
+
+// apis/models/account.model.ts
+export interface AccountResponseModel {
+    id: string;
+    name: string;
+    email: string;
+    createdAt: string;
+}
+
+export interface CreateAccountRequestModel {
+    name: string;
+    email: string;
+}
+```
+
+### Model Organization
+
+Models are split between API layer and Feature layer:
+
+| Model Type    | Location             | Naming Pattern          | Purpose                     |
+| ------------- | -------------------- | ----------------------- | --------------------------- |
+| ResponseModel | `apis/models/`       | `{Entity}ResponseModel` | API response data structure |
+| RequestModel  | `apis/models/`       | `{Entity}RequestModel`  | API request data structure  |
+| UI Model      | `features/*/models/` | `{Entity}` (no suffix)  | UI-specific data structure  |
+
+```typescript
+// ✅ Good: ResponseModel in apis/models/ (with suffix)
+// apis/models/user.model.ts
+export interface UserProfileResponseModel {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    avatarUrl: string | null;
+}
+
+// ✅ Good: UI Model in features/ (no suffix)
+// features/user/models/user.model.ts
+export interface UserProfile {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    avatarUrl: string | null;
+}
+
+// Alternative: Type alias if identical to ResponseModel
+// import { UserProfileResponseModel } from '@/apis';
+// export type UserProfile = UserProfileResponseModel;
 ```
 
 ### Hook with Business Logic Examples
 
+When a mutation requires additional business logic (Redux dispatch, cache invalidation, data transformation), create a custom hook in `core/hooks/` or `features/{domain}/hooks/`.
+
 ```typescript
 // ✅ Good: Hook WITH additional business logic (Redux dispatch + cache invalidation)
-// features/accounts/hooks/use-create-account.hook.ts
-export const useCreateAccount = () => {
+// core/hooks/use-create-account.hook.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { accountApi, CreateAccountRequestModel } from '@/apis';
+import { useAppDispatch } from './use-redux.hook';
+import { addAccount } from '@/store/accounts/accounts.slice';
+
+export function useCreateAccount() {
     const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
 
-    return useMutation({
+    const mutation = useMutation({
         mutationFn: (data: CreateAccountRequestModel) => accountApi.create(data),
         onSuccess: account => {
             dispatch(addAccount(account)); // Business logic: Redux dispatch
             queryClient.invalidateQueries({ queryKey: ['accounts', 'list'] }); // Business logic: Cache invalidation
         },
     });
-};
+
+    return {
+        create: mutation.mutate,
+        createAsync: mutation.mutateAsync,
+        isPending: mutation.isPending,
+        isError: mutation.isError,
+        error: mutation.error,
+    };
+}
 ```
 
 ### Direct API Call Examples
 
+When there's no additional business logic, use TanStack Query directly in the component/page without creating a custom hook wrapper.
+
 ```typescript
 // ✅ Good: Direct API call WITHOUT hook (no additional business logic)
-// In component or page
+// pages/accounts/accounts.tsx
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { accountApi } from '@/apis';
+
 const AccountsPage = () => {
     // Simple query without extra business logic - no hook needed
     const { data: accounts, isLoading } = useQuery({
@@ -1020,17 +1090,22 @@ const AccountsPage = () => {
     });
 
     // Simple mutation without extra business logic - no hook needed
-    const deleteAccount = useMutation({
+    const { mutate: deleteAccount, isPending: isDeleting } = useMutation({
         mutationFn: (id: string) => accountApi.delete(id),
+        onSuccess: () => {
+            toast.success('Account deleted!');
+        },
+        onError: () => {
+            toast.error('Failed to delete account');
+        },
     });
 
     return (/*...*/);
 };
 
 // ❌ Bad: Unnecessary hook wrapper for simple API call
-// features/accounts/hooks/use-list-accounts.hook.ts
+// This hook adds no value - it just wraps the API call
 export const useListAccounts = () => {
-    // This hook adds no value - it just wraps the API call
     return useQuery({
         queryKey: ['accounts', 'list'],
         queryFn: () => accountApi.list(),
@@ -1243,47 +1318,85 @@ export default timelineSlice.reducer;
 
 ## Feature Examples
 
-### Feature Modal Component
+Features contain shared business logic, components, and ViewModels that are reused across pages.
+
+### Feature Component with Direct API Usage
 
 ```typescript
-// features/accounts/account-create/create-account-modal.tsx
-import { useState } from 'react';
+// features/accounts/components/create-account-modal.tsx
+import { memo } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Modal } from '@/components/modal';
-import { useCreateAccount } from './use-create-account';
+import { accountApi, CreateAccountRequestModel } from '@/apis';
 import { CreateAccountForm } from './create-account-form';
 
-export const CreateAccountModal = ({ isOpen, onClose }) => {
-    const { create, isLoading } = useCreateAccount();
+interface CreateAccountModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
 
-    const handleSubmit = async data => {
-        await create(data);
-        onClose();
+function CreateAccountModal({ isOpen, onClose }: CreateAccountModalProps) {
+    const queryClient = useQueryClient();
+
+    const { mutate: create, isPending } = useMutation({
+        mutationFn: (data: CreateAccountRequestModel) => accountApi.create(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['accounts', 'list'] });
+            onClose();
+        },
+    });
+
+    const handleSubmit = (data: CreateAccountRequestModel) => {
+        create(data);
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Create Account">
-            <CreateAccountForm onSubmit={handleSubmit} isLoading={isLoading} />
+            <CreateAccountForm onSubmit={handleSubmit} isLoading={isPending} />
         </Modal>
     );
-};
+}
+
+export default memo(CreateAccountModal);
+```
+
+### Feature UI Models
+
+UI models represent data structures used in UI components, potentially transformed from API response models. They do not use a suffix.
+
+```typescript
+// features/user/models/user.model.ts
+// UI model - can be identical to ResponseModel or transformed
+export interface UserProfile {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    avatarUrl: string | null;
+}
+
+// If identical to ResponseModel, can also be a type alias:
+// import { UserProfileResponseModel } from '@/apis';
+// export type UserProfile = UserProfileResponseModel;
 ```
 
 ### Reusable Business Logic Hook
 
-```typescript
-// features/accounts/account-create/use-create-account.ts
-// Reusable business logic that can be used across multiple pages
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
-import { accountApi } from '../apis';
-import { addAccount } from '@/store/accounts';
+When business logic needs to be shared across multiple pages, create a hook in the feature folder:
 
-export const useCreateAccount = () => {
-    const dispatch = useDispatch();
+```typescript
+// features/accounts/hooks/use-create-account.hook.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { accountApi, CreateAccountRequestModel } from '@/apis';
+import { useAppDispatch } from '@/core/hooks';
+import { addAccount } from '@/store/accounts/accounts.slice';
+
+export function useCreateAccount() {
+    const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: data => accountApi.create(data),
+        mutationFn: (data: CreateAccountRequestModel) => accountApi.create(data),
         onSuccess: account => {
             dispatch(addAccount(account));
             queryClient.invalidateQueries({ queryKey: ['accounts', 'list'] });
@@ -1292,10 +1405,11 @@ export const useCreateAccount = () => {
 
     return {
         create: mutation.mutate,
-        isLoading: mutation.isPending,
+        createAsync: mutation.mutateAsync,
+        isPending: mutation.isPending,
         error: mutation.error,
     };
-};
+}
 ```
 
 ---
@@ -1390,63 +1504,142 @@ const user = useAppSelector((state: RootState) => state.user.user);
 
 ### API Client
 
+The API client is located in `apis/client.ts` (centralized with all APIs).
+
 ```typescript
-// core/apis/client.api.ts
+// apis/client.ts
 import { tokenManagerUtils } from '@/app/utils';
 
-export interface IApiResponse<T = unknown> {
-    data: T;
-    status: number;
-    statusText: string;
+interface RequestConfig extends RequestInit {
+    params?: Record<string, string>;
 }
 
-export class ApiClient {
-    private getAuthHeaders() {
-        const token = tokenManagerUtils.getToken();
+class ApiClient {
+    private baseUrl: string;
+
+    constructor(baseUrl: string) {
+        this.baseUrl = baseUrl;
+    }
+
+    async get<T = any>(endpoint: string, options: RequestConfig = {}): Promise<T> {
+        return this._request<T>(endpoint, { ...options, method: 'GET' });
+    }
+
+    async post<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}): Promise<T> {
+        return this._request<T>(endpoint, {
+            ...options,
+            method: 'POST',
+            body: data ? JSON.stringify(data) : undefined,
+        });
+    }
+
+    async put<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}): Promise<T> {
+        return this._request<T>(endpoint, {
+            ...options,
+            method: 'PUT',
+            body: data ? JSON.stringify(data) : undefined,
+        });
+    }
+
+    async delete<T = any>(endpoint: string, options: RequestConfig = {}): Promise<T> {
+        return this._request<T>(endpoint, { ...options, method: 'DELETE' });
+    }
+
+    private async _request<T = any>(endpoint: string, options: RequestConfig): Promise<T> {
+        const headers = {
+            'Content-Type': 'application/json',
+            ...this._getAuthHeaders(),
+            ...options.headers,
+        };
+
+        const response = await fetch(`${this.baseUrl}${endpoint}`, {
+            ...options,
+            headers,
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return response.json();
+    }
+
+    private _getAuthHeaders(): Record<string, string> {
+        const token = tokenManagerUtils.getAccessToken();
         return token ? { Authorization: `Bearer ${token}` } : {};
     }
 }
+
+export const apiClient = new ApiClient(import.meta.env.VITE_API_URL);
 ```
 
 ### Auth Hook
 
 ```typescript
-// core/hooks/use-auth.ts
-import { useState, useEffect } from 'react';
-import { apiClient } from '../apis';
-import { IUser } from '@/features/user/models';
+// core/hooks/use-reload-user.hook.ts
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { authApi } from '@/apis';
+import { useAppDispatch, useAppSelector } from './use-redux.hook';
+import { setUser } from '@/store/user/user.slice';
+import { tokenManagerUtils } from '@/app/utils';
 
-export const useAuth = () => {
-    const [user, setUser] = useState<IUser | null>(null);
-    const [loading, setLoading] = useState(true);
+const QUERY_KEY = ['user', 'reload'] as const;
 
-    const login = async (credentials: LoginCredentials) => {
-        const response = await apiClient.post('/auth/login', credentials);
-        setUser(response.data.user);
+export function useReloadUser() {
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(state => state.user.user);
+    const hasValidToken = tokenManagerUtils.hasValidToken();
+
+    const query = useQuery({
+        queryKey: QUERY_KEY,
+        queryFn: () => authApi.reload(),
+        enabled: Boolean(hasValidToken && !user),
+        retry: false,
+    });
+
+    useEffect(() => {
+        if (query.data) {
+            dispatch(setUser(query.data));
+        }
+    }, [query.data, dispatch]);
+
+    return {
+        user,
+        isLoading: query.isLoading,
+        isError: query.isError,
+        error: query.error,
     };
-
-    return { user, login, loading };
-};
+}
 ```
 
 ### Auth Context
 
 ```typescript
 // core/contexts/auth-context.tsx
-import { createContext, ReactNode } from 'react';
-import { useAuth } from '../hooks';
-import { IUser } from '@/features/user/models';
+import { createContext, ReactNode, useMemo } from 'react';
+import { UserProfile } from '@/features/user/models/user.model';
+import { useAppSelector } from '../hooks';
 
 interface IAuthContext {
-    user: IUser | null;
-    login: (credentials: LoginCredentials) => Promise<void>;
+    user: UserProfile | null;
+    isAuthenticated: boolean;
 }
 
 export const AuthContext = createContext<IAuthContext | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const auth = useAuth();
-    return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+    const user = useAppSelector(state => state.user.user);
+
+    const value = useMemo(
+        () => ({
+            user,
+            isAuthenticated: !!user,
+        }),
+        [user]
+    );
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 ```
 
