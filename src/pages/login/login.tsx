@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { memo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { loginApi } from './apis';
-
+import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/configs';
 import { passwordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
@@ -17,7 +17,6 @@ import { Input } from '@/components/input';
 import { PasswordInput } from '@/components/password-input';
 import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { oauthApi, OAuthProviderType } from '@/features/oauth';
 import { setAuth } from '@/store/auth/auth.slice';
 
 const loginSchema = z.object({
@@ -31,7 +30,21 @@ function Login() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const loginMutation = useMutation({
+        mutationFn: authApi.login,
+        onSuccess: data => {
+            dispatch(setAuth(data.token, data.user));
+        },
+    });
+
+    const oauthRedirectMutation = useMutation({
+        mutationFn: oauthApi.getOAuthRedirect,
+        onSuccess: data => {
+            window.location.href = data.redirectUrl;
+        },
+    });
+
+    const isLoading = loginMutation.isPending || oauthRedirectMutation.isPending;
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -46,37 +59,23 @@ function Login() {
         formState: { errors },
     } = form;
 
-    const handleFormSubmit = async (values: LoginFormValues) => {
-        setIsLoading(true);
-
-        loginApi
-            .login({
+    const handleFormSubmit = (values: LoginFormValues) => {
+        loginMutation.mutate(
+            {
                 email: values.email,
                 password: values.password,
-            })
-            .then(data => {
-                dispatch(setAuth(data.token, data.user));
-            })
-            .then(() => {
-                toast.success('Login successful! Welcome back.');
-                navigate(`/${ROUTES.profile}`);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            },
+            {
+                onSuccess: () => {
+                    toast.success('Login successful! Welcome back.');
+                    navigate(`/${ROUTES.profile}`);
+                },
+            }
+        );
     };
 
     const handleOAuthLogin = (provider: OAuthProviderType) => {
-        setIsLoading(true);
-
-        oauthApi
-            .getOAuthRedirect(provider)
-            .then(data => {
-                window.location.href = data.redirectUrl;
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+        oauthRedirectMutation.mutate(provider);
     };
 
     return (
@@ -123,7 +122,7 @@ function Login() {
 
                 {/* Submit Button */}
                 <Button type='submit' className='w-full' disabled={isLoading}>
-                    {isLoading ? 'Signing in...' : 'Sign in'}
+                    {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
                 </Button>
             </form>
 
@@ -160,4 +159,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default memo(Login);

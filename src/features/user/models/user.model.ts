@@ -5,9 +5,3 @@ export interface UserProfileViewModel {
     email: string;
     avatarUrl: string | null;
 }
-
-export interface UpdateProfileRM {
-    firstName: string;
-    lastName: string;
-    avatarUrl: string | null;
-}

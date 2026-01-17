@@ -4,9 +4,9 @@ import { toast } from 'sonner';
 
 import { ClientLayoutToolbar, ClientSettingsDialog } from './components';
 
+import { authApi } from '@/apis';
 import { ROUTES } from '@/app/configs';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { authApi } from '@/features/auth/apis';
 import { unsetAuth } from '@/store/auth/auth.slice';
 
 function ClientLayout() {

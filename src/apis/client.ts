@@ -77,11 +77,11 @@ export class ApiClient {
         this._interceptors.response.push(interceptor);
     }
 
-    async get<T = any>(endpoint: string, options: RequestConfig = {}) {
+    async get<T = any>(endpoint: string, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, { ...options, method: 'GET' });
     }
 
-    async post<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}) {
+    async post<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, {
             ...options,
             method: 'POST',
@@ -89,7 +89,7 @@ export class ApiClient {
         });
     }
 
-    async put<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}) {
+    async put<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, {
             ...options,
             method: 'PUT',
@@ -97,7 +97,7 @@ export class ApiClient {
         });
     }
 
-    async patch<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}) {
+    async patch<T = any, D = any>(endpoint: string, data?: D, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, {
             ...options,
             method: 'PATCH',
@@ -105,11 +105,11 @@ export class ApiClient {
         });
     }
 
-    async delete<T = any>(endpoint: string, options: RequestConfig = {}) {
+    async delete<T = any>(endpoint: string, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, { ...options, method: 'DELETE' });
     }
 
-    async postFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}) {
+    async postFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, {
             ...options,
             method: 'POST',
@@ -117,7 +117,7 @@ export class ApiClient {
         });
     }
 
-    async putFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}) {
+    async putFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, {
             ...options,
             method: 'PUT',
@@ -125,7 +125,7 @@ export class ApiClient {
         });
     }
 
-    async patchFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}) {
+    async patchFormData<T = any>(endpoint: string, formData: FormData, options: RequestConfig = {}): Promise<T> {
         return this._request<T>(endpoint, {
             ...options,
             method: 'PATCH',
@@ -136,7 +136,7 @@ export class ApiClient {
     /**
      * Apply request interceptors
      */
-    private async _applyRequestInterceptors(config: RequestConfig) {
+    private async _applyRequestInterceptors(config: RequestConfig): Promise<RequestConfig> {
         let modifiedConfig = { ...config };
 
         for (const interceptor of this._interceptors.request) {
@@ -149,7 +149,7 @@ export class ApiClient {
     /**
      * Apply response interceptors
      */
-    private async _applyResponseInterceptors(response: Response) {
+    private async _applyResponseInterceptors(response: Response): Promise<Response> {
         let modifiedResponse = response;
 
         for (const interceptor of this._interceptors.response) {
@@ -162,7 +162,7 @@ export class ApiClient {
     /**
      * Build full URL with query parameters
      */
-    private _buildUrl(endpoint: string, params?: Record<string, any>) {
+    private _buildUrl(endpoint: string, params?: Record<string, any>): string {
         let url: string;
 
         if (endpoint.startsWith('http')) {
@@ -187,7 +187,7 @@ export class ApiClient {
         return url;
     }
 
-    private async _processResponse<T = any>(response: Response) {
+    private async _processResponse<T = any>(response: Response): Promise<T> {
         const contentType = response.headers.get('content-type');
         const data =
             contentType && contentType.includes('application/json')
@@ -210,7 +210,7 @@ export class ApiClient {
     /**
      * Make HTTP request
      */
-    private async _request<T = any>(endpoint: string, options: RequestConfig = {}) {
+    private async _request<T = any>(endpoint: string, options: RequestConfig = {}): Promise<T> {
         const { params, ...requestOptions } = options;
 
         const isFormData = requestOptions.body instanceof FormData;
@@ -269,11 +269,11 @@ export class ApiClient {
     /**
      * Handle token refresh logic
      */
-    private async _handleTokenRefresh(originalEndpoint: string, originalConfig: RequestConfig): Promise<any> {
+    private async _handleTokenRefresh<T = any>(originalEndpoint: string, originalConfig: RequestConfig): Promise<T> {
         if (this._isRefreshing) {
-            return new Promise((resolve, reject) => {
+            return new Promise<T>((resolve, reject) => {
                 this._failedQueue.push({
-                    resolve,
+                    resolve: resolve as (value: unknown) => void,
                     reject,
                     originalEndpoint,
                     originalConfig,
@@ -318,7 +318,7 @@ export class ApiClient {
         }
     }
 
-    private _handleTokenError() {
+    private _handleTokenError(): never {
         tokenManagerUtils.clearAll();
         navigationUtils.navigate(`/${ROUTES.logIn}`, { replace: true });
 

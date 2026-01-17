@@ -1,21 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Phone, Globe, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { UserProfileAvatar } from './components';
 
+import { storageApi, userApi } from '@/apis';
 import { PresignedUrlUploadEnum } from '@/app/enums';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
 import { Textarea } from '@/components/textarea';
-import { storageApi } from '@/core/apis';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { userApi } from '@/features/user/apis';
 import { updateUser } from '@/store/user/user.slice';
 
 const profileSchema = z.object({
@@ -77,7 +76,7 @@ function Profile() {
         return presignedData.fileKey;
     };
 
-    const handleFormSubmit = async (values: ProfileFormValues) => {
+    const handleFormSubmit = (values: ProfileFormValues) => {
         setIsLoading(true);
 
         const updateProfile = (avatarUrl: string | null) => {
@@ -314,4 +313,4 @@ function Profile() {
     );
 }
 
-export default Profile;
+export default memo(Profile);

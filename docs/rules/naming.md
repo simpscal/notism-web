@@ -8,7 +8,6 @@ This document defines the naming conventions used throughout the React applicati
 - [Constants](#constants)
 - [Enums](#enums)
 - [Types](#types)
-- [Interfaces](#interfaces)
 - [Component Props Interface](#component-props-interface)
 - [Event Handler](#event-handler)
 - [Custom Hook](#custom-hook)
@@ -204,43 +203,6 @@ type UserRoleType = 'admin' | 'user' | 'guest';
 type Theme = 'dark' | 'light' | 'system';
 type RequestInterceptor = (config: RequestConfig) => Promise<RequestConfig> | RequestConfig;
 type ResponseInterceptor = (response: Response) => Promise<Response> | Response;
-```
-
-## Interfaces
-
-**Convention**:
-
-- **PascalCase**
-- **General interfaces**: Prefixed with `I` (e.g., `IAuthState`, `IUser`)
-- **Component props interfaces**: NO `I` prefix, use component name + `Props` (e.g., `UserCardProps`, `HeroSectionProps`)
-- Use descriptive names that clearly indicate the interface's purpose
-
-**Example**:
-
-```typescript
-// State/Data interfaces - use I prefix
-interface IUser {
-    id: string;
-    name: string;
-    email: string;
-    role: UserRoleType;
-}
-
-interface IAuthState {
-    accessToken: string | null;
-}
-
-// Component props - NO I prefix
-interface UserCardProps {
-    user: IUser;
-    onEdit?: (user: IUser) => void;
-    isLoading?: boolean;
-}
-
-interface HeroSectionProps {
-    onExploreTimeline?: () => void;
-    onGetStarted?: () => void;
-}
 ```
 
 ## Component Props Interface
@@ -859,25 +821,23 @@ src/
 
 ### Quick Reference
 
-| Type                     | Convention                   | Example                                   |
-| ------------------------ | ---------------------------- | ----------------------------------------- |
-| **Files**                | kebab-case                   | `user-profile.tsx`, `auth.service.ts`     |
-| **Components**           | PascalCase                   | `UserCard`, `HeroSection`                 |
-| **Component Props**      | PascalCase + `Props`         | `UserCardProps`, `HeroSectionProps`       |
-| **Interfaces (General)** | `I` + PascalCase             | `IAuthState`, `IUser`                     |
-| **Interfaces (Props)**   | PascalCase + `Props`         | `UserCardProps` (no `I` prefix)           |
-| **Types**                | PascalCase (+ `Type` suffix) | `UserRoleType`, `Theme`                   |
-| **Enums**                | PascalCase + `Enum`          | `StatusEnum`                              |
-| **Models**               | PascalCase + `Model` suffix  | `PeriodViewModel`, `UserProfileViewModel` |
-| **Hooks**                | camelCase, `use` prefix      | `useAuth`, `useInput`                     |
-| **Functions**            | camelCase                    | `calculateGaps`, `formatDate`             |
-| **Event Handlers**       | camelCase, `handle` prefix   | `handleSubmit`, `handleClick`             |
-| **State**                | camelCase                    | `user`, `isLoading`, `selectedPeriodId`   |
-| **Setters**              | `set` + PascalCase           | `setUser`, `setIsLoading`                 |
-| **APIs**                 | camelCase + `Api`            | `timelineApi`, `userApi`                  |
-| **Services**             | camelCase + `Service`        | `authService`                             |
-| **Utils**                | camelCase + `Utils`          | `tokenManagerUtils`                       |
-| **Constants**            | UPPERCASE_SNAKE_CASE         | `PAGE_SIZE`, `TOKEN_KEY`                  |
-| **Refs**                 | camelCase + `Ref`            | `modalRef`, `inputRef`                    |
-| **Contexts**             | PascalCase + `Context`       | `AuthContext`, `ThemeProviderContext`     |
-| **Folders**              | kebab-case                   | `user-profile/`, `auth/`                  |
+| Type                | Convention                   | Example                                   |
+| ------------------- | ---------------------------- | ----------------------------------------- |
+| **Files**           | kebab-case                   | `user-profile.tsx`, `auth.service.ts`     |
+| **Components**      | PascalCase                   | `UserCard`, `HeroSection`                 |
+| **Component Props** | PascalCase + `Props`         | `UserCardProps`, `HeroSectionProps`       |
+| **Types**           | PascalCase (+ `Type` suffix) | `UserRoleType`, `Theme`                   |
+| **Enums**           | PascalCase + `Enum`          | `StatusEnum`                              |
+| **Models**          | PascalCase + `Model` suffix  | `PeriodViewModel`, `UserProfileViewModel` |
+| **Hooks**           | camelCase, `use` prefix      | `useAuth`, `useInput`                     |
+| **Functions**       | camelCase                    | `calculateGaps`, `formatDate`             |
+| **Event Handlers**  | camelCase, `handle` prefix   | `handleSubmit`, `handleClick`             |
+| **State**           | camelCase                    | `user`, `isLoading`, `selectedPeriodId`   |
+| **Setters**         | `set` + PascalCase           | `setUser`, `setIsLoading`                 |
+| **APIs**            | camelCase + `Api`            | `timelineApi`, `userApi`                  |
+| **Services**        | camelCase + `Service`        | `authService`                             |
+| **Utils**           | camelCase + `Utils`          | `tokenManagerUtils`                       |
+| **Constants**       | UPPERCASE_SNAKE_CASE         | `PAGE_SIZE`, `TOKEN_KEY`                  |
+| **Refs**            | camelCase + `Ref`            | `modalRef`, `inputRef`                    |
+| **Contexts**        | PascalCase + `Context`       | `AuthContext`, `ThemeProviderContext`     |
+| **Folders**         | kebab-case                   | `user-profile/`, `auth/`                  |

@@ -3,14 +3,14 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthRouteGuard, ResetPasswordRouteGuard } from '@/core/guards';
 import { AuthLayout } from '@/layouts/auth';
 import { ClientLayout } from '@/layouts/client';
-import Login from '@/pages/login';
+import { Login } from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
 import OAuthCallback from '@/pages/oauth-callback';
 import { OAuthCallbackRouteGuard } from '@/pages/oauth-callback/guards';
 import Profile from '@/pages/profile';
-import { RequestResetPasswordPage } from '@/pages/request-reset-password';
-import { ResetPasswordPage } from '@/pages/reset-password';
-import Signup from '@/pages/signup';
+import { RequestResetPassword } from '@/pages/request-reset-password';
+import { ResetPassword } from '@/pages/reset-password';
+import { Signup } from '@/pages/signup';
 
 function AppRoutes() {
     return (
@@ -21,12 +21,12 @@ function AppRoutes() {
                     <Route index element={<Navigate replace to='login' />} />
                     <Route path='login' element={<Login />} />
                     <Route path='signup' element={<Signup />} />
-                    <Route path='request-reset-password' element={<RequestResetPasswordPage />} />
+                    <Route path='request-reset-password' element={<RequestResetPassword />} />
                     <Route
                         path='reset-password'
                         element={
                             <ResetPasswordRouteGuard>
-                                <ResetPasswordPage />
+                                <ResetPassword />
                             </ResetPasswordRouteGuard>
                         }
                     />

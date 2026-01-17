@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from './use-redux.hook';
 
+import { authApi } from '@/apis';
 import { tokenManagerUtils } from '@/app/utils';
-import { authApi } from '@/features/auth/apis/auth.api';
 import { unsetAuth } from '@/store/auth/auth.slice';
 import { setUser } from '@/store/user/user.slice';
 

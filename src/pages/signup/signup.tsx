@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { memo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { signupApi } from './apis';
-
+import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/configs';
 import { passwordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
@@ -32,7 +32,21 @@ function Signup() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const signupMutation = useMutation({
+        mutationFn: authApi.signup,
+        onSuccess: data => {
+            dispatch(setAuth(data.token, data.user));
+        },
+    });
+
+    const oauthRedirectMutation = useMutation({
+        mutationFn: oauthApi.getOAuthRedirect,
+        onSuccess: data => {
+            window.location.href = data.redirectUrl;
+        },
+    });
+
+    const isLoading = signupMutation.isPending || oauthRedirectMutation.isPending;
 
     const form = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
@@ -49,31 +63,26 @@ function Signup() {
         formState: { errors },
     } = form;
 
-    const handleFormSubmit = async (values: SignupFormValues) => {
-        setIsLoading(true);
-
-        signupApi
-            .signup({
+    const handleFormSubmit = (values: SignupFormValues) => {
+        signupMutation.mutate(
+            {
                 firstName: values.firstName,
                 lastName: values.lastName,
                 email: values.email,
                 password: values.password,
-            })
-            .then(data => {
-                dispatch(setAuth(data.token, data.user));
-            })
-            .then(() => {
-                toast.success('Account created successfully! Welcome aboard.');
-                navigate(`/${ROUTES.profile}`);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            },
+            {
+                onSuccess: () => {
+                    toast.success('Account created successfully! Welcome aboard.');
+                    navigate(`/${ROUTES.profile}`);
+                },
+            }
+        );
     };
 
-    const handleGoogleSignup = () => {};
-
-    const handleGithubSignup = () => {};
+    const handleOAuthSignup = (provider: OAuthProviderType) => {
+        oauthRedirectMutation.mutate(provider);
+    };
 
     return (
         <div className='space-y-6'>
@@ -145,7 +154,7 @@ function Signup() {
 
                 {/* Submit Button */}
                 <Button type='submit' className='w-full' disabled={isLoading}>
-                    {isLoading ? 'Creating account...' : 'Sign up'}
+                    {signupMutation.isPending ? 'Creating account...' : 'Sign up'}
                 </Button>
             </form>
 
@@ -161,11 +170,21 @@ function Signup() {
 
             {/* Social Signup Buttons */}
             <div className='grid grid-cols-2 gap-3'>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGoogleSignup}>
+                <Button
+                    type='button'
+                    variant='outline'
+                    disabled={isLoading}
+                    onClick={() => handleOAuthSignup('google')}
+                >
                     <GoogleLogo className='h-4 w-4' />
                     Google
                 </Button>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={handleGithubSignup}>
+                <Button
+                    type='button'
+                    variant='outline'
+                    disabled={isLoading}
+                    onClick={() => handleOAuthSignup('github')}
+                >
                     <GithubLogo className='h-4 w-4' />
                     GitHub
                 </Button>
@@ -182,4 +201,4 @@ function Signup() {
     );
 }
 
-export default Signup;
+export default memo(Signup);
