@@ -15,6 +15,9 @@ import { Signup } from '@/pages/signup';
 function AppRoutes() {
     return (
         <Routes>
+            {/* Root Redirect */}
+            <Route path='/' element={<Navigate replace to='/profile' />} />
+
             {/* Auth Routes - Public (Redirects authenticated users) */}
             <Route path='auth' element={<AuthRouteGuard />}>
                 <Route element={<AuthLayout />}>
