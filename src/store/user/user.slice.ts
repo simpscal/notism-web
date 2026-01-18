@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { UserProfileVM } from '@/features/user/models';
+import { UserProfileViewModel } from '@/features/user/models';
 
 export interface IUserState {
-    user: UserProfileVM | null;
+    user: UserProfileViewModel | null;
 }
 
 const INITIAL_STATE: IUserState = {
@@ -14,11 +14,11 @@ const userSlice = createSlice({
     name: 'user',
     initialState: INITIAL_STATE,
     reducers: {
-        setUser: (state, action: PayloadAction<UserProfileVM>) => {
+        setUser: (state, action: PayloadAction<UserProfileViewModel>) => {
             state.user = action.payload;
         },
 
-        updateUser: (state, action: PayloadAction<Partial<UserProfileVM>>) => {
+        updateUser: (state, action: PayloadAction<Partial<UserProfileViewModel>>) => {
             if (state.user) {
                 state.user = {
                     ...state.user,

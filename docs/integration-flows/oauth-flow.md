@@ -98,9 +98,10 @@ sequenceDiagram
 %%{init: {'theme':'base', 'themeVariables': { 'fontSize': '16px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'primaryBorderColor': '#7C0000', 'lineColor': '#F8B229', 'secondaryColor': '#006100', 'tertiaryColor': '#fff'}}}%%
 sequenceDiagram
     participant CallbackPage as OAuth Callback<br/>(Frontend)
+    participant ReduxStore as Redux Store
     participant User
 
-    CallbackPage->>CallbackPage: authService.authenticate()<br/>Store token & user in Redux
+    CallbackPage->>ReduxStore: dispatch(setAuth(token, user))
     CallbackPage->>User: Show Success Toast
     CallbackPage->>User: Navigate to /profile
 ```
@@ -145,7 +146,7 @@ sequenceDiagram
 
 ### 5. **Authentication Phase**
 
-- `authService.authenticate()` stores tokens and user in Redux
+- `dispatch(setAuth(token, user))` stores tokens and user in Redux
 - Success toast is shown
 - User is redirected to profile page
 
@@ -154,8 +155,8 @@ sequenceDiagram
 - **Login Page** (`pages/login/login.tsx`): Initiates OAuth flow
 - **OAuth Callback Guard** (`pages/oauth-callback/guards/oauth-callback-route.guard.tsx`): Validates callback parameters
 - **OAuth Callback Page** (`pages/oauth-callback/oauth-callback.tsx`): Handles callback and token exchange
-- **OAuth API** (`features/oauth/apis/oauth.api.ts`): API methods for OAuth operations
-- **Auth Service** (`features/auth/services/auth.service.ts`): Handles authentication state
+- **OAuth API** (`apis/oauth.api.ts`): API methods for OAuth operations
+- **Auth Slice** (`store/auth/auth.slice.ts`): Redux slice for authentication state
 
 ## API Endpoints
 

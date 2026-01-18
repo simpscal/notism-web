@@ -1,16 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { memo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { resetPassword } from './apis/reset-password.api';
-
+import { authApi } from '@/apis';
 import { ROUTES } from '@/app/configs';
-import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { PasswordInput } from '@/components/ui/password-input';
+import { Button } from '@/components/button';
+import { Field, FieldError, FieldLabel } from '@/components/field';
+import { PasswordInput } from '@/components/password-input';
 
 const resetPasswordSchema = z
     .object({
@@ -24,12 +24,14 @@ const resetPasswordSchema = z
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
-export const ResetPasswordPage = () => {
+function ResetPassword() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token')!;
 
-    const [isLoading, setIsLoading] = useState(false);
+    const { mutate: resetPassword, isPending } = useMutation({
+        mutationFn: authApi.resetPassword,
+    });
 
     const form = useForm<ResetPasswordFormData>({
         resolver: zodResolver(resetPasswordSchema),
@@ -45,25 +47,24 @@ export const ResetPasswordPage = () => {
     } = form;
 
     const handleFormSubmit = (data: ResetPasswordFormData) => {
-        setIsLoading(true);
+        resetPassword(
+            {
+                token,
+                newPassword: data.newPassword,
+                confirmPassword: data.confirmPassword,
+            },
+            {
+                onSuccess: () => {
+                    toast.success('Success', {
+                        description: 'Your password has been reset successfully',
+                    });
 
-        resetPassword({
-            token,
-            newPassword: data.newPassword,
-            confirmPassword: data.confirmPassword,
-        })
-            .then(() => {
-                toast.success('Success', {
-                    description: 'Your password has been reset successfully',
-                });
-
-                setTimeout(() => {
-                    navigate(`/${ROUTES.logIn}`);
-                }, 1500);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+                    setTimeout(() => {
+                        navigate(`/${ROUTES.logIn}`);
+                    }, 1500);
+                },
+            }
+        );
     };
 
     return (
@@ -81,7 +82,7 @@ export const ResetPasswordPage = () => {
                         id='newPassword'
                         placeholder='Enter new password'
                         autoComplete='new-password'
-                        disabled={isLoading}
+                        disabled={isPending}
                         {...form.register('newPassword')}
                     />
                     {errors.newPassword && <FieldError>{errors.newPassword.message}</FieldError>}
@@ -94,14 +95,14 @@ export const ResetPasswordPage = () => {
                         id='confirmPassword'
                         placeholder='Confirm new password'
                         autoComplete='new-password'
-                        disabled={isLoading}
+                        disabled={isPending}
                         {...form.register('confirmPassword')}
                     />
                     {errors.confirmPassword && <FieldError>{errors.confirmPassword.message}</FieldError>}
                 </Field>
 
-                <Button type='submit' className='w-full' disabled={!isValid || isLoading}>
-                    {isLoading ? 'Resetting...' : 'Reset Password'}
+                <Button type='submit' className='w-full' disabled={!isValid || isPending}>
+                    {isPending ? 'Resetting...' : 'Reset Password'}
                 </Button>
             </form>
 
@@ -112,4 +113,6 @@ export const ResetPasswordPage = () => {
             </div>
         </div>
     );
-};
+}
+
+export default memo(ResetPassword);

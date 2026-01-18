@@ -1,8 +1,8 @@
 import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/configs';
-import { OAuthProviderType } from '@/features/oauth';
 
 interface OAuthCallbackRouteGuardProps {
     children: React.ReactNode;

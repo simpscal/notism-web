@@ -53,6 +53,15 @@ export default tseslint.config(
             'import/newline-after-import': 'error',
             'import/no-useless-path-segments': 'error',
 
+            // TypeScript rules
+            '@typescript-eslint/no-inferrable-types': [
+                'error',
+                {
+                    ignoreParameters: false,
+                    ignoreProperties: false,
+                },
+            ],
+
             // Prettier rules
             'prettier/prettier': [
                 'warn',

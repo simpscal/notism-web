@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { memo, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/configs';
-import Spinner from '@/components/ui/spinner';
+import Spinner from '@/components/spinner';
 import { useAppDispatch } from '@/core/hooks';
-import { authService } from '@/features/auth/services';
-import { oauthApi, OAuthProviderType } from '@/features/oauth';
+import { setAuth } from '@/store/auth/auth.slice';
 
 function OAuthCallback() {
     const navigate = useNavigate();
@@ -14,21 +15,31 @@ function OAuthCallback() {
     const params = useParams<{ provider: OAuthProviderType }>();
     const [searchParams] = useSearchParams();
 
+    const oauthCallbackMutation = useMutation({
+        mutationFn: ({ provider, data }: { provider: OAuthProviderType; data: { code: string; state?: string } }) =>
+            oauthApi.handleOAuthCallback(provider, data),
+        onSuccess: data => {
+            dispatch(setAuth(data.token, data.user));
+        },
+    });
+
     useEffect(() => {
         const provider = params.provider!;
         const code = searchParams.get('code')!;
         const state = searchParams.get('state');
 
-        oauthApi
-            .handleOAuthCallback(provider, { code, state: state || undefined })
-            .then(data => {
-                authService.authenticate(dispatch, data.token, data.user);
-            })
-            .then(() => {
-                toast.success('Login successful! Welcome back.');
-                navigate(`/${ROUTES.profile}`);
-            });
-    }, [params.provider, searchParams, navigate, dispatch]);
+        oauthCallbackMutation.mutate({
+            provider,
+            data: { code, state: state || undefined },
+        });
+    }, [params.provider, searchParams]);
+
+    useEffect(() => {
+        if (oauthCallbackMutation.isSuccess) {
+            toast.success('Login successful! Welcome back.');
+            navigate(`/${ROUTES.profile}`);
+        }
+    }, [oauthCallbackMutation.isSuccess, navigate]);
 
     return (
         <div className='flex flex-col items-center justify-center gap-4 h-36'>
@@ -38,4 +49,4 @@ function OAuthCallback() {
     );
 }
 
-export default OAuthCallback;
+export default memo(OAuthCallback);
