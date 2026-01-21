@@ -1,0 +1,89 @@
+# Cursor Rules for Notism Web
+
+This project follows strict architectural and coding standards. Always refer to and follow the rules defined in the `docs/rules/` directory.
+
+## Documentation References
+
+**CRITICAL: Before making any changes, review the following documentation:**
+
+1. **Architecture Rules**: `docs/rules/architecture.md`
+   - Layer hierarchy and dependencies
+   - Import rules between layers
+   - Folder responsibilities
+   - Project structure
+
+2. **Best Practices**: `docs/rules/best-practices.md`
+   - Component conventions and memoization
+   - TanStack Query patterns (MUST use useQuery/useMutation, never direct API calls)
+   - API and hook patterns
+   - State management responsibilities
+   - Component architecture patterns
+
+3. **Naming Conventions**: `docs/rules/naming.md`
+   - File naming (kebab-case)
+   - Component naming (PascalCase)
+   - Hook naming (camelCase with `use` prefix)
+   - Model naming (PascalCase with Model suffix)
+   - Constants (UPPERCASE_SNAKE_CASE)
+
+## Key Rules to Follow
+
+### Architecture
+- **Layer Dependencies**: Follow the strict layer hierarchy. Higher layers can import from lower layers, but NOT the reverse.
+- **Import Rules**: 
+  - `layouts` → pages, features, components, core, store, apis, app
+  - `pages` → layouts (store only), features, components, core, store, apis, app
+  - `features` → components, core, store, apis, app
+  - `components` → core, app
+  - `core` → apis, app
+  - `store` → features (models only), app
+  - `apis` → app
+  - `app` → (no imports from other layers)
+
+### Components
+- **Always wrap components with `memo`** when exporting
+- **Component Order**: Imports → Types/Interfaces → Component Definition → Hooks → Event Handlers → Early Returns → Main Render → Export (wrapped with memo)
+- **No business logic in UI components** (`@/components/` folder)
+- **No custom color/border/shadow styles** on design system components - use variants instead
+- **Use semantic CSS classes** (e.g., `bg-primary`, `text-destructive`) instead of specific colors (e.g., `bg-blue-500`)
+
+### API Calls
+- **MUST use TanStack Query** (`useQuery` or `useMutation`) - NEVER make direct API calls in components or pages
+- **Query Keys**: Use hierarchical arrays with `as const` (e.g., `['user', 'profile'] as const`)
+- **Hooks vs Direct Calls**: Only create custom hooks when there's additional business logic (Redux dispatch, cache invalidation, data transformation). For simple API calls, use TanStack Query directly.
+
+### State Management
+- **Global Store**: Only for state shared across multiple pages
+- **Page Store**: Only for complex page-specific state that benefits from Redux patterns
+- **Component State**: Use `useState` for simple, local state
+- **No side effects in store reducers** - must be pure functions
+
+### Naming
+- **Files**: kebab-case (e.g., `user-profile.tsx`, `auth.api.ts`)
+- **Components**: PascalCase (e.g., `UserCard`, `HeroSection`)
+- **Hooks**: camelCase with `use` prefix (e.g., `useAuth`, `useInput`)
+- **Models**: PascalCase with Model suffix (e.g., `UserProfileViewModel`, `CreateAccountRequestModel`)
+- **Event Handlers**: camelCase with `handle` prefix (e.g., `handleSubmit`, `handleClick`)
+- **Constants**: UPPERCASE_SNAKE_CASE (e.g., `PAGE_SIZE`, `TOKEN_KEY`)
+
+### Models Organization
+- **ResponseModel**: In `apis/models/` with `{Entity}ResponseModel` naming
+- **RequestModel**: In `apis/models/` with `{Entity}RequestModel` naming
+- **UI Model**: In `features/*/models/` with `{Entity}` naming (no suffix)
+
+## When Making Changes
+
+1. **Check layer dependencies** - Ensure imports follow the architecture rules
+2. **Use TanStack Query** - All API calls must use `useQuery` or `useMutation`
+3. **Follow naming conventions** - Use the correct naming pattern for files, components, hooks, etc.
+4. **Wrap components with memo** - Always export components wrapped with `memo`
+5. **Use semantic classes** - Prefer semantic CSS classes over specific color values
+6. **Respect component responsibilities** - Keep UI components pure, business logic in features/pages
+
+## Questions?
+
+If unsure about any rule or pattern, refer to the detailed documentation in `docs/rules/`:
+- `docs/rules/architecture.md` for structure and dependencies
+- `docs/rules/best-practices.md` for implementation patterns and examples
+- `docs/rules/naming.md` for naming conventions
+
