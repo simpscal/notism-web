@@ -416,6 +416,157 @@ function BadProductCard({ product }) {
 }
 ```
 
+##### Customizing Component Color Styles
+
+**Rule: Avoid customizing color, border, shadow, or background styles for components in `@/components/`.**
+
+Components in the `@/components/` directory (like `Button`, `Card`, `Badge`, etc.) are part of the design system and should maintain consistent styling. Custom color styles break design system consistency and make it harder to maintain a cohesive UI.
+
+```javascript
+// ❌ Bad: Customizing color styles on design system components
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Badge } from '@/components/badge';
+
+function FoodCard() {
+    return (
+        <Card className='border-primary bg-primary/10'>
+            <Badge className='bg-blue-500 text-white border-blue-600'>Category</Badge>
+            <Button className='border-primary text-primary hover:bg-primary/10'>Add to Cart</Button>
+        </Card>
+    );
+}
+
+// ✅ Good: Use component variants and default styling
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Badge } from '@/components/badge';
+
+function FoodCard() {
+    return (
+        <Card>
+            <Badge variant='secondary'>Category</Badge>
+            <Button variant='outline'>Add to Cart</Button>
+        </Card>
+    );
+}
+```
+
+**What to Avoid:**
+
+- ❌ Custom `bg-*`, `text-*`, `border-*` color classes on design system components
+- ❌ Custom `shadow-*` or gradient classes on components
+- ❌ Overriding component default colors with inline styles or custom classes
+- ❌ Using `!important` to override component styles
+
+**What to Do Instead:**
+
+- ✅ Use component variants (e.g., `variant='primary'`, `variant='outline'`)
+- ✅ Use component size props (e.g., `size='sm'`, `size='lg'`)
+- ✅ Rely on the design system's default styling
+- ✅ If customization is needed, extend the component in `@/components/` with a new variant
+- ✅ Use layout/spacing classes (e.g., `gap-4`, `p-6`, `mb-4`) which are acceptable
+
+**Exceptions:**
+
+- ✅ Layout/spacing utilities (e.g., `gap-4`, `p-6`, `mb-4`) are acceptable
+- ✅ Structural classes (e.g., `flex`, `grid`, `w-full`) are acceptable
+
+##### Preferring Semantic CSS Classes
+
+**Rule: Use semantic CSS classes that describe purpose and meaning rather than specific visual properties.**
+
+Semantic classes make code more maintainable, themeable, and accessible. They describe _what_ something is (e.g., `btn-primary`, `text-error`) rather than _how_ it looks (e.g., `bg-blue-500`, `text-red-600`).
+
+```javascript
+// ❌ Bad: Using specific visual classes
+function ErrorMessage() {
+    return (
+        <div className='bg-red-50 border-red-200 text-red-800 p-4 rounded'>
+            <p className='text-red-600 font-semibold'>Error occurred</p>
+        </div>
+    );
+}
+
+function SuccessMessage() {
+    return (
+        <div className='bg-green-50 border-green-200 text-green-800 p-4 rounded'>
+            <p className='text-green-600 font-semibold'>Success!</p>
+        </div>
+    );
+}
+
+// ✅ Good: Using semantic classes
+function ErrorMessage() {
+    return (
+        <div className='bg-destructive/10 border-destructive/20 text-destructive p-4 rounded'>
+            <p className='text-destructive font-semibold'>Error occurred</p>
+        </div>
+    );
+}
+
+function SuccessMessage() {
+    return (
+        <div className='bg-success/10 border-success/20 text-success p-4 rounded'>
+            <p className='text-success font-semibold'>Success!</p>
+        </div>
+    );
+}
+
+// ✅ Better: Using design system components with semantic variants
+import { Alert, AlertDescription } from '@/components/alert';
+
+function ErrorMessage() {
+    return (
+        <Alert variant='destructive'>
+            <AlertDescription>Error occurred</AlertDescription>
+        </Alert>
+    );
+}
+```
+
+**What to Avoid:**
+
+- ❌ Hardcoded color values (e.g., `bg-blue-500`, `text-red-600`, `border-gray-300`)
+- ❌ Specific spacing values when semantic tokens exist (e.g., `p-4` when `p-card` exists)
+- ❌ Visual property classes that should be semantic (e.g., `font-bold` when `text-heading` exists)
+- ❌ Magic numbers in class names (e.g., `w-320px`, `h-48px`)
+
+**What to Do Instead:**
+
+- ✅ Use design system tokens (e.g., `bg-primary`, `text-destructive`, `border-muted`)
+- ✅ Use component variants (e.g., `variant='destructive'`, `variant='success'`)
+- ✅ Use semantic utility classes (e.g., `text-heading`, `text-body`, `spacing-card`)
+- ✅ Use CSS custom properties/variables for themeable values
+- ✅ Prefer Tailwind's semantic color system (e.g., `bg-background`, `text-foreground`)
+
+**Examples of Semantic vs Specific:**
+
+| Purpose         | ❌ Specific              | ✅ Semantic                          |
+| --------------- | ------------------------ | ------------------------------------ |
+| Primary action  | `bg-blue-500 text-white` | `bg-primary text-primary-foreground` |
+| Error state     | `text-red-600`           | `text-destructive`                   |
+| Card background | `bg-white`               | `bg-card`                            |
+| Muted text      | `text-gray-500`          | `text-muted-foreground`              |
+| Border          | `border-gray-200`        | `border-border`                      |
+| Heading text    | `text-2xl font-bold`     | `text-heading` or component variant  |
+| Spacing         | `p-4`                    | `p-card` (if semantic token exists)  |
+
+**Benefits:**
+
+- ✅ **Themeable**: Easy to change colors across the app by updating design tokens
+- ✅ **Accessible**: Semantic classes often include accessibility considerations
+- ✅ **Maintainable**: Changes to design system propagate automatically
+- ✅ **Consistent**: Ensures visual consistency across the application
+- ✅ **Readable**: Code intent is clearer (e.g., `text-error` vs `text-red-600`)
+
+**When Specific Classes Are Acceptable:**
+
+- ✅ Layout utilities (e.g., `flex`, `grid`, `gap-4`, `w-full`) - these are structural, not visual
+- ✅ Responsive utilities (e.g., `md:flex`, `lg:grid-cols-3`) - these describe behavior
+- ✅ Animation utilities (e.g., `transition-all`, `duration-300`) - these describe behavior
+- ✅ When no semantic alternative exists and the value is truly arbitrary (e.g., `w-[320px]` for a specific fixed width)
+
 ### Component Architecture Patterns
 
 #### Composition Over Inheritance
@@ -473,6 +624,7 @@ function ProfileCard({ user }) {
 - [ ] Promoting local state unnecessarily
 - [ ] Tight coupling between unrelated components
 - [ ] Forgetting to wrap components with `memo`
+- [ ] Customizing color, border, shadow, or background styles on design system components
 
 ---
 

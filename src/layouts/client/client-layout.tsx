@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { ClientLayoutToolbar, ClientSettingsDialog } from './components';
 
 import { authApi } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { unsetAuth } from '@/store/auth/auth.slice';
 
@@ -19,7 +19,7 @@ function ClientLayout() {
         await authApi.logout();
         dispatch(unsetAuth());
         toast.success('Logged out successfully');
-        navigate(`/${ROUTES.logIn}`);
+        navigate(`/${ROUTES.AUTH.LOGIN}`);
     };
 
     const handleSettingsClick = () => {

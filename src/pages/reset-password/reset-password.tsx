@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { authApi } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { PasswordInput } from '@/components/password-input';
@@ -60,7 +60,7 @@ function ResetPassword() {
                     });
 
                     setTimeout(() => {
-                        navigate(`/${ROUTES.logIn}`);
+                        navigate(`/${ROUTES.AUTH.LOGIN}`);
                     }, 1500);
                 },
             }
@@ -108,7 +108,7 @@ function ResetPassword() {
 
             <div className='text-center text-sm'>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.logIn}`}>Back to Login</Link>
+                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>Back to Login</Link>
                 </Button>
             </div>
         </div>

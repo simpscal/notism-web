@@ -4,7 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { oauthApi, OAuthProviderType } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import Spinner from '@/components/spinner';
 import { useAppDispatch } from '@/core/hooks';
 import { setAuth } from '@/store/auth/auth.slice';
@@ -37,7 +37,7 @@ function OAuthCallback() {
     useEffect(() => {
         if (oauthCallbackMutation.isSuccess) {
             toast.success('Login successful! Welcome back.');
-            navigate(`/${ROUTES.profile}`);
+            navigate(`/${ROUTES.PROFILE}`);
         }
     }, [oauthCallbackMutation.isSuccess, navigate]);
 

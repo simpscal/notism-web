@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import { Button } from '@/components/button';
 import {
@@ -58,7 +58,7 @@ function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutTo
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.profile}`}>Profile</Link>
+                                    <Link to={`/${ROUTES.PROFILE}`}>Profile</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={onSettingsClick}>Settings</DropdownMenuItem>
                                 <DropdownMenuSeparator />
@@ -68,10 +68,10 @@ function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutTo
                     ) : (
                         <div className='flex items-center gap-2'>
                             <Button variant='ghost' asChild>
-                                <Link to={`/${ROUTES.logIn}`}>Log in</Link>
+                                <Link to={`/${ROUTES.AUTH.LOGIN}`}>Log in</Link>
                             </Button>
                             <Button asChild>
-                                <Link to={`/${ROUTES.signUp}`}>Sign up</Link>
+                                <Link to={`/${ROUTES.AUTH.SIGNUP}`}>Sign up</Link>
                             </Button>
                         </div>
                     )}

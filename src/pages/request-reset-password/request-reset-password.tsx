@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
 import { authApi } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
@@ -84,7 +84,7 @@ function RequestResetPassword() {
 
             <div className='text-center text-sm'>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.logIn}`}>Back to Login</Link>
+                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>Back to Login</Link>
                 </Button>
             </div>
         </div>

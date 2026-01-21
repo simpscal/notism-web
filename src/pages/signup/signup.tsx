@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { authApi, oauthApi, OAuthProviderType } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import { passwordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
@@ -74,7 +74,7 @@ function Signup() {
             {
                 onSuccess: () => {
                     toast.success('Account created successfully! Welcome aboard.');
-                    navigate(`/${ROUTES.profile}`);
+                    navigate(`/${ROUTES.PROFILE}`);
                 },
             }
         );
@@ -194,7 +194,7 @@ function Signup() {
             <div className='text-center text-sm'>
                 <span className='text-muted-foreground'>Already have an account? </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.logIn}`}>Sign in</Link>
+                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>Sign in</Link>
                 </Button>
             </div>
         </div>

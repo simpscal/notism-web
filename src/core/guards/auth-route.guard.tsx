@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 import { useAppSelector } from '../hooks';
 
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 
 interface AuthRouteGuardProps {
     mode?: 'authenticated' | 'anonymous';
@@ -13,14 +13,14 @@ export function AuthRouteGuard({ mode = 'anonymous' }: AuthRouteGuardProps = {})
 
     if (mode === 'anonymous') {
         if (user) {
-            return <Navigate to={`/${ROUTES.profile}`} replace />;
+            return <Navigate to={`/${ROUTES.PROFILE}`} replace />;
         }
 
         return <Outlet />;
     }
 
     if (!user) {
-        return <Navigate to={`/${ROUTES.logIn}`} replace />;
+        return <Navigate to={`/${ROUTES.AUTH.LOGIN}`} replace />;
     }
 
     return <Outlet />;

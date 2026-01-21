@@ -18,4 +18,9 @@ export const API_ENDPOINTS = {
     STORAGE: {
         PRESIGNED_URL_UPLOAD: (presignedUrlType: PresignedUrlUploadEnum) => `storage/presigned-url/${presignedUrlType}`,
     },
+    FOOD: {
+        LIST: 'foods',
+        DETAIL: (id: string) => `foods/${id}`,
+        CATEGORIES: 'foods/categories',
+    },
 } as const;

@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { authApi, oauthApi, OAuthProviderType } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import { passwordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
@@ -68,7 +68,7 @@ function Login() {
             {
                 onSuccess: () => {
                     toast.success('Login successful! Welcome back.');
-                    navigate(`/${ROUTES.profile}`);
+                    navigate(`/${ROUTES.PROFILE}`);
                 },
             }
         );
@@ -107,7 +107,7 @@ function Login() {
                     <div className='flex items-center justify-between'>
                         <FieldLabel htmlFor='password'>Password</FieldLabel>
                         <Button variant='link' className='p-0 h-auto text-sm font-medium' asChild>
-                            <Link to={`/${ROUTES.requestResetPassword}`}>Forgot password?</Link>
+                            <Link to={`/${ROUTES.AUTH.REQUEST_RESET_PASSWORD}`}>Forgot password?</Link>
                         </Button>
                     </div>
                     <PasswordInput
@@ -152,7 +152,7 @@ function Login() {
             <div className='text-center text-sm'>
                 <span className='text-muted-foreground'>Don't have an account? </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.signUp}`}>Sign up</Link>
+                    <Link to={`/${ROUTES.AUTH.SIGNUP}`}>Sign up</Link>
                 </Button>
             </div>
         </div>
