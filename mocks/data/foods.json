@@ -9,10 +9,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400",
             "category": "pizza",
             "isAvailable": true,
-            "preparationTimeMinutes": 20,
-            "stockQuantity": 50,
+            "stockQuantity": 35000,
             "createdAt": "2024-01-15T10:00:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "2",
@@ -23,10 +23,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400",
             "category": "pizza",
             "isAvailable": true,
-            "preparationTimeMinutes": 25,
-            "stockQuantity": 30,
+            "stockQuantity": 21000,
             "createdAt": "2024-01-15T10:05:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "3",
@@ -37,10 +37,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400",
             "category": "salad",
             "isAvailable": true,
-            "preparationTimeMinutes": 10,
-            "stockQuantity": 100,
+            "stockQuantity": 28000,
             "createdAt": "2024-01-15T10:10:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "4",
@@ -51,10 +51,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=400",
             "category": "burger",
             "isAvailable": true,
-            "preparationTimeMinutes": 15,
-            "stockQuantity": 40,
+            "stockQuantity": 11200,
             "createdAt": "2024-01-15T10:15:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "5",
@@ -65,10 +65,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400",
             "category": "dessert",
             "isAvailable": true,
-            "preparationTimeMinutes": 5,
-            "stockQuantity": 60,
+            "stockQuantity": 10800,
             "createdAt": "2024-01-15T10:20:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "6",
@@ -79,10 +79,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400",
             "category": "pasta",
             "isAvailable": false,
-            "preparationTimeMinutes": 18,
             "stockQuantity": 0,
             "createdAt": "2024-01-15T10:25:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "7",
@@ -93,10 +93,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
             "category": "pizza",
             "isAvailable": true,
-            "preparationTimeMinutes": 22,
-            "stockQuantity": 35,
+            "stockQuantity": 24500,
             "createdAt": "2024-01-15T10:30:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "8",
@@ -107,10 +107,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
             "category": "burger",
             "isAvailable": true,
-            "preparationTimeMinutes": 12,
-            "stockQuantity": 45,
+            "stockQuantity": 12600,
             "createdAt": "2024-01-15T10:35:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "9",
@@ -121,10 +121,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",
             "category": "salad",
             "isAvailable": true,
-            "preparationTimeMinutes": 8,
-            "stockQuantity": 80,
+            "stockQuantity": 22400,
             "createdAt": "2024-01-15T10:40:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "10",
@@ -135,10 +135,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400",
             "category": "pasta",
             "isAvailable": true,
-            "preparationTimeMinutes": 20,
-            "stockQuantity": 55,
+            "stockQuantity": 24750,
             "createdAt": "2024-01-15T10:45:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "11",
@@ -149,10 +149,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400",
             "category": "dessert",
             "isAvailable": true,
-            "preparationTimeMinutes": 0,
-            "stockQuantity": 25,
+            "stockQuantity": 4500,
             "createdAt": "2024-01-15T10:50:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "12",
@@ -163,10 +163,10 @@
             "imageUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400",
             "category": "pizza",
             "isAvailable": true,
-            "preparationTimeMinutes": 18,
-            "stockQuantity": 42,
+            "stockQuantity": 29400,
             "createdAt": "2024-01-15T10:55:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "13",
@@ -177,10 +177,10 @@
             "imageUrl": null,
             "category": "drink",
             "isAvailable": true,
-            "preparationTimeMinutes": 2,
-            "stockQuantity": 100,
+            "stockQuantity": 100000,
             "createdAt": "2024-01-15T11:00:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "ml"
         },
         {
             "id": "14",
@@ -191,10 +191,10 @@
             "imageUrl": null,
             "category": "drink",
             "isAvailable": true,
-            "preparationTimeMinutes": 3,
-            "stockQuantity": 80,
+            "stockQuantity": 80000,
             "createdAt": "2024-01-15T11:05:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "ml"
         },
         {
             "id": "15",
@@ -205,10 +205,10 @@
             "imageUrl": null,
             "category": "drink",
             "isAvailable": true,
-            "preparationTimeMinutes": 2,
-            "stockQuantity": 120,
+            "stockQuantity": 120000,
             "createdAt": "2024-01-15T11:10:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "ml"
         },
         {
             "id": "16",
@@ -219,10 +219,10 @@
             "imageUrl": null,
             "category": "salad",
             "isAvailable": true,
-            "preparationTimeMinutes": 8,
-            "stockQuantity": 60,
+            "stockQuantity": 16800,
             "createdAt": "2024-01-15T11:15:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "17",
@@ -233,10 +233,10 @@
             "imageUrl": null,
             "category": "pasta",
             "isAvailable": true,
-            "preparationTimeMinutes": 15,
-            "stockQuantity": 50,
+            "stockQuantity": 22500,
             "createdAt": "2024-01-15T11:20:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "18",
@@ -247,10 +247,10 @@
             "imageUrl": null,
             "category": "burger",
             "isAvailable": true,
-            "preparationTimeMinutes": 14,
-            "stockQuantity": 38,
+            "stockQuantity": 10640,
             "createdAt": "2024-01-15T11:25:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "19",
@@ -261,10 +261,10 @@
             "imageUrl": null,
             "category": "dessert",
             "isAvailable": true,
-            "preparationTimeMinutes": 0,
-            "stockQuantity": 30,
+            "stockQuantity": 5400,
             "createdAt": "2024-01-15T11:30:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "20",
@@ -275,10 +275,10 @@
             "imageUrl": null,
             "category": "pizza",
             "isAvailable": true,
-            "preparationTimeMinutes": 20,
-            "stockQuantity": 28,
+            "stockQuantity": 19600,
             "createdAt": "2024-01-15T11:35:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "21",
@@ -289,10 +289,10 @@
             "imageUrl": null,
             "category": "drink",
             "isAvailable": true,
-            "preparationTimeMinutes": 1,
-            "stockQuantity": 200,
+            "stockQuantity": 200000,
             "createdAt": "2024-01-15T11:40:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "ml"
         },
         {
             "id": "22",
@@ -303,10 +303,10 @@
             "imageUrl": null,
             "category": "drink",
             "isAvailable": true,
-            "preparationTimeMinutes": 4,
-            "stockQuantity": 45,
+            "stockQuantity": 45000,
             "createdAt": "2024-01-15T11:45:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "ml"
         },
         {
             "id": "23",
@@ -317,10 +317,10 @@
             "imageUrl": null,
             "category": "pasta",
             "isAvailable": true,
-            "preparationTimeMinutes": 12,
-            "stockQuantity": 40,
+            "stockQuantity": 18000,
             "createdAt": "2024-01-15T11:50:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "24",
@@ -331,10 +331,10 @@
             "imageUrl": null,
             "category": "dessert",
             "isAvailable": true,
-            "preparationTimeMinutes": 0,
-            "stockQuantity": 20,
+            "stockQuantity": 3600,
             "createdAt": "2024-01-15T11:55:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "25",
@@ -345,10 +345,10 @@
             "imageUrl": null,
             "category": "appetizer",
             "isAvailable": true,
-            "preparationTimeMinutes": 12,
-            "stockQuantity": 55,
+            "stockQuantity": 9900,
             "createdAt": "2024-01-15T12:00:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "26",
@@ -359,10 +359,10 @@
             "imageUrl": null,
             "category": "appetizer",
             "isAvailable": true,
-            "preparationTimeMinutes": 8,
-            "stockQuantity": 70,
+            "stockQuantity": 12600,
             "createdAt": "2024-01-15T12:05:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "27",
@@ -373,10 +373,10 @@
             "imageUrl": null,
             "category": "soup",
             "isAvailable": true,
-            "preparationTimeMinutes": 10,
-            "stockQuantity": 90,
+            "stockQuantity": 40500,
             "createdAt": "2024-01-15T12:10:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "ml"
         },
         {
             "id": "28",
@@ -387,10 +387,10 @@
             "imageUrl": null,
             "category": "soup",
             "isAvailable": true,
-            "preparationTimeMinutes": 12,
-            "stockQuantity": 75,
+            "stockQuantity": 33750,
             "createdAt": "2024-01-15T12:15:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "ml"
         },
         {
             "id": "29",
@@ -401,10 +401,10 @@
             "imageUrl": null,
             "category": "sandwich",
             "isAvailable": true,
-            "preparationTimeMinutes": 10,
-            "stockQuantity": 50,
+            "stockQuantity": 11000,
             "createdAt": "2024-01-15T12:20:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "30",
@@ -415,10 +415,10 @@
             "imageUrl": null,
             "category": "sandwich",
             "isAvailable": true,
-            "preparationTimeMinutes": 8,
-            "stockQuantity": 65,
+            "stockQuantity": 14300,
             "createdAt": "2024-01-15T12:25:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "31",
@@ -429,10 +429,10 @@
             "imageUrl": null,
             "category": "breakfast",
             "isAvailable": true,
-            "preparationTimeMinutes": 10,
-            "stockQuantity": 40,
+            "stockQuantity": 14000,
             "createdAt": "2024-01-15T12:30:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "32",
@@ -443,10 +443,10 @@
             "imageUrl": null,
             "category": "breakfast",
             "isAvailable": true,
-            "preparationTimeMinutes": 12,
-            "stockQuantity": 35,
+            "stockQuantity": 12250,
             "createdAt": "2024-01-15T12:35:00Z",
-            "updatedAt": null
+            "updatedAt": null,
+            "quantityUnit": "g"
         },
         {
             "id": "33",
@@ -457,52 +457,10 @@
             "imageUrl": null,
             "category": "breakfast",
             "isAvailable": true,
-            "preparationTimeMinutes": 15,
-            "stockQuantity": 30,
+            "stockQuantity": 10500,
             "createdAt": "2024-01-15T12:40:00Z",
-            "updatedAt": null
-        }
-    ],
-    "categories": [
-        {
-            "value": "pizza",
-            "label": "Pizza"
-        },
-        {
-            "value": "burger",
-            "label": "Burger"
-        },
-        {
-            "value": "salad",
-            "label": "Salad"
-        },
-        {
-            "value": "pasta",
-            "label": "Pasta"
-        },
-        {
-            "value": "dessert",
-            "label": "Dessert"
-        },
-        {
-            "value": "drink",
-            "label": "Drink"
-        },
-        {
-            "value": "appetizer",
-            "label": "Appetizer"
-        },
-        {
-            "value": "soup",
-            "label": "Soup"
-        },
-        {
-            "value": "sandwich",
-            "label": "Sandwich"
-        },
-        {
-            "value": "breakfast",
-            "label": "Breakfast"
+            "updatedAt": null,
+            "quantityUnit": "g"
         }
     ]
 }

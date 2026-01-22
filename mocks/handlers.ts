@@ -59,22 +59,6 @@ export const handlers = [
         });
     }),
 
-    http.get(buildUrl(API_ENDPOINTS.FOOD.CATEGORIES), async () => {
-        await delay(300);
-
-        const uniqueCategories = new Set(foodsData.foods.map(food => food.category));
-        const categoryMap = new Map(foodsData.categories.map(cat => [cat.value, cat.label]));
-
-        const categories = Array.from(uniqueCategories)
-            .map(categoryValue => ({
-                value: categoryValue,
-                label: categoryMap.get(categoryValue) || categoryValue.charAt(0).toUpperCase() + categoryValue.slice(1),
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label));
-
-        return HttpResponse.json({ categories });
-    }),
-
     http.get(`${buildUrl(API_ENDPOINTS.FOOD.LIST)}/:id`, async ({ params }) => {
         await delay(400);
 

@@ -3,6 +3,8 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthRouteGuard, ResetPasswordRouteGuard } from '@/core/guards';
 import { AuthLayout } from '@/layouts/auth';
 import { ClientLayout } from '@/layouts/client';
+import { FoodDetail } from '@/pages/food-detail';
+import { Foods } from '@/pages/foods';
 import { Login } from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
 import OAuthCallback from '@/pages/oauth-callback';
@@ -15,10 +17,8 @@ import { Signup } from '@/pages/signup';
 function AppRoutes() {
     return (
         <Routes>
-            {/* Root Redirect */}
-            <Route path='/' element={<Navigate replace to='/profile' />} />
+            <Route path='/' element={<Navigate replace to='/foods' />} />
 
-            {/* Auth Routes - Public (Redirects authenticated users) */}
             <Route path='auth' element={<AuthRouteGuard />}>
                 <Route element={<AuthLayout />}>
                     <Route index element={<Navigate replace to='login' />} />
@@ -44,9 +44,11 @@ function AppRoutes() {
                 </Route>
             </Route>
 
-            {/* Protected Routes - Requires Authentication */}
-            <Route element={<AuthRouteGuard mode='authenticated' />}>
-                <Route element={<ClientLayout />}>
+            <Route element={<ClientLayout />}>
+                <Route path='foods' element={<Foods />} />
+                <Route path='foods/:id' element={<FoodDetail />} />
+
+                <Route element={<AuthRouteGuard mode='authenticated' />}>
                     <Route path='profile' element={<Profile />} />
                 </Route>
             </Route>

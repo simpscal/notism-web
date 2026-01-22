@@ -21,6 +21,5 @@ export const API_ENDPOINTS = {
     FOOD: {
         LIST: 'foods',
         DETAIL: (id: string) => `foods/${id}`,
-        CATEGORIES: 'foods/categories',
     },
 } as const;

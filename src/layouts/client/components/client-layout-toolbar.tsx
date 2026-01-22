@@ -31,7 +31,11 @@ function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutTo
         <header className='border-b bg-background sticky top-0 z-50'>
             <div className='flex h-16 items-center justify-between px-4 md:px-6'>
                 {/* Logo/Brand - Left */}
-                <h1 className='text-2xl font-semibold text-primary tracking-tight'>Brand Name</h1>
+                <Link to={ROUTES.HOME} className='cursor-pointer'>
+                    <h1 className='text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
+                        Brand Name
+                    </h1>
+                </Link>
 
                 {/* Right side - User Avatar or Login/Signup */}
                 <div className='flex items-center gap-4'>

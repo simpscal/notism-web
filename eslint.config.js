@@ -52,6 +52,20 @@ export default tseslint.config(
             'import/no-cycle': 'warn',
             'import/newline-after-import': 'error',
             'import/no-useless-path-segments': 'error',
+            'import/no-restricted-paths': [
+                'error',
+                {
+                    zones: [
+                        {
+                            target: './src/**/*',
+                            from: './src/apis/models',
+                            except: ['./src/apis'],
+                            message:
+                                'Do not import models directly from @/apis/models/. Use viewmodels from features instead.',
+                        },
+                    ],
+                },
+            ],
 
             // TypeScript rules
             '@typescript-eslint/no-inferrable-types': [
