@@ -1,8 +1,10 @@
 import { Package, ShoppingCart, Flame } from 'lucide-react';
 import { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { FoodItemViewModel } from '../models';
 
+import { ROUTES } from '@/app/constants';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardFooter, CardHeader } from '@/components/card';
@@ -10,16 +12,28 @@ import { Card, CardFooter, CardHeader } from '@/components/card';
 interface FoodCardProps {
     food: FoodItemViewModel;
     onAddToCart?: (food: FoodItemViewModel) => void;
-    onViewDetails?: (food: FoodItemViewModel) => void;
 }
 
-function FoodCard({ food, onAddToCart, onViewDetails }: FoodCardProps) {
+function FoodCard({ food, onAddToCart }: FoodCardProps) {
+    const navigate = useNavigate();
     const hasDiscount = food.discountPrice !== null && food.discountPrice < food.price;
     const effectivePrice = hasDiscount ? food.discountPrice! : food.price;
     const discountPercentage = hasDiscount ? Math.round(((food.price - food.discountPrice!) / food.price) * 100) : 0;
 
+    const handleCardClick = () => {
+        navigate(`/${ROUTES.FOODS.DETAIL(food.id)}`);
+    };
+
+    const handleAddToCartClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onAddToCart?.(food);
+    };
+
     return (
-        <Card className='group relative flex flex-col overflow-hidden pt-0'>
+        <Card
+            className='group relative flex flex-col overflow-hidden pt-0 cursor-pointer transition-shadow hover:shadow-lg'
+            onClick={handleCardClick}
+        >
             {/* Image Container */}
             <div className='relative aspect-[4/3] overflow-hidden'>
                 <img
@@ -73,11 +87,8 @@ function FoodCard({ food, onAddToCart, onViewDetails }: FoodCardProps) {
                     <span className='text-2xl font-black'>${effectivePrice.toFixed(2)}</span>
                 </div>
 
-                <div className='flex shrink-0 gap-2'>
-                    <Button variant='outline' size='sm' onClick={() => onViewDetails?.(food)}>
-                        Details
-                    </Button>
-                    <Button size='sm' disabled={!food.isAvailable} onClick={() => onAddToCart?.(food)}>
+                <div className='flex shrink-0'>
+                    <Button size='sm' disabled={!food.isAvailable} onClick={handleAddToCartClick}>
                         <ShoppingCart className='mr-1.5 h-4 w-4' />
                         Add
                     </Button>

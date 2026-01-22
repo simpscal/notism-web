@@ -2,7 +2,6 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { UtensilsCrossed } from 'lucide-react';
 import { memo, useCallback, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { FoodItemViewModel } from '../models';
@@ -11,7 +10,7 @@ import FoodCard from './food-card';
 import FoodCardSkeleton from './food-card-skeleton';
 
 import { foodApi } from '@/apis';
-import { PAGE_SIZE, ROUTES } from '@/app/constants';
+import { PAGE_SIZE } from '@/app/constants';
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
 
@@ -23,7 +22,6 @@ interface FoodsGridProps {
 }
 
 function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: FoodsGridProps) {
-    const navigate = useNavigate();
     const { ref: loadMoreRef, inView } = useInView();
 
     const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
@@ -61,13 +59,6 @@ function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: Fo
         });
     }, []);
 
-    const handleViewDetails = useCallback(
-        (food: FoodItemViewModel) => {
-            navigate(`/${ROUTES.FOODS.DETAIL(food.id)}`);
-        },
-        [navigate]
-    );
-
     if (isLoading) {
         return (
             <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
@@ -99,12 +90,7 @@ function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: Fo
             {/* Food Grid */}
             <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
                 {foods.map(food => (
-                    <FoodCard
-                        key={food.id}
-                        food={food}
-                        onAddToCart={handleAddToCart}
-                        onViewDetails={handleViewDetails}
-                    />
+                    <FoodCard key={food.id} food={food} onAddToCart={handleAddToCart} />
                 ))}
             </div>
 
