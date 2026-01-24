@@ -37,7 +37,7 @@ function OAuthCallback() {
     useEffect(() => {
         if (oauthCallbackMutation.isSuccess) {
             toast.success('Login successful! Welcome back.');
-            navigate(`/${ROUTES.PROFILE}`);
+            navigate(`/${ROUTES.SETTINGS.PROFILE}`);
         }
     }, [oauthCallbackMutation.isSuccess, navigate]);
 

@@ -9,9 +9,11 @@ import { Login } from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
 import OAuthCallback from '@/pages/oauth-callback';
 import { OAuthCallbackRouteGuard } from '@/pages/oauth-callback/guards';
-import Profile from '@/pages/profile';
 import { RequestResetPassword } from '@/pages/request-reset-password';
 import { ResetPassword } from '@/pages/reset-password';
+import { Settings } from '@/pages/settings';
+import SettingsAppearance from '@/pages/settings/routes/settings-appearance';
+import SettingsProfile from '@/pages/settings/routes/settings-profile';
 import { Signup } from '@/pages/signup';
 
 function AppRoutes() {
@@ -49,7 +51,11 @@ function AppRoutes() {
                 <Route path='foods/:id' element={<FoodDetail />} />
 
                 <Route element={<AuthRouteGuard mode='authenticated' />}>
-                    <Route path='profile' element={<Profile />} />
+                    <Route path='settings' element={<Settings />}>
+                        <Route index element={<Navigate replace to='profile' />} />
+                        <Route path='profile' element={<SettingsProfile />} />
+                        <Route path='appearance' element={<SettingsAppearance />} />
+                    </Route>
                 </Route>
             </Route>
 

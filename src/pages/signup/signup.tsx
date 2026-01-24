@@ -74,7 +74,7 @@ function Signup() {
             {
                 onSuccess: () => {
                     toast.success('Account created successfully! Welcome aboard.');
-                    navigate(`/${ROUTES.PROFILE}`);
+                    navigate(`/${ROUTES.SETTINGS.PROFILE}`);
                 },
             }
         );

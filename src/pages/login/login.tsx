@@ -68,7 +68,7 @@ function Login() {
             {
                 onSuccess: () => {
                     toast.success('Login successful! Welcome back.');
-                    navigate(`/${ROUTES.PROFILE}`);
+                    navigate(`/${ROUTES.SETTINGS.PROFILE}`);
                 },
             }
         );

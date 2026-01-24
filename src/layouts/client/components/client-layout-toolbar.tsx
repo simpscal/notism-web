@@ -16,10 +16,9 @@ import { UserProfileViewModel } from '@/features/user/models';
 interface ClientLayoutToolbarProps {
     user: UserProfileViewModel | null;
     onLogout: () => void;
-    onSettingsClick: () => void;
 }
 
-function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutToolbarProps) {
+function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
     const getUserInitials = () => {
         if (!user) return 'U';
         const firstInitial = user.firstName?.[0] || '';
@@ -62,9 +61,8 @@ function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutTo
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.PROFILE}`}>Profile</Link>
+                                    <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>Settings</Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={onSettingsClick}>Settings</DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
                             </DropdownMenuContent>

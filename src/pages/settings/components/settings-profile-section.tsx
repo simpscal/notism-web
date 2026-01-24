@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Phone, Globe, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { UserProfileAvatar } from './components';
+import UserProfileAvatar from './user-profile-avatar';
 
 import { storageApi, userApi } from '@/apis';
 import { PresignedUrlUploadEnum } from '@/app/enums';
@@ -13,7 +13,6 @@ import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
-import { Textarea } from '@/components/textarea';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { updateUser } from '@/store/user/user.slice';
 
@@ -22,15 +21,13 @@ const profileSchema = z.object({
     lastName: z.string().min(1, { message: 'Last name is required' }),
     email: z.string().email(),
     avatarUrl: z.string().nullable().optional(),
-    bio: z.string().max(500, { message: 'Bio must be less than 500 characters' }).optional(),
     phone: z.string().optional(),
-    website: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
     location: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-function Profile() {
+function SettingsProfileSection() {
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.user.user)!;
     const [isLoading, setIsLoading] = useState(false);
@@ -45,9 +42,7 @@ function Profile() {
             lastName: user.lastName || '',
             email: user.email || '',
             avatarUrl: user.avatarUrl || null,
-            bio: '',
             phone: '',
-            website: '',
             location: '',
         },
     });
@@ -132,9 +127,7 @@ function Profile() {
             lastName: user.lastName || '',
             email: user.email || '',
             avatarUrl: user.avatarUrl || null,
-            bio: '',
             phone: '',
-            website: '',
             location: '',
         });
         setSelectedFile(null);
@@ -142,21 +135,22 @@ function Profile() {
     };
 
     return (
-        <div className='container mx-auto py-8 px-4 max-w-4xl'>
-            <div className='space-y-6'>
-                <div>
-                    <h1 className='text-3xl font-bold tracking-tight'>Profile Settings</h1>
-                    <p className='text-muted-foreground mt-2'>Manage your account information and preferences</p>
-                </div>
+        <div className='space-y-6'>
+            <div>
+                <h2 className='text-2xl font-semibold tracking-tight'>Profile Settings</h2>
+                <p className='text-muted-foreground mt-1'>Manage your account information and preferences</p>
+            </div>
 
-                <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-6'>
-                    {/* Profile Picture Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Profile Picture</CardTitle>
-                            <CardDescription>Upload a profile picture to personalize your account</CardDescription>
-                        </CardHeader>
-                        <CardContent>
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-6'>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Profile Information</CardTitle>
+                        <CardDescription>Manage your account information and preferences</CardDescription>
+                    </CardHeader>
+                    <CardContent className='space-y-6'>
+                        {/* Profile Picture */}
+                        <div>
+                            <h3 className='text-sm font-medium mb-2'>Profile Picture</h3>
                             <UserProfileAvatar
                                 avatarUrl={avatarRemoved ? null : form.watch('avatarUrl') || user.avatarUrl || null}
                                 firstName={form.watch('firstName') || user.firstName || ''}
@@ -165,16 +159,10 @@ function Profile() {
                                 onAvatarChange={handleAvatarChange}
                                 onAvatarRemove={handleAvatarRemove}
                             />
-                        </CardContent>
-                    </Card>
+                        </div>
 
-                    {/* Basic Information Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Basic Information</CardTitle>
-                            <CardDescription>Your basic account details</CardDescription>
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
+                        {/* Basic Information */}
+                        <div className='space-y-6 pt-4 border-t'>
                             <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                                 <Field data-invalid={!!errors.firstName}>
                                     <FieldLabel htmlFor='firstName'>First Name</FieldLabel>
@@ -212,55 +200,10 @@ function Profile() {
                                     className='bg-muted cursor-not-allowed'
                                 />
                             </Field>
-                        </CardContent>
-                    </Card>
+                        </div>
 
-                    {/* Personal Information Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Personal Information</CardTitle>
-                            <CardDescription>Tell us more about yourself</CardDescription>
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                            <Field data-invalid={!!errors.bio}>
-                                <FieldLabel htmlFor='bio'>Bio</FieldLabel>
-                                <Textarea
-                                    id='bio'
-                                    placeholder='Tell us about yourself...'
-                                    disabled={isLoading}
-                                    rows={4}
-                                    className='resize-none'
-                                    {...form.register('bio')}
-                                />
-                                {errors.bio && <FieldError>{errors.bio.message}</FieldError>}
-                                <p className='text-sm text-muted-foreground mt-1'>
-                                    {form.watch('bio')?.length || 0}/500 characters
-                                </p>
-                            </Field>
-
-                            <Field data-invalid={!!errors.location}>
-                                <FieldLabel htmlFor='location' className='flex items-center gap-2'>
-                                    <MapPin className='h-4 w-4' />
-                                    Location
-                                </FieldLabel>
-                                <Input
-                                    id='location'
-                                    placeholder='City, Country'
-                                    disabled={isLoading}
-                                    {...form.register('location')}
-                                />
-                                {errors.location && <FieldError>{errors.location.message}</FieldError>}
-                            </Field>
-                        </CardContent>
-                    </Card>
-
-                    {/* Contact Information Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Contact Information</CardTitle>
-                            <CardDescription>Your contact details and online presence</CardDescription>
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
+                        {/* Contact Information */}
+                        <div className='space-y-6 pt-4 border-t'>
                             <Field data-invalid={!!errors.phone}>
                                 <FieldLabel htmlFor='phone' className='flex items-center gap-2'>
                                     <Phone className='h-4 w-4' />
@@ -276,41 +219,40 @@ function Profile() {
                                 {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
                             </Field>
 
-                            <Field data-invalid={!!errors.website}>
-                                <FieldLabel htmlFor='website' className='flex items-center gap-2'>
-                                    <Globe className='h-4 w-4' />
-                                    Website
+                            <Field data-invalid={!!errors.location}>
+                                <FieldLabel htmlFor='location' className='flex items-center gap-2'>
+                                    <MapPin className='h-4 w-4' />
+                                    Location
                                 </FieldLabel>
                                 <Input
-                                    id='website'
-                                    type='url'
-                                    placeholder='https://example.com'
+                                    id='location'
+                                    placeholder='City, Country'
                                     disabled={isLoading}
-                                    {...form.register('website')}
+                                    {...form.register('location')}
                                 />
-                                {errors.website && <FieldError>{errors.website.message}</FieldError>}
+                                {errors.location && <FieldError>{errors.location.message}</FieldError>}
                             </Field>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    {/* Action Buttons */}
-                    <div className='flex justify-end gap-3 pt-4 border-t'>
-                        <Button
-                            type='button'
-                            variant='outline'
-                            onClick={handleCancel}
-                            disabled={isLoading || (!isDirty && !selectedFile && !avatarRemoved)}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type='submit' disabled={isLoading || (!isDirty && !selectedFile && !avatarRemoved)}>
-                            {isLoading ? 'Saving...' : 'Save Changes'}
-                        </Button>
-                    </div>
-                </form>
-            </div>
+                {/* Action Buttons */}
+                <div className='flex justify-end gap-3 pt-4 border-t'>
+                    <Button
+                        type='button'
+                        variant='outline'
+                        onClick={handleCancel}
+                        disabled={isLoading || (!isDirty && !selectedFile && !avatarRemoved)}
+                    >
+                        Cancel
+                    </Button>
+                    <Button type='submit' disabled={isLoading || (!isDirty && !selectedFile && !avatarRemoved)}>
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                </div>
+            </form>
         </div>
     );
 }
 
-export default memo(Profile);
+export default memo(SettingsProfileSection);
