@@ -11,5 +11,9 @@ export const ROUTES = {
         LIST: 'foods',
         DETAIL: (id: string) => `foods/${id}`,
     },
-    PROFILE: 'profile',
+    SETTINGS: {
+        BASE: 'settings',
+        PROFILE: 'settings/profile',
+        APPEARANCE: 'settings/appearance',
+    },
 } as const;

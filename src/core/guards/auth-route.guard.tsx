@@ -13,7 +13,7 @@ export function AuthRouteGuard({ mode = 'anonymous' }: AuthRouteGuardProps = {})
 
     if (mode === 'anonymous') {
         if (user) {
-            return <Navigate to={`/${ROUTES.PROFILE}`} replace />;
+            return <Navigate to={`/${ROUTES.SETTINGS.PROFILE}`} replace />;
         }
 
         return <Outlet />;

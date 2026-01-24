@@ -39,6 +39,6 @@ export function useReloadUser() {
     return {
         user,
         isLoading: query.isLoading,
-        isInitialized: !hasValidToken || !!user || (!query.isLoading && !query.isFetching),
+        isInitialized: !hasValidToken || !!user,
     };
 }
