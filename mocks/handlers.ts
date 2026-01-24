@@ -69,9 +69,22 @@ export const handlers = [
             return HttpResponse.json({ message: 'Food not found' }, { status: 404 });
         }
 
+        const imageUrls =
+            (food as GetFoodByIdResponseModel).imageUrls && Array.isArray((food as GetFoodByIdResponseModel).imageUrls)
+                ? (food as GetFoodByIdResponseModel).imageUrls
+                : food.imageUrl
+                  ? [
+                        food.imageUrl,
+                        food.imageUrl.replace('?w=400', '?w=800'),
+                        food.imageUrl.replace('?w=400', '?w=600'),
+                    ]
+                  : ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800'];
+
+        const { ...foodWithoutImageUrls } = food;
+
         const foodDetail: GetFoodByIdResponseModel = {
-            ...food,
-            imageUrl: food.imageUrl || '',
+            ...foodWithoutImageUrls,
+            imageUrls,
             createdAt: food.createdAt || new Date().toISOString(),
             updatedAt: food.updatedAt || null,
         };

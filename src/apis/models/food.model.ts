@@ -22,7 +22,7 @@ export interface GetFoodByIdResponseModel {
     description: string;
     price: number;
     discountPrice: number | null;
-    imageUrl: string;
+    imageUrls: string[];
     category: string;
     isAvailable: boolean;
     stockQuantity: number;
