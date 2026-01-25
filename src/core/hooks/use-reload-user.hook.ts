@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from './use-redux.hook';
 
 import { authApi } from '@/apis';
 import { tokenManagerUtils } from '@/app/utils';
-import { unsetAuth } from '@/store/auth/auth.slice';
+import { unsetAuth } from '@/store/auth';
 import { setUser } from '@/store/user/user.slice';
 
 const QUERY_KEY = ['user', 'reload'] as const;
@@ -32,7 +32,7 @@ export function useReloadUser() {
 
     useEffect(() => {
         if (query.isError) {
-            dispatch(unsetAuth());
+            dispatch(unsetAuth()).unwrap();
         }
     }, [query.isError, dispatch]);
 

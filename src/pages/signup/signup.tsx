@@ -17,7 +17,7 @@ import { Input } from '@/components/input';
 import { PasswordInput } from '@/components/password-input';
 import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { setAuth } from '@/store/auth/auth.slice';
+import { setAuth } from '@/store/auth';
 
 const signupSchema = z.object({
     firstName: z.string().min(1, { message: 'First name is required' }),
@@ -35,7 +35,7 @@ function Signup() {
     const signupMutation = useMutation({
         mutationFn: authApi.signup,
         onSuccess: data => {
-            dispatch(setAuth(data.token, data.user));
+            dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
         },
     });
 

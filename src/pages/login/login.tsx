@@ -17,7 +17,7 @@ import { Input } from '@/components/input';
 import { PasswordInput } from '@/components/password-input';
 import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { setAuth } from '@/store/auth/auth.slice';
+import { setAuth } from '@/store/auth';
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
@@ -33,7 +33,7 @@ function Login() {
     const loginMutation = useMutation({
         mutationFn: authApi.login,
         onSuccess: data => {
-            dispatch(setAuth(data.token, data.user));
+            dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
         },
     });
 

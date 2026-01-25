@@ -4,12 +4,12 @@ import { addItem, clearItems, loadCart, removeItem, updateItemQuantity } from '.
 
 import { CartItemViewModel } from '@/features/cart/models';
 
-export interface CartState {
+export interface ICartState {
     items: CartItemViewModel[];
     isInitialized: boolean;
 }
 
-const INITIAL_STATE: CartState = {
+const INITIAL_STATE: ICartState = {
     items: [],
     isInitialized: false,
 };

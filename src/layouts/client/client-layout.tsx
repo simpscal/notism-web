@@ -7,7 +7,7 @@ import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { SidebarInset, SidebarProvider } from '@/components/sidebar';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { unsetAuth } from '@/store/auth/auth.slice';
+import { unsetAuth } from '@/store/auth';
 
 function ClientLayout() {
     const navigate = useNavigate();
@@ -16,7 +16,7 @@ function ClientLayout() {
 
     const handleLogout = async () => {
         await authApi.logout();
-        dispatch(unsetAuth());
+        dispatch(unsetAuth()).unwrap();
         toast.success('Logged out successfully');
         navigate(`/${ROUTES.AUTH.LOGIN}`);
     };

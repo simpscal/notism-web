@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { tokenManagerUtils } from '@/app/utils';
-import { UserProfileViewModel } from '@/features/user/models';
-import { AppDispatch } from '@/store';
-import { setUser, clearUser } from '@/store/user/user.slice';
 
 export interface IAuthState {
     accessToken: string | null;
@@ -30,19 +27,5 @@ const authSlice = createSlice({
 });
 
 export const { setToken, clearToken } = authSlice.actions;
-
-export const setAuth = (token: string, user: UserProfileViewModel) => {
-    return (dispatch: AppDispatch) => {
-        dispatch(setToken(token));
-        dispatch(setUser(user));
-    };
-};
-
-export const unsetAuth = () => {
-    return (dispatch: AppDispatch) => {
-        dispatch(clearToken());
-        dispatch(clearUser());
-    };
-};
 
 export default authSlice.reducer;

@@ -7,7 +7,7 @@ import { oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import Spinner from '@/components/spinner';
 import { useAppDispatch } from '@/core/hooks';
-import { setAuth } from '@/store/auth/auth.slice';
+import { setAuth } from '@/store/auth';
 
 function OAuthCallback() {
     const navigate = useNavigate();
@@ -19,7 +19,7 @@ function OAuthCallback() {
         mutationFn: ({ provider, data }: { provider: OAuthProviderType; data: { code: string; state?: string } }) =>
             oauthApi.handleOAuthCallback(provider, data),
         onSuccess: data => {
-            dispatch(setAuth(data.token, data.user));
+            dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
         },
     });
 
