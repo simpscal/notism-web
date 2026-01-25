@@ -29,8 +29,9 @@ This project follows strict architectural and coding standards. Always refer to 
 ## Key Rules to Follow
 
 ### Architecture
+
 - **Layer Dependencies**: Follow the strict layer hierarchy. Higher layers can import from lower layers, but NOT the reverse.
-- **Import Rules**: 
+- **Import Rules**:
   - `layouts` → pages, features, components, core, store, apis, app
   - `pages` → layouts (store only), features, components, core, store, apis, app
   - `features` → components, core, store, apis, app
@@ -41,24 +42,32 @@ This project follows strict architectural and coding standards. Always refer to 
   - `app` → (no imports from other layers)
 
 ### Components
+
 - **Always wrap components with `memo`** when exporting
 - **Component Order**: Imports → Types/Interfaces → Component Definition → Hooks → Event Handlers → Early Returns → Main Render → Export (wrapped with memo)
 - **No business logic in UI components** (`@/components/` folder)
 - **No custom color/border/shadow styles** on design system components - use variants instead
 - **Use semantic CSS classes** (e.g., `bg-primary`, `text-destructive`) instead of specific colors (e.g., `bg-blue-500`)
+- **Use component props/variants instead of custom styles**: Before adding custom size/color/spacing classes to a component, check if the component already provides a prop or variant for that style. For example:
+  - Button has `size='icon-sm'` (w-8 h-8) - use `size='icon-sm'` instead of `className='h-8 w-8'`
+  - Button has `size='icon'` (w-9 h-9), `size='icon-xs'` (w-6 h-6), `size='icon-lg'` (w-10 h-10)
+  - Always prefer component props (size, variant) over custom className styles when the component supports them
 
 ### API Calls
+
 - **MUST use TanStack Query** (`useQuery` or `useMutation`) - NEVER make direct API calls in components or pages
 - **Query Keys**: Use hierarchical arrays with `as const` (e.g., `['user', 'profile'] as const`)
 - **Hooks vs Direct Calls**: Only create custom hooks when there's additional business logic (Redux dispatch, cache invalidation, data transformation). For simple API calls, use TanStack Query directly.
 
 ### State Management
+
 - **Global Store**: Only for state shared across multiple pages
 - **Page Store**: Only for complex page-specific state that benefits from Redux patterns
 - **Component State**: Use `useState` for simple, local state
 - **No side effects in store reducers** - must be pure functions
 
 ### Naming
+
 - **Files**: kebab-case (e.g., `user-profile.tsx`, `auth.api.ts`)
 - **Components**: PascalCase (e.g., `UserCard`, `HeroSection`)
 - **Hooks**: camelCase with `use` prefix (e.g., `useAuth`, `useInput`)
@@ -67,6 +76,7 @@ This project follows strict architectural and coding standards. Always refer to 
 - **Constants**: UPPERCASE_SNAKE_CASE (e.g., `PAGE_SIZE`, `TOKEN_KEY`)
 
 ### Models Organization
+
 - **ResponseModel**: In `apis/models/` with `{Entity}ResponseModel` naming
 - **RequestModel**: In `apis/models/` with `{Entity}RequestModel` naming
 - **UI Model**: In `features/*/models/` with `{Entity}` naming (no suffix)
@@ -83,7 +93,7 @@ This project follows strict architectural and coding standards. Always refer to 
 ## Questions?
 
 If unsure about any rule or pattern, refer to the detailed documentation in `docs/rules/`:
+
 - `docs/rules/architecture.md` for structure and dependencies
 - `docs/rules/best-practices.md` for implementation patterns and examples
 - `docs/rules/naming.md` for naming conventions
-
