@@ -1,7 +1,9 @@
+import { ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import {
     DropdownMenu,
@@ -11,7 +13,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
+import { useAppSelector } from '@/core/hooks';
 import { UserProfileViewModel } from '@/features/user/models';
+import { selectCartTotalItems } from '@/store/cart';
 
 interface ClientLayoutToolbarProps {
     user: UserProfileViewModel | null;
@@ -19,6 +23,8 @@ interface ClientLayoutToolbarProps {
 }
 
 function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
+    const cartItemCount = useAppSelector(selectCartTotalItems);
+
     const getUserInitials = () => {
         if (!user) return 'U';
         const firstInitial = user.firstName?.[0] || '';
@@ -36,8 +42,20 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                     </h1>
                 </Link>
 
-                {/* Right side - User Avatar or Login/Signup */}
+                {/* Right side - Cart & User Avatar or Login/Signup */}
                 <div className='flex items-center gap-4'>
+                    {/* Cart Icon */}
+                    <Button variant='ghost' size='icon' className='relative' asChild>
+                        <Link to={`/${ROUTES.CART}`}>
+                            <ShoppingCart className='h-5 w-5' />
+                            {cartItemCount > 0 && (
+                                <Badge className='absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0'>
+                                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                                </Badge>
+                            )}
+                        </Link>
+                    </Button>
+
                     {user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

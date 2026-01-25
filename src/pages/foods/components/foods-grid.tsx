@@ -13,6 +13,7 @@ import { foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
+import { CartItemViewModel, useCart } from '@/features/cart';
 
 interface FoodsGridProps {
     category: string | null;
@@ -22,6 +23,7 @@ interface FoodsGridProps {
 }
 
 function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: FoodsGridProps) {
+    const { addToCart } = useCart();
     const { ref: loadMoreRef, inView } = useInView();
 
     const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
@@ -53,11 +55,28 @@ function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: Fo
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    const handleAddToCart = useCallback((food: FoodItemViewModel) => {
-        toast.success(`${food.name} added to cart!`, {
-            description: `$${(food.discountPrice ?? food.price).toFixed(2)}`,
-        });
-    }, []);
+    const handleAddToCart = useCallback(
+        async (food: FoodItemViewModel) => {
+            const effectivePrice = food.discountPrice ?? food.price;
+            const cartItem: Omit<CartItemViewModel, 'quantity'> = {
+                id: food.id,
+                name: food.name,
+                description: food.description,
+                price: food.price,
+                discountPrice: food.discountPrice,
+                imageUrl: food.imageUrl,
+                category: food.category,
+                stockQuantity: food.stockQuantity,
+                quantityUnit: food.quantityUnit,
+            };
+
+            await addToCart(cartItem, 1);
+            toast.success(`${food.name} added to cart!`, {
+                description: `$${effectivePrice.toFixed(2)}`,
+            });
+        },
+        [addToCart]
+    );
 
     if (isLoading) {
         return (

@@ -10,8 +10,10 @@ import { foodApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { CartItemViewModel, useCart } from '@/features/cart';
 
 function FoodDetail() {
+    const { addToCart } = useCart();
     const { id } = useParams<{ id: string }>();
     const [quantity, setQuantity] = useState(1);
 
@@ -32,12 +34,26 @@ function FoodDetail() {
         setQuantity(prev => Math.max(1, prev + delta));
     }, []);
 
-    const handleAddToCart = useCallback(() => {
+    const handleAddToCart = useCallback(async () => {
         if (!food) return;
+        const effectivePrice = food.discountPrice ?? food.price;
+        const cartItem: Omit<CartItemViewModel, 'quantity'> = {
+            id: food.id,
+            name: food.name,
+            description: food.description,
+            price: food.price,
+            discountPrice: food.discountPrice,
+            imageUrl: food.imageUrls[0] || '',
+            category: food.category,
+            stockQuantity: food.stockQuantity,
+            quantityUnit: food.quantityUnit,
+        };
+
+        await addToCart(cartItem, quantity);
         toast.success(`${quantity}x ${food.name} added to cart!`, {
-            description: `Total: $${((food.discountPrice ?? food.price) * quantity).toFixed(2)}`,
+            description: `Total: $${(effectivePrice * quantity).toFixed(2)}`,
         });
-    }, [food, quantity]);
+    }, [addToCart, food, quantity]);
 
     if (isError) {
         return <FoodDetailError />;

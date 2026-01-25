@@ -16,4 +16,5 @@ export const ROUTES = {
         PROFILE: 'settings/profile',
         APPEARANCE: 'settings/appearance',
     },
+    CART: 'cart',
 } as const;

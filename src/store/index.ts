@@ -1,22 +1,30 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import authReducer from './auth/auth.slice';
-import userReducer from './user/user.slice';
+import authReducer, { type IAuthState } from './auth/auth.slice';
+import { cartPersistenceMiddleware } from './cart/cart.middleware';
+import cartReducer, { type CartState } from './cart/cart.slice';
+import userReducer, { type IUserState } from './user/user.slice';
+
+export type RootState = {
+    auth: IAuthState;
+    user: IUserState;
+    cart: CartState;
+};
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
         user: userReducer,
+        cart: cartReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
             serializableCheck: {
                 ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
             },
-        }),
+        }).concat(cartPersistenceMiddleware),
     devTools: import.meta.env.DEV,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type Store = typeof store;

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthRouteGuard, ResetPasswordRouteGuard } from '@/core/guards';
 import { AuthLayout } from '@/layouts/auth';
 import { ClientLayout } from '@/layouts/client';
+import { Cart } from '@/pages/cart';
 import { FoodDetail } from '@/pages/food-detail';
 import { Foods } from '@/pages/foods';
 import { Login } from '@/pages/login';
@@ -49,6 +50,7 @@ function AppRoutes() {
             <Route element={<ClientLayout />}>
                 <Route path='foods' element={<Foods />} />
                 <Route path='foods/:id' element={<FoodDetail />} />
+                <Route path='cart' element={<Cart />} />
 
                 <Route element={<AuthRouteGuard mode='authenticated' />}>
                     <Route path='settings' element={<Settings />}>

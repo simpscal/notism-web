@@ -22,4 +22,9 @@ export const API_ENDPOINTS = {
         LIST: 'foods',
         DETAIL: (id: string) => `foods/${id}`,
     },
+    CART: {
+        BASE: 'cart',
+        ITEMS: 'cart/items',
+        ITEM: (itemId: string) => `cart/items/${itemId}`,
+    },
 } as const;
