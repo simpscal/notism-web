@@ -1,5 +1,4 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { UtensilsCrossed } from 'lucide-react';
 import { memo, useCallback, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
@@ -8,10 +7,10 @@ import { FoodItemViewModel } from '../models';
 
 import FoodCard from './food-card';
 import FoodCardSkeleton from './food-card-skeleton';
+import FoodsEmpty from './foods-empty';
 
 import { foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
-import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
 import { CartItemViewModel, useCart } from '@/features/cart';
 
@@ -89,19 +88,7 @@ function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: Fo
     }
 
     if (foods.length === 0) {
-        return (
-            <div className='flex flex-col items-center justify-center py-20 text-center'>
-                <div className='mb-4 rounded-full p-6'>
-                    <UtensilsCrossed className='h-12 w-12' />
-                </div>
-                <h3 className='mb-2 text-xl font-semibold'>No dishes found</h3>
-                <p className='mb-6'>We couldn't find any dishes matching your criteria. Try adjusting your filters.</p>
-
-                <Button variant='outline' onClick={onClearFilters}>
-                    Clear all filters
-                </Button>
-            </div>
-        );
+        return <FoodsEmpty onClearFilters={onClearFilters} />;
     }
 
     return (
