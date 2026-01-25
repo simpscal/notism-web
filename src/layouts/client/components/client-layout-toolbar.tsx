@@ -13,7 +13,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
-import { useAppSelector } from '@/core/hooks';
+import { SidebarTrigger } from '@/components/sidebar';
+import { useAppSelector, useIsMobile } from '@/core/hooks';
 import { UserProfileViewModel } from '@/features/user/models';
 import { selectCartTotalItems } from '@/store/cart';
 
@@ -24,6 +25,7 @@ interface ClientLayoutToolbarProps {
 
 function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
     const cartItemCount = useAppSelector(selectCartTotalItems);
+    const isMobile = useIsMobile();
 
     const getUserInitials = () => {
         if (!user) return 'U';
@@ -35,12 +37,15 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
     return (
         <header className='border-b bg-background sticky top-0 z-50'>
             <div className='flex h-16 items-center justify-between px-4 md:px-6'>
-                {/* Logo/Brand - Left */}
-                <Link to={ROUTES.HOME} className='cursor-pointer'>
-                    <h1 className='text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
-                        Brand Name
-                    </h1>
-                </Link>
+                {/* Left side - Menu button (mobile only) & Logo */}
+                <div className='flex items-center gap-4'>
+                    {isMobile && <SidebarTrigger />}
+                    <Link to={ROUTES.HOME} className='cursor-pointer'>
+                        <h1 className='text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
+                            Brand Name
+                        </h1>
+                    </Link>
+                </div>
 
                 {/* Right side - Cart & User Avatar or Login/Signup */}
                 <div className='flex items-center gap-4'>
