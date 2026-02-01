@@ -8,13 +8,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
     return (
         <Sonner
             theme={theme}
-            position='top-right'
+            position='bottom-right'
             className='toaster group'
+            closeButton
+            richColors
             style={
                 {
                     '--normal-bg': 'var(--popover)',
                     '--normal-text': 'var(--popover-foreground)',
                     '--normal-border': 'var(--border)',
+                    '--success-text': 'var(--success)',
+                    '--error-text': 'var(--destructive)',
+                    '--warning-text': 'var(--warning)',
+                    '--info-text': 'var(--info)',
                 } as React.CSSProperties
             }
             {...props}
