@@ -8,6 +8,7 @@ import { ROUTES } from '@/app/constants';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardFooter, CardHeader } from '@/components/card';
+import { FoodImage } from '@/features/food/components';
 
 interface FoodCardProps {
     food: FoodItemViewModel;
@@ -35,11 +36,11 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
             onClick={handleCardClick}
         >
             {/* Image Container */}
-            <div className='relative aspect-[4/3] overflow-hidden'>
-                <img
+            <div className='relative aspect-[4/3] overflow-hidden bg-muted'>
+                <FoodImage
                     src={food.imageUrl}
                     alt={food.name}
-                    className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-110'
+                    className='absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110'
                 />
             </div>
 

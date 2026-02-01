@@ -5,6 +5,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader } from '@/components/card';
 import { CartItemViewModel } from '@/features/cart/models';
+import { FoodImage } from '@/features/food/components';
 
 interface CartItemProps {
     item: CartItemViewModel;
@@ -23,7 +24,13 @@ function CartItemComponent({ item, onQuantityChange, onRemove }: CartItemProps) 
         <Card>
             <CardHeader>
                 <div className='flex items-start gap-4'>
-                    <img src={item.imageUrl} alt={item.name} className='h-24 w-24 rounded-lg object-cover' />
+                    <div className='relative h-24 w-24 rounded-lg overflow-hidden bg-muted'>
+                        <FoodImage
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className='absolute inset-0 h-full w-full object-cover'
+                        />
+                    </div>
                     <div className='flex-1'>
                         <div className='mb-2 flex items-start justify-between gap-4'>
                             <div>

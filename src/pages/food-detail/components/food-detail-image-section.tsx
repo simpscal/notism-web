@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 
 import type { CarouselApi } from '@/components/carousel';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/carousel';
+import { FoodImage } from '@/features/food/components';
 
 interface FoodDetailImageSectionProps {
     imageUrls: string[];
@@ -30,17 +31,20 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
         [api]
     );
 
+    // Use placeholder if no images or empty array
+    const displayImages = imageUrls.length > 0 ? imageUrls : [''];
+
     return (
         <div className='relative space-y-4'>
-            <Carousel className='w-full' opts={{ loop: true }} setApi={setApi}>
-                <CarouselContent>
-                    {imageUrls.map((imageUrl, index) => (
+            <Carousel className='w-full rounded-3xl overflow-hidden' opts={{ loop: true }} setApi={setApi}>
+                <CarouselContent className='rounded-3xl'>
+                    {displayImages.map((imageUrl, index) => (
                         <CarouselItem key={index}>
                             <div className='relative aspect-square overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card to-secondary shadow-2xl'>
-                                <img
+                                <FoodImage
                                     src={imageUrl}
                                     alt={`${foodName} - Image ${index + 1}`}
-                                    className='h-full w-full object-cover'
+                                    className='absolute inset-0 h-full w-full object-cover'
                                 />
 
                                 {/* Badges - Only show on first image */}
@@ -55,7 +59,7 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                {imageUrls.length > 1 && (
+                {displayImages.length > 1 && (
                     <>
                         <CarouselPrevious variant='secondary' className='left-4' />
                         <CarouselNext variant='secondary' className='right-4' />
@@ -64,9 +68,9 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
             </Carousel>
 
             {/* Thumbnail Navigation */}
-            {imageUrls.length > 1 && (
+            {displayImages.length > 1 && (
                 <div className='flex gap-2 justify-center'>
-                    {imageUrls.map((imageUrl, index) => (
+                    {displayImages.map((imageUrl, index) => (
                         <button
                             key={index}
                             type='button'
@@ -78,10 +82,10 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
                             }`}
                             aria-label={`View image ${index + 1}`}
                         >
-                            <img
+                            <FoodImage
                                 src={imageUrl}
                                 alt={`${foodName} thumbnail ${index + 1}`}
-                                className='h-full w-full object-cover'
+                                className='absolute inset-0 h-full w-full object-cover'
                             />
                             {current === index && <div className='absolute inset-0 bg-primary/20' />}
                         </button>
