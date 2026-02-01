@@ -132,7 +132,7 @@ function FoodDetail() {
                         </div>
 
                         {/* Quantity & Add to Cart */}
-                        <div className='flex flex-col gap-4 sm:flex-row sm:justify-center sm:items-start'>
+                        <div className='flex flex-col gap-4 sm:flex-row sm:items-start'>
                             {/* Quantity Selector */}
                             <div className='flex items-center justify-between rounded-xl border border-border bg-secondary/50 shrink-0 h-10'>
                                 <Button
@@ -162,7 +162,7 @@ function FoodDetail() {
                             <Button
                                 size='lg'
                                 disabled={!food.isAvailable}
-                                className='w-full sm:flex-1 sm:w-auto shrink-0'
+                                className='shrink-0'
                                 onClick={handleAddToCart}
                             >
                                 <ShoppingCart className='mr-2 h-5 w-5 shrink-0' />
