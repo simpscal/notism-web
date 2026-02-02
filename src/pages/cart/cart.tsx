@@ -1,8 +1,10 @@
 import { memo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { CartEmpty, CartItem } from './components';
 
+import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/card';
 import { Separator } from '@/components/separator';
@@ -106,8 +108,8 @@ function Cart() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button size='lg' className='w-full' disabled={items.length === 0}>
-                                Proceed to Payment
+                            <Button size='lg' className='w-full' disabled={items.length === 0} asChild>
+                                <Link to={`/${ROUTES.PAYMENT}`}>Proceed to Payment</Link>
                             </Button>
                         </CardFooter>
                     </Card>
