@@ -17,4 +17,6 @@ export const ROUTES = {
         APPEARANCE: 'settings/appearance',
     },
     CART: 'cart',
+    PAYMENT: 'payment',
+    DELIVERY_STATUS: 'delivery-status',
 } as const;

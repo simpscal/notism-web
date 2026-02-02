@@ -1,4 +1,4 @@
-import { ShoppingCart } from 'lucide-react';
+import { LogOut, Package, Settings, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
@@ -84,10 +84,22 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>Settings</Link>
+                                    <Link to={`/${ROUTES.DELIVERY_STATUS}`} className='flex items-center gap-2'>
+                                        <Package className='h-4 w-4' />
+                                        <span>Delivery Status</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>
+                                        <Settings className='h-4 w-4' />
+                                        <span>Setting</span>
+                                    </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
+                                <DropdownMenuItem onClick={onLogout}>
+                                    <LogOut className='h-4 w-4' />
+                                    <span>Log out</span>
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
