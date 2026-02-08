@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CheckCircle2, Package, Truck } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -13,14 +13,12 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import Timeline from '@/components/timeline';
 import { FoodImage } from '@/features/food';
-import { DeliveryStatusEnum } from '@/features/order';
+import { DELIVERY_STATUS, DeliveryStatusEnum } from '@/features/order';
 
-const DELIVERY_STEPS: { key: DeliveryStatusEnum; label: string; icon: typeof CheckCircle2 }[] = [
-    { key: DeliveryStatusEnum.Placed, label: 'Order Placed', icon: CheckCircle2 },
-    { key: DeliveryStatusEnum.Preparing, label: 'Preparing', icon: Package },
-    { key: DeliveryStatusEnum.OnTheWay, label: 'On the Way', icon: Truck },
-    { key: DeliveryStatusEnum.Delivered, label: 'Delivered', icon: CheckCircle2 },
-];
+const getDeliveryStatusLabel = (status: string): string => {
+    const step = DELIVERY_STATUS.find(s => s.key === status);
+    return step?.label || status;
+};
 
 function OrderDetail() {
     const { id } = useParams<{ id: string }>();
@@ -42,7 +40,7 @@ function OrderDetail() {
         if (!order) return -1;
 
         const enumValue = order.deliveryStatus as DeliveryStatusEnum;
-        return DELIVERY_STEPS.findIndex(step => step.key === enumValue);
+        return DELIVERY_STATUS.findIndex(step => step.key === enumValue);
     }, [order]);
 
     const orderDate = useMemo(() => {
@@ -102,7 +100,7 @@ function OrderDetail() {
                             </CardHeader>
                             <CardContent>
                                 <Timeline
-                                    items={DELIVERY_STEPS.map((step, index) => {
+                                    items={DELIVERY_STATUS.map((step, index) => {
                                         const isCompleted = index <= currentStepIndex;
                                         const isCurrent = index === currentStepIndex;
                                         const timing = order.deliveryStatusTiming;
@@ -216,7 +214,9 @@ function OrderDetail() {
                                     </div>
                                     <div>
                                         <div className='text-muted-foreground'>Status</div>
-                                        <div className='font-medium capitalize'>{order.deliveryStatus}</div>
+                                        <div className='font-medium'>
+                                            {getDeliveryStatusLabel(order.deliveryStatus)}
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>
