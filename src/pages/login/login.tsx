@@ -85,11 +85,13 @@ function Login() {
     };
 
     return (
-        <div className='space-y-6'>
+        <div className='space-y-4 sm:space-y-6'>
             {/* Header */}
-            <div className='space-y-2 text-center'>
-                <h1 className='text-2xl font-semibold tracking-tight'>Welcome back</h1>
-                <p className='text-sm text-muted-foreground'>Enter your credentials to access your account</p>
+            <div className='space-y-1 sm:space-y-2 text-center'>
+                <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>Welcome back</h1>
+                <p className='text-xs sm:text-sm text-muted-foreground'>
+                    Enter your credentials to access your account
+                </p>
             </div>
 
             {/* Login Form */}
@@ -110,9 +112,13 @@ function Login() {
 
                 {/* Password Field */}
                 <Field data-invalid={!!errors.password}>
-                    <div className='flex items-center justify-between'>
+                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0'>
                         <FieldLabel htmlFor='password'>Password</FieldLabel>
-                        <Button variant='link' className='p-0 h-auto text-sm font-medium' asChild>
+                        <Button
+                            variant='link'
+                            className='p-0 h-auto text-xs sm:text-sm font-medium self-start sm:self-auto'
+                            asChild
+                        >
                             <Link to={`/${ROUTES.AUTH.REQUEST_RESET_PASSWORD}`}>Forgot password?</Link>
                         </Button>
                     </div>
@@ -143,19 +149,31 @@ function Login() {
             </div>
 
             {/* Social Login Buttons */}
-            <div className='grid grid-cols-2 gap-3'>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('google')}>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3'>
+                <Button
+                    type='button'
+                    variant='outline'
+                    disabled={isLoading}
+                    onClick={() => handleOAuthLogin('google')}
+                    className='w-full gap-2'
+                >
                     <GoogleLogo className='h-4 w-4' />
-                    Google
+                    <span>Google</span>
                 </Button>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('github')}>
+                <Button
+                    type='button'
+                    variant='outline'
+                    disabled={isLoading}
+                    onClick={() => handleOAuthLogin('github')}
+                    className='w-full gap-2'
+                >
                     <GithubLogo className='h-4 w-4' />
-                    GitHub
+                    <span>GitHub</span>
                 </Button>
             </div>
 
             {/* Sign Up Link */}
-            <div className='text-center text-sm'>
+            <div className='text-center text-xs sm:text-sm'>
                 <span className='text-muted-foreground'>Don't have an account? </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
                     <Link to={`/${ROUTES.AUTH.SIGNUP}`}>Sign up</Link>

@@ -85,17 +85,17 @@ function Signup() {
     };
 
     return (
-        <div className='space-y-6'>
+        <div className='space-y-4 sm:space-y-6'>
             {/* Header */}
-            <div className='space-y-2 text-center'>
-                <h1 className='text-2xl font-semibold tracking-tight'>Create an account</h1>
-                <p className='text-sm text-muted-foreground'>Enter your details to get started</p>
+            <div className='space-y-1 sm:space-y-2 text-center'>
+                <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>Create an account</h1>
+                <p className='text-xs sm:text-sm text-muted-foreground'>Enter your details to get started</p>
             </div>
 
             {/* Signup Form */}
             <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-4'>
                 {/* Name Fields */}
-                <div className='grid grid-cols-2 gap-4'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                     {/* First Name Field */}
                     <Field data-invalid={!!errors.firstName}>
                         <FieldLabel htmlFor='firstName'>First Name</FieldLabel>
@@ -169,29 +169,31 @@ function Signup() {
             </div>
 
             {/* Social Signup Buttons */}
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3'>
                 <Button
                     type='button'
                     variant='outline'
                     disabled={isLoading}
                     onClick={() => handleOAuthSignup('google')}
+                    className='w-full gap-2'
                 >
                     <GoogleLogo className='h-4 w-4' />
-                    Google
+                    <span>Google</span>
                 </Button>
                 <Button
                     type='button'
                     variant='outline'
                     disabled={isLoading}
                     onClick={() => handleOAuthSignup('github')}
+                    className='w-full gap-2'
                 >
                     <GithubLogo className='h-4 w-4' />
-                    GitHub
+                    <span>GitHub</span>
                 </Button>
             </div>
 
             {/* Back to Login Link */}
-            <div className='text-center text-sm'>
+            <div className='text-center text-xs sm:text-sm'>
                 <span className='text-muted-foreground'>Already have an account? </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
                     <Link to={`/${ROUTES.AUTH.LOGIN}`}>Sign in</Link>

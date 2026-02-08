@@ -38,10 +38,10 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
         <header className='border-b bg-background sticky top-0 z-50'>
             <div className='flex h-16 items-center justify-between px-4 md:px-6'>
                 {/* Left side - Menu button (mobile only) & Logo */}
-                <div className='flex items-center gap-4'>
+                <div className='flex items-center gap-2 md:gap-4'>
                     {isMobile && <SidebarTrigger />}
                     <Link to={ROUTES.HOME} className='cursor-pointer'>
-                        <h1 className='text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
+                        <h1 className='text-lg md:text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
                             Brand Name
                         </h1>
                     </Link>
@@ -103,14 +103,9 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
-                        <div className='flex items-center gap-2'>
-                            <Button variant='ghost' asChild>
-                                <Link to={`/${ROUTES.AUTH.LOGIN}`}>Log in</Link>
-                            </Button>
-                            <Button asChild>
-                                <Link to={`/${ROUTES.AUTH.SIGNUP}`}>Sign up</Link>
-                            </Button>
-                        </div>
+                        <Button size={isMobile ? 'sm' : 'default'} asChild>
+                            <Link to={`/${ROUTES.AUTH.LOGIN}`}>Log in</Link>
+                        </Button>
                     )}
                 </div>
             </div>
