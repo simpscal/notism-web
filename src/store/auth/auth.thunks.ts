@@ -1,8 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { clearUser, setUser } from '../user/user.slice';
+import { syncCartItems } from '../cart/cart.thunks';
+import { setUser } from '../user/user.slice';
 
-import { clearToken, setToken } from './auth.slice';
+import { setToken } from './auth.slice';
 
 import { UserProfileViewModel } from '@/features/user/models';
 
@@ -11,10 +12,6 @@ export const setAuth = createAsyncThunk<void, { token: string; user: UserProfile
     async ({ token, user }, { dispatch }) => {
         dispatch(setToken(token));
         dispatch(setUser(user));
+        await dispatch(syncCartItems()).unwrap();
     }
 );
-
-export const unsetAuth = createAsyncThunk<void, void>('auth/unsetAuth', async (_, { dispatch }) => {
-    dispatch(clearToken());
-    dispatch(clearUser());
-});

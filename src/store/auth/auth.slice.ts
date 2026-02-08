@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { resetStore } from '../root.actions';
+
 import { tokenManagerUtils } from '@/app/utils';
 
 export interface IAuthState {
@@ -21,17 +23,18 @@ const authSlice = createSlice({
             tokenManagerUtils.setToken(action.payload);
         },
 
-        clearToken: state => {
-            state.accessToken = null;
-            tokenManagerUtils.clearAll();
-        },
-
         setInitialized: state => {
             state.isInitialized = true;
         },
     },
+    extraReducers: builder => {
+        builder.addCase(resetStore, state => {
+            tokenManagerUtils.clearAll();
+            return { ...INITIAL_STATE, isInitialized: state.isInitialized };
+        });
+    },
 });
 
-export const { setToken, clearToken, setInitialized } = authSlice.actions;
+export const { setToken, setInitialized } = authSlice.actions;
 
 export default authSlice.reducer;

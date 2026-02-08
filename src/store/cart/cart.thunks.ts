@@ -72,3 +72,22 @@ export const clearItems = createAsyncThunk('cart/clearCart', async (_, { getStat
         cartStorageUtils.clearCart();
     }
 });
+
+export const syncCartItems = createAsyncThunk('cart/syncCartItems', async (_, { getState }) => {
+    const state = getState() as RootState;
+    const isAuthenticated = !!state.user.user?.id;
+
+    if (!isAuthenticated || !state.cart.items?.length) {
+        return { synced: false };
+    }
+
+    const items = state.cart.items.map(item => ({
+        foodId: item.id,
+        quantity: item.quantity,
+    }));
+
+    await cartApi.bulkAddItems({ items });
+    cartStorageUtils.clearCart();
+
+    return { synced: true };
+});

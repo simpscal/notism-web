@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer, { type IAuthState } from './auth/auth.slice';
-import { cartPersistenceMiddleware } from './cart/cart.middleware';
 import cartReducer, { type ICartState } from './cart/cart.slice';
 import userReducer, { type IUserState } from './user/user.slice';
 
@@ -22,7 +21,7 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
             },
-        }).concat(cartPersistenceMiddleware),
+        }),
     devTools: import.meta.env.DEV,
 });
 

@@ -34,8 +34,16 @@ function Login() {
 
     const loginMutation = useMutation({
         mutationFn: authApi.login,
-        onSuccess: data => {
-            dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
+        onSuccess: async data => {
+            await dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
+
+            toast.success('Login successful! Welcome back.');
+            const returnUrl = searchParams.get('returnUrl');
+            if (returnUrl) {
+                navigate(decodeURIComponent(returnUrl), { replace: true });
+            } else {
+                navigate(`/${ROUTES.SETTINGS.PROFILE}`);
+            }
         },
     });
 
@@ -62,23 +70,10 @@ function Login() {
     } = form;
 
     const handleFormSubmit = (values: LoginFormValues) => {
-        loginMutation.mutate(
-            {
-                email: values.email,
-                password: values.password,
-            },
-            {
-                onSuccess: () => {
-                    toast.success('Login successful! Welcome back.');
-                    const returnUrl = searchParams.get('returnUrl');
-                    if (returnUrl) {
-                        navigate(decodeURIComponent(returnUrl), { replace: true });
-                    } else {
-                        navigate(`/${ROUTES.SETTINGS.PROFILE}`);
-                    }
-                },
-            }
-        );
+        loginMutation.mutate({
+            email: values.email,
+            password: values.password,
+        });
     };
 
     const handleOAuthLogin = (provider: OAuthProviderType) => {

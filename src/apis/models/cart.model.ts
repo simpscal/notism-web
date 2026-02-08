@@ -23,3 +23,7 @@ export interface AddCartItemRequestModel {
 export interface UpdateCartItemQuantityRequestModel {
     quantity: number;
 }
+
+export interface BulkAddCartItemsRequestModel {
+    items: AddCartItemRequestModel[];
+}

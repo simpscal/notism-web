@@ -1,7 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { resetStore } from '../root.actions';
+
 import { addItem, clearItems, loadCart, removeItem, updateItemQuantity } from './cart.thunks';
 
+import { cartStorageUtils } from '@/features/cart';
 import { CartItemViewModel } from '@/features/cart/models';
 
 export interface ICartState {
@@ -17,7 +20,9 @@ const INITIAL_STATE: ICartState = {
 const cartSlice = createSlice({
     name: 'cart',
     initialState: INITIAL_STATE,
-    reducers: {},
+    reducers: {
+        resetCart: () => INITIAL_STATE,
+    },
     extraReducers: builder => {
         builder
             .addCase(loadCart.fulfilled, (state, action) => {
@@ -29,13 +34,17 @@ const cartSlice = createSlice({
             });
 
         builder.addCase(addItem.fulfilled, (state, action) => {
-            const { item: newItem } = action.payload;
+            const { item: newItem, isAuthenticated } = action.payload;
             const existingItem = state.items.find(item => item.id === newItem.id);
 
             if (existingItem) {
                 existingItem.quantity = Math.min(existingItem.quantity + newItem.quantity, newItem.stockQuantity);
             } else {
                 state.items.push(newItem);
+            }
+
+            if (!isAuthenticated && state.isInitialized) {
+                cartStorageUtils.setCart(state.items);
             }
         });
 
@@ -58,17 +67,32 @@ const cartSlice = createSlice({
                         item.quantity = Math.min(quantity, item.stockQuantity);
                     }
                 }
+
+                if (state.isInitialized) {
+                    cartStorageUtils.setCart(state.items);
+                }
             }
         });
 
         builder.addCase(removeItem.fulfilled, (state, action) => {
             state.items = state.items.filter(item => item.id !== action.payload.id);
+
+            if (!action.payload.isAuthenticated && state.isInitialized) {
+                cartStorageUtils.setCart(state.items);
+            }
         });
 
         builder.addCase(clearItems.fulfilled, state => {
             state.items = [];
         });
+
+        builder.addCase(resetStore, () => {
+            cartStorageUtils.clearCart();
+            return INITIAL_STATE;
+        });
     },
 });
+
+export const { resetCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

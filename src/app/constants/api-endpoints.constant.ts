@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
     CART: {
         BASE: 'cart',
         ITEMS: 'cart/items',
+        ITEMS_BULK: 'cart/items/bulk',
         ITEM: (itemId: string) => `cart/items/${itemId}`,
     },
     ORDER: {

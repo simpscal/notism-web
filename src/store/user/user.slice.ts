@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { resetStore } from '../root.actions';
+
 import { UserProfileViewModel } from '@/features/user/models';
 
 export interface IUserState {
@@ -26,13 +28,12 @@ const userSlice = createSlice({
                 };
             }
         },
-
-        clearUser: state => {
-            state.user = null;
-        },
+    },
+    extraReducers: builder => {
+        builder.addCase(resetStore, () => INITIAL_STATE);
     },
 });
 
-export const { setUser, updateUser, clearUser } = userSlice.actions;
+export const { setUser, updateUser } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,8 +1,9 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import { useAppSelector } from '../hooks';
 
-import { ROUTES } from '@/app/constants';
+import NotFoundPage from '@/pages/not-found';
 
 interface AuthRouteGuardProps {
     mode?: 'authenticated' | 'anonymous';
@@ -11,16 +12,19 @@ interface AuthRouteGuardProps {
 export function AuthRouteGuard({ mode = 'anonymous' }: AuthRouteGuardProps = {}) {
     const user = useAppSelector(state => state.user.user);
 
+    // Use snapshot to get current state synchronously, avoiding subscription-based re-renders
+    const userSnapshot = useMemo(() => user, []);
+
     if (mode === 'anonymous') {
-        if (user) {
-            return <Navigate to={`/${ROUTES.SETTINGS.PROFILE}`} replace />;
+        if (userSnapshot) {
+            return <NotFoundPage />;
         }
 
         return <Outlet />;
     }
 
-    if (!user) {
-        return <Navigate to={`/${ROUTES.AUTH.LOGIN}`} replace />;
+    if (!userSnapshot) {
+        return <NotFoundPage />;
     }
 
     return <Outlet />;

@@ -1,6 +1,7 @@
 import { apiClient } from './client';
 import {
     AddCartItemRequestModel,
+    BulkAddCartItemsRequestModel,
     CartItemResponseModel,
     GetCartResponseModel,
     UpdateCartItemQuantityRequestModel,
@@ -27,5 +28,9 @@ export const cartApi = {
 
     clearCart: () => {
         return apiClient.delete(API_ENDPOINTS.CART.BASE);
+    },
+
+    bulkAddItems: (data: BulkAddCartItemsRequestModel) => {
+        return apiClient.post<GetCartResponseModel>(API_ENDPOINTS.CART.ITEMS_BULK, data);
     },
 };
