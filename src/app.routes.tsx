@@ -10,6 +10,9 @@ import { Login } from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
 import OAuthCallback from '@/pages/oauth-callback';
 import { OAuthCallbackRouteGuard } from '@/pages/oauth-callback/guards';
+import { OrderDetail } from '@/pages/order-detail';
+import { Orders } from '@/pages/orders';
+import { Payment } from '@/pages/payment';
 import { RequestResetPassword } from '@/pages/request-reset-password';
 import { ResetPassword } from '@/pages/reset-password';
 import { Settings } from '@/pages/settings';
@@ -53,6 +56,9 @@ function AppRoutes() {
                 <Route path='cart' element={<Cart />} />
 
                 <Route element={<AuthRouteGuard mode='authenticated' />}>
+                    <Route path='payment' element={<Payment />} />
+                    <Route path='orders' element={<Orders />} />
+                    <Route path='orders/:id' element={<OrderDetail />} />
                     <Route path='settings' element={<Settings />}>
                         <Route index element={<Navigate replace to='profile' />} />
                         <Route path='profile' element={<SettingsProfile />} />

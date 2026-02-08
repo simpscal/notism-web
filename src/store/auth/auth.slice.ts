@@ -4,10 +4,12 @@ import { tokenManagerUtils } from '@/app/utils';
 
 export interface IAuthState {
     accessToken: string | null;
+    isInitialized: boolean;
 }
 
 const INITIAL_STATE: IAuthState = {
     accessToken: null,
+    isInitialized: false,
 };
 
 const authSlice = createSlice({
@@ -23,9 +25,13 @@ const authSlice = createSlice({
             state.accessToken = null;
             tokenManagerUtils.clearAll();
         },
+
+        setInitialized: state => {
+            state.isInitialized = true;
+        },
     },
 });
 
-export const { setToken, clearToken } = authSlice.actions;
+export const { setToken, clearToken, setInitialized } = authSlice.actions;
 
 export default authSlice.reducer;

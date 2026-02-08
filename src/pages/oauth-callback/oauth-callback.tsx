@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { TOKEN_KEYS } from '@/app/constants/token-keys.constant';
 import Spinner from '@/components/spinner';
 import { useAppDispatch } from '@/core/hooks';
 import { setAuth } from '@/store/auth';
@@ -37,7 +38,13 @@ function OAuthCallback() {
     useEffect(() => {
         if (oauthCallbackMutation.isSuccess) {
             toast.success('Login successful! Welcome back.');
-            navigate(`/${ROUTES.SETTINGS.PROFILE}`);
+            const returnUrl = localStorage.getItem(TOKEN_KEYS.OAUTH_RETURN_URL);
+            if (returnUrl) {
+                localStorage.removeItem(TOKEN_KEYS.OAUTH_RETURN_URL);
+                navigate(decodeURIComponent(returnUrl), { replace: true });
+            } else {
+                navigate(`/${ROUTES.SETTINGS.PROFILE}`);
+            }
         }
     }, [oauthCallbackMutation.isSuccess, navigate]);
 

@@ -82,13 +82,13 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                         <p className='text-xs leading-none text-muted-foreground'>{user?.email}</p>
                                     </div>
                                 </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.DELIVERY_STATUS}`} className='flex items-center gap-2'>
+                                    <Link to={`/${ROUTES.ORDERS.LIST}`}>
                                         <Package className='h-4 w-4' />
-                                        <span>Delivery Status</span>
+                                        <span>My Orders</span>
                                     </Link>
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
                                     <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>
                                         <Settings className='h-4 w-4' />

@@ -2,12 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { memo } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { TOKEN_KEYS } from '@/app/constants/token-keys.constant';
 import { passwordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
@@ -29,6 +30,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 function Login() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const [searchParams] = useSearchParams();
 
     const loginMutation = useMutation({
         mutationFn: authApi.login,
@@ -68,13 +70,22 @@ function Login() {
             {
                 onSuccess: () => {
                     toast.success('Login successful! Welcome back.');
-                    navigate(`/${ROUTES.SETTINGS.PROFILE}`);
+                    const returnUrl = searchParams.get('returnUrl');
+                    if (returnUrl) {
+                        navigate(decodeURIComponent(returnUrl), { replace: true });
+                    } else {
+                        navigate(`/${ROUTES.SETTINGS.PROFILE}`);
+                    }
                 },
             }
         );
     };
 
     const handleOAuthLogin = (provider: OAuthProviderType) => {
+        const returnUrl = searchParams.get('returnUrl');
+        if (returnUrl) {
+            localStorage.setItem(TOKEN_KEYS.OAUTH_RETURN_URL, returnUrl);
+        }
         oauthRedirectMutation.mutate(provider);
     };
 

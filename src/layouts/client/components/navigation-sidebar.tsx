@@ -1,4 +1,4 @@
-import { Palette, User } from 'lucide-react';
+import { Package, Palette, User } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -23,6 +23,12 @@ interface NavigationItem {
 }
 
 const NAVIGATION_ITEMS: NavigationItem[] = [
+    {
+        label: 'Orders',
+        icon: Package,
+        path: `/${ROUTES.ORDERS.LIST}`,
+        requiresAuth: true,
+    },
     {
         label: 'Profile',
         icon: User,

@@ -7,7 +7,7 @@ import { RootState } from '@/store';
 
 export const loadCart = createAsyncThunk('cart/load', async (_, { getState }) => {
     const state = getState() as RootState;
-    const isAuthenticated = !!state.auth.accessToken;
+    const isAuthenticated = !!state.user.user?.id;
 
     if (isAuthenticated) {
         const response = await cartApi.getCart();
@@ -21,7 +21,7 @@ export const addItem = createAsyncThunk(
     'cart/addItem',
     async ({ item, quantity }: { item: Omit<CartItemViewModel, 'quantity'>; quantity: number }, { getState }) => {
         const state = getState() as RootState;
-        const isAuthenticated = !!state.auth.accessToken;
+        const isAuthenticated = !!state.user.user?.id;
 
         if (isAuthenticated) {
             const response = await cartApi.addItem({ foodId: item.id, quantity });
@@ -39,7 +39,7 @@ export const updateItemQuantity = createAsyncThunk(
     'cart/updateItemQuantity',
     async ({ id, quantity }: { id: string; quantity: number }, { getState }) => {
         const state = getState() as RootState;
-        const isAuthenticated = !!state.auth.accessToken;
+        const isAuthenticated = !!state.user.user?.id;
 
         if (isAuthenticated) {
             const response = await cartApi.updateItemQuantity(id, { quantity });
@@ -52,7 +52,7 @@ export const updateItemQuantity = createAsyncThunk(
 
 export const removeItem = createAsyncThunk('cart/removeItem', async (id: string, { getState }) => {
     const state = getState() as RootState;
-    const isAuthenticated = !!state.auth.accessToken;
+    const isAuthenticated = !!state.user.user?.id;
 
     if (isAuthenticated) {
         await cartApi.removeItem(id);
@@ -64,7 +64,7 @@ export const removeItem = createAsyncThunk('cart/removeItem', async (id: string,
 
 export const clearItems = createAsyncThunk('cart/clearCart', async (_, { getState }) => {
     const state = getState() as RootState;
-    const isAuthenticated = !!state.auth.accessToken;
+    const isAuthenticated = !!state.user.user?.id;
 
     if (isAuthenticated) {
         await cartApi.clearCart();

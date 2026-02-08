@@ -27,4 +27,9 @@ export const API_ENDPOINTS = {
         ITEMS: 'cart/items',
         ITEM: (itemId: string) => `cart/items/${itemId}`,
     },
+    ORDER: {
+        BASE: 'orders',
+        LIST: 'orders',
+        DETAIL: (id: string) => `orders/${id}`,
+    },
 } as const;

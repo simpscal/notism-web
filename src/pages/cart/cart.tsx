@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { CartEmpty, CartItem } from './components';
@@ -14,7 +14,9 @@ import { useCart } from '@/features/cart';
 import { selectCartItems, selectCartIsInitialized, selectCartTotalPrice } from '@/store/cart';
 
 function Cart() {
+    const navigate = useNavigate();
     const { updateCartItemQuantity, removeFromCart } = useCart();
+    const user = useAppSelector(state => state.user.user);
     const items = useAppSelector(selectCartItems);
     const totalPrice = useAppSelector(selectCartTotalPrice);
     const isInitialized = useAppSelector(selectCartIsInitialized);
@@ -44,6 +46,15 @@ function Cart() {
         },
         [removeFromCart]
     );
+
+    const handleProceedToPayment = useCallback(() => {
+        if (!user) {
+            const returnUrl = encodeURIComponent(`/${ROUTES.PAYMENT}`);
+            navigate(`/${ROUTES.AUTH.LOGIN}?returnUrl=${returnUrl}`);
+        } else {
+            navigate(`/${ROUTES.PAYMENT}`);
+        }
+    }, [user, navigate]);
 
     if (!isInitialized) {
         return (
@@ -107,10 +118,20 @@ function Cart() {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button size='lg' className='w-full' disabled={items.length === 0} asChild>
-                                <Link to={`/${ROUTES.PAYMENT}`}>Proceed to Payment</Link>
+                        <CardFooter className='flex flex-col gap-2'>
+                            <Button
+                                size='lg'
+                                className='w-full'
+                                disabled={items.length === 0}
+                                onClick={handleProceedToPayment}
+                            >
+                                Proceed to Payment
                             </Button>
+                            {user && (
+                                <Button variant='outline' size='lg' className='w-full' asChild>
+                                    <Link to={`/${ROUTES.ORDERS.LIST}`}>View My Orders</Link>
+                                </Button>
+                            )}
                         </CardFooter>
                     </Card>
                 </div>

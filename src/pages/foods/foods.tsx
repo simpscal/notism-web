@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { CategoryFilter, FoodsGrid, FoodsHeroSection } from './components';
 
-import { FOOD_CATEGORIES } from '@/features/product/constants';
+import { FOOD_CATEGORIES } from '@/features/food/constants';
 
 function Foods() {
     const [searchParams, setSearchParams] = useSearchParams();

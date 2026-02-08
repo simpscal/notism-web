@@ -5,11 +5,12 @@ import { loadCart } from '@/store/cart';
 
 export function useReloadCart() {
     const dispatch = useAppDispatch();
-    const isInitialized = useAppSelector(state => state.cart.isInitialized);
+    const cartIsInitialized = useAppSelector(state => state.cart.isInitialized);
+    const authIsInitialized = useAppSelector(state => state.auth.isInitialized);
 
     useEffect(() => {
-        if (!isInitialized) {
+        if (authIsInitialized && !cartIsInitialized) {
             dispatch(loadCart());
         }
-    }, [dispatch, isInitialized]);
+    }, [dispatch, authIsInitialized, cartIsInitialized]);
 }

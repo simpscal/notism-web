@@ -6,6 +6,7 @@ export * from './auth.api';
 export * from './cart.api';
 export * from './food.api';
 export * from './oauth.api';
+export * from './order.api';
 export * from './storage.api';
 export * from './user.api';
 

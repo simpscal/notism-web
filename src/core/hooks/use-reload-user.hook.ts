@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from './use-redux.hook';
 
 import { authApi } from '@/apis';
 import { tokenManagerUtils } from '@/app/utils';
-import { unsetAuth } from '@/store/auth';
+import { setInitialized, unsetAuth } from '@/store/auth';
 import { setUser } from '@/store/user/user.slice';
 
 const QUERY_KEY = ['user', 'reload'] as const;
@@ -13,6 +13,7 @@ const QUERY_KEY = ['user', 'reload'] as const;
 export function useReloadUser() {
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.user.user);
+    const isAuthInitialized = useAppSelector(state => state.auth.isInitialized);
 
     const accessToken = tokenManagerUtils.getToken();
     const hasValidToken = Boolean(accessToken);
@@ -36,9 +37,21 @@ export function useReloadUser() {
         }
     }, [query.isError, dispatch]);
 
+    useEffect(() => {
+        if (!isAuthInitialized) {
+            if (!hasValidToken) {
+                dispatch(setInitialized());
+            } else if (user) {
+                dispatch(setInitialized());
+            } else if (query.isSuccess || query.isError) {
+                dispatch(setInitialized());
+            }
+        }
+    }, [dispatch, isAuthInitialized, hasValidToken, user, query.isSuccess, query.isError]);
+
     return {
         user,
         isLoading: query.isLoading,
-        isInitialized: !hasValidToken || !!user,
+        isInitialized: isAuthInitialized,
     };
 }

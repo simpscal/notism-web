@@ -19,4 +19,8 @@ export const ROUTES = {
     CART: 'cart',
     PAYMENT: 'payment',
     DELIVERY_STATUS: 'delivery-status',
+    ORDERS: {
+        LIST: 'orders',
+        DETAIL: (slugId: string) => `orders/${slugId}`,
+    },
 } as const;
