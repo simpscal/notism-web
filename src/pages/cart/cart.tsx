@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -9,17 +9,29 @@ import { Button } from '@/components/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { useAppSelector } from '@/core/hooks';
+import { useAppSelector, useAppDispatch } from '@/core/hooks';
 import { useCart } from '@/features/cart';
-import { selectCartItems, selectCartIsInitialized, selectCartTotalPrice } from '@/store/cart';
+import { selectCartItems, selectCartIsInitialized, setItemSelection } from '@/store/cart';
 
 function Cart() {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const { updateCartItemQuantity, removeFromCart } = useCart();
+
     const user = useAppSelector(state => state.user.user);
     const items = useAppSelector(selectCartItems);
-    const totalPrice = useAppSelector(selectCartTotalPrice);
     const isInitialized = useAppSelector(selectCartIsInitialized);
+
+    const selectedItemsList = useMemo(() => {
+        return items.filter(item => item.isSelected);
+    }, [items]);
+
+    const selectedTotalPrice = useMemo(() => {
+        return selectedItemsList.reduce((total, item) => {
+            const itemPrice = item.discountPrice ?? item.price;
+            return total + itemPrice * item.quantity;
+        }, 0);
+    }, [selectedItemsList]);
 
     const handleQuantityChange = useCallback(
         async (id: string, delta: number) => {
@@ -47,14 +59,25 @@ function Cart() {
         [removeFromCart]
     );
 
+    const handleSelectionChange = useCallback(
+        (id: string, selected: boolean) => {
+            dispatch(setItemSelection({ id, isSelected: selected }));
+        },
+        [dispatch]
+    );
+
     const handleProceedToPayment = useCallback(() => {
+        if (selectedItemsList.length === 0) {
+            toast.error('Please select at least one item to proceed');
+            return;
+        }
         if (!user) {
             const returnUrl = encodeURIComponent(`/${ROUTES.PAYMENT}`);
             navigate(`/${ROUTES.AUTH.LOGIN}?returnUrl=${returnUrl}`);
         } else {
             navigate(`/${ROUTES.PAYMENT}`);
         }
-    }, [user, navigate]);
+    }, [user, navigate, selectedItemsList.length]);
 
     if (!isInitialized) {
         return (
@@ -73,7 +96,6 @@ function Cart() {
             <h1 className='mb-8 text-3xl font-bold'>Shopping Cart</h1>
 
             <div className='grid gap-8 lg:grid-cols-3'>
-                {/* Cart Items */}
                 <div className='lg:col-span-2 space-y-4'>
                     {items.map(item => (
                         <CartItem
@@ -81,11 +103,11 @@ function Cart() {
                             item={item}
                             onQuantityChange={handleQuantityChange}
                             onRemove={handleRemoveItem}
+                            onSelectionChange={handleSelectionChange}
                         />
                     ))}
                 </div>
 
-                {/* Order Summary */}
                 <div className='lg:col-span-1'>
                     <Card className='sticky top-4'>
                         <CardHeader>
@@ -93,20 +115,25 @@ function Cart() {
                         </CardHeader>
                         <CardContent className='space-y-4'>
                             <div className='space-y-2'>
-                                {items.map(item => {
-                                    const hasDiscount = item.discountPrice !== null && item.discountPrice < item.price;
-                                    const effectivePrice = hasDiscount ? item.discountPrice! : item.price;
-                                    const itemTotal = effectivePrice * item.quantity;
+                                {selectedItemsList.length > 0 ? (
+                                    selectedItemsList.map(item => {
+                                        const hasDiscount =
+                                            item.discountPrice !== null && item.discountPrice < item.price;
+                                        const effectivePrice = hasDiscount ? item.discountPrice! : item.price;
+                                        const itemTotal = effectivePrice * item.quantity;
 
-                                    return (
-                                        <div key={item.id} className='flex justify-between text-sm'>
-                                            <span className='text-muted-foreground'>
-                                                {item.name} x{item.quantity}
-                                            </span>
-                                            <span className='font-medium'>${itemTotal.toFixed(2)}</span>
-                                        </div>
-                                    );
-                                })}
+                                        return (
+                                            <div key={item.id} className='flex justify-between text-sm'>
+                                                <span className='text-muted-foreground'>
+                                                    {item.name} x{item.quantity}
+                                                </span>
+                                                <span className='font-medium'>${itemTotal.toFixed(2)}</span>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p className='text-sm text-muted-foreground'>No items selected</p>
+                                )}
                             </div>
 
                             <Separator />
@@ -114,7 +141,7 @@ function Cart() {
                             <div className='space-y-2'>
                                 <div className='flex justify-between text-lg font-semibold'>
                                     <span>Total</span>
-                                    <span>${totalPrice.toFixed(2)}</span>
+                                    <span>${selectedTotalPrice.toFixed(2)}</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -122,7 +149,7 @@ function Cart() {
                             <Button
                                 size='lg'
                                 className='w-full'
-                                disabled={items.length === 0}
+                                disabled={selectedItemsList.length === 0}
                                 onClick={handleProceedToPayment}
                             >
                                 Proceed to Payment

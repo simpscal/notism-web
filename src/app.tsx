@@ -3,14 +3,22 @@ import { useNavigate } from 'react-router-dom';
 
 import AppRoutes from './app.routes';
 import Spinner from './components/spinner';
+import { loadCart } from './store/cart';
 
 import { navigationUtils } from '@/app/utils/navigation.utils';
 import { Toaster } from '@/components/sonner';
-import { useReloadUser } from '@/core/hooks';
+import { useAppDispatch, useReloadUser } from '@/core/hooks';
 
 function App() {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { isInitialized } = useReloadUser();
+
+    useEffect(() => {
+        if (isInitialized) {
+            dispatch(loadCart());
+        }
+    }, [isInitialized]);
 
     useEffect(() => {
         navigationUtils.initialize(navigate);

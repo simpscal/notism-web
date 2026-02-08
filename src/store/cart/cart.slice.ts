@@ -22,11 +22,20 @@ const cartSlice = createSlice({
     initialState: INITIAL_STATE,
     reducers: {
         resetCart: () => INITIAL_STATE,
+        setItemSelection: (state, action: { payload: { id: string; isSelected: boolean } }) => {
+            const item = state.items.find(item => item.id === action.payload.id);
+            if (item) {
+                item.isSelected = action.payload.isSelected;
+            }
+        },
     },
     extraReducers: builder => {
         builder
             .addCase(loadCart.fulfilled, (state, action) => {
-                state.items = action.payload;
+                state.items = action.payload.map(item => ({
+                    ...item,
+                    isSelected: item.isSelected ?? true,
+                }));
                 state.isInitialized = true;
             })
             .addCase(loadCart.rejected, state => {
@@ -50,11 +59,11 @@ const cartSlice = createSlice({
 
         builder.addCase(updateItemQuantity.fulfilled, (state, action) => {
             if (action.payload.isAuthenticated) {
-                const { item: updatedItem } = action.payload;
-                const item = state.items.find(item => item.id === updatedItem.id);
+                const { id, quantity } = action.payload;
+                const item = state.items.find(item => item.id === id);
 
                 if (item) {
-                    item.quantity = updatedItem.quantity;
+                    item.quantity = quantity;
                 }
             } else {
                 const { id, quantity } = action.payload;
@@ -93,6 +102,6 @@ const cartSlice = createSlice({
     },
 });
 
-export const { resetCart } = cartSlice.actions;
+export const { resetCart, setItemSelection } = cartSlice.actions;
 
 export default cartSlice.reducer;

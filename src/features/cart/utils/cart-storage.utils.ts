@@ -7,7 +7,11 @@ export const cartStorageUtils = {
         try {
             const stored = localStorage.getItem(CART_STORAGE_KEY);
             if (!stored) return [];
-            return JSON.parse(stored) as CartItemViewModel[];
+            const items = JSON.parse(stored) as CartItemViewModel[];
+            return items.map(item => ({
+                ...item,
+                isSelected: item.isSelected ?? true,
+            }));
         } catch {
             return [];
         }

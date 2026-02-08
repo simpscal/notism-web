@@ -13,14 +13,21 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { PaymentMethodEnum } from '@/features/order';
-import { loadCart, selectCartItems, selectCartIsInitialized, selectCartTotalPrice } from '@/store/cart';
+import {
+    loadCart,
+    selectCartItems,
+    selectCartIsInitialized,
+    selectSelectedCartItems,
+    selectSelectedCartTotalPrice,
+} from '@/store/cart';
 
 function Payment() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
-    const items = useAppSelector(selectCartItems);
-    const totalPrice = useAppSelector(selectCartTotalPrice);
+    const allItems = useAppSelector(selectCartItems);
+    const selectedItems = useAppSelector(selectSelectedCartItems);
+    const totalPrice = useAppSelector(selectSelectedCartTotalPrice);
     const isInitialized = useAppSelector(selectCartIsInitialized);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
 
@@ -44,19 +51,19 @@ function Payment() {
     }, []);
 
     const handlePlaceOrder = useCallback(() => {
-        if (items.length === 0) {
-            toast.error('Your cart is empty');
+        if (selectedItems.length === 0) {
+            toast.error('Please select at least one item to place an order');
             navigate(`/${ROUTES.CART}`);
             return;
         }
 
-        const cartItemIds = items.map(item => item.id);
+        const cartItemIds = selectedItems.map(item => item.id);
 
         createOrder({
             paymentMethod: paymentMethod,
             cartItemIds,
         });
-    }, [items, paymentMethod, navigate, createOrder]);
+    }, [selectedItems, paymentMethod, navigate, createOrder]);
 
     const handleBackToCart = useCallback(() => {
         navigate(`/${ROUTES.CART}`);
@@ -70,8 +77,22 @@ function Payment() {
         );
     }
 
-    if (items.length === 0) {
+    if (allItems.length === 0) {
         return <PaymentEmpty />;
+    }
+
+    if (selectedItems.length === 0) {
+        return (
+            <div className='container mx-auto px-4 py-8'>
+                <h1 className='mb-8 text-3xl font-bold'>Payment</h1>
+                <Card>
+                    <CardContent className='py-8 text-center'>
+                        <p className='text-muted-foreground mb-4'>No items selected for checkout</p>
+                        <Button onClick={handleBackToCart}>Back to Cart</Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
     }
 
     return (
@@ -82,7 +103,7 @@ function Payment() {
                 {/* Payment Method Selection */}
                 <div className='lg:col-span-2 space-y-6'>
                     <PaymentMethod value={paymentMethod} onValueChange={handlePaymentMethodChange} />
-                    <PaymentOrderSummary items={items} totalPrice={totalPrice} />
+                    <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
                 </div>
 
                 {/* Action Buttons */}

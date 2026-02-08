@@ -28,7 +28,7 @@ export const addItem = createAsyncThunk(
             return { item: mapCartItemResponseToViewModel(response), isAuthenticated: true as const };
         } else {
             return {
-                item: { ...item, quantity: Math.min(quantity, item.stockQuantity) },
+                item: { ...item, quantity: Math.min(quantity, item.stockQuantity), isSelected: true },
                 isAuthenticated: false as const,
             };
         }
@@ -42,8 +42,8 @@ export const updateItemQuantity = createAsyncThunk(
         const isAuthenticated = !!state.user.user?.id;
 
         if (isAuthenticated) {
-            const response = await cartApi.updateItemQuantity(id, { quantity });
-            return { item: mapCartItemResponseToViewModel(response), isAuthenticated: true as const };
+            await cartApi.updateItemQuantity(id, { quantity });
+            return { id, quantity, isAuthenticated: true as const };
         } else {
             return { id, quantity, isAuthenticated: false as const };
         }

@@ -9,4 +9,5 @@ export interface CartItemViewModel {
     quantity: number;
     stockQuantity: number;
     quantityUnit: string;
+    isSelected: boolean;
 }

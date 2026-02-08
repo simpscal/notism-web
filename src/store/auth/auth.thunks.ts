@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { syncCartItems } from '../cart/cart.thunks';
+import { loadCart, syncCartItems } from '../cart/cart.thunks';
 import { setUser } from '../user/user.slice';
 
 import { setToken } from './auth.slice';
@@ -13,5 +13,6 @@ export const setAuth = createAsyncThunk<void, { token: string; user: UserProfile
         dispatch(setToken(token));
         dispatch(setUser(user));
         await dispatch(syncCartItems()).unwrap();
+        dispatch(loadCart());
     }
 );

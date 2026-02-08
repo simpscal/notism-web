@@ -1,9 +1,11 @@
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { memo } from 'react';
 
+import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader } from '@/components/card';
+import { Checkbox } from '@/components/checkbox';
 import { CartItemViewModel } from '@/features/cart/models';
 import { FoodImage } from '@/features/food/components';
 
@@ -11,19 +13,39 @@ interface CartItemProps {
     item: CartItemViewModel;
     onQuantityChange: (id: string, delta: number) => void;
     onRemove: (id: string, name: string) => void;
+    onSelectionChange: (id: string, selected: boolean) => void;
 }
 
-function CartItemComponent({ item, onQuantityChange, onRemove }: CartItemProps) {
+function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange }: CartItemProps) {
+    const isSelected = item.isSelected;
     const hasDiscount = item.discountPrice !== null && item.discountPrice < item.price;
     const effectivePrice = hasDiscount ? item.discountPrice! : item.price;
     const itemTotal = effectivePrice * item.quantity;
     const originalTotal = item.price * item.quantity;
     const discountAmount = hasDiscount ? originalTotal - itemTotal : 0;
 
+    const handleCardClick = () => {
+        onSelectionChange(item.id, !isSelected);
+    };
+
+    const handleCheckboxChange = (checked: boolean) => {
+        onSelectionChange(item.id, checked);
+    };
+
+    const handleButtonClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
     return (
-        <Card>
+        <Card
+            className={cn('cursor-pointer transition-colors', isSelected && 'border-primary border-2')}
+            onClick={handleCardClick}
+        >
             <CardHeader>
                 <div className='flex items-start gap-4'>
+                    <div onClick={handleButtonClick} onMouseDown={e => e.stopPropagation()}>
+                        <Checkbox checked={isSelected} onCheckedChange={handleCheckboxChange} className='mt-1' />
+                    </div>
                     <div className='relative h-24 w-24 rounded-lg overflow-hidden bg-muted'>
                         <FoodImage
                             src={item.imageUrl}
@@ -41,7 +63,10 @@ function CartItemComponent({ item, onQuantityChange, onRemove }: CartItemProps) 
                                 variant='ghost'
                                 size='icon'
                                 className='shrink-0'
-                                onClick={() => onRemove(item.id, item.name)}
+                                onClick={e => {
+                                    handleButtonClick(e);
+                                    onRemove(item.id, item.name);
+                                }}
                             >
                                 <Trash2 className='h-4 w-4' />
                             </Button>
@@ -63,7 +88,10 @@ function CartItemComponent({ item, onQuantityChange, onRemove }: CartItemProps) 
                                 variant='ghost'
                                 size='icon-sm'
                                 className='rounded-l-lg'
-                                onClick={() => onQuantityChange(item.id, -1)}
+                                onClick={e => {
+                                    handleButtonClick(e);
+                                    onQuantityChange(item.id, -1);
+                                }}
                             >
                                 <Minus className='h-4 w-4' />
                             </Button>
@@ -72,7 +100,10 @@ function CartItemComponent({ item, onQuantityChange, onRemove }: CartItemProps) 
                                 variant='ghost'
                                 size='icon-sm'
                                 className='rounded-r-lg'
-                                onClick={() => onQuantityChange(item.id, 1)}
+                                onClick={e => {
+                                    handleButtonClick(e);
+                                    onQuantityChange(item.id, 1);
+                                }}
                                 disabled={item.quantity >= item.stockQuantity}
                             >
                                 <Plus className='h-4 w-4' />

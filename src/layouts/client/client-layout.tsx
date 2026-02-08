@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -8,20 +7,12 @@ import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { SidebarInset, SidebarProvider } from '@/components/sidebar';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { loadCart } from '@/store/cart';
 import { resetStore } from '@/store/root.actions';
 
 function ClientLayout() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.user.user);
-    const authIsInitialized = useAppSelector(state => state.auth.isInitialized);
-
-    useEffect(() => {
-        if (authIsInitialized) {
-            dispatch(loadCart());
-        }
-    }, [authIsInitialized]);
 
     const handleLogout = async () => {
         await authApi.logout();

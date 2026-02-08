@@ -13,4 +13,5 @@ export const mapCartItemResponseToViewModel = (item: CartItemResponseModel): Car
     quantity: item.quantity,
     stockQuantity: item.stockQuantity,
     quantityUnit: item.quantityUnit,
+    isSelected: true,
 });

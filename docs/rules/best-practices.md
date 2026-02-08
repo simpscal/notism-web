@@ -63,17 +63,26 @@ This document contains code examples and best practices for implementing the arc
 1. **Imports** (including `memo` from 'react')
 2. **Types/Interfaces**
 3. **Component Definition**
-4. **Hooks**
-5. **Event handlers**
-6. **Early returns**
-7. **Main render** (always last)
-8. **Export** (wrapped with `memo`)
+4. **Hooks** (useState, useRef, useMemo, useCallback for utilities)
+5. **useEffect** (under the hooks)
+6. **Utilities** (helper functions, above early returns)
+7. **Event handlers** (useCallback)
+8. **Early returns**
+9. **Main render** (always last)
+10. **Export** (wrapped with `memo`)
+
+#### Rules
+
+- **Hooks**: Must include `useMemo` for heavy calculated variables
+- **useEffect**: Must be placed under all hooks
+- **Event handlers**: Must use `useCallback`
+- **Utilities**: Helper functions should be placed above early returns
 
 #### Example
 
 ```typescript
 // 1. IMPORTS
-import { memo, useState } from 'react';
+import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useCustomHook } from '@/hooks/useCustomHook';
 
 // 2. TYPES/INTERFACES
@@ -86,19 +95,36 @@ interface MyComponentProps {
 function MyComponent({ title, onAction }: MyComponentProps) {
     // 4. HOOKS
     const [loading, setLoading] = useState(false);
+    const dataRef = useRef(null);
     const { data, error } = useCustomHook();
 
-    // 5. EVENT HANDLERS
-    const handleSubmit = () => {
-        setLoading(true);
-        onAction?.();
+    const memoizedValue = useMemo(() => {
+        return data?.map(item => item.value);
+    }, [data]);
+
+    // 5. useEffect (under hooks)
+    useEffect(() => {
+        if (data) {
+            dataRef.current = data;
+        }
+    }, [data]);
+
+    // 6. UTILITIES (above early returns)
+    const calculateTotal = (items: Item[]) => {
+        return items.reduce((sum, item) => sum + item.price, 0);
     };
 
-    // 6. EARLY RETURNS
+    // 7. EVENT HANDLERS (useCallback)
+    const handleSubmit = useCallback(() => {
+        setLoading(true);
+        onAction?.();
+    }, [onAction]);
+
+    // 8. EARLY RETURNS
     if (error) return <div>Error occurred</div>;
     if (loading) return <div>Loading...</div>;
 
-    // 7. MAIN RENDER
+    // 9. MAIN RENDER
     return (
         <div>
             <h1>{title}</h1>
@@ -107,7 +133,7 @@ function MyComponent({ title, onAction }: MyComponentProps) {
     );
 }
 
-// 8. EXPORT (wrapped with memo)
+// 10. EXPORT (wrapped with memo)
 export default memo(MyComponent);
 ```
 
