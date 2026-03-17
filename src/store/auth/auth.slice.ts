@@ -1,16 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { resetStore } from '../root.actions';
+
+import { TOKEN_KEYS } from '@/app/constants/token-keys.constant';
 import { tokenManagerUtils } from '@/app/utils';
-import { UserProfileViewModel } from '@/features/user/models';
-import { AppDispatch } from '@/store';
-import { setUser, clearUser } from '@/store/user/user.slice';
+
+function getOauthReturnUrlFromStorage() {
+    try {
+        return localStorage.getItem(TOKEN_KEYS.OAUTH_RETURN_URL);
+    } catch {
+        return null;
+    }
+}
 
 export interface IAuthState {
     accessToken: string | null;
+    isInitialized: boolean;
+    oauthReturnUrl: string | null;
 }
 
 const INITIAL_STATE: IAuthState = {
     accessToken: null,
+    isInitialized: false,
+    oauthReturnUrl: getOauthReturnUrlFromStorage(),
 };
 
 const authSlice = createSlice({
@@ -22,27 +34,29 @@ const authSlice = createSlice({
             tokenManagerUtils.setToken(action.payload);
         },
 
-        clearToken: state => {
-            state.accessToken = null;
-            tokenManagerUtils.clearAll();
+        setInitialized: state => {
+            state.isInitialized = true;
         },
+
+        setOauthReturnUrl: (state, action: PayloadAction<string | null>) => {
+            state.oauthReturnUrl = action.payload;
+
+            if (action.payload != null) {
+                localStorage.setItem(TOKEN_KEYS.OAUTH_RETURN_URL, action.payload);
+            } else {
+                localStorage.removeItem(TOKEN_KEYS.OAUTH_RETURN_URL);
+            }
+        },
+    },
+    extraReducers: builder => {
+        builder.addCase(resetStore, state => {
+            tokenManagerUtils.clearAll();
+            localStorage.removeItem(TOKEN_KEYS.OAUTH_RETURN_URL);
+            return { ...INITIAL_STATE, oauthReturnUrl: null, isInitialized: state.isInitialized };
+        });
     },
 });
 
-export const { setToken, clearToken } = authSlice.actions;
-
-export const setAuth = (token: string, user: UserProfileViewModel) => {
-    return (dispatch: AppDispatch) => {
-        dispatch(setToken(token));
-        dispatch(setUser(user));
-    };
-};
-
-export const unsetAuth = () => {
-    return (dispatch: AppDispatch) => {
-        dispatch(clearToken());
-        dispatch(clearUser());
-    };
-};
+export const { setToken, setInitialized, setOauthReturnUrl } = authSlice.actions;
 
 export default authSlice.reducer;

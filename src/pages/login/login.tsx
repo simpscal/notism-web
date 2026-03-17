@@ -2,12 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { memo } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { authApi, oauthApi, OAuthProviderType } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import { passwordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
@@ -17,7 +17,7 @@ import { Input } from '@/components/input';
 import { PasswordInput } from '@/components/password-input';
 import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { setAuth } from '@/store/auth/auth.slice';
+import { setAuth, setOauthReturnUrl } from '@/store/auth';
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
@@ -29,11 +29,20 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 function Login() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const [searchParams] = useSearchParams();
 
     const loginMutation = useMutation({
         mutationFn: authApi.login,
-        onSuccess: data => {
-            dispatch(setAuth(data.token, data.user));
+        onSuccess: async data => {
+            await dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
+
+            toast.success('Login successful! Welcome back.');
+            const returnUrl = searchParams.get('returnUrl');
+            if (returnUrl) {
+                navigate(decodeURIComponent(returnUrl), { replace: true });
+            } else {
+                navigate(`/${ROUTES.SETTINGS.PROFILE}`);
+            }
         },
     });
 
@@ -60,30 +69,26 @@ function Login() {
     } = form;
 
     const handleFormSubmit = (values: LoginFormValues) => {
-        loginMutation.mutate(
-            {
-                email: values.email,
-                password: values.password,
-            },
-            {
-                onSuccess: () => {
-                    toast.success('Login successful! Welcome back.');
-                    navigate(`/${ROUTES.profile}`);
-                },
-            }
-        );
+        loginMutation.mutate({
+            email: values.email,
+            password: values.password,
+        });
     };
 
     const handleOAuthLogin = (provider: OAuthProviderType) => {
+        const returnUrl = searchParams.get('returnUrl');
+        dispatch(setOauthReturnUrl(returnUrl ?? null));
         oauthRedirectMutation.mutate(provider);
     };
 
     return (
-        <div className='space-y-6'>
+        <div className='space-y-4 sm:space-y-6'>
             {/* Header */}
-            <div className='space-y-2 text-center'>
-                <h1 className='text-2xl font-semibold tracking-tight'>Welcome back</h1>
-                <p className='text-sm text-muted-foreground'>Enter your credentials to access your account</p>
+            <div className='space-y-1 sm:space-y-2 text-center'>
+                <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>Welcome back</h1>
+                <p className='text-xs sm:text-sm text-muted-foreground'>
+                    Enter your credentials to access your account
+                </p>
             </div>
 
             {/* Login Form */}
@@ -104,10 +109,14 @@ function Login() {
 
                 {/* Password Field */}
                 <Field data-invalid={!!errors.password}>
-                    <div className='flex items-center justify-between'>
+                    <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0'>
                         <FieldLabel htmlFor='password'>Password</FieldLabel>
-                        <Button variant='link' className='p-0 h-auto text-sm font-medium' asChild>
-                            <Link to={`/${ROUTES.requestResetPassword}`}>Forgot password?</Link>
+                        <Button
+                            variant='link'
+                            className='p-0 h-auto text-xs sm:text-sm font-medium self-start sm:self-auto'
+                            asChild
+                        >
+                            <Link to={`/${ROUTES.AUTH.REQUEST_RESET_PASSWORD}`}>Forgot password?</Link>
                         </Button>
                     </div>
                     <PasswordInput
@@ -137,22 +146,34 @@ function Login() {
             </div>
 
             {/* Social Login Buttons */}
-            <div className='grid grid-cols-2 gap-3'>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('google')}>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3'>
+                <Button
+                    type='button'
+                    variant='outline'
+                    disabled={isLoading}
+                    onClick={() => handleOAuthLogin('google')}
+                    className='w-full gap-2'
+                >
                     <GoogleLogo className='h-4 w-4' />
-                    Google
+                    <span>Google</span>
                 </Button>
-                <Button type='button' variant='outline' disabled={isLoading} onClick={() => handleOAuthLogin('github')}>
+                <Button
+                    type='button'
+                    variant='outline'
+                    disabled={isLoading}
+                    onClick={() => handleOAuthLogin('github')}
+                    className='w-full gap-2'
+                >
                     <GithubLogo className='h-4 w-4' />
-                    GitHub
+                    <span>GitHub</span>
                 </Button>
             </div>
 
             {/* Sign Up Link */}
-            <div className='text-center text-sm'>
+            <div className='text-center text-xs sm:text-sm'>
                 <span className='text-muted-foreground'>Don't have an account? </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.signUp}`}>Sign up</Link>
+                    <Link to={`/${ROUTES.AUTH.SIGNUP}`}>Sign up</Link>
                 </Button>
             </div>
         </div>

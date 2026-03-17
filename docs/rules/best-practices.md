@@ -11,6 +11,7 @@ This document contains code examples and best practices for implementing the arc
     - [State Management Responsibilities](#state-management-responsibilities)
     - [Component Scope and Communication](#component-scope-and-communication)
     - [UI Component Responsibilities](#ui-component-responsibilities)
+    - [Showing Error State UI](#showing-error-state-ui)
     - [Component Architecture Patterns](#component-architecture-patterns)
     - [Component Responsibilities Checklist](#component-responsibilities-checklist)
 - [TanStack Query Patterns](#tanstack-query-patterns)
@@ -25,6 +26,7 @@ This document contains code examples and best practices for implementing the arc
 - [API and Hook Patterns](#api-and-hook-patterns)
     - [When to Use Hooks vs Direct API Calls](#when-to-use-hooks-vs-direct-api-calls)
     - [API Layer Examples](#api-layer-examples)
+    - [Model Organization](#model-organization)
     - [Hook with Business Logic Examples](#hook-with-business-logic-examples)
     - [Direct API Call Examples](#direct-api-call-examples)
 - [Component Examples](#component-examples)
@@ -35,7 +37,8 @@ This document contains code examples and best practices for implementing the arc
     - [Page Orchestrating Features](#page-orchestrating-features)
     - [Page Store Examples](#page-store-examples)
 - [Feature Examples](#feature-examples)
-    - [Feature Modal Component](#feature-modal-component)
+    - [Feature Component with Direct API Usage](#feature-component-with-direct-api-usage)
+    - [Feature UI Models](#feature-ui-models)
     - [Reusable Business Logic Hook](#reusable-business-logic-hook)
 - [Store Examples](#store-examples)
     - [Store Configuration](#store-configuration)
@@ -63,17 +66,26 @@ This document contains code examples and best practices for implementing the arc
 1. **Imports** (including `memo` from 'react')
 2. **Types/Interfaces**
 3. **Component Definition**
-4. **Hooks**
-5. **Event handlers**
-6. **Early returns**
-7. **Main render** (always last)
-8. **Export** (wrapped with `memo`)
+4. **Hooks** (useState, useRef, useMemo, useCallback for utilities)
+5. **useEffect** (under the hooks)
+6. **Utilities** (helper functions, above early returns)
+7. **Event handlers** (useCallback)
+8. **Early returns**
+9. **Main render** (always last)
+10. **Export** (wrapped with `memo`)
+
+#### Rules
+
+- **Hooks**: Must include `useMemo` for heavy calculated variables
+- **useEffect**: Must be placed under all hooks
+- **Event handlers**: Must use `useCallback`
+- **Utilities**: Helper functions should be placed above early returns
 
 #### Example
 
 ```typescript
 // 1. IMPORTS
-import { memo, useState } from 'react';
+import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useCustomHook } from '@/hooks/useCustomHook';
 
 // 2. TYPES/INTERFACES
@@ -86,19 +98,36 @@ interface MyComponentProps {
 function MyComponent({ title, onAction }: MyComponentProps) {
     // 4. HOOKS
     const [loading, setLoading] = useState(false);
+    const dataRef = useRef(null);
     const { data, error } = useCustomHook();
 
-    // 5. EVENT HANDLERS
-    const handleSubmit = () => {
-        setLoading(true);
-        onAction?.();
+    const memoizedValue = useMemo(() => {
+        return data?.map(item => item.value);
+    }, [data]);
+
+    // 5. useEffect (under hooks)
+    useEffect(() => {
+        if (data) {
+            dataRef.current = data;
+        }
+    }, [data]);
+
+    // 6. UTILITIES (above early returns)
+    const calculateTotal = (items: Item[]) => {
+        return items.reduce((sum, item) => sum + item.price, 0);
     };
 
-    // 6. EARLY RETURNS
+    // 7. EVENT HANDLERS (useCallback)
+    const handleSubmit = useCallback(() => {
+        setLoading(true);
+        onAction?.();
+    }, [onAction]);
+
+    // 8. EARLY RETURNS
     if (error) return <div>Error occurred</div>;
     if (loading) return <div>Loading...</div>;
 
-    // 7. MAIN RENDER
+    // 9. MAIN RENDER
     return (
         <div>
             <h1>{title}</h1>
@@ -107,7 +136,7 @@ function MyComponent({ title, onAction }: MyComponentProps) {
     );
 }
 
-// 8. EXPORT (wrapped with memo)
+// 10. EXPORT (wrapped with memo)
 export default memo(MyComponent);
 ```
 
@@ -416,6 +445,246 @@ function BadProductCard({ product }) {
 }
 ```
 
+##### Customizing Component Color Styles
+
+**Rule: Avoid customizing color, border, shadow, or background styles for components in `@/components/`.**
+
+Components in the `@/components/` directory (like `Button`, `Card`, `Badge`, etc.) are part of the design system and should maintain consistent styling. Custom color styles break design system consistency and make it harder to maintain a cohesive UI.
+
+```javascript
+// ❌ Bad: Customizing color styles on design system components
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Badge } from '@/components/badge';
+
+function FoodCard() {
+    return (
+        <Card className='border-primary bg-primary/10'>
+            <Badge className='bg-blue-500 text-white border-blue-600'>Category</Badge>
+            <Button className='border-primary text-primary hover:bg-primary/10'>Add to Cart</Button>
+        </Card>
+    );
+}
+
+// ✅ Good: Use component variants and default styling
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Badge } from '@/components/badge';
+
+function FoodCard() {
+    return (
+        <Card>
+            <Badge variant='secondary'>Category</Badge>
+            <Button variant='outline'>Add to Cart</Button>
+        </Card>
+    );
+}
+```
+
+**What to Avoid:**
+
+- ❌ Custom `bg-*`, `text-*`, `border-*` color classes on design system components
+- ❌ Custom `shadow-*` or gradient classes on components
+- ❌ Overriding component default colors with inline styles or custom classes
+- ❌ Using `!important` to override component styles
+
+**What to Do Instead:**
+
+- ✅ Use component variants (e.g., `variant='primary'`, `variant='outline'`)
+- ✅ Use component size props (e.g., `size='sm'`, `size='lg'`)
+- ✅ Rely on the design system's default styling
+- ✅ If customization is needed, extend the component in `@/components/` with a new variant
+- ✅ Use layout/spacing classes (e.g., `gap-4`, `p-6`, `mb-4`) which are acceptable
+
+**Exceptions:**
+
+- ✅ Layout/spacing utilities (e.g., `gap-4`, `p-6`, `mb-4`) are acceptable
+- ✅ Structural classes (e.g., `flex`, `grid`, `w-full`) are acceptable
+
+##### Preferring Semantic CSS Classes
+
+**Rule: Use semantic CSS classes that describe purpose and meaning rather than specific visual properties.**
+
+Semantic classes make code more maintainable, themeable, and accessible. They describe _what_ something is (e.g., `btn-primary`, `text-error`) rather than _how_ it looks (e.g., `bg-blue-500`, `text-red-600`).
+
+```javascript
+// ❌ Bad: Using specific visual classes
+function ErrorMessage() {
+    return (
+        <div className='bg-red-50 border-red-200 text-red-800 p-4 rounded'>
+            <p className='text-red-600 font-semibold'>Error occurred</p>
+        </div>
+    );
+}
+
+function SuccessMessage() {
+    return (
+        <div className='bg-green-50 border-green-200 text-green-800 p-4 rounded'>
+            <p className='text-green-600 font-semibold'>Success!</p>
+        </div>
+    );
+}
+
+// ✅ Good: Using semantic classes
+function ErrorMessage() {
+    return (
+        <div className='bg-destructive/10 border-destructive/20 text-destructive p-4 rounded'>
+            <p className='text-destructive font-semibold'>Error occurred</p>
+        </div>
+    );
+}
+
+function SuccessMessage() {
+    return (
+        <div className='bg-success/10 border-success/20 text-success p-4 rounded'>
+            <p className='text-success font-semibold'>Success!</p>
+        </div>
+    );
+}
+
+// ✅ Better: Using design system components with semantic variants
+import { Alert, AlertDescription } from '@/components/alert';
+
+function ErrorMessage() {
+    return (
+        <Alert variant='destructive'>
+            <AlertDescription>Error occurred</AlertDescription>
+        </Alert>
+    );
+}
+```
+
+**What to Avoid:**
+
+- ❌ Hardcoded color values (e.g., `bg-blue-500`, `text-red-600`, `border-gray-300`)
+- ❌ Specific spacing values when semantic tokens exist (e.g., `p-4` when `p-card` exists)
+- ❌ Visual property classes that should be semantic (e.g., `font-bold` when `text-heading` exists)
+- ❌ Magic numbers in class names (e.g., `w-320px`, `h-48px`)
+
+**What to Do Instead:**
+
+- ✅ Use design system tokens (e.g., `bg-primary`, `text-destructive`, `border-muted`)
+- ✅ Use component variants (e.g., `variant='destructive'`, `variant='success'`)
+- ✅ Use semantic utility classes (e.g., `text-heading`, `text-body`, `spacing-card`)
+- ✅ Use CSS custom properties/variables for themeable values
+- ✅ Prefer Tailwind's semantic color system (e.g., `bg-background`, `text-foreground`)
+
+**Examples of Semantic vs Specific:**
+
+| Purpose         | ❌ Specific              | ✅ Semantic                          |
+| --------------- | ------------------------ | ------------------------------------ |
+| Primary action  | `bg-blue-500 text-white` | `bg-primary text-primary-foreground` |
+| Error state     | `text-red-600`           | `text-destructive`                   |
+| Card background | `bg-white`               | `bg-card`                            |
+| Muted text      | `text-gray-500`          | `text-muted-foreground`              |
+| Border          | `border-gray-200`        | `border-border`                      |
+| Heading text    | `text-2xl font-bold`     | `text-heading` or component variant  |
+| Spacing         | `p-4`                    | `p-card` (if semantic token exists)  |
+
+**Benefits:**
+
+- ✅ **Themeable**: Easy to change colors across the app by updating design tokens
+- ✅ **Accessible**: Semantic classes often include accessibility considerations
+- ✅ **Maintainable**: Changes to design system propagate automatically
+- ✅ **Consistent**: Ensures visual consistency across the application
+- ✅ **Readable**: Code intent is clearer (e.g., `text-error` vs `text-red-600`)
+
+**When Specific Classes Are Acceptable:**
+
+- ✅ Layout utilities (e.g., `flex`, `grid`, `gap-4`, `w-full`) - these are structural, not visual
+- ✅ Responsive utilities (e.g., `md:flex`, `lg:grid-cols-3`) - these describe behavior
+- ✅ Animation utilities (e.g., `transition-all`, `duration-300`) - these describe behavior
+- ✅ When no semantic alternative exists and the value is truly arbitrary (e.g., `w-[320px]` for a specific fixed width)
+
+### Showing Error State UI
+
+When a query fails (`isError` from `useQuery`), show a dedicated error UI instead of rendering broken or empty content. Use the shared **ErrorState** component from `@/components/error-state` so error presentation is consistent across the app.
+
+**Rule: Use the `ErrorState` component for API-failure error UIs.** Customize the message and icon via props; avoid duplicating error layout and styles in page-specific components.
+
+**ErrorState props:**
+
+| Prop          | Type           | Required | Description                                                           |
+| ------------- | -------------- | -------- | --------------------------------------------------------------------- |
+| `title`       | string         | Yes      | Main heading (e.g. "Failed to load food details").                    |
+| `description` | string         | No       | Secondary text below the title.                                       |
+| `icon`        | ReactNode      | No       | Custom icon (default: `AlertCircle` from lucide-react).               |
+| `action`      | ReactNode      | No       | Primary CTA (e.g. Button + Link "Back to list").                      |
+| `iconSize`    | `'sm' \| 'md'` | No       | Default `'md'`. Use `'sm'` for compact contexts (tables, list pages). |
+| `className`   | string         | No       | Extra classes on the wrapper.                                         |
+
+**Detail pages (with back navigation):** Compose a back link above `ErrorState` and pass an `action` (e.g. "Back to Foods" button). Keep routing and copy in the page; use `ErrorState` only for the icon, title, description, and action block.
+
+```typescript
+// ✅ Good: Detail page error – back button + ErrorState with action
+const FoodDetailPage = () => {
+    const { id } = useParams();
+    const { data: food, isLoading, isError } = useQuery({
+        queryKey: ['foods', 'detail', id],
+        queryFn: () => foodApi.getById(id!),
+        enabled: !!id,
+    });
+
+    if (isLoading) return <Spinner />;
+    if (isError) {
+        return (
+            <div className='container mx-auto px-4 py-8'>
+                <Button variant='ghost' className='mb-8' asChild>
+                    <Link to={`/${ROUTES.ADMIN.FOODS}`}>
+                        <ArrowLeft className='h-4 w-4' />
+                        Back to Foods
+                    </Link>
+                </Button>
+                <ErrorState
+                    title='Failed to load food details'
+                    description='Please try again later or go back to the foods list.'
+                    action={
+                        <Button asChild>
+                            <Link to={`/${ROUTES.ADMIN.FOODS}`}>Back to Foods</Link>
+                        </Button>
+                    }
+                />
+            </div>
+        );
+    }
+    return (/* ... */);
+};
+```
+
+**List/table or compact layouts:** Use `ErrorState` with `iconSize='sm'` inside a centered container. No back button or action is required if the page context is clear.
+
+```typescript
+// ✅ Good: List/table error – centered ErrorState, compact size
+const AdminFoodsPage = () => {
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ['admin', 'foods', { page, search }],
+        queryFn: () => adminApi.getFoods({ page, search }),
+    });
+
+    if (isLoading) return <Spinner />;
+    if (isError) {
+        return (
+            <div className='flex h-full w-full items-center justify-center'>
+                <ErrorState
+                    title='Failed to load foods'
+                    description='Please try again later.'
+                    iconSize='sm'
+                />
+            </div>
+        );
+    }
+    return (/* ... */);
+};
+```
+
+**Custom icon:** Pass the `icon` prop when a different icon is needed (e.g. `icon={<AlertTriangle className='h-16 w-16 text-destructive' />}`).
+
+**What to avoid:**
+
+- ❌ Building page-specific error blocks that duplicate ErrorState layout (icon circle, title, description, button).
+- ❌ Using raw text or ad-hoc divs for query errors instead of `ErrorState`.
+- ❌ Showing error toasts for the same failure that is already shown via `ErrorState` (global API interceptor may still show toasts; avoid duplicating in component).
+
 ### Component Architecture Patterns
 
 #### Composition Over Inheritance
@@ -473,6 +742,7 @@ function ProfileCard({ user }) {
 - [ ] Promoting local state unnecessarily
 - [ ] Tight coupling between unrelated components
 - [ ] Forgetting to wrap components with `memo`
+- [ ] Customizing color, border, shadow, or background styles on design system components
 
 ---
 
@@ -577,6 +847,34 @@ const { data: accountNames } = useQuery({
 ### useMutation Patterns
 
 Use `useMutation` for POST, PUT, PATCH, DELETE requests (modifying data).
+
+#### Use the Mutation Object Directly
+
+**Rule: Do not destructure the mutation return value into extra variables.** Use the mutation object directly (e.g. `mutation.mutate`, `mutation.isPending`) so that call sites and dependency arrays stay clear and you avoid referential-stability issues.
+
+```typescript
+// ❌ Bad: Extracting mutation into separate variables
+const deleteFoodMutation = useMutation({ ... });
+const { mutate: deleteFood, isPending: isDeleting } = deleteFoodMutation;
+// ...
+deleteFood(id);
+disabled={isDeleting}
+
+// ✅ Good: Use the mutation object directly
+const deleteFoodMutation = useMutation({ ... });
+// ...
+deleteFoodMutation.mutate(id);
+disabled={deleteFoodMutation.isPending}
+```
+
+**What to avoid:**
+
+- ❌ `const { mutate: someAction, isPending: isDoing } = someMutation;`
+- ❌ Passing the whole mutation object into `useCallback`/`useEffect` dependency arrays (use destructured stable values only when a dependency is required)
+
+**What to do instead:**
+
+- ✅ Call `someMutation.mutate(...)` and use `someMutation.isPending` (and other properties) directly in JSX and handlers.
 
 #### Basic Mutation
 
@@ -686,6 +984,24 @@ const CreateAccountModal = () => {
 
 #### Global Error Handler
 
+API errors are automatically handled by the global error interceptor in the API client (`apis/client.ts`). The interceptor shows error toasts for all API errors (except 401 Unauthorized which is handled separately for authentication flows).
+
+**Rule: Do NOT show error toasts in components for API errors.**
+
+Since API errors are handled globally, components should not duplicate error toast notifications in `onError` handlers. The global handler will automatically display appropriate error messages based on the HTTP status code.
+
+```typescript
+// ✅ Good: Global error handler in apis/client.ts
+// Automatically shows error toasts for API errors
+apiClient.addResponseInterceptor(async (response: Response) => {
+    if (!response.ok) {
+        // Shows toast.error with appropriate message based on status code
+        toast.error(errorTitle, { description: errorDescription });
+    }
+    return response;
+});
+```
+
 ```typescript
 // main.tsx or app.tsx
 const queryClient = new QueryClient({
@@ -709,41 +1025,62 @@ const queryClient = new QueryClient({
 
 #### Component-Level Error Handling
 
-```typescript
-const AccountsPage = () => {
-    const { data, error, isError, refetch } = useQuery({
-        queryKey: ['accounts', 'list'],
-        queryFn: () => accountApi.list(),
-    });
-
-    if (isError) {
-        return (
-            <ErrorState
-                message={error.message}
-                onRetry={() => refetch()}
-            />
-        );
-    }
-
-    return (/*...*/);
-};
-```
+When a query fails (`isError` from `useQuery`), show a dedicated error UI instead of rendering broken or empty content. Use the **ErrorState** component from `@/components/error-state` and follow the patterns in [Showing Error State UI](#showing-error-state-ui) (Component Conventions).
 
 #### Mutation Error Handling
 
+**Rule: Do NOT show error toasts in mutation `onError` handlers for API errors.**
+
+API errors are automatically handled by the global error interceptor. Only use `onError` for:
+
+- Component-specific error handling (e.g., setting form errors)
+- Business logic that needs to run on error (e.g., resetting form state)
+- Non-API errors (e.g., validation errors before API call)
+
 ```typescript
+// ❌ Bad: Showing error toast for API errors (duplicates global handler)
+const updateAccount = useMutation({
+    mutationFn: (data: UpdateAccountRM) => accountApi.update(data),
+    onError: () => {
+        toast.error('Failed to update account'); // ❌ Don't do this!
+    },
+});
+
+// ✅ Good: Only handle component-specific errors
 const updateAccount = useMutation({
     mutationFn: (data: UpdateAccountRM) => accountApi.update(data),
     onError: (error, variables, context) => {
-        // Handle specific error types
+        // Handle specific error types for component logic
         if (error instanceof ValidationError) {
-            setFormErrors(error.fieldErrors);
-        } else {
-            toast.error('Failed to update account');
+            setFormErrors(error.fieldErrors); // ✅ Component-specific handling
         }
+        // No toast.error here - global handler will show it
     },
 });
+
+// ✅ Good: No onError needed if only success handling is required
+const deleteAccount = useMutation({
+    mutationFn: (id: string) => accountApi.delete(id),
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['accounts', 'list'] });
+        toast.success('Account deleted successfully');
+    },
+    // No onError - global handler will show error toast automatically
+});
 ```
+
+**When to Use `onError` in Mutations:**
+
+- ✅ Setting form validation errors
+- ✅ Resetting component state on error
+- ✅ Handling business logic specific to the component
+- ✅ Handling non-API errors (client-side validation, etc.)
+
+**When NOT to Use `onError` in Mutations:**
+
+- ❌ Showing error toasts (handled globally)
+- ❌ Logging errors (can be done globally)
+- ❌ Generic error handling (handled globally)
 
 ### Loading States
 
@@ -1089,17 +1426,15 @@ const AccountsPage = () => {
         queryFn: () => accountApi.list(),
     });
 
-    // Simple mutation without extra business logic - no hook needed
-    const { mutate: deleteAccount, isPending: isDeleting } = useMutation({
+    // Simple mutation without extra business logic - no hook needed; use mutation object directly
+    const deleteAccountMutation = useMutation({
         mutationFn: (id: string) => accountApi.delete(id),
         onSuccess: () => {
             toast.success('Account deleted!');
         },
-        onError: () => {
-            toast.error('Failed to delete account');
-        },
     });
 
+    // Use deleteAccountMutation.mutate(...) and deleteAccountMutation.isPending in JSX/handlers
     return (/*...*/);
 };
 

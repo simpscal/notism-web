@@ -1,0 +1,12 @@
+[
+    { "id": "pizza", "name": "Pizza" },
+    { "id": "burger", "name": "Burger" },
+    { "id": "salad", "name": "Salad" },
+    { "id": "pasta", "name": "Pasta" },
+    { "id": "dessert", "name": "Dessert" },
+    { "id": "drink", "name": "Drink" },
+    { "id": "appetizer", "name": "Appetizer" },
+    { "id": "soup", "name": "Soup" },
+    { "id": "sandwich", "name": "Sandwich" },
+    { "id": "breakfast", "name": "Breakfast" }
+]

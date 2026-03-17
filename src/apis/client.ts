@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from 'sonner';
 
-import { ROUTES } from '@/app/configs';
-import { API_ENDPOINTS, TOKEN_KEYS } from '@/app/constants';
+import { API_ENDPOINTS, ROUTES, TOKEN_KEYS } from '@/app/constants';
 import { tokenManagerUtils } from '@/app/utils';
 import { navigationUtils } from '@/app/utils/navigation.utils';
 
@@ -320,7 +319,7 @@ export class ApiClient {
 
     private _handleTokenError(): never {
         tokenManagerUtils.clearAll();
-        navigationUtils.navigate(`/${ROUTES.logIn}`, { replace: true });
+        navigationUtils.navigate(`/${ROUTES.AUTH.LOGIN}`, { replace: true });
 
         throw new Error('Unauthorized: please log in again');
     }

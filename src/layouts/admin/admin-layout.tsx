@@ -1,0 +1,37 @@
+import { Outlet, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { AdminLayoutToolbar, AdminNavigationSidebar } from './components';
+
+import { authApi } from '@/apis';
+import { ROUTES } from '@/app/constants';
+import { SidebarInset, SidebarProvider } from '@/components/sidebar';
+import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { resetStore } from '@/store/root.actions';
+
+function AdminLayout() {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(state => state.user.user);
+
+    const handleLogout = async () => {
+        await authApi.logout();
+        dispatch(resetStore());
+        toast.success('Logged out successfully');
+        navigate(`/${ROUTES.AUTH.LOGIN}`);
+    };
+
+    return (
+        <SidebarProvider className='h-screen' defaultOpen={true}>
+            <AdminNavigationSidebar />
+            <SidebarInset className='flex flex-col overflow-hidden'>
+                <AdminLayoutToolbar user={user} onLogout={handleLogout} />
+                <main className='flex-1 overflow-y-auto'>
+                    <Outlet />
+                </main>
+            </SidebarInset>
+        </SidebarProvider>
+    );
+}
+
+export default AdminLayout;

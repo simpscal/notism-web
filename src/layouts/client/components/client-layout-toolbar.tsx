@@ -1,7 +1,11 @@
+import { LogOut, Moon, Monitor, Package, Settings, ShoppingCart, Sun, Shield } from 'lucide-react';
+import { memo, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
+import { UserRoleEnum } from '@/app/enums';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import {
     DropdownMenu,
@@ -11,15 +15,23 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
+import { SidebarTrigger } from '@/components/sidebar';
+import { useTheme } from '@/core/contexts/theme.context';
+import { useAppSelector, useIsMobile } from '@/core/hooks';
 import { UserProfileViewModel } from '@/features/user/models';
+import { selectCartTotalItems } from '@/store/cart';
 
 interface ClientLayoutToolbarProps {
     user: UserProfileViewModel | null;
     onLogout: () => void;
-    onSettingsClick: () => void;
 }
 
-function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutToolbarProps) {
+function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
+    const cartItemCount = useAppSelector(selectCartTotalItems);
+    const isMobile = useIsMobile();
+    const { theme, setTheme } = useTheme();
+    const isAdmin = useMemo(() => user?.role === UserRoleEnum.Admin, [user?.role]);
+
     const getUserInitials = () => {
         if (!user) return 'U';
         const firstInitial = user.firstName?.[0] || '';
@@ -27,14 +39,62 @@ function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutTo
         return (firstInitial + lastInitial).toUpperCase() || 'U';
     };
 
+    const handleThemeToggle = useCallback(() => {
+        if (theme === 'light') {
+            setTheme('dark');
+        } else if (theme === 'dark') {
+            setTheme('system');
+        } else {
+            setTheme('light');
+        }
+    }, [theme, setTheme]);
+
+    const getThemeIcon = () => {
+        if (theme === 'light') {
+            return Sun;
+        } else if (theme === 'dark') {
+            return Moon;
+        } else {
+            return Monitor;
+        }
+    };
+
+    const ThemeIcon = getThemeIcon();
+
     return (
         <header className='border-b bg-background sticky top-0 z-50'>
             <div className='flex h-16 items-center justify-between px-4 md:px-6'>
-                {/* Logo/Brand - Left */}
-                <h1 className='text-2xl font-semibold text-primary tracking-tight'>Brand Name</h1>
+                {/* Left side - Menu button (mobile only) & Logo */}
+                <div className='flex items-center gap-2 md:gap-4'>
+                    {isMobile && <SidebarTrigger />}
+                    <Link to={ROUTES.HOME} className='cursor-pointer'>
+                        <h1 className='text-lg md:text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
+                            Brand Name
+                        </h1>
+                    </Link>
+                </div>
 
-                {/* Right side - User Avatar or Login/Signup */}
-                <div className='flex items-center gap-4'>
+                {/* Right side - Cart, Theme Toggle & User Avatar or Login/Signup */}
+                <div className='flex items-center gap-2 md:gap-4'>
+                    {/* Cart Icon */}
+                    <Button variant='ghost' size='icon' className='relative' asChild>
+                        <Link to={`/${ROUTES.CART}`}>
+                            <ShoppingCart className='h-5 w-5' />
+                            {cartItemCount > 0 && (
+                                <Badge className='absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0'>
+                                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                                </Badge>
+                            )}
+                        </Link>
+                    </Button>
+
+                    {/* Theme Toggle */}
+                    {!isMobile && (
+                        <Button variant='ghost' size='icon' onClick={handleThemeToggle} title={`Theme: ${theme}`}>
+                            <ThemeIcon className='h-5 w-5' />
+                        </Button>
+                    )}
+
                     {user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -58,22 +118,39 @@ function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutTo
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.profile}`}>Profile</Link>
+                                    <Link to={`/${ROUTES.ORDERS.LIST}`}>
+                                        <Package className='h-4 w-4' />
+                                        <span>Orders</span>
+                                    </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={onSettingsClick}>Settings</DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>
+                                        <Settings className='h-4 w-4' />
+                                        <span>Setting</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                {isAdmin && (
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <Link to={`/${ROUTES.ADMIN.ORDERS}`}>
+                                                <Shield className='h-4 w-4' />
+                                                <span>Admin Portal</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={onLogout}>Log out</DropdownMenuItem>
+                                <DropdownMenuItem onClick={onLogout}>
+                                    <LogOut className='h-4 w-4' />
+                                    <span>Log out</span>
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
-                        <div className='flex items-center gap-2'>
-                            <Button variant='ghost' asChild>
-                                <Link to={`/${ROUTES.logIn}`}>Log in</Link>
-                            </Button>
-                            <Button asChild>
-                                <Link to={`/${ROUTES.signUp}`}>Sign up</Link>
-                            </Button>
-                        </div>
+                        <Button size={isMobile ? 'sm' : 'default'} asChild>
+                            <Link to={`/${ROUTES.AUTH.LOGIN}`}>Log in</Link>
+                        </Button>
                     )}
                 </div>
             </div>
@@ -81,4 +158,4 @@ function ClientLayoutToolbar({ user, onLogout, onSettingsClick }: ClientLayoutTo
     );
 }
 
-export default ClientLayoutToolbar;
+export default memo(ClientLayoutToolbar);

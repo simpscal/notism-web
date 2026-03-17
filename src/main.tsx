@@ -11,19 +11,41 @@ import { store } from './store';
 
 import { ThemeProvider } from '@/core/contexts';
 
-const queryClient = new QueryClient();
+async function enableMocking() {
+    if (import.meta.env.VITE_ENABLE_MOCK !== 'true') {
+        return;
+    }
 
-createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        <Provider store={store}>
-            <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
-                    <ThemeProvider>
-                        <App />
-                        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-                    </ThemeProvider>
-                </BrowserRouter>
-            </QueryClientProvider>
-        </Provider>
-    </StrictMode>
-);
+    const { worker } = await import('../mocks/browser');
+    return worker.start({
+        onUnhandledRequest: 'bypass',
+        serviceWorker: {
+            url: '/mockServiceWorker.js',
+        },
+    });
+}
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: false,
+        },
+    },
+});
+
+enableMocking().then(() => {
+    createRoot(document.getElementById('root')!).render(
+        <StrictMode>
+            <Provider store={store}>
+                <QueryClientProvider client={queryClient}>
+                    <BrowserRouter>
+                        <ThemeProvider>
+                            <App />
+                            {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+                        </ThemeProvider>
+                    </BrowserRouter>
+                </QueryClientProvider>
+            </Provider>
+        </StrictMode>
+    );
+});

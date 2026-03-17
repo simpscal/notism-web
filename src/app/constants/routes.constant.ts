@@ -1,0 +1,39 @@
+export const ROUTES = {
+    HOME: '/',
+    AUTH: {
+        LOGIN: 'auth/login',
+        SIGNUP: 'auth/signup',
+        REQUEST_RESET_PASSWORD: 'auth/request-reset-password',
+        RESET_PASSWORD: 'auth/reset-password',
+        OAUTH_CALLBACK: (provider: string) => `auth/oauth/${provider}/callback`,
+    },
+    FOODS: {
+        LIST: 'foods',
+        DETAIL: (id: string) => `foods/${id}`,
+    },
+    SETTINGS: {
+        BASE: 'settings',
+        PROFILE: 'settings/profile',
+        APPEARANCE: 'settings/appearance',
+    },
+    CART: 'cart',
+    PAYMENT: 'payment',
+    DELIVERY_STATUS: 'delivery-status',
+    ORDERS: {
+        LIST: 'orders',
+        DETAIL: (slugId: string) => `orders/${slugId}`,
+    },
+    ADMIN: {
+        BASE: 'admin',
+        ORDERS: 'admin/orders',
+        ORDER_DETAIL: (slugId: string) => `admin/orders/${slugId}`,
+        USERS: 'admin/users',
+        USER_DETAIL: (id: string) => `admin/users/${id}`,
+        FOODS: 'admin/foods',
+        FOOD_ADD: 'admin/foods/new',
+        FOOD_DETAIL: (id: string) => `admin/foods/${id}`,
+        CATEGORIES: 'admin/categories',
+        CATEGORY_ADD: 'admin/categories/new',
+        CATEGORY_DETAIL: (id: string) => `admin/categories/${id}`,
+    },
+} as const;

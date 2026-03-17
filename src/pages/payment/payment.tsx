@@ -1,0 +1,156 @@
+import { useMutation } from '@tanstack/react-query';
+import { memo, useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
+
+import { orderApi } from '@/apis';
+import { ROUTES } from '@/app/constants/routes.constant';
+import { Button } from '@/components/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
+import { Separator } from '@/components/separator';
+import Spinner from '@/components/spinner';
+import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { PaymentMethodEnum } from '@/features/order';
+import {
+    loadCart,
+    selectCartItems,
+    selectCartIsInitialized,
+    selectSelectedCartItems,
+    selectSelectedCartTotalPrice,
+} from '@/store/cart';
+
+function Payment() {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const allItems = useAppSelector(selectCartItems);
+    const selectedItems = useAppSelector(selectSelectedCartItems);
+    const totalPrice = useAppSelector(selectSelectedCartTotalPrice);
+    const isInitialized = useAppSelector(selectCartIsInitialized);
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
+
+    const { mutate: createOrder, isPending: isCreatingOrder } = useMutation({
+        mutationFn: (data: { paymentMethod: string; cartItemIds: string[] }) => orderApi.create(data),
+        onSuccess: async order => {
+            await dispatch(loadCart()).unwrap();
+
+            toast.success('Order placed successfully!');
+            navigate(`/${ROUTES.ORDERS.DETAIL(order.slugId)}`);
+        },
+    });
+
+    const handlePaymentMethodChange = useCallback((value: string) => {
+        setPaymentMethod(value as PaymentMethodEnum);
+    }, []);
+
+    const handlePlaceOrder = useCallback(() => {
+        if (selectedItems.length === 0) {
+            toast.error('Please select at least one item to place an order');
+            navigate(`/${ROUTES.CART}`);
+            return;
+        }
+
+        const cartItemIds = selectedItems.map(item => item.id);
+
+        createOrder({
+            paymentMethod: paymentMethod,
+            cartItemIds,
+        });
+    }, [selectedItems, paymentMethod, navigate, createOrder]);
+
+    const handleBackToCart = useCallback(() => {
+        navigate(`/${ROUTES.CART}`);
+    }, [navigate]);
+
+    if (!isInitialized) {
+        return (
+            <div className='flex h-full w-full items-center justify-center'>
+                <Spinner size='lg' />
+            </div>
+        );
+    }
+
+    if (allItems.length === 0) {
+        return <PaymentEmpty />;
+    }
+
+    if (selectedItems.length === 0) {
+        return (
+            <div className='container mx-auto px-4 py-8'>
+                <h1 className='mb-8 text-3xl font-bold'>Payment</h1>
+                <Card>
+                    <CardContent className='py-8 text-center'>
+                        <p className='text-muted-foreground mb-4'>No items selected for checkout</p>
+                        <Button onClick={handleBackToCart}>Back to Cart</Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    return (
+        <div className='container mx-auto px-4 py-8'>
+            <h1 className='mb-8 text-3xl font-bold'>Payment</h1>
+
+            <div className='grid gap-8 lg:grid-cols-3'>
+                {/* Payment Method Selection */}
+                <div className='lg:col-span-2 space-y-6'>
+                    <PaymentMethod value={paymentMethod} onValueChange={handlePaymentMethodChange} />
+                    <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
+                </div>
+
+                {/* Action Buttons */}
+                <div className='lg:col-span-1'>
+                    <Card className='sticky top-4'>
+                        <CardHeader>
+                            <CardTitle>Complete Order</CardTitle>
+                            <CardDescription>
+                                Review your order and payment method before placing the order
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className='space-y-2'>
+                                <div className='flex justify-between text-sm'>
+                                    <span className='text-muted-foreground'>Payment Method</span>
+                                    <span className='font-medium'>
+                                        {paymentMethod === PaymentMethodEnum.CashOnDelivery
+                                            ? 'Cash on Delivery'
+                                            : 'Banking'}
+                                    </span>
+                                </div>
+                                <Separator />
+                                <div className='flex justify-between text-lg font-semibold'>
+                                    <span>Total Amount</span>
+                                    <span>${totalPrice.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </CardContent>
+                        <CardFooter className='flex flex-col gap-2'>
+                            <Button
+                                size='lg'
+                                className='w-full'
+                                onClick={handlePlaceOrder}
+                                disabled={isCreatingOrder || paymentMethod === PaymentMethodEnum.Banking}
+                            >
+                                {isCreatingOrder ? (
+                                    <>
+                                        <Spinner size='sm' className='' />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    'Place Order'
+                                )}
+                            </Button>
+                            <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
+                                Back to Cart
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default memo(Payment);
