@@ -182,6 +182,7 @@ export const adminFoodsHandlers = [
             quantityUnit: body.quantityUnit ?? food.quantityUnit,
             createdAt: food.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            categoryId: food.category,
         };
 
         return HttpResponse.json(updated);
