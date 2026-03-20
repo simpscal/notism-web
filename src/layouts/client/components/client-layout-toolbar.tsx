@@ -1,9 +1,21 @@
-import { LogOut, Moon, Monitor, Package, Settings, ShoppingCart, Sun, Shield } from 'lucide-react';
+import {
+    LogOut,
+    Menu,
+    Moon,
+    Monitor,
+    Package,
+    Settings,
+    ShoppingCart,
+    Sun,
+    Shield,
+    UtensilsCrossed,
+} from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
 import { UserRoleEnum } from '@/app/enums';
+import { cn } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
@@ -15,7 +27,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
-import { SidebarTrigger } from '@/components/sidebar';
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/sheet';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useAppSelector, useIsMobile } from '@/core/hooks';
 import { UserProfileViewModel } from '@/features/user/models';
@@ -61,17 +73,119 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
 
     const ThemeIcon = getThemeIcon();
 
+    const navItems = useMemo(() => {
+        const items: Array<{ label: string; path: string }> = [{ label: 'Foods', path: `/${ROUTES.FOODS.LIST}` }];
+
+        if (user) {
+            items.push({ label: 'Orders', path: `/${ROUTES.ORDERS.LIST}` });
+            items.push({ label: 'Appearance', path: `/${ROUTES.SETTINGS.APPEARANCE}` });
+        }
+
+        if (isAdmin) {
+            items.push({ label: 'Admin Portal', path: `/${ROUTES.ADMIN.ORDERS}` });
+        }
+
+        return items;
+    }, [isAdmin, user]);
+
     return (
         <header className='border-b bg-background sticky top-0 z-50'>
             <div className='flex h-16 items-center justify-between px-4 md:px-6'>
-                {/* Left side - Menu button (mobile only) & Logo */}
+                {/* Left side - mobile menu + brand + desktop nav */}
                 <div className='flex items-center gap-2 md:gap-4'>
-                    {isMobile && <SidebarTrigger />}
+                    {isMobile && (
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant='ghost' size='icon' aria-label='Open menu'>
+                                    <Menu className='h-5 w-5' />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side='left' className='p-0'>
+                                <SheetHeader className='px-4 pt-4'>
+                                    <SheetTitle className='text-primary text-lg'>Notism</SheetTitle>
+                                </SheetHeader>
+                                <div className='mt-4 grid gap-1 px-2'>
+                                    {navItems.map(item => {
+                                        return (
+                                            <SheetClose asChild key={item.path}>
+                                                <NavLink
+                                                    to={item.path}
+                                                    end={false}
+                                                    className={({ isActive }) =>
+                                                        cn(
+                                                            'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                                                            isActive
+                                                                ? 'bg-primary/10 text-primary'
+                                                                : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                                                        )
+                                                    }
+                                                >
+                                                    {item.path === `/${ROUTES.FOODS.LIST}` ? (
+                                                        <UtensilsCrossed className='h-4 w-4 text-current' />
+                                                    ) : (
+                                                        <Package className='h-4 w-4 text-current' />
+                                                    )}
+                                                    <span>{item.label}</span>
+                                                </NavLink>
+                                            </SheetClose>
+                                        );
+                                    })}
+                                </div>
+                                <div className='mt-4 border-t px-2 pt-3'>
+                                    {user ? (
+                                        <SheetClose asChild>
+                                            <Link
+                                                to={`/${ROUTES.SETTINGS.PROFILE}`}
+                                                className='flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary'
+                                            >
+                                                <Settings className='h-4 w-4' />
+                                                <span>Profile</span>
+                                            </Link>
+                                        </SheetClose>
+                                    ) : (
+                                        <SheetClose asChild>
+                                            <Link
+                                                to={`/${ROUTES.AUTH.LOGIN}`}
+                                                className='flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90'
+                                            >
+                                                Log in
+                                            </Link>
+                                        </SheetClose>
+                                    )}
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    )}
+
                     <Link to={ROUTES.HOME} className='cursor-pointer'>
-                        <h1 className='text-lg md:text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
-                            Brand Name
+                        <h1 className='text-lg font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity md:text-2xl'>
+                            Notism
                         </h1>
                     </Link>
+
+                    <nav className='hidden items-center gap-2 md:flex'>
+                        {navItems
+                            .filter(item => item.path !== `/${ROUTES.ADMIN.ORDERS}`)
+                            .map(item => {
+                                return (
+                                    <NavLink
+                                        key={item.path}
+                                        to={item.path}
+                                        end={false}
+                                        className={({ isActive }) =>
+                                            cn(
+                                                'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                                                isActive
+                                                    ? 'bg-primary/10 text-primary'
+                                                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                                            )
+                                        }
+                                    >
+                                        {item.label}
+                                    </NavLink>
+                                );
+                            })}
+                    </nav>
                 </div>
 
                 {/* Right side - Cart, Theme Toggle & User Avatar or Login/Signup */}

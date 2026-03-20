@@ -12,6 +12,7 @@ import Spinner from '@/components/spinner';
 import { useAppSelector, useAppDispatch } from '@/core/hooks';
 import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
+import { CheckoutProgress, CheckoutTrustBar } from '@/features/order';
 import { selectCartItems, selectCartIsInitialized, setItemSelection } from '@/store/cart';
 
 function Cart() {
@@ -94,7 +95,12 @@ function Cart() {
 
     return (
         <div className='container mx-auto px-4 py-8'>
-            <h1 className='mb-8 text-3xl font-bold'>Shopping Cart</h1>
+            <h1 className='mb-8 text-2xl font-bold sm:text-3xl'>Shopping Cart</h1>
+
+            <div className='mb-8 space-y-4'>
+                <CheckoutTrustBar />
+                <CheckoutProgress currentStep='cart' />
+            </div>
 
             <div className='grid gap-8 lg:grid-cols-3'>
                 <div className='lg:col-span-2 space-y-4'>
@@ -146,6 +152,7 @@ function Cart() {
                         </CardContent>
                         <CardFooter className='flex flex-col gap-2'>
                             <Button
+                                variant='default'
                                 size='lg'
                                 className='w-full'
                                 disabled={selectedItemsList.length === 0}

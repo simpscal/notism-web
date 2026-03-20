@@ -14,24 +14,24 @@ export const DELIVERY_STATUS: DeliveryStatusConfig[] = [
         key: DeliveryStatusEnum.Placed,
         label: 'Order Placed',
         icon: CheckCircle2,
-        colorClass: 'bg-blue-500 text-white border-blue-600',
+        colorClass: 'bg-secondary text-secondary-foreground border-secondary/50',
     },
     {
         key: DeliveryStatusEnum.Preparing,
         label: 'Preparing',
         icon: Package,
-        colorClass: 'bg-teal-500 text-white border-teal-600',
+        colorClass: 'bg-primary/10 text-primary border-primary/20',
     },
     {
         key: DeliveryStatusEnum.OnTheWay,
         label: 'On the Way',
         icon: Truck,
-        colorClass: 'bg-purple-500 text-white border-purple-600',
+        colorClass: 'bg-accent/10 text-accent-foreground border-accent/20',
     },
     {
         key: DeliveryStatusEnum.Delivered,
         label: 'Delivered',
         icon: CheckCircle2,
-        colorClass: 'bg-green-500 text-white border-green-600',
+        colorClass: 'bg-success/15 text-success border-success/25',
     },
 ];

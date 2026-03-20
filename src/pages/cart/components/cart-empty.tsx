@@ -14,7 +14,7 @@ function CartEmpty() {
                 </div>
                 <h2 className='mb-2 text-2xl font-semibold'>Your cart is empty</h2>
                 <p className='mb-6 text-muted-foreground'>Add some delicious items to get started!</p>
-                <Button asChild>
+                <Button variant='default' asChild>
                     <Link to={`/${ROUTES.FOODS.LIST}`}>Browse Menu</Link>
                 </Button>
             </div>

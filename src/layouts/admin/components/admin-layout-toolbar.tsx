@@ -1,8 +1,9 @@
-import { LogOut, Moon, Monitor, Settings, Sun } from 'lucide-react';
+import { LogOut, Menu, Moon, Monitor, Package, Settings, Sun, Tags, UtensilsCrossed, Users } from 'lucide-react';
 import { memo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
+import { cn } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import { Button } from '@/components/button';
 import {
@@ -13,7 +14,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
-import { SidebarTrigger } from '@/components/sidebar';
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/sheet';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useIsMobile } from '@/core/hooks';
 import { UserProfileViewModel } from '@/features/user/models';
@@ -26,6 +27,13 @@ interface AdminLayoutToolbarProps {
 function AdminLayoutToolbar({ user, onLogout }: AdminLayoutToolbarProps) {
     const isMobile = useIsMobile();
     const { theme, setTheme } = useTheme();
+
+    const adminNavItems = [
+        { label: 'Orders', path: `/${ROUTES.ADMIN.ORDERS}`, icon: Package },
+        { label: 'Foods', path: `/${ROUTES.ADMIN.FOODS}`, icon: UtensilsCrossed },
+        { label: 'Categories', path: `/${ROUTES.ADMIN.CATEGORIES}`, icon: Tags },
+        { label: 'Users', path: `/${ROUTES.ADMIN.USERS}`, icon: Users },
+    ] as const;
 
     const getUserInitials = () => {
         if (!user) return 'A';
@@ -59,14 +67,86 @@ function AdminLayoutToolbar({ user, onLogout }: AdminLayoutToolbarProps) {
     return (
         <header className='border-b bg-background sticky top-0 z-50'>
             <div className='flex h-16 items-center justify-between px-4 md:px-6'>
-                {/* Left side - Menu button & Logo */}
+                {/* Left side - mobile menu + brand + desktop nav */}
                 <div className='flex items-center gap-2 md:gap-4'>
-                    <SidebarTrigger />
+                    {isMobile && (
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant='ghost' size='icon' aria-label='Open admin menu'>
+                                    <Menu className='h-5 w-5' />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side='left' className='p-0'>
+                                <SheetHeader className='px-4 pt-4'>
+                                    <SheetTitle className='text-primary text-lg'>Admin Portal</SheetTitle>
+                                </SheetHeader>
+                                <div className='mt-4 grid gap-1 px-2'>
+                                    {adminNavItems.map(item => {
+                                        const Icon = item.icon;
+                                        return (
+                                            <SheetClose asChild key={item.path}>
+                                                <NavLink
+                                                    to={item.path}
+                                                    end={false}
+                                                    className={({ isActive }) =>
+                                                        cn(
+                                                            'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                                                            isActive
+                                                                ? 'bg-primary/10 text-primary'
+                                                                : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                                                        )
+                                                    }
+                                                >
+                                                    <Icon className='h-4 w-4 text-current' />
+                                                    <span>{item.label}</span>
+                                                </NavLink>
+                                            </SheetClose>
+                                        );
+                                    })}
+                                </div>
+                                <div className='mt-4 border-t px-2 pt-3'>
+                                    <SheetClose asChild>
+                                        <Link
+                                            to={`/${ROUTES.FOODS.LIST}`}
+                                            className='flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary'
+                                        >
+                                            <span>Back to Store</span>
+                                        </Link>
+                                    </SheetClose>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    )}
+
                     <Link to={ROUTES.HOME} className='cursor-pointer'>
                         <h1 className='text-lg md:text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
                             Admin Portal
                         </h1>
                     </Link>
+
+                    <nav className='hidden items-center gap-2 md:flex'>
+                        {adminNavItems.map(item => {
+                            const Icon = item.icon;
+                            return (
+                                <NavLink
+                                    key={item.path}
+                                    to={item.path}
+                                    end={false}
+                                    className={({ isActive }) =>
+                                        cn(
+                                            'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                                            isActive
+                                                ? 'bg-primary/10 text-primary'
+                                                : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                                        )
+                                    }
+                                >
+                                    <Icon className='h-4 w-4 text-current' />
+                                    <span>{item.label}</span>
+                                </NavLink>
+                            );
+                        })}
+                    </nav>
                 </div>
 
                 {/* Right side - Theme Toggle & User Avatar */}

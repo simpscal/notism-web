@@ -60,7 +60,7 @@ function Foods() {
     }, []);
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='bg-background'>
             <FoodsHeroSection
                 searchInput={searchInput}
                 onSearchChange={setSearchInput}

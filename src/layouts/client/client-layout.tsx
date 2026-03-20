@@ -1,11 +1,11 @@
+import { memo } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { ClientLayoutToolbar, NavigationSidebar } from './components';
+import { ClientLayoutToolbar } from './components';
 
 import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { SidebarInset, SidebarProvider } from '@/components/sidebar';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { resetStore } from '@/store/root.actions';
 
@@ -22,16 +22,13 @@ function ClientLayout() {
     };
 
     return (
-        <SidebarProvider className='h-screen' defaultOpen={false}>
-            <NavigationSidebar />
-            <SidebarInset className='flex flex-col overflow-hidden'>
-                <ClientLayoutToolbar user={user} onLogout={handleLogout} />
-                <main className='flex-1 overflow-y-auto'>
-                    <Outlet />
-                </main>
-            </SidebarInset>
-        </SidebarProvider>
+        <div className='flex h-screen flex-col bg-background'>
+            <ClientLayoutToolbar user={user} onLogout={handleLogout} />
+            <main className='flex-1 overflow-y-auto'>
+                <Outlet />
+            </main>
+        </div>
     );
 }
 
-export default ClientLayout;
+export default memo(ClientLayout);

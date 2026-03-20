@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { getFoodPricing, FoodImage } from '@/features/food';
-import { OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
+import { CheckoutProgress, CheckoutTrustBar, OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
 
 function OrderDetail() {
     const { id } = useParams<{ id: string }>();
@@ -73,6 +73,8 @@ function OrderDetail() {
             </Button>
 
             <div className='mx-auto max-w-4xl space-y-6'>
+                <CheckoutTrustBar />
+                <CheckoutProgress currentStep='confirmation' />
                 <OrderHeader
                     slugId={order.slugId}
                     totalAmount={order.totalAmount}

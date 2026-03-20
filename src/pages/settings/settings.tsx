@@ -1,11 +1,9 @@
 import { Palette, User } from 'lucide-react';
 import { memo } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-
-import { SettingsSidebar } from './components';
+import { NavLink, Outlet } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { SidebarInset, SidebarProvider } from '@/components/sidebar';
+import { buttonVariants } from '@/components/button';
 
 type SettingsTab = 'profile' | 'appearance';
 
@@ -15,24 +13,35 @@ const SETTINGS_TABS: { value: SettingsTab; label: string; icon: React.ComponentT
 ];
 
 function Settings() {
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    const currentTab = (location.pathname.split('/').pop() || 'profile') as SettingsTab;
-
-    const handleTabChange = (tab: string) => {
-        navigate(`/${ROUTES.SETTINGS.BASE}/${tab}`);
-    };
-
     return (
-        <SidebarProvider className='h-full' defaultOpen={true}>
-            <SettingsSidebar tabs={SETTINGS_TABS} currentTab={currentTab} onTabChange={handleTabChange} />
-            <SidebarInset className='h-full'>
-                <div className='container mx-auto py-8 px-4 max-w-7xl h-full overflow-auto'>
-                    <Outlet />
+        <div className='container mx-auto max-w-7xl py-8 px-4'>
+            <div className='mb-6'>
+                <div className='flex flex-wrap gap-2'>
+                    {SETTINGS_TABS.map(tab => {
+                        const Icon = tab.icon;
+
+                        return (
+                            <NavLink
+                                key={tab.value}
+                                to={`/${ROUTES.SETTINGS.BASE}/${tab.value}`}
+                                end={false}
+                                className={({ isActive }) =>
+                                    buttonVariants({
+                                        variant: isActive ? 'default' : 'outline',
+                                        size: 'sm',
+                                    })
+                                }
+                            >
+                                <Icon className='h-4 w-4' />
+                                {tab.label}
+                            </NavLink>
+                        );
+                    })}
                 </div>
-            </SidebarInset>
-        </SidebarProvider>
+            </div>
+
+            <Outlet />
+        </div>
     );
 }
 

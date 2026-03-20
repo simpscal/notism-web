@@ -15,6 +15,7 @@ import AdminUsers from '@/pages/admin/users/users';
 import { Cart } from '@/pages/cart';
 import { FoodDetail } from '@/pages/food-detail';
 import { Foods } from '@/pages/foods';
+import { Landing } from '@/pages/landing';
 import { Login } from '@/pages/login';
 import NotFoundPage from '@/pages/not-found';
 import OAuthCallback from '@/pages/oauth-callback';
@@ -32,7 +33,7 @@ import { Signup } from '@/pages/signup';
 function AppRoutes() {
     return (
         <Routes>
-            <Route path='/' element={<Navigate replace to='/foods' />} />
+            <Route path='/' element={<Landing />} />
 
             <Route path='auth' element={<AuthRouteGuard />}>
                 <Route element={<AuthLayout />}>

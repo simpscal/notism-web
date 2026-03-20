@@ -14,7 +14,7 @@ function PaymentEmpty() {
                 </div>
                 <h2 className='mb-2 text-2xl font-semibold'>Your cart is empty</h2>
                 <p className='mb-6 text-muted-foreground'>Add items to your cart before proceeding to payment.</p>
-                <Button asChild>
+                <Button variant='default' asChild>
                     <Link to={`/${ROUTES.FOODS.LIST}`}>Browse Foods</Link>
                 </Button>
             </div>

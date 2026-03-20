@@ -12,7 +12,7 @@ interface FoodsHeroSectionProps {
 
 function FoodsHeroSection({ searchInput, onSearchChange, totalCount, categoriesCount }: FoodsHeroSectionProps) {
     return (
-        <section className='relative border-b bg-gradient-to-b from-primary/20 to-background px-4 py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24'>
+        <section className='relative border-b bg-gradient-to-b from-primary/15 to-background px-4 py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24'>
             <div className='mx-auto max-w-4xl text-center'>
                 <div className='mb-4 inline-flex items-center gap-2 rounded-full border bg-background/80 backdrop-blur-sm px-3 py-1 sm:mb-6 sm:px-4 sm:py-1.5'>
                     <Sparkles className='h-3.5 w-3.5 sm:h-4 sm:w-4' />

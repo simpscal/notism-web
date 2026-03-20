@@ -32,7 +32,7 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
 
     return (
         <Card
-            className='group relative flex flex-col overflow-hidden border-2 pt-0 transition-all hover:border-primary/50 sm:border lg:border'
+            className='group relative flex flex-col overflow-hidden border pt-0 transition-all hover:border-primary/40 hover:shadow-md'
             onClick={handleCardClick}
         >
             {/* Image Container */}
@@ -40,7 +40,7 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
                 <FoodImage
                     src={food.imageUrl}
                     alt={food.name}
-                    className='absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110'
+                    className='absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105'
                 />
                 {hasSavings && (
                     <div className='absolute top-2 right-2 rounded-md bg-destructive px-2 py-0.5 text-xs font-semibold text-white sm:top-2.5 sm:right-2.5'>
@@ -93,6 +93,7 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
 
                 <div className='flex shrink-0'>
                     <Button
+                        variant='default'
                         size='sm'
                         className='h-8 px-3 text-xs sm:h-9 sm:px-4'
                         disabled={!food.isAvailable}

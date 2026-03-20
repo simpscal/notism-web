@@ -64,7 +64,7 @@ function OrderActionCard({
             </CardContent>
             <CardContent className='pt-0'>
                 <div className='space-y-2'>
-                    <Button size='lg' className='w-full' asChild>
+                    <Button variant='default' size='lg' className='w-full' asChild>
                         <Link to={`/${ROUTES.FOODS.LIST}`}>Continue Shopping</Link>
                     </Button>
                     {canCancelOrder(deliveryStatus) && onConfirmCancel && (

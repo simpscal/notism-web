@@ -23,7 +23,7 @@ const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
             key: status as DeliveryStatusEnum,
             label: status,
             icon: Clock,
-            colorClass: 'bg-gray-500 text-white border-gray-600',
+            colorClass: 'bg-secondary text-secondary-foreground border-secondary/50',
         }
     );
 };
@@ -80,7 +80,7 @@ function Orders() {
                     return (
                         <Card
                             key={order.id}
-                            className='overflow-hidden border-2 transition-all hover:border-primary/50 hover:shadow-lg'
+                            className='overflow-hidden border border-border transition-all hover:border-primary/40 hover:shadow-md'
                         >
                             <CardHeader className='pb-4'>
                                 <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
@@ -89,7 +89,7 @@ function Orders() {
                                         <div className='mb-2 sm:mb-0'>
                                             <Badge
                                                 variant='outline'
-                                                className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5 border-0`}
+                                                className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
                                             >
                                                 <StatusIcon className='h-3 w-3' />
                                                 {statusInfo.label}
@@ -136,7 +136,7 @@ function Orders() {
                                             </div>
                                         ))}
                                         {order.items.length > 3 && (
-                                            <div className='flex items-center gap-3 pl-17'>
+                                            <div className='flex items-center gap-3'>
                                                 <div className='text-sm font-medium text-muted-foreground'>
                                                     +{order.items.length - 3} more item
                                                     {order.items.length - 3 > 1 ? 's' : ''}

@@ -97,7 +97,7 @@ function FoodDetail() {
                         </span>
 
                         {/* Title */}
-                        <h1 className='mb-4 text-4xl font-black text-foreground lg:text-5xl'>{food.name}</h1>
+                        <h1 className='mb-4 text-4xl font-bold text-foreground lg:text-5xl'>{food.name}</h1>
 
                         {/* Description */}
                         <p className='mb-8 text-lg leading-relaxed text-muted-foreground'>{food.description}</p>
@@ -122,7 +122,7 @@ function FoodDetail() {
                                 </span>
                             )}
                             <div className='flex items-baseline gap-2'>
-                                <span className='text-5xl font-black text-primary'>${effectivePrice.toFixed(2)}</span>
+                                <span className='text-5xl font-bold text-primary'>${effectivePrice.toFixed(2)}</span>
                                 {hasSavings && (
                                     <span className='rounded-full bg-destructive/20 px-2 py-0.5 text-sm font-semibold text-destructive'>
                                         Save ${(food.price - effectivePrice).toFixed(2)}
@@ -160,6 +160,7 @@ function FoodDetail() {
 
                             {/* Add to Cart Button */}
                             <Button
+                                variant='default'
                                 size='lg'
                                 disabled={!food.isAvailable}
                                 className='shrink-0'

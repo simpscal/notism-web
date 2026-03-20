@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { PaymentMethodEnum } from '@/features/order';
+import { CheckoutProgress, CheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import {
     loadCart,
     selectCartItems,
@@ -79,6 +79,10 @@ function Payment() {
         return (
             <div className='container mx-auto px-4 py-8'>
                 <h1 className='mb-8 text-3xl font-bold'>Payment</h1>
+                <div className='mb-8 space-y-4'>
+                    <CheckoutTrustBar />
+                    <CheckoutProgress currentStep='payment' />
+                </div>
                 <Card>
                     <CardContent className='py-8 text-center'>
                         <p className='text-muted-foreground mb-4'>No items selected for checkout</p>
@@ -92,6 +96,10 @@ function Payment() {
     return (
         <div className='container mx-auto px-4 py-8'>
             <h1 className='mb-8 text-3xl font-bold'>Payment</h1>
+            <div className='mb-8 space-y-4'>
+                <CheckoutTrustBar />
+                <CheckoutProgress currentStep='payment' />
+            </div>
 
             <div className='grid gap-8 lg:grid-cols-3'>
                 {/* Payment Method Selection */}
@@ -128,6 +136,7 @@ function Payment() {
                         </CardContent>
                         <CardFooter className='flex flex-col gap-2'>
                             <Button
+                                variant='default'
                                 size='lg'
                                 className='w-full'
                                 onClick={handlePlaceOrder}
