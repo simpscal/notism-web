@@ -40,7 +40,7 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
                 <CarouselContent className='rounded-3xl'>
                     {displayImages.map((imageUrl, index) => (
                         <CarouselItem key={index}>
-                            <div className='relative aspect-square overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card to-secondary shadow-2xl'>
+                            <div className='relative aspect-[4/5] overflow-hidden rounded-3xl bg-gradient-to-br from-card to-secondary shadow-2xl shadow-primary/10 ring-1 ring-border'>
                                 <FoodImage
                                     src={imageUrl}
                                     alt={`${foodName} - Image ${index + 1}`}
@@ -50,7 +50,7 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
                                 {/* Badges - Only show on first image */}
                                 {index === 0 && !isAvailable && (
                                     <div className='absolute inset-0 z-10 flex items-center justify-center bg-card/80'>
-                                        <span className='rounded-full bg-muted px-6 py-3 text-lg font-semibold text-foreground'>
+                                        <span className='rounded-full bg-muted px-6 py-3 text-lg font-semibold uppercase tracking-widest text-foreground'>
                                             Out of Stock
                                         </span>
                                     </div>
@@ -61,23 +61,23 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
                 </CarouselContent>
                 {displayImages.length > 1 && (
                     <>
-                        <CarouselPrevious variant='secondary' className='left-4' />
-                        <CarouselNext variant='secondary' className='right-4' />
+                        <CarouselPrevious variant='secondary' className='left-4 bg-background/80 backdrop-blur-sm' />
+                        <CarouselNext variant='secondary' className='right-4 bg-background/80 backdrop-blur-sm' />
                     </>
                 )}
             </Carousel>
 
             {/* Thumbnail Navigation */}
             {displayImages.length > 1 && (
-                <div className='flex gap-2 justify-center'>
+                <div className='flex gap-3 justify-center'>
                     {displayImages.map((imageUrl, index) => (
                         <button
                             key={index}
                             type='button'
                             onClick={() => scrollTo(index)}
-                            className={`relative h-20 w-20 overflow-hidden rounded-lg border-2 transition-all ${
+                            className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition-all ${
                                 current === index
-                                    ? 'border-primary scale-105'
+                                    ? 'border-primary scale-105 shadow-md shadow-primary/20'
                                     : 'border-transparent hover:border-muted-foreground/50'
                             }`}
                             aria-label={`View image ${index + 1}`}

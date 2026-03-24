@@ -1,7 +1,7 @@
-import { CheckCircle2, CreditCard, ShoppingCart } from 'lucide-react';
+import { Check, CheckCircle2, CreditCard, ShoppingCart } from 'lucide-react';
 import { memo, type ComponentType } from 'react';
 
-import { Card } from '@/components/card';
+import { cn } from '@/app/utils/tailwind.utils';
 
 type CheckoutStep = 'cart' | 'payment' | 'confirmation';
 
@@ -23,43 +23,61 @@ function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
     const currentIndex = steps.findIndex(s => s.key === currentStep);
 
     return (
-        <Card className='px-4 py-4'>
-            <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <div className='rounded-xl bg-primary/5 px-4 py-4'>
+            <div className='flex items-center'>
                 {steps.map((step, index) => {
                     const Icon = step.icon;
                     const isCompleted = index < currentIndex;
                     const isCurrent = index === currentIndex;
+                    const isLast = index === steps.length - 1;
 
                     return (
-                        <div key={step.key} className='flex items-center gap-3'>
-                            <div
-                                className={[
-                                    'flex size-10 items-center justify-center rounded-full border',
-                                    isCompleted || isCurrent
-                                        ? 'border-primary bg-primary text-primary-foreground'
-                                        : 'border-border bg-background text-muted-foreground',
-                                ].join(' ')}
-                            >
-                                <Icon className='h-5 w-5' />
+                        <div key={step.key} className='flex flex-1 items-center'>
+                            <div className='flex items-center gap-2.5'>
+                                <div
+                                    className={cn(
+                                        'flex size-10 shrink-0 items-center justify-center rounded-full border-2 transition-all',
+                                        isCompleted
+                                            ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                                            : isCurrent
+                                              ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                                              : 'border-border bg-background text-muted-foreground'
+                                    )}
+                                >
+                                    {isCompleted ? <Check className='h-4 w-4' /> : <Icon className='h-5 w-5' />}
+                                </div>
+                                <div className='hidden min-w-0 sm:block'>
+                                    <div
+                                        className={cn(
+                                            'text-sm font-semibold',
+                                            isCurrent
+                                                ? 'text-foreground'
+                                                : isCompleted
+                                                  ? 'text-foreground/80'
+                                                  : 'text-muted-foreground'
+                                        )}
+                                    >
+                                        {step.label}
+                                    </div>
+                                    <div className='text-xs text-muted-foreground'>
+                                        {isCompleted ? 'Completed' : isCurrent ? 'Current step' : 'Upcoming'}
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className='min-w-0'>
+                            {!isLast && (
                                 <div
-                                    className={
-                                        isCurrent ? 'text-foreground font-semibold' : 'text-foreground/90 font-semibold'
-                                    }
-                                >
-                                    {step.label}
-                                </div>
-                                <div className='text-xs text-muted-foreground'>
-                                    {isCompleted ? 'Completed' : isCurrent ? 'Current step' : 'Next'}
-                                </div>
-                            </div>
+                                    className={cn(
+                                        'mx-3 h-px flex-1 transition-colors',
+                                        isCompleted ? 'bg-primary' : 'bg-border'
+                                    )}
+                                />
+                            )}
                         </div>
                     );
                 })}
             </div>
-        </Card>
+        </div>
     );
 }
 

@@ -11,6 +11,8 @@ export const foodApi = {
         if (params?.category) searchParams.append('category', params.category);
         if (params?.keyword) searchParams.append('keyword', params.keyword);
         if (params?.isAvailable !== undefined) searchParams.append('isAvailable', params.isAvailable.toString());
+        if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
+        if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
         const queryString = searchParams.toString();
         return apiClient.get<GetFoodsResponseModel>(
             `${API_ENDPOINTS.FOOD.LIST}${queryString ? `?${queryString}` : ''}`

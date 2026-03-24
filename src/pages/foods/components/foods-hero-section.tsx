@@ -1,57 +1,51 @@
-import { Search, UtensilsCrossed, ChefHat, Sparkles } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { memo } from 'react';
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 
 interface FoodsHeroSectionProps {
     searchInput: string;
-    totalCount: number;
-    categoriesCount: number;
     onSearchChange: (value: string) => void;
 }
 
-function FoodsHeroSection({ searchInput, onSearchChange, totalCount, categoriesCount }: FoodsHeroSectionProps) {
+function FoodsHeroSection({ searchInput, onSearchChange }: FoodsHeroSectionProps) {
     return (
-        <section className='relative border-b bg-gradient-to-b from-primary/15 to-background px-4 py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24'>
-            <div className='mx-auto max-w-4xl text-center'>
-                <div className='mb-4 inline-flex items-center gap-2 rounded-full border bg-background/80 backdrop-blur-sm px-3 py-1 sm:mb-6 sm:px-4 sm:py-1.5'>
-                    <Sparkles className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
-                    <span className='text-xs font-medium sm:text-sm'>Fresh & Delicious</span>
+        <section className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-12 sm:py-16 lg:py-20'>
+            {/* Decorative blobs */}
+            <div className='pointer-events-none absolute inset-0 overflow-hidden' aria-hidden='true'>
+                <div className='absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl' />
+                <div className='absolute -bottom-16 -left-16 h-72 w-72 rounded-full bg-primary/8 blur-2xl' />
+            </div>
+
+            <div className='relative mx-auto max-w-3xl text-center'>
+                <div className='mb-5 inline-flex items-center gap-2 rounded-full border bg-background/80 px-4 py-1.5 backdrop-blur-sm'>
+                    <span className='h-2 w-2 animate-pulse rounded-full bg-primary' />
+                    <span className='text-xs font-medium sm:text-sm'>Fresh &amp; Delicious</span>
                 </div>
 
-                <h1 className='text-primary mb-3 text-2xl font-bold tracking-tight sm:mb-4 sm:text-3xl md:text-4xl lg:text-5xl'>
-                    Discover Amazing Food
+                <h1 className='mb-5 text-4xl font-black tracking-tight sm:text-5xl md:text-6xl lg:text-7xl'>
+                    Discover <span className='text-primary'>Amazing</span>
+                    <br />
+                    <span className='text-primary'>Food</span>
                 </h1>
 
-                <p className='mb-6 text-xs leading-relaxed sm:mb-8 sm:text-sm md:text-base lg:text-lg'>
-                    Explore our curated selection of mouth-watering dishes, crafted with love and the finest ingredients
+                <p className='mb-8 text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg'>
+                    Explore our curated selection of mouth-watering dishes,
+                    <br className='hidden sm:block' /> crafted with love and the finest ingredients.
                 </p>
 
-                <InputGroup className='mx-auto max-w-xl h-11 rounded-xl border-2 sm:h-12 sm:rounded-2xl'>
+                <InputGroup className='mx-auto h-12 max-w-2xl rounded-2xl border-2 shadow-sm sm:h-14'>
                     <InputGroupInput
                         type='text'
                         placeholder='Search for your favorite dish...'
                         value={searchInput}
                         onChange={e => onSearchChange(e.target.value)}
-                        className='h-full w-full rounded-[inherit] border-0 bg-background pr-4 text-sm'
+                        className='h-full w-full rounded-[inherit] border-0 bg-background pr-4 text-sm sm:text-base'
                     />
-                    <InputGroupAddon className='pl-3 sm:[&>svg]:h-5 sm:[&>svg]:w-5'>
+                    <InputGroupAddon className='pl-3.5 sm:[&>svg]:h-5 sm:[&>svg]:w-5'>
                         <Search />
                     </InputGroupAddon>
                 </InputGroup>
-
-                <div className='mt-6 flex flex-wrap items-center justify-center gap-4 text-xs sm:mt-8 sm:gap-6 md:mt-10 md:gap-8 lg:gap-12'>
-                    <div className='flex items-center gap-1.5 sm:gap-2'>
-                        <UtensilsCrossed className='h-4 w-4 sm:h-5 sm:w-5' />
-                        <span className='font-bold sm:text-sm'>{totalCount}</span>
-                        <span className='text-muted-foreground sm:text-sm'>Dishes</span>
-                    </div>
-                    <div className='flex items-center gap-1.5 sm:gap-2'>
-                        <ChefHat className='h-4 w-4 sm:h-5 sm:w-5' />
-                        <span className='font-bold sm:text-sm'>{categoriesCount}</span>
-                        <span className='text-muted-foreground sm:text-sm'>Categories</span>
-                    </div>
-                </div>
             </div>
         </section>
     );

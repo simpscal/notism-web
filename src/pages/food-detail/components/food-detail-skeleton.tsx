@@ -7,10 +7,10 @@ function FoodDetailSkeleton() {
         <div className='bg-background'>
             <div className='container mx-auto px-4 py-8'>
                 <Skeleton className='mb-8 h-10 w-32' />
-                <div className='grid gap-8 lg:grid-cols-2 lg:gap-12'>
+                <div className='grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16'>
                     {/* Image skeleton */}
                     <div className='relative'>
-                        <Skeleton className='aspect-square w-full rounded-3xl' />
+                        <Skeleton className='aspect-[4/5] w-full rounded-3xl' />
                     </div>
 
                     {/* Details skeleton */}

@@ -1,8 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 
+import { FoodSortOption } from '../enums';
 import { FoodItemViewModel } from '../models';
 
 import FoodCard from './food-card';
@@ -18,22 +19,31 @@ import { getFoodPricing } from '@/features/food';
 interface FoodsGridProps {
     category: string | null;
     keyword: string;
+    sortBy: FoodSortOption;
     onTotalCountChange?: (count: number) => void;
     onClearFilters: () => void;
 }
 
-function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: FoodsGridProps) {
+function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilters }: FoodsGridProps) {
     const { addToCart } = useCart();
     const { ref: loadMoreRef, inView } = useInView();
 
+    const sortParams = useMemo(() => {
+        if (sortBy === 'price-asc') return { sortBy: 'price', sortOrder: 'asc' };
+        if (sortBy === 'price-desc') return { sortBy: 'price', sortOrder: 'desc' };
+        if (sortBy === 'name-asc') return { sortBy: 'name', sortOrder: 'asc' };
+        return {};
+    }, [sortBy]);
+
     const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
-        queryKey: ['foods', 'infinite', { category, keyword }] as const,
+        queryKey: ['foods', 'infinite', { category, keyword, sortBy, sortParams }] as const,
         queryFn: ({ pageParam = 0 }) =>
             foodApi.getFoods({
                 skip: pageParam,
                 take: PAGE_SIZE,
                 category: category || undefined,
                 keyword: keyword || undefined,
+                ...sortParams,
             }),
         getNextPageParam: (lastPage, allPages) => {
             const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
@@ -42,8 +52,9 @@ function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: Fo
         initialPageParam: 0,
     });
 
-    const foods = data?.pages.flatMap(page => page.items) ?? [];
     const totalCount = data?.pages[0]?.totalCount ?? 0;
+
+    const foods = useMemo(() => data?.pages.flatMap(page => page.items) ?? [], [data?.pages]);
 
     useEffect(() => {
         onTotalCountChange?.(totalCount);
@@ -80,7 +91,7 @@ function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: Fo
 
     if (isLoading) {
         return (
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6 2xl:grid-cols-5 2xl:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6'>
                 {Array.from({ length: PAGE_SIZE }).map((_, index) => (
                     <FoodCardSkeleton key={index} />
                 ))}
@@ -94,8 +105,7 @@ function FoodsGrid({ category, keyword, onTotalCountChange, onClearFilters }: Fo
 
     return (
         <>
-            {/* Food Grid */}
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6 2xl:grid-cols-5 2xl:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6'>
                 {foods.map(food => (
                     <FoodCard key={food.id} food={food} onAddToCart={handleAddToCart} />
                 ))}

@@ -75,87 +75,97 @@ function Payment() {
         return <PaymentEmpty />;
     }
 
-    if (selectedItems.length === 0) {
-        return (
-            <div className='container mx-auto px-4 py-8'>
-                <h1 className='mb-8 text-3xl font-bold'>Payment</h1>
-                <div className='mb-8 space-y-4'>
+    const pageHeader = (
+        <div className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-8 sm:py-10'>
+            <div className='pointer-events-none absolute inset-0 overflow-hidden' aria-hidden='true'>
+                <div className='absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl' />
+            </div>
+            <div className='relative container mx-auto max-w-7xl'>
+                <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>Payment</h1>
+                <div className='space-y-3'>
                     <CheckoutTrustBar />
                     <CheckoutProgress currentStep='payment' />
                 </div>
-                <Card>
-                    <CardContent className='py-8 text-center'>
-                        <p className='text-muted-foreground mb-4'>No items selected for checkout</p>
-                        <Button onClick={handleBackToCart}>Back to Cart</Button>
-                    </CardContent>
-                </Card>
+            </div>
+        </div>
+    );
+
+    if (selectedItems.length === 0) {
+        return (
+            <div className='bg-background'>
+                {pageHeader}
+                <div className='container mx-auto max-w-7xl px-4 py-8'>
+                    <div className='flex flex-col items-center justify-center py-12 text-center'>
+                        <p className='mb-4 text-muted-foreground'>No items selected for checkout</p>
+                        <Button size='lg' onClick={handleBackToCart}>
+                            Back to Cart
+                        </Button>
+                    </div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className='container mx-auto px-4 py-8'>
-            <h1 className='mb-8 text-3xl font-bold'>Payment</h1>
-            <div className='mb-8 space-y-4'>
-                <CheckoutTrustBar />
-                <CheckoutProgress currentStep='payment' />
-            </div>
+        <div className='bg-background'>
+            {pageHeader}
+            <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
+                <div className='grid gap-8 lg:grid-cols-3'>
+                    {/* Payment Method Selection */}
+                    <div className='lg:col-span-2 space-y-6'>
+                        <PaymentMethod value={paymentMethod} onValueChange={handlePaymentMethodChange} />
+                        <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
+                    </div>
 
-            <div className='grid gap-8 lg:grid-cols-3'>
-                {/* Payment Method Selection */}
-                <div className='lg:col-span-2 space-y-6'>
-                    <PaymentMethod value={paymentMethod} onValueChange={handlePaymentMethodChange} />
-                    <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
-                </div>
-
-                {/* Action Buttons */}
-                <div className='lg:col-span-1'>
-                    <Card className='sticky top-4'>
-                        <CardHeader>
-                            <CardTitle>Complete Order</CardTitle>
-                            <CardDescription>
-                                Review your order and payment method before placing the order
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className='space-y-2'>
-                                <div className='flex justify-between text-sm'>
-                                    <span className='text-muted-foreground'>Payment Method</span>
-                                    <span className='font-medium'>
-                                        {paymentMethod === PaymentMethodEnum.CashOnDelivery
-                                            ? 'Cash on Delivery'
-                                            : 'Banking'}
-                                    </span>
+                    {/* Action Buttons */}
+                    <div className='lg:col-span-1'>
+                        <Card className='sticky top-4'>
+                            <CardHeader>
+                                <CardTitle>Complete Order</CardTitle>
+                                <CardDescription>
+                                    Review your order and payment method before placing the order
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className='space-y-2'>
+                                    <div className='flex justify-between text-sm'>
+                                        <span className='text-muted-foreground'>Payment Method</span>
+                                        <span className='font-medium'>
+                                            {paymentMethod === PaymentMethodEnum.CashOnDelivery
+                                                ? 'Cash on Delivery'
+                                                : 'Banking'}
+                                        </span>
+                                    </div>
+                                    <Separator />
+                                    <div className='flex justify-between text-lg font-semibold'>
+                                        <span>Total Amount</span>
+                                        <span>${totalPrice.toFixed(2)}</span>
+                                    </div>
                                 </div>
-                                <Separator />
-                                <div className='flex justify-between text-lg font-semibold'>
-                                    <span>Total Amount</span>
-                                    <span>${totalPrice.toFixed(2)}</span>
-                                </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className='flex flex-col gap-2'>
-                            <Button
-                                variant='default'
-                                size='lg'
-                                className='w-full'
-                                onClick={handlePlaceOrder}
-                                disabled={isCreatingOrder || paymentMethod === PaymentMethodEnum.Banking}
-                            >
-                                {isCreatingOrder ? (
-                                    <>
-                                        <Spinner size='sm' className='' />
-                                        Processing...
-                                    </>
-                                ) : (
-                                    'Place Order'
-                                )}
-                            </Button>
-                            <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
-                                Back to Cart
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                            </CardContent>
+                            <CardFooter className='flex flex-col gap-2'>
+                                <Button
+                                    variant='default'
+                                    size='lg'
+                                    className='w-full'
+                                    onClick={handlePlaceOrder}
+                                    disabled={isCreatingOrder || paymentMethod === PaymentMethodEnum.Banking}
+                                >
+                                    {isCreatingOrder ? (
+                                        <>
+                                            <Spinner size='sm' className='' />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        'Place Order'
+                                    )}
+                                </Button>
+                                <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
+                                    Back to Cart
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

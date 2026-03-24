@@ -1,7 +1,7 @@
 import { ShieldCheck, Star, Truck } from 'lucide-react';
 import { memo } from 'react';
 
-import { Card } from '@/components/card';
+import { cn } from '@/app/utils/tailwind.utils';
 
 export interface CheckoutTrustBarProps {
     className?: string;
@@ -9,10 +9,10 @@ export interface CheckoutTrustBarProps {
 
 function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
     return (
-        <Card className={['px-4 py-3', className].filter(Boolean).join(' ')}>
+        <div className={cn('rounded-xl bg-primary/5 px-4 py-3', className)}>
             <div className='grid gap-3 sm:grid-cols-3 sm:items-center'>
                 <div className='flex items-center gap-3'>
-                    <div className='flex size-10 items-center justify-center rounded-md bg-secondary text-secondary-foreground'>
+                    <div className='flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary'>
                         <ShieldCheck className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
@@ -22,7 +22,7 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                 </div>
 
                 <div className='flex items-center gap-3'>
-                    <div className='flex size-10 items-center justify-center rounded-md bg-secondary text-secondary-foreground'>
+                    <div className='flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary'>
                         <Truck className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
@@ -32,7 +32,7 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                 </div>
 
                 <div className='flex items-center gap-3'>
-                    <div className='flex size-10 items-center justify-center rounded-md bg-secondary text-secondary-foreground'>
+                    <div className='flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary'>
                         <Star className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
@@ -41,7 +41,7 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                     </div>
                 </div>
             </div>
-        </Card>
+        </div>
     );
 }
 

@@ -8,7 +8,6 @@ import { FoodDetailSkeleton, FoodDetailError, FoodDetailEmpty, FoodDetailImageSe
 
 import { foodApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { CartItemViewModel, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
@@ -74,14 +73,15 @@ function FoodDetail() {
         <div className='bg-background'>
             <div className='container mx-auto px-4 py-8'>
                 {/* Back Button */}
-                <Button variant='ghost' className='mb-8' asChild>
-                    <Link to={`/${ROUTES.FOODS.LIST}`}>
-                        <ArrowLeft className=' h-4 w-4' />
-                        Back to Menu
-                    </Link>
-                </Button>
+                <Link
+                    to={`/${ROUTES.FOODS.LIST}`}
+                    className='mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground'
+                >
+                    <ArrowLeft className='h-4 w-4' />
+                    Back to Menu
+                </Link>
 
-                <div className='grid gap-8 lg:grid-cols-2 lg:gap-12'>
+                <div className='grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16'>
                     {/* Image Section */}
                     <FoodDetailImageSection
                         imageUrls={food.imageUrls}
@@ -92,39 +92,46 @@ function FoodDetail() {
                     {/* Details Section */}
                     <div className='flex flex-col'>
                         {/* Category */}
-                        <span className='mb-3 inline-flex w-fit items-center rounded-full bg-primary/20 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary'>
+                        <span className='mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-primary'>
                             {food.category}
                         </span>
 
                         {/* Title */}
-                        <h1 className='mb-4 text-4xl font-bold text-foreground lg:text-5xl'>{food.name}</h1>
+                        <h1 className='mb-2 text-4xl font-bold leading-tight text-foreground lg:text-5xl xl:text-6xl'>
+                            {food.name}
+                        </h1>
+
+                        <hr className='border-border my-6' />
 
                         {/* Description */}
-                        <p className='mb-8 text-lg leading-relaxed text-muted-foreground'>{food.description}</p>
+                        <p className='mb-6 text-base leading-relaxed text-muted-foreground'>{food.description}</p>
 
                         {/* Meta info */}
-                        <div className='mb-8 flex flex-wrap gap-4'>
-                            <Badge variant='secondary' className='flex items-center gap-2'>
-                                <Package className='h-5 w-5' />
-                                <span className='font-semibold'>{food.quantityUnit}</span>
-                            </Badge>
-                            <Badge variant='secondary' className='flex items-center gap-2'>
-                                <Utensils className='h-5 w-5' />
-                                <span className='font-semibold'>{food.stockQuantity} available</span>
-                            </Badge>
+                        <div className='mb-6 flex flex-wrap gap-3'>
+                            <div className='flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium'>
+                                <Package className='h-4 w-4' />
+                                <span>{food.quantityUnit}</span>
+                            </div>
+                            <div className='flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium'>
+                                <Utensils className='h-4 w-4' />
+                                <span>{food.stockQuantity} available</span>
+                            </div>
                         </div>
 
                         {/* Price */}
-                        <div className='mb-6'>
+                        <hr className='border-border mb-6' />
+                        <div className='mb-8'>
                             {hasSavings && (
-                                <span className='mb-1 block text-xl text-muted-foreground line-through'>
+                                <span className='mb-2 block text-base text-muted-foreground line-through'>
                                     ${food.price.toFixed(2)}
                                 </span>
                             )}
-                            <div className='flex items-baseline gap-2'>
-                                <span className='text-5xl font-bold text-primary'>${effectivePrice.toFixed(2)}</span>
+                            <div className='flex items-baseline gap-3'>
+                                <span className='font-sans text-6xl font-bold text-primary tabular-nums'>
+                                    ${effectivePrice.toFixed(2)}
+                                </span>
                                 {hasSavings && (
-                                    <span className='rounded-full bg-destructive/20 px-2 py-0.5 text-sm font-semibold text-destructive'>
+                                    <span className='rounded-full bg-destructive/20 px-3 py-1 text-sm font-semibold text-destructive'>
                                         Save ${(food.price - effectivePrice).toFixed(2)}
                                     </span>
                                 )}
@@ -132,29 +139,27 @@ function FoodDetail() {
                         </div>
 
                         {/* Quantity & Add to Cart */}
-                        <div className='flex flex-col gap-4 sm:flex-row sm:items-start'>
+                        <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
                             {/* Quantity Selector */}
-                            <div className='flex items-center justify-between rounded-xl border border-border bg-secondary/50 shrink-0 h-10'>
+                            <div className='flex items-center justify-between rounded-full bg-muted px-1 py-1 shrink-0 h-10'>
                                 <Button
                                     variant='ghost'
                                     size='icon'
-                                    className='rounded-l-xl sm:w-10'
+                                    className='h-8 w-8 rounded-full'
                                     onClick={() => handleQuantityChange(-1)}
                                     disabled={quantity <= 1}
                                 >
-                                    <Minus className='h-5 w-5' />
+                                    <Minus className='h-4 w-4' />
                                 </Button>
-                                <span className='w-14 text-center text-xl font-bold text-foreground flex items-center justify-center'>
-                                    {quantity}
-                                </span>
+                                <span className='w-10 text-center text-sm font-bold text-foreground'>{quantity}</span>
                                 <Button
                                     variant='ghost'
                                     size='icon'
-                                    className='rounded-r-xl sm:w-10'
+                                    className='h-8 w-8 rounded-full'
                                     onClick={() => handleQuantityChange(1)}
                                     disabled={quantity >= food.stockQuantity}
                                 >
-                                    <Plus className='h-5 w-5' />
+                                    <Plus className='h-4 w-4' />
                                 </Button>
                             </div>
 
@@ -163,13 +168,12 @@ function FoodDetail() {
                                 variant='default'
                                 size='lg'
                                 disabled={!food.isAvailable}
-                                className='shrink-0'
+                                className='flex-1 rounded-full'
                                 onClick={handleAddToCart}
                             >
-                                <ShoppingCart className=' h-5 w-5 shrink-0' />
+                                <ShoppingCart className='h-5 w-5 shrink-0' />
                                 <span className='truncate'>
-                                    <span className='hidden sm:inline'>Add to Cart - </span>$
-                                    {(effectivePrice * quantity).toFixed(2)}
+                                    Add to Cart - ${(effectivePrice * quantity).toFixed(2)}
                                 </span>
                             </Button>
                         </div>

@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader } from '@/components/card';
+import { Card } from '@/components/card';
 import { Checkbox } from '@/components/checkbox';
 import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
@@ -38,93 +38,102 @@ function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange
 
     return (
         <Card
-            className={cn('cursor-pointer transition-colors', isSelected && 'border-primary border-2')}
+            className={cn(
+                'relative cursor-pointer p-4 transition-all hover:shadow-md',
+                isSelected ? 'border-2 border-primary bg-primary/5' : 'border hover:border-primary/40'
+            )}
             onClick={handleCardClick}
         >
-            <CardHeader>
-                <div className='flex items-start gap-4'>
-                    <div onClick={handleButtonClick} onMouseDown={e => e.stopPropagation()}>
-                        <Checkbox checked={isSelected} onCheckedChange={handleCheckboxChange} className='mt-1' />
-                    </div>
-                    <div className='relative h-24 w-24 rounded-lg overflow-hidden bg-muted'>
-                        <FoodImage
-                            src={item.imageUrl}
-                            alt={item.name}
-                            className='absolute inset-0 h-full w-full object-cover'
-                        />
-                    </div>
-                    <div className='flex-1'>
-                        <div className='mb-2 flex items-start justify-between gap-4'>
-                            <div>
-                                <h3 className='text-lg font-semibold'>{item.name}</h3>
-                                <p className='mt-1 text-sm text-muted-foreground line-clamp-2'>{item.description}</p>
-                            </div>
-                            <Button
-                                variant='ghost'
-                                size='icon'
-                                className='shrink-0'
-                                onClick={e => {
-                                    handleButtonClick(e);
-                                    onRemove(item.id, item.name);
-                                }}
-                            >
-                                <Trash2 className='h-4 w-4' />
-                            </Button>
-                        </div>
-                        <div className='flex flex-wrap items-center gap-2'>
-                            <Badge variant='secondary'>{item.category}</Badge>
-                            <Badge variant='outline'>{item.quantityUnit}</Badge>
-                        </div>
-                    </div>
+            {/* Delete button */}
+            <Button
+                variant='ghost'
+                size='icon-sm'
+                className='absolute top-3 right-3 text-muted-foreground hover:text-destructive'
+                onClick={e => {
+                    handleButtonClick(e);
+                    onRemove(item.id, item.name);
+                }}
+            >
+                <Trash2 className='h-4 w-4' />
+            </Button>
+
+            <div className='flex items-start gap-4 pr-8'>
+                {/* Checkbox */}
+                <div className='pt-0.5' onClick={handleButtonClick} onMouseDown={e => e.stopPropagation()}>
+                    <Checkbox checked={isSelected} onCheckedChange={handleCheckboxChange} />
                 </div>
-            </CardHeader>
-            <CardContent>
-                <div className='flex items-center justify-between'>
-                    {/* Quantity Controls */}
-                    <div className='flex items-center gap-4'>
-                        <span className='text-sm font-medium text-muted-foreground'>Quantity:</span>
-                        <div className='flex items-center rounded-lg border border-border bg-secondary/50'>
+
+                {/* Image */}
+                <div className='relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted'>
+                    <FoodImage
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className='absolute inset-0 h-full w-full object-cover'
+                    />
+                </div>
+
+                {/* Info */}
+                <div className='flex min-w-0 flex-1 flex-col gap-2'>
+                    <div>
+                        <h3 className='truncate text-base font-semibold leading-tight'>{item.name}</h3>
+                        <p className='mt-0.5 line-clamp-1 text-xs text-muted-foreground'>{item.description}</p>
+                    </div>
+                    <div className='flex flex-wrap items-center gap-1.5'>
+                        <Badge variant='secondary' className='text-xs'>
+                            {item.category}
+                        </Badge>
+                        <Badge variant='outline' className='text-xs'>
+                            {item.quantityUnit}
+                        </Badge>
+                    </div>
+
+                    {/* Quantity + Price row */}
+                    <div className='flex flex-wrap items-center justify-between gap-3 pt-1'>
+                        <div
+                            className='flex items-center rounded-lg border'
+                            onClick={handleButtonClick}
+                            onMouseDown={e => e.stopPropagation()}
+                        >
                             <Button
                                 variant='ghost'
                                 size='icon-sm'
-                                className='rounded-l-lg'
                                 onClick={e => {
                                     handleButtonClick(e);
                                     onQuantityChange(item.id, -1);
                                 }}
                             >
-                                <Minus className='h-4 w-4' />
+                                <Minus className='h-3.5 w-3.5' />
                             </Button>
-                            <span className='w-12 text-center text-sm font-semibold'>{item.quantity}</span>
+                            <span className='w-8 text-center text-sm font-semibold'>{item.quantity}</span>
                             <Button
                                 variant='ghost'
                                 size='icon-sm'
-                                className='rounded-r-lg'
                                 onClick={e => {
                                     handleButtonClick(e);
                                     onQuantityChange(item.id, 1);
                                 }}
                                 disabled={item.quantity >= item.stockQuantity}
                             >
-                                <Plus className='h-4 w-4' />
+                                <Plus className='h-3.5 w-3.5' />
                             </Button>
                         </div>
-                    </div>
 
-                    {/* Price */}
-                    <div className='text-right'>
-                        {hasSavings && (
-                            <span className='block text-sm text-muted-foreground line-through'>
-                                ${originalTotal.toFixed(2)}
-                            </span>
-                        )}
-                        <span className='text-xl font-bold'>${itemTotal.toFixed(2)}</span>
-                        {hasSavings && (
-                            <span className='block text-xs text-destructive'>Save ${discountAmount.toFixed(2)}</span>
-                        )}
+                        <div className='text-right'>
+                            {hasSavings && (
+                                <span className='block text-xs text-muted-foreground line-through'>
+                                    ${originalTotal.toFixed(2)}
+                                </span>
+                            )}
+                            <span className='text-xl font-bold'>${itemTotal.toFixed(2)}</span>
+                            {hasSavings && (
+                                <span className='block text-xs text-destructive'>
+                                    Save ${discountAmount.toFixed(2)}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </CardContent>
+            </div>
         </Card>
     );
 }

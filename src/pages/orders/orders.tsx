@@ -44,11 +44,32 @@ function Orders() {
         );
     }
 
+    const pageHeader = (
+        <div className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-8 sm:py-10'>
+            <div className='pointer-events-none absolute inset-0 overflow-hidden' aria-hidden='true'>
+                <div className='absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl' />
+            </div>
+            <div className='relative container mx-auto max-w-7xl'>
+                <div className='flex items-center gap-3'>
+                    <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>My Orders</h1>
+                    {orders.length > 0 && (
+                        <span className='rounded-full bg-primary/10 px-3 py-0.5 text-sm font-semibold text-primary'>
+                            {orders.length} {orders.length === 1 ? 'order' : 'orders'}
+                        </span>
+                    )}
+                </div>
+                <p className='mt-2 text-sm text-muted-foreground'>View and track all your orders</p>
+            </div>
+        </div>
+    );
+
     if (isError) {
         return (
-            <div className='container mx-auto px-4 py-8'>
-                <h1 className='mb-8 text-3xl font-bold'>My Orders</h1>
-                <ErrorState title='Failed to load orders' description='Please try again later.' iconSize='sm' />
+            <div className='bg-background'>
+                {pageHeader}
+                <div className='container mx-auto max-w-7xl px-4 py-8'>
+                    <ErrorState title='Failed to load orders' description='Please try again later.' iconSize='sm' />
+                </div>
             </div>
         );
     }
@@ -58,114 +79,116 @@ function Orders() {
     }
 
     return (
-        <div className='container mx-auto px-4 py-6 sm:py-8'>
-            <div className='mb-6 sm:mb-8'>
-                <h1 className='text-2xl sm:text-3xl font-bold'>My Orders</h1>
-                <p className='mt-2 text-sm text-muted-foreground'>View and track all your orders</p>
-            </div>
+        <div className='bg-background'>
+            {pageHeader}
+            <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
+                <div className='space-y-4 sm:space-y-6'>
+                    {orders.map(order => {
+                        const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
 
-            <div className='space-y-4 sm:space-y-6'>
-                {orders.map(order => {
-                    const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    });
+                        const statusInfo = getDeliveryStatusInfo(order.deliveryStatus);
+                        const StatusIcon = statusInfo.icon;
 
-                    const statusInfo = getDeliveryStatusInfo(order.deliveryStatus);
-                    const StatusIcon = statusInfo.icon;
-
-                    return (
-                        <Card
-                            key={order.id}
-                            className='overflow-hidden border border-border transition-all hover:border-primary/40 hover:shadow-md'
-                        >
-                            <CardHeader className='pb-4'>
-                                <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-                                    <div className='flex-1'>
-                                        <CardTitle className='mb-2 text-lg sm:text-xl'>Order #{order.slugId}</CardTitle>
-                                        <div className='mb-2 sm:mb-0'>
-                                            <Badge
-                                                variant='outline'
-                                                className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
-                                            >
-                                                <StatusIcon className='h-3 w-3' />
-                                                {statusInfo.label}
-                                            </Badge>
+                        return (
+                            <Card
+                                key={order.id}
+                                className='overflow-hidden border border-border transition-all hover:border-primary/40 hover:shadow-md'
+                            >
+                                <CardHeader className='pb-4'>
+                                    <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+                                        <div className='flex-1'>
+                                            <CardTitle className='mb-2 text-lg sm:text-xl'>
+                                                Order #{order.slugId}
+                                            </CardTitle>
+                                            <div className='mb-2 sm:mb-0'>
+                                                <Badge
+                                                    variant='outline'
+                                                    className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
+                                                >
+                                                    <StatusIcon className='h-3 w-3' />
+                                                    {statusInfo.label}
+                                                </Badge>
+                                            </div>
+                                            <CardDescription className='mt-2 flex items-center gap-2'>
+                                                <Clock className='h-3.5 w-3.5' />
+                                                {orderDate}
+                                            </CardDescription>
                                         </div>
-                                        <CardDescription className='mt-2 flex items-center gap-2'>
-                                            <Clock className='h-3.5 w-3.5' />
-                                            {orderDate}
-                                        </CardDescription>
+                                        <div className='flex items-baseline gap-2 sm:flex-col sm:items-end sm:gap-1'>
+                                            <div className='text-xl sm:text-2xl font-bold'>
+                                                ${order.totalAmount.toFixed(2)}
+                                            </div>
+                                            <div className='text-xs text-muted-foreground'>
+                                                {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className='flex items-baseline gap-2 sm:flex-col sm:items-end sm:gap-1'>
-                                        <div className='text-xl sm:text-2xl font-bold'>
-                                            ${order.totalAmount.toFixed(2)}
-                                        </div>
-                                        <div className='text-xs text-muted-foreground'>
-                                            {order.items.length} item{order.items.length !== 1 ? 's' : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className='pt-0'>
-                                <div className='space-y-4'>
-                                    {/* Order Items with Images */}
-                                    <div className='space-y-3'>
-                                        {order.items.slice(0, 3).map(item => (
-                                            <div key={item.id} className='flex items-center gap-3'>
-                                                <div className='relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border bg-muted'>
-                                                    <FoodImage
-                                                        src={item.imageUrl}
-                                                        alt={item.foodName}
-                                                        className='h-full w-full object-cover'
-                                                    />
-                                                </div>
-                                                <div className='flex-1 min-w-0'>
-                                                    <div className='font-medium text-sm truncate'>{item.foodName}</div>
-                                                    <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                                                        <span>Qty: {item.quantity}</span>
-                                                        <span>•</span>
-                                                        <span className='font-medium text-foreground'>
-                                                            ${item.totalPrice.toFixed(2)}
-                                                        </span>
+                                </CardHeader>
+                                <CardContent className='pt-0'>
+                                    <div className='space-y-4'>
+                                        {/* Order Items with Images */}
+                                        <div className='space-y-3'>
+                                            {order.items.slice(0, 3).map(item => (
+                                                <div key={item.id} className='flex items-center gap-3'>
+                                                    <div className='relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border bg-muted'>
+                                                        <FoodImage
+                                                            src={item.imageUrl}
+                                                            alt={item.foodName}
+                                                            className='h-full w-full object-cover'
+                                                        />
+                                                    </div>
+                                                    <div className='flex-1 min-w-0'>
+                                                        <div className='font-medium text-sm truncate'>
+                                                            {item.foodName}
+                                                        </div>
+                                                        <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+                                                            <span>Qty: {item.quantity}</span>
+                                                            <span>•</span>
+                                                            <span className='font-medium text-foreground'>
+                                                                ${item.totalPrice.toFixed(2)}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                        {order.items.length > 3 && (
-                                            <div className='flex items-center gap-3'>
-                                                <div className='text-sm font-medium text-muted-foreground'>
-                                                    +{order.items.length - 3} more item
-                                                    {order.items.length - 3 > 1 ? 's' : ''}
+                                            ))}
+                                            {order.items.length > 3 && (
+                                                <div className='flex items-center gap-3'>
+                                                    <div className='text-sm font-medium text-muted-foreground'>
+                                                        +{order.items.length - 3} more item
+                                                        {order.items.length - 3 > 1 ? 's' : ''}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <Separator />
-
-                                    <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-                                        <div className='flex items-center gap-2 text-sm'>
-                                            <span className='text-muted-foreground'>Payment:</span>
-                                            <Badge variant='outline' className='font-medium capitalize'>
-                                                {order.paymentMethod}
-                                            </Badge>
+                                            )}
                                         </div>
-                                        <Button variant='default' size='sm' className='w-full sm:w-auto' asChild>
-                                            <Link to={`/${ROUTES.ORDERS.DETAIL(order.slugId)}`}>
-                                                View Details
-                                                <ArrowRight className='ml-2 h-4 w-4' />
-                                            </Link>
-                                        </Button>
+
+                                        <Separator />
+
+                                        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                                            <div className='flex items-center gap-2 text-sm'>
+                                                <span className='text-muted-foreground'>Payment:</span>
+                                                <Badge variant='outline' className='font-medium capitalize'>
+                                                    {order.paymentMethod}
+                                                </Badge>
+                                            </div>
+                                            <Button variant='default' size='sm' className='w-full sm:w-auto' asChild>
+                                                <Link to={`/${ROUTES.ORDERS.DETAIL(order.slugId)}`}>
+                                                    View Details
+                                                    <ArrowRight className='ml-2 h-4 w-4' />
+                                                </Link>
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
