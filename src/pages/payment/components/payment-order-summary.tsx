@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
@@ -12,10 +13,11 @@ interface PaymentOrderSummaryProps {
 }
 
 function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
+    const { t } = useTranslation();
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle>{t('payment.orderSummary')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
                 <div className='space-y-3'>
@@ -44,7 +46,7 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
                 <Separator />
 
                 <div className='flex justify-between text-xl font-black'>
-                    <span>Total</span>
+                    <span>{t('payment.totalAmount')}</span>
                     <span>${totalPrice.toFixed(2)}</span>
                 </div>
             </CardContent>

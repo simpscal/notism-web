@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Package, Minus, Plus, ShoppingCart, Utensils } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -13,6 +14,7 @@ import { CartItemViewModel, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 
 function FoodDetail() {
+    const { t } = useTranslation();
     const { addToCart } = useCart();
     const { id } = useParams<{ id: string }>();
     const [quantity, setQuantity] = useState(1);
@@ -50,8 +52,8 @@ function FoodDetail() {
         };
 
         await addToCart(cartItem, quantity);
-        toast.success(`${quantity}x ${food.name} added to cart!`, {
-            description: `Total: $${(effectivePrice * quantity).toFixed(2)}`,
+        toast.success(t('foodDetail.addedToCart', { qty: quantity, name: food.name }), {
+            description: t('foodDetail.total', { amount: (effectivePrice * quantity).toFixed(2) }),
         });
     }, [addToCart, food, quantity]);
 
@@ -78,7 +80,7 @@ function FoodDetail() {
                     className='mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground'
                 >
                     <ArrowLeft className='h-4 w-4' />
-                    Back to Menu
+                    {t('foodDetail.backToMenu')}
                 </Link>
 
                 <div className='grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16'>
@@ -114,7 +116,7 @@ function FoodDetail() {
                             </div>
                             <div className='flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium'>
                                 <Utensils className='h-4 w-4' />
-                                <span>{food.stockQuantity} available</span>
+                                <span>{t('foodDetail.available', { qty: food.stockQuantity })}</span>
                             </div>
                         </div>
 
@@ -132,7 +134,7 @@ function FoodDetail() {
                                 </span>
                                 {hasSavings && (
                                     <span className='rounded-full bg-destructive/20 px-3 py-1 text-sm font-semibold text-destructive'>
-                                        Save ${(food.price - effectivePrice).toFixed(2)}
+                                        {t('cart.saveBadge', { amount: (food.price - effectivePrice).toFixed(2) })}
                                     </span>
                                 )}
                             </div>
@@ -173,7 +175,7 @@ function FoodDetail() {
                             >
                                 <ShoppingCart className='h-5 w-5 shrink-0' />
                                 <span className='truncate'>
-                                    Add to Cart - ${(effectivePrice * quantity).toFixed(2)}
+                                    {t('foodDetail.addToCart', { price: (effectivePrice * quantity).toFixed(2) })}
                                 </span>
                             </Button>
                         </div>

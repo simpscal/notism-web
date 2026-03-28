@@ -1,5 +1,6 @@
 import { Camera, Trash2, Upload } from 'lucide-react';
 import { memo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
@@ -22,6 +23,7 @@ function UserProfileAvatar({
     onAvatarChange,
     onAvatarRemove,
 }: UserProfileAvatarProps) {
+    const { t } = useTranslation();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -40,12 +42,12 @@ function UserProfileAvatar({
 
     const processFile = (file: File) => {
         if (!file.type.startsWith('image/')) {
-            toast.error('Please select an image file');
+            toast.error(t('settings.profile.imageTypeError'));
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error('Image size must be less than 5MB');
+            toast.error(t('settings.profile.imageSizeError'));
             return;
         }
 
@@ -125,7 +127,7 @@ function UserProfileAvatar({
                     <div className='absolute inset-0 rounded-full bg-black/50 flex items-center justify-center transition-opacity duration-300 opacity-0 group-hover:opacity-100'>
                         <div className='flex flex-col items-center gap-1 text-white'>
                             <Camera className='h-6 w-6' />
-                            <span className='text-xs font-medium'>Change Photo</span>
+                            <span className='text-xs font-medium'>{t('settings.profile.changePhoto')}</span>
                         </div>
                     </div>
 
@@ -155,7 +157,7 @@ function UserProfileAvatar({
                     <div className='absolute inset-0 rounded-full border-4 border-dashed border-primary bg-primary/10 flex items-center justify-center z-10'>
                         <div className='flex flex-col items-center gap-2 text-primary'>
                             <Upload className='h-8 w-8' />
-                            <span className='text-sm font-medium'>Drop image here</span>
+                            <span className='text-sm font-medium'>{t('settings.profile.dropImage')}</span>
                         </div>
                     </div>
                 )}
@@ -163,10 +165,8 @@ function UserProfileAvatar({
 
             <div className='flex-1 space-y-3'>
                 <div>
-                    <h3 className='text-sm font-medium mb-1'>Profile Picture</h3>
-                    <p className='text-sm text-muted-foreground mb-4'>
-                        Upload a photo to personalize your profile. JPG, PNG or GIF. Max size of 5MB.
-                    </p>
+                    <h3 className='text-sm font-medium mb-1'>{t('settings.profile.profilePicture')}</h3>
+                    <p className='text-sm text-muted-foreground mb-4'>{t('settings.profile.uploadHint')}</p>
                 </div>
                 <div className='flex flex-wrap gap-2'>
                     <Button
@@ -177,7 +177,7 @@ function UserProfileAvatar({
                         className='gap-2'
                     >
                         <Upload className='h-4 w-4' />
-                        {currentAvatarUrl ? 'Change Photo' : 'Upload Photo'}
+                        {currentAvatarUrl ? t('settings.profile.changePhoto') : t('settings.profile.uploadPhoto')}
                     </Button>
                     {currentAvatarUrl && (
                         <Button
@@ -188,7 +188,7 @@ function UserProfileAvatar({
                             className='gap-2 text-destructive hover:text-destructive'
                         >
                             <Trash2 className='h-4 w-4' />
-                            Remove
+                            {t('settings.profile.remove')}
                         </Button>
                     )}
                 </div>

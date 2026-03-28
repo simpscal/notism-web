@@ -1,5 +1,6 @@
 import { Clock } from 'lucide-react';
 import { memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants/routes.constant';
@@ -40,6 +41,7 @@ function OrderActionCard({
     onConfirmCancel,
     isCancelling = false,
 }: OrderActionCardProps) {
+    const { t } = useTranslation();
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const statusInfo = getDeliveryStatusInfo(deliveryStatus);
     const StatusIcon = statusInfo.icon;
@@ -55,29 +57,29 @@ function OrderActionCard({
     return (
         <Card className='sticky top-4'>
             <CardHeader>
-                <CardTitle>Order Information</CardTitle>
+                <CardTitle>{t('orderDetail.orderInformation')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
                 <div className='space-y-3 text-sm'>
                     <div>
                         <div className='mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                            Order ID
+                            {t('orderDetail.orderId')}
                         </div>
                         <div className='font-mono rounded bg-muted px-2 py-1 text-sm'>{slugId}</div>
                     </div>
                     <div>
                         <div className='mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                            Placed on
+                            {t('orderDetail.placedOn')}
                         </div>
                         <div className='font-medium'>{orderDate}</div>
                     </div>
                     <div>
                         <div className='mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                            Status
+                            {t('orderDetail.status')}
                         </div>
                         <Badge variant='outline' className={`flex w-fit items-center gap-1.5 ${statusInfo.colorClass}`}>
                             <StatusIcon className='h-3 w-3' />
-                            {statusInfo.label}
+                            {t(statusInfo.label)}
                         </Badge>
                     </div>
                 </div>
@@ -85,7 +87,7 @@ function OrderActionCard({
             <CardContent className='pt-0'>
                 <div className='space-y-2'>
                     <Button variant='default' size='lg' className='w-full' asChild>
-                        <Link to={`/${ROUTES.FOODS.LIST}`}>Continue Shopping</Link>
+                        <Link to={`/${ROUTES.FOODS.LIST}`}>{t('orderDetail.continueShopping')}</Link>
                     </Button>
                     {canCancelOrder(deliveryStatus) && onConfirmCancel && (
                         <>
@@ -96,14 +98,14 @@ function OrderActionCard({
                                 onClick={handleCancelClick}
                                 disabled={isCancelling}
                             >
-                                Cancel Order
+                                {t('orderDetail.cancelOrder')}
                             </Button>
                             <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
                                 <DialogContent>
                                     <DialogHeader>
-                                        <DialogTitle>Cancel Order</DialogTitle>
+                                        <DialogTitle>{t('orderDetail.cancelConfirmTitle')}</DialogTitle>
                                         <DialogDescription>
-                                            Are you sure you want to cancel this order? This action cannot be undone.
+                                            {t('orderDetail.cancelConfirmDescription')}
                                         </DialogDescription>
                                     </DialogHeader>
                                     <DialogFooter>
@@ -112,14 +114,14 @@ function OrderActionCard({
                                             onClick={() => setShowCancelDialog(false)}
                                             disabled={isCancelling}
                                         >
-                                            Keep Order
+                                            {t('orderDetail.keepOrder')}
                                         </Button>
                                         <Button
                                             variant='destructive'
                                             onClick={handleConfirmCancel}
                                             disabled={isCancelling}
                                         >
-                                            {isCancelling ? 'Cancelling...' : 'Cancel Order'}
+                                            {isCancelling ? t('orderDetail.cancelling') : t('orderDetail.cancelOrder')}
                                         </Button>
                                     </DialogFooter>
                                 </DialogContent>

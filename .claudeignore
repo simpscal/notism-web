@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+bun.lockb
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment files
+.env.production
+.env.local
+.env.*.local
+
+# Version control
+.git/
+.gitignore
+
+# Editor & IDE
+.vscode/
+.idea/
+.cursor/
+.DS_Store
+*.swp
+*.swo
+
+# Git hooks
+.husky/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

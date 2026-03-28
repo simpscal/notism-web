@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { memo, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 
@@ -25,6 +26,7 @@ interface FoodsGridProps {
 }
 
 function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilters }: FoodsGridProps) {
+    const { t } = useTranslation();
     const { addToCart } = useCart();
     const { ref: loadMoreRef, inView } = useInView();
 
@@ -82,7 +84,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
             };
 
             await addToCart(cartItem, 1);
-            toast.success(`${food.name} added to cart!`, {
+            toast.success(t('foods.card.addedToCart', { name: food.name }), {
                 description: `$${effectivePrice.toFixed(2)}`,
             });
         },

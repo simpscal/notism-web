@@ -1,5 +1,6 @@
 import { Check, CheckCircle2, CreditCard, ShoppingCart } from 'lucide-react';
 import { memo, type ComponentType } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
 
@@ -14,12 +15,13 @@ const steps: Array<{
     label: string;
     icon: ComponentType<{ className?: string }>;
 }> = [
-    { key: 'cart', label: 'Cart', icon: ShoppingCart },
-    { key: 'payment', label: 'Payment', icon: CreditCard },
-    { key: 'confirmation', label: 'Confirmation', icon: CheckCircle2 },
+    { key: 'cart', label: 'checkout.progress.cart', icon: ShoppingCart },
+    { key: 'payment', label: 'checkout.progress.payment', icon: CreditCard },
+    { key: 'confirmation', label: 'checkout.progress.confirmation', icon: CheckCircle2 },
 ];
 
 function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
+    const { t } = useTranslation();
     const currentIndex = steps.findIndex(s => s.key === currentStep);
 
     return (
@@ -57,10 +59,14 @@ function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
                                                   : 'text-muted-foreground'
                                         )}
                                     >
-                                        {step.label}
+                                        {t(step.label)}
                                     </div>
                                     <div className='text-xs text-muted-foreground'>
-                                        {isCompleted ? 'Completed' : isCurrent ? 'Current step' : 'Upcoming'}
+                                        {isCompleted
+                                            ? t('checkout.progress.completed')
+                                            : isCurrent
+                                              ? t('checkout.progress.currentStep')
+                                              : t('checkout.progress.upcoming')}
                                     </div>
                                 </div>
                             </div>

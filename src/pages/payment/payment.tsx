@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { memo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -22,6 +23,7 @@ import {
 } from '@/store/cart';
 
 function Payment() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const allItems = useAppSelector(selectCartItems);
@@ -35,7 +37,7 @@ function Payment() {
         onSuccess: async order => {
             await dispatch(loadCart()).unwrap();
 
-            toast.success('Order placed successfully!');
+            toast.success(t('payment.orderPlaced'));
             navigate(`/${ROUTES.ORDERS.DETAIL(order.slugId)}`);
         },
     });
@@ -46,7 +48,7 @@ function Payment() {
 
     const handlePlaceOrder = useCallback(() => {
         if (selectedItems.length === 0) {
-            toast.error('Please select at least one item to place an order');
+            toast.error(t('payment.selectItem'));
             navigate(`/${ROUTES.CART}`);
             return;
         }
@@ -81,7 +83,7 @@ function Payment() {
                 <div className='absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl' />
             </div>
             <div className='relative container mx-auto max-w-7xl'>
-                <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>Payment</h1>
+                <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>{t('payment.title')}</h1>
                 <div className='space-y-3'>
                     <CheckoutTrustBar />
                     <CheckoutProgress currentStep='payment' />
@@ -96,9 +98,9 @@ function Payment() {
                 {pageHeader}
                 <div className='container mx-auto max-w-7xl px-4 py-8'>
                     <div className='flex flex-col items-center justify-center py-12 text-center'>
-                        <p className='mb-4 text-muted-foreground'>No items selected for checkout</p>
+                        <p className='mb-4 text-muted-foreground'>{t('payment.noItemsSelected')}</p>
                         <Button size='lg' onClick={handleBackToCart}>
-                            Back to Cart
+                            {t('payment.backToCart')}
                         </Button>
                     </div>
                 </div>
@@ -121,24 +123,22 @@ function Payment() {
                     <div className='lg:col-span-1'>
                         <Card className='sticky top-4'>
                             <CardHeader>
-                                <CardTitle>Complete Order</CardTitle>
-                                <CardDescription>
-                                    Review your order and payment method before placing the order
-                                </CardDescription>
+                                <CardTitle>{t('payment.completeOrder')}</CardTitle>
+                                <CardDescription>{t('payment.reviewOrder')}</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className='space-y-2'>
                                     <div className='flex justify-between text-sm'>
-                                        <span className='text-muted-foreground'>Payment Method</span>
+                                        <span className='text-muted-foreground'>{t('payment.paymentMethod')}</span>
                                         <span className='font-medium'>
                                             {paymentMethod === PaymentMethodEnum.CashOnDelivery
-                                                ? 'Cash on Delivery'
-                                                : 'Banking'}
+                                                ? t('payment.cashOnDelivery')
+                                                : t('payment.banking')}
                                         </span>
                                     </div>
                                     <Separator />
                                     <div className='flex justify-between text-lg font-semibold'>
-                                        <span>Total Amount</span>
+                                        <span>{t('payment.totalAmount')}</span>
                                         <span>${totalPrice.toFixed(2)}</span>
                                     </div>
                                 </div>
@@ -154,14 +154,14 @@ function Payment() {
                                     {isCreatingOrder ? (
                                         <>
                                             <Spinner size='sm' className='' />
-                                            Processing...
+                                            {t('payment.processing')}
                                         </>
                                     ) : (
-                                        'Place Order'
+                                        t('payment.placeOrder')
                                     )}
                                 </Button>
                                 <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
-                                    Back to Cart
+                                    {t('payment.backToCart')}
                                 </Button>
                             </CardFooter>
                         </Card>

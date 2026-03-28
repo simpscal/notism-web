@@ -1,5 +1,6 @@
 import { Palette } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import { Field, FieldLabel } from '@/components/field';
@@ -8,26 +9,27 @@ import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { useTheme } from '@/core/contexts/theme.context';
 
 function SettingsAppearanceSection() {
+    const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
 
     return (
         <div className='space-y-6'>
             <div>
-                <h2 className='text-2xl font-semibold tracking-tight'>Appearance</h2>
-                <p className='text-muted-foreground mt-1'>Customize the appearance of the application</p>
+                <h2 className='text-2xl font-semibold tracking-tight'>{t('settings.appearance.title')}</h2>
+                <p className='text-muted-foreground mt-1'>{t('settings.appearance.subtitle')}</p>
             </div>
 
             <Card>
                 <CardHeader>
                     <CardTitle className='flex items-center gap-2'>
                         <Palette className='h-5 w-5' />
-                        Theme
+                        {t('settings.appearance.sectionTitle')}
                     </CardTitle>
-                    <CardDescription>Choose your preferred theme for the application</CardDescription>
+                    <CardDescription>{t('settings.appearance.themeDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Field>
-                        <FieldLabel>Theme Preference</FieldLabel>
+                        <FieldLabel>{t('settings.appearance.themePreference')}</FieldLabel>
                         <RadioGroup
                             value={theme}
                             onValueChange={value => setTheme(value as 'light' | 'dark' | 'system')}
@@ -36,19 +38,19 @@ function SettingsAppearanceSection() {
                             <div className='flex items-center space-x-2'>
                                 <RadioGroupItem value='light' id='light' />
                                 <Label htmlFor='light' className='font-normal cursor-pointer'>
-                                    Light
+                                    {t('settings.appearance.light')}
                                 </Label>
                             </div>
                             <div className='flex items-center space-x-2'>
                                 <RadioGroupItem value='dark' id='dark' />
                                 <Label htmlFor='dark' className='font-normal cursor-pointer'>
-                                    Dark
+                                    {t('settings.appearance.dark')}
                                 </Label>
                             </div>
                             <div className='flex items-center space-x-2'>
                                 <RadioGroupItem value='system' id='system' />
                                 <Label htmlFor='system' className='font-normal cursor-pointer'>
-                                    System
+                                    {t('settings.appearance.system')}
                                 </Label>
                             </div>
                         </RadioGroup>

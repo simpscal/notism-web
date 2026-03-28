@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { DELIVERY_STATUS } from '../constants';
 import { DeliveryStatusEnum } from '../enums';
@@ -16,6 +17,7 @@ function OrderDeliveryStatusTimeline({
     deliveryStatus,
     deliveryStatusTiming: timing,
 }: OrderDeliveryStatusTimelineProps) {
+    const { t } = useTranslation();
     const currentStepIndex = useMemo(() => {
         const enumValue = deliveryStatus as DeliveryStatusEnum;
         return DELIVERY_STATUS.findIndex(step => step.key === enumValue);
@@ -34,21 +36,21 @@ function OrderDeliveryStatusTimeline({
                 if (step.key === DeliveryStatusEnum.Delivered) completedAt = timing.deliveredCompletedAt;
 
                 return {
-                    title: step.label,
+                    title: t(step.label),
                     icon: step.icon,
                     isCompleted,
                     isCurrent,
                     completedAt,
                 };
             }),
-        [currentStepIndex, timing]
+        [currentStepIndex, timing, t]
     );
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Delivery Status</CardTitle>
-                <CardDescription>Track your order progress</CardDescription>
+                <CardTitle>{t('orderDetail.deliveryStatus')}</CardTitle>
+                <CardDescription>{t('orderDetail.trackYourOrder')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <Timeline items={items} />

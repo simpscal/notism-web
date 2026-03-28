@@ -1,5 +1,6 @@
 import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import AdminOrderCard from './admin-order-card';
@@ -16,6 +17,7 @@ interface AdminOrdersKanbanProps {
 }
 
 function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
+    const { t } = useTranslation();
     const queryClient = useQueryClient();
 
     const placedQuery = useInfiniteQuery({
@@ -158,7 +160,7 @@ function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
                 }
             );
 
-            toast.success('Order status updated successfully');
+            toast.success(t('admin.orders.statusUpdated'));
         },
     });
 

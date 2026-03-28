@@ -1,5 +1,6 @@
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
@@ -18,6 +19,7 @@ interface CartItemProps {
 }
 
 function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange }: CartItemProps) {
+    const { t } = useTranslation();
     const isSelected = item.isSelected;
     const { effectivePrice, hasSavings } = getFoodPricing(item.price, item.discountPrice);
     const itemTotal = effectivePrice * item.quantity;
@@ -127,7 +129,7 @@ function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange
                             <span className='text-xl font-bold'>${itemTotal.toFixed(2)}</span>
                             {hasSavings && (
                                 <span className='block text-xs text-destructive'>
-                                    Save ${discountAmount.toFixed(2)}
+                                    {t('cart.saveBadge', { amount: discountAmount.toFixed(2) })}
                                 </span>
                             )}
                         </div>

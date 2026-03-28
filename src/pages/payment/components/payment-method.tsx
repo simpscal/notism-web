@@ -1,5 +1,6 @@
 import { Banknote, CreditCard } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
@@ -14,11 +15,12 @@ interface PaymentMethodProps {
 }
 
 function PaymentMethodComponent({ value, onValueChange }: PaymentMethodProps) {
+    const { t } = useTranslation();
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Payment Method</CardTitle>
-                <CardDescription>Select your preferred payment method</CardDescription>
+                <CardTitle>{t('payment.paymentMethod')}</CardTitle>
+                <CardDescription>{t('payment.selectPaymentMethod')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <RadioGroup value={value} onValueChange={onValueChange}>
@@ -46,10 +48,8 @@ function PaymentMethodComponent({ value, onValueChange }: PaymentMethodProps) {
                         </div>
                         <Label htmlFor={PaymentMethodEnum.CashOnDelivery} className='flex-1 cursor-pointer font-normal'>
                             <div className='flex flex-col'>
-                                <span className='font-semibold'>Cash on Delivery</span>
-                                <span className='text-sm text-muted-foreground'>
-                                    Pay with cash when your order is delivered
-                                </span>
+                                <span className='font-semibold'>{t('payment.cashOnDelivery')}</span>
+                                <span className='text-sm text-muted-foreground'>{t('payment.payWithCash')}</span>
                             </div>
                         </Label>
                     </div>
@@ -61,11 +61,11 @@ function PaymentMethodComponent({ value, onValueChange }: PaymentMethodProps) {
                         <Label htmlFor={PaymentMethodEnum.Banking} className='flex-1 cursor-not-allowed font-normal'>
                             <div className='flex items-center gap-2'>
                                 <div className='flex flex-col'>
-                                    <span className='font-semibold'>Banking</span>
-                                    <span className='text-sm text-muted-foreground'>Online banking transfer</span>
+                                    <span className='font-semibold'>{t('payment.banking')}</span>
+                                    <span className='text-sm text-muted-foreground'>{t('payment.onlineBanking')}</span>
                                 </div>
                                 <Badge variant='secondary' className='ml-auto text-xs'>
-                                    Coming soon
+                                    {t('payment.comingSoon')}
                                 </Badge>
                             </div>
                         </Label>

@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import i18next from 'i18next';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -27,6 +29,7 @@ import Spinner from '@/components/spinner';
 import { useAppSelector } from '@/core/hooks/use-redux.hook';
 
 function AdminUserDetail() {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -62,14 +65,14 @@ function AdminUserDetail() {
         onSuccess: updated => {
             queryClient.setQueryData(['admin', 'users', 'detail', id], updated);
             form.reset(getDefaultUserDetailFormValues(updated));
-            toast.success('User updated successfully');
+            toast.success(t('admin.user.updated'));
         },
     });
 
     const deleteUserMutation = useMutation({
         mutationFn: (userId: string) => adminApi.deleteUser(userId),
         onSuccess: () => {
-            toast.success('User deleted successfully');
+            toast.success(t('admin.user.deleted'));
             setDeleteDialogOpen(false);
             navigate(`/${ROUTES.ADMIN.USERS}`);
         },
@@ -80,7 +83,7 @@ function AdminUserDetail() {
 
     const createdDate = useMemo(() => {
         if (!user) return '';
-        return new Date(user.createdAt).toLocaleDateString('en-US', {
+        return new Date(user.createdAt).toLocaleDateString(i18next.language === 'vi' ? 'vi-VN' : 'en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -120,15 +123,15 @@ function AdminUserDetail() {
                 <Button variant='ghost' className='mb-8' asChild>
                     <Link to={`/${ROUTES.ADMIN.USERS}`}>
                         <ArrowLeft className='h-4 w-4' />
-                        Back to Users
+                        {t('common.back')}
                     </Link>
                 </Button>
                 <ErrorState
-                    title='Failed to load user details'
-                    description='Please try again later or go back to the users list.'
+                    title={t('admin.user.failedToLoad')}
+                    description={t('admin.user.tryAgainOrGoBack')}
                     action={
                         <Button asChild>
-                            <Link to={`/${ROUTES.ADMIN.USERS}`}>Back to Users</Link>
+                            <Link to={`/${ROUTES.ADMIN.USERS}`}>{t('common.back')}</Link>
                         </Button>
                     }
                 />
@@ -141,7 +144,7 @@ function AdminUserDetail() {
             <Button variant='ghost' className='mb-8' asChild>
                 <Link to={`/${ROUTES.ADMIN.USERS}`}>
                     <ArrowLeft className='h-4 w-4' />
-                    Back to Users
+                    {t('common.back')}
                 </Link>
             </Button>
 
@@ -151,42 +154,44 @@ function AdminUserDetail() {
                         <FormProvider {...form}>
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>User Details</CardTitle>
-                                    <CardDescription>
-                                        View user information. Only the role can be updated.
-                                    </CardDescription>
+                                    <CardTitle>{t('admin.user.details')}</CardTitle>
+                                    <CardDescription>{t('admin.user.viewInfoDescription')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
                                         <div className='space-y-2'>
                                             <div className='flex justify-between text-sm'>
-                                                <span className='text-muted-foreground'>First name</span>
+                                                <span className='text-muted-foreground'>{t('auth.firstName')}</span>
                                                 <span className='font-medium'>{user.firstName}</span>
                                             </div>
                                             <Separator />
                                             <div className='flex justify-between text-sm'>
-                                                <span className='text-muted-foreground'>Last name</span>
+                                                <span className='text-muted-foreground'>{t('auth.lastName')}</span>
                                                 <span className='font-medium'>{user.lastName}</span>
                                             </div>
                                             <Separator />
                                             <div className='flex justify-between text-sm'>
-                                                <span className='text-muted-foreground'>Email</span>
+                                                <span className='text-muted-foreground'>{t('auth.email')}</span>
                                                 <span className='font-medium'>{user.email}</span>
                                             </div>
                                             <Separator />
                                             <div className='flex justify-between text-sm'>
-                                                <span className='text-muted-foreground'>Phone number</span>
+                                                <span className='text-muted-foreground'>
+                                                    {t('admin.user.phoneNumber')}
+                                                </span>
                                                 <span className='font-medium'>{user.phoneNumber || '-'}</span>
                                             </div>
                                             <Separator />
                                             <div className='flex justify-between text-sm'>
-                                                <span className='text-muted-foreground'>Location</span>
+                                                <span className='text-muted-foreground'>
+                                                    {t('admin.user.location')}
+                                                </span>
                                                 <span className='font-medium'>{user.location || '-'}</span>
                                             </div>
                                             <Separator />
                                         </div>
                                         <Field>
-                                            <FieldLabel>Role</FieldLabel>
+                                            <FieldLabel>{t('admin.user.role')}</FieldLabel>
                                             <Controller
                                                 control={form.control}
                                                 name='role'
@@ -198,7 +203,7 @@ function AdminUserDetail() {
                                                         aria-invalid={!!form.formState.errors.role}
                                                     >
                                                         <SelectTrigger className='w-full' disabled={isViewingSelf}>
-                                                            <SelectValue placeholder='Select role' />
+                                                            <SelectValue placeholder={t('admin.user.selectRole')} />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {USER_ROLE_OPTIONS.map(opt => (
@@ -214,14 +219,18 @@ function AdminUserDetail() {
                                                 <FieldError>{form.formState.errors.role.message}</FieldError>
                                             )}
                                         </Field>
-                                        <div className='text-sm text-muted-foreground'>Created at {createdDate}</div>
+                                        <div className='text-sm text-muted-foreground'>
+                                            {t('admin.user.createdAt')} {createdDate}
+                                        </div>
                                         {!isViewingSelf && (
                                             <div className='flex gap-4'>
                                                 <Button
                                                     type='submit'
                                                     disabled={!form.formState.isDirty || updateUserMutation.isPending}
                                                 >
-                                                    {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
+                                                    {updateUserMutation.isPending
+                                                        ? t('common.saving')
+                                                        : t('common.save')}
                                                 </Button>
                                                 <Button
                                                     type='button'
@@ -230,7 +239,7 @@ function AdminUserDetail() {
                                                     disabled={deleteUserMutation.isPending}
                                                 >
                                                     <Trash2 className='h-4 w-4' />
-                                                    Delete User
+                                                    {t('admin.user.deleteUser')}
                                                 </Button>
                                             </div>
                                         )}
@@ -245,22 +254,21 @@ function AdminUserDetail() {
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete User</DialogTitle>
+                        <DialogTitle>{t('admin.user.deleteUser')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete user <strong>{user.email}</strong>? This action cannot be
-                            undone.
+                            {t('admin.user.deleteConfirmation', { email: user.email })}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             variant='destructive'
                             onClick={handleConfirmDelete}
                             disabled={deleteUserMutation.isPending}
                         >
-                            {deleteUserMutation.isPending ? 'Deleting...' : 'Delete'}
+                            {deleteUserMutation.isPending ? t('common.deleting') : t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

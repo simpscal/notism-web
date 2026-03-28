@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { CarouselApi } from '@/components/carousel';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/carousel';
@@ -11,6 +12,7 @@ interface FoodDetailImageSectionProps {
 }
 
 function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetailImageSectionProps) {
+    const { t } = useTranslation();
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
 
@@ -51,7 +53,7 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
                                 {index === 0 && !isAvailable && (
                                     <div className='absolute inset-0 z-10 flex items-center justify-center bg-card/80'>
                                         <span className='rounded-full bg-muted px-6 py-3 text-lg font-semibold uppercase tracking-widest text-foreground'>
-                                            Out of Stock
+                                            {t('foodDetail.outOfStock')}
                                         </span>
                                     </div>
                                 )}

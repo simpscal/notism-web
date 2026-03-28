@@ -1,5 +1,6 @@
 import { Grid3x3, LayoutGrid } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import AdminOrdersKanban from './components/admin-orders-kanban';
@@ -11,6 +12,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 type ViewMode = 'kanban' | 'grid';
 
 function AdminOrders() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [viewMode, setViewMode] = useState<ViewMode>('kanban');
 
@@ -26,8 +28,8 @@ function AdminOrders() {
             <div className='px-4 py-6 w-full'>
                 <div className='mb-6 flex items-center justify-between'>
                     <div>
-                        <h1 className='text-2xl font-bold'>Orders Management</h1>
-                        <p className='mt-1 text-sm text-muted-foreground'>Manage and track all orders</p>
+                        <h1 className='text-2xl font-bold'>{t('admin.orders.title')}</h1>
+                        <p className='mt-1 text-sm text-muted-foreground'>{t('admin.orders.subtitle')}</p>
                     </div>
                     <ToggleGroup
                         type='single'

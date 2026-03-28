@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Eye, MoreVertical, Plus, Search, Trash2 } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -18,6 +19,7 @@ import { useAppDispatch } from '@/core/hooks';
 import { removeCategory } from '@/store/food';
 
 function AdminCategories() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
@@ -46,7 +48,7 @@ function AdminCategories() {
                 };
             });
             dispatch(removeCategory(categoryId));
-            toast.success('Category deleted successfully');
+            toast.success(t('admin.categories.deletedSuccess'));
             setDeleteDialogOpen(false);
             setSelectedCategory(null);
         },

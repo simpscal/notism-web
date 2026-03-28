@@ -1,5 +1,6 @@
 import { memo, type ReactNode, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { QUANTITY_UNIT_OPTIONS, type FoodFormValues } from '../models';
 
@@ -16,6 +17,7 @@ interface FoodDetailFormProps {
 }
 
 function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
+    const { t } = useTranslation();
     const form = useFormContext<FoodFormValues>();
     const {
         formState: { errors },
@@ -31,28 +33,32 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Food Details</CardTitle>
-                <CardDescription>Edit the food information below.</CardDescription>
+                <CardTitle>{t('admin.food.details')}</CardTitle>
+                <CardDescription>{t('admin.food.editInformationBelow')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
                     <Field>
-                        <FieldLabel>Name</FieldLabel>
-                        <Input {...form.register('name')} placeholder='Food name' aria-invalid={!!errors.name} />
+                        <FieldLabel>{t('admin.food.name')}</FieldLabel>
+                        <Input
+                            {...form.register('name')}
+                            placeholder={t('admin.food.namePlaceholder')}
+                            aria-invalid={!!errors.name}
+                        />
                         {errors.name && <FieldError>{errors.name.message}</FieldError>}
                     </Field>
                     <Field>
-                        <FieldLabel>Description</FieldLabel>
+                        <FieldLabel>{t('admin.food.description')}</FieldLabel>
                         <Input
                             {...form.register('description')}
-                            placeholder='Description'
+                            placeholder={t('admin.food.descriptionPlaceholder')}
                             aria-invalid={!!errors.description}
                         />
                         {errors.description && <FieldError>{errors.description.message}</FieldError>}
                     </Field>
                     <div className='grid gap-6 sm:grid-cols-2'>
                         <Field>
-                            <FieldLabel>Price ($)</FieldLabel>
+                            <FieldLabel>{t('admin.food.price')}</FieldLabel>
                             <Input
                                 type='number'
                                 step='0.01'
@@ -63,7 +69,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                             {errors.price && <FieldError>{errors.price.message}</FieldError>}
                         </Field>
                         <Field>
-                            <FieldLabel>Discount Price ($)</FieldLabel>
+                            <FieldLabel>{t('admin.food.discountPrice')}</FieldLabel>
                             <Input
                                 type='number'
                                 step='0.01'
@@ -71,7 +77,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                                 {...form.register('discountPrice', {
                                     setValueAs: v => (v === '' || v === undefined ? null : Number(v)),
                                 })}
-                                placeholder='Optional'
+                                placeholder={t('admin.food.optional')}
                                 aria-invalid={!!errors.discountPrice}
                             />
                             {errors.discountPrice && <FieldError>{errors.discountPrice.message}</FieldError>}
@@ -79,7 +85,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                     </div>
                     <div className='grid gap-6 sm:grid-cols-2'>
                         <Field>
-                            <FieldLabel>Category</FieldLabel>
+                            <FieldLabel>{t('admin.food.category')}</FieldLabel>
                             <Controller
                                 control={form.control}
                                 name='category'
@@ -92,7 +98,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                                             aria-invalid={!!errors.category}
                                         >
                                             <SelectTrigger className='w-full'>
-                                                <SelectValue placeholder='Select category' />
+                                                <SelectValue placeholder={t('admin.food.selectCategory')} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {categoryOptions.map(opt => (
@@ -108,7 +114,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                             {errors.category && <FieldError>{errors.category.message}</FieldError>}
                         </Field>
                         <Field>
-                            <FieldLabel>Quantity Unit</FieldLabel>
+                            <FieldLabel>{t('admin.food.quantityUnit')}</FieldLabel>
                             <Controller
                                 control={form.control}
                                 name='quantityUnit'
@@ -119,7 +125,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                                         aria-invalid={!!errors.quantityUnit}
                                     >
                                         <SelectTrigger className='w-full'>
-                                            <SelectValue placeholder='Select unit' />
+                                            <SelectValue placeholder={t('admin.food.selectUnit')} />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {QUANTITY_UNIT_OPTIONS.map(opt => (
@@ -136,7 +142,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                     </div>
                     <div className='grid gap-6 sm:grid-cols-2'>
                         <Field>
-                            <FieldLabel>Available</FieldLabel>
+                            <FieldLabel>{t('admin.food.available')}</FieldLabel>
                             <div className='w-fit'>
                                 <Switch
                                     checked={form.watch('isAvailable')}
@@ -147,7 +153,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                             </div>
                         </Field>
                         <Field>
-                            <FieldLabel>Stock Quantity</FieldLabel>
+                            <FieldLabel>{t('admin.food.stockQuantity')}</FieldLabel>
                             <Input
                                 type='number'
                                 min={0}

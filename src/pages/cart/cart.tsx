@@ -1,4 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -16,6 +17,7 @@ import { CheckoutProgress, CheckoutTrustBar } from '@/features/order';
 import { selectCartItems, selectCartIsInitialized, setItemSelection } from '@/store/cart';
 
 function Cart() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { updateCartItemQuantity, removeFromCart } = useCart();
@@ -43,9 +45,9 @@ function Cart() {
             const newQuantity = item.quantity + delta;
             if (newQuantity <= 0) {
                 await removeFromCart(id);
-                toast.success('Item removed from cart');
+                toast.success(t('cart.itemRemoved'));
             } else if (newQuantity > item.stockQuantity) {
-                toast.error(`Only ${item.stockQuantity} items available`);
+                toast.error(t('cart.insufficientStock', { quantity: item.stockQuantity }));
             } else {
                 await updateCartItemQuantity(id, newQuantity);
             }
@@ -54,11 +56,11 @@ function Cart() {
     );
 
     const handleRemoveItem = useCallback(
-        async (id: string, name: string) => {
+        async (id: string) => {
             await removeFromCart(id);
-            toast.success(`${name} removed from cart`);
+            toast.success(t('cart.itemRemoved'));
         },
-        [removeFromCart]
+        [removeFromCart, t]
     );
 
     const handleSelectionChange = useCallback(
@@ -70,7 +72,7 @@ function Cart() {
 
     const handleProceedToPayment = useCallback(() => {
         if (selectedItemsList.length === 0) {
-            toast.error('Please select at least one item to proceed');
+            toast.error(t('cart.selectAtLeastOne'));
             return;
         }
         if (!user) {
@@ -102,9 +104,9 @@ function Cart() {
                 </div>
                 <div className='relative container mx-auto max-w-7xl'>
                     <div className='mb-5 flex items-center gap-3'>
-                        <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>Shopping Cart</h1>
+                        <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>{t('cart.title')}</h1>
                         <span className='rounded-full bg-primary/10 px-3 py-0.5 text-sm font-semibold text-primary'>
-                            {items.length} {items.length === 1 ? 'item' : 'items'}
+                            {t('cart.itemCount_one', { count: items.length })}
                         </span>
                     </div>
                     <div className='space-y-3'>
@@ -131,7 +133,7 @@ function Cart() {
                     <div className='lg:col-span-1'>
                         <Card className='sticky top-4'>
                             <CardHeader>
-                                <h2 className='text-xl font-bold'>Order Summary</h2>
+                                <h2 className='text-xl font-bold'>{t('cart.orderSummary')}</h2>
                             </CardHeader>
                             <CardContent className='space-y-4'>
                                 <div className='space-y-2'>
@@ -168,14 +170,14 @@ function Cart() {
                                             );
                                         })
                                     ) : (
-                                        <p className='text-sm text-muted-foreground'>No items selected</p>
+                                        <p className='text-sm text-muted-foreground'>{t('cart.noItemsSelected')}</p>
                                     )}
                                 </div>
 
                                 <Separator />
 
                                 <div className='flex justify-between'>
-                                    <span className='text-lg font-semibold'>Total</span>
+                                    <span className='text-lg font-semibold'>{t('cart.total')}</span>
                                     <span className='text-xl font-black'>${selectedTotalPrice.toFixed(2)}</span>
                                 </div>
                             </CardContent>
@@ -187,11 +189,11 @@ function Cart() {
                                     disabled={selectedItemsList.length === 0}
                                     onClick={handleProceedToPayment}
                                 >
-                                    Proceed to Payment
+                                    {t('cart.proceedToPayment')}
                                 </Button>
                                 {user && (
                                     <Button variant='outline' size='lg' className='w-full' asChild>
-                                        <Link to={`/${ROUTES.ORDERS.LIST}`}>View My Orders</Link>
+                                        <Link to={`/${ROUTES.ORDERS.LIST}`}>{t('cart.viewMyOrders')}</Link>
                                     </Button>
                                 )}
                             </CardFooter>

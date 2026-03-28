@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Eye, MoreVertical, Search } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -31,6 +32,7 @@ interface AdminOrdersTableProps {
 }
 
 function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
+    const { t } = useTranslation();
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
     const [searchInput, setSearchInput] = useState('');
@@ -82,7 +84,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                     };
                 }
             );
-            toast.success('Order status updated successfully');
+            toast.success(t('admin.orders.statusUpdated'));
         },
     });
 
@@ -106,7 +108,11 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
     if (isError) {
         return (
             <div className='flex h-full w-full items-center justify-center'>
-                <ErrorState title='Failed to load orders' description='Please try again later.' iconSize='sm' />
+                <ErrorState
+                    title={t('admin.orders.failedToLoad')}
+                    description={t('common.tryAgainLater')}
+                    iconSize='sm'
+                />
             </div>
         );
     }
@@ -118,7 +124,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                 <InputGroup>
                     <InputGroupInput
                         type='text'
-                        placeholder='Search orders by ID, customer name, or email...'
+                        placeholder={t('orders.searchPlaceholder')}
                         value={searchInput}
                         onChange={e => setSearchInput(e.target.value)}
                     />
@@ -140,7 +146,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                                 onSort={handleSort}
                                 className='min-w-[120px]'
                             >
-                                Order ID
+                                {t('orders.orderId')}
                             </SortableTableHead>
                             <SortableTableHead
                                 field='userName'
@@ -149,7 +155,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                                 onSort={handleSort}
                                 className='min-w-[150px]'
                             >
-                                Customer
+                                {t('admin.orders.customer')}
                             </SortableTableHead>
                             <SortableTableHead
                                 field='userEmail'
@@ -158,7 +164,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                                 onSort={handleSort}
                                 className='min-w-[200px]'
                             >
-                                Email
+                                {t('auth.email')}
                             </SortableTableHead>
                             <SortableTableHead
                                 field='totalAmount'
@@ -167,11 +173,11 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                                 onSort={handleSort}
                                 className='min-w-[100px]'
                             >
-                                Total
+                                {t('orders.total')}
                             </SortableTableHead>
-                            <TableHead className='min-w-[80px]'>Items</TableHead>
-                            <TableHead className='min-w-[150px]'>Status</TableHead>
-                            <TableHead className='min-w-[120px] text-right'>Actions</TableHead>
+                            <TableHead className='min-w-[80px]'>{t('orders.items')}</TableHead>
+                            <TableHead className='min-w-[150px]'>{t('orders.status')}</TableHead>
+                            <TableHead className='min-w-[120px] text-right'>{t('orders.actions')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody className={orders.length === 0 ? 'h-full' : undefined}>
@@ -220,7 +226,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                                                 <DropdownMenuContent align='end'>
                                                     <DropdownMenuItem onClick={() => onOrderClick(order.slugId)}>
                                                         <Eye className='h-4 w-4' />
-                                                        View
+                                                        {t('common.view')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -231,7 +237,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={7} className='text-center text-muted-foreground'>
-                                    No orders found
+                                    {t('orders.noOrders')}
                                 </TableCell>
                             </TableRow>
                         )}

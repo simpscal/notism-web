@@ -1,5 +1,6 @@
 import { Search, ShieldCheck, Sparkles, Truck, UtensilsCrossed } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
@@ -7,6 +8,8 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 
 function LandingHeroSection() {
+    const { t } = useTranslation();
+
     return (
         <section className='relative border-b bg-gradient-to-b from-primary/15 to-background px-4 py-10 sm:py-14 md:py-16'>
             <div className='mx-auto max-w-7xl'>
@@ -15,38 +18,39 @@ function LandingHeroSection() {
                         <div className='flex flex-col items-start gap-3 sm:flex-row sm:items-center'>
                             <Badge variant='secondary' className='gap-2'>
                                 <Sparkles className='h-4 w-4 text-primary' />
-                                <span>Fresh meals, fast checkout</span>
+                                <span>{t('landing.hero.badge')}</span>
                             </Badge>
                         </div>
 
                         <h2 className='text-primary text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl'>
-                            Order fresh food in minutes
+                            {t('landing.hero.title')}
                         </h2>
 
                         <p className='max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg'>
-                            Browse menus, customize your order, and track delivery in real time. Designed to keep
-                            checkout simple and secure.
+                            {t('landing.hero.subtitle')}
                         </p>
 
                         <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
                             <Button size='lg' asChild>
-                                <Link to={`/${ROUTES.AUTH.SIGNUP}`}>Start ordering</Link>
+                                <Link to={`/${ROUTES.AUTH.SIGNUP}`}>{t('landing.hero.startOrdering')}</Link>
                             </Button>
 
                             <Button size='lg' variant='outline' asChild>
-                                <Link to={`/${ROUTES.FOODS.LIST}`}>Explore foods</Link>
+                                <Link to={`/${ROUTES.FOODS.LIST}`}>{t('landing.hero.exploreFoods')}</Link>
                             </Button>
                         </div>
 
                         <div className='flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-muted-foreground sm:text-sm'>
                             <div className='flex items-center gap-2'>
                                 <ShieldCheck className='h-4 w-4 text-primary' />
-                                <span className='font-semibold text-foreground'>Secure checkout</span>
+                                <span className='font-semibold text-foreground'>
+                                    {t('landing.hero.secureCheckout')}
+                                </span>
                             </div>
 
                             <div className='flex items-center gap-2'>
                                 <Truck className='h-4 w-4 text-primary' />
-                                <span className='font-semibold text-foreground'>Fast delivery</span>
+                                <span className='font-semibold text-foreground'>{t('landing.hero.fastDelivery')}</span>
                             </div>
                         </div>
                     </div>
@@ -97,7 +101,7 @@ function LandingHeroSection() {
                                 <div className='flex items-center justify-between'>
                                     <div className='flex items-center gap-2'>
                                         <ShieldCheck className='h-4 w-4 text-primary' />
-                                        <span className='text-xs font-medium'>Secure checkout</span>
+                                        <span className='text-xs font-medium'>{t('landing.hero.secureCheckout')}</span>
                                     </div>
                                     <span className='text-xs text-muted-foreground'>Protected</span>
                                 </div>

@@ -1,39 +1,35 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/accordion';
 
 function LandingFaqSection() {
+    const { t } = useTranslation();
+
     return (
         <section className='px-4 py-12 sm:py-16'>
             <div className='mx-auto max-w-3xl space-y-6'>
                 <div className='space-y-3 text-center'>
-                    <h3 className='text-2xl font-bold tracking-tight'>Frequently asked questions</h3>
+                    <h3 className='text-2xl font-bold tracking-tight'>{t('landing.faq.title')}</h3>
                     <p className='mx-auto max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base'>
-                        Quick answers about ordering, delivery, and checkout.
+                        {t('landing.faq.subtitle')}
                     </p>
                 </div>
 
                 <Accordion type='single' collapsible defaultValue='item-1' className='w-full'>
                     <AccordionItem value='item-1'>
-                        <AccordionTrigger>How do I start an order?</AccordionTrigger>
-                        <AccordionContent>
-                            Go to Foods, pick what you want, review your summary, and proceed to checkout.
-                        </AccordionContent>
+                        <AccordionTrigger>{t('landing.faq.items.0.question')}</AccordionTrigger>
+                        <AccordionContent>{t('landing.faq.items.0.answer')}</AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value='item-2'>
-                        <AccordionTrigger>Is payment processing secure?</AccordionTrigger>
-                        <AccordionContent>
-                            Yes. Your checkout uses protected payment processing and clear confirmation steps.
-                        </AccordionContent>
+                        <AccordionTrigger>{t('landing.faq.items.1.question')}</AccordionTrigger>
+                        <AccordionContent>{t('landing.faq.items.1.answer')}</AccordionContent>
                     </AccordionItem>
 
                     <AccordionItem value='item-3'>
-                        <AccordionTrigger>Can I track my delivery?</AccordionTrigger>
-                        <AccordionContent>
-                            You can view delivery progress in real time after checkout, so you always know what to
-                            expect.
-                        </AccordionContent>
+                        <AccordionTrigger>{t('landing.faq.items.2.question')}</AccordionTrigger>
+                        <AccordionContent>{t('landing.faq.items.2.answer')}</AccordionContent>
                     </AccordionItem>
                 </Accordion>
             </div>

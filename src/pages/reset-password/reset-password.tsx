@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { memo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -12,22 +13,26 @@ import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { PasswordInput } from '@/components/password-input';
 
-const resetPasswordSchema = z
-    .object({
-        newPassword: z.string().min(1, 'Password is required').min(8, 'Password must be at least 8 characters'),
-        confirmPassword: z.string().min(1, 'Please confirm your password'),
-    })
-    .refine(data => data.newPassword === data.confirmPassword, {
-        message: 'Passwords do not match',
-        path: ['confirmPassword'],
-    });
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
-
 function ResetPassword() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token')!;
+
+    const resetPasswordSchema = z
+        .object({
+            newPassword: z
+                .string()
+                .min(1, t('auth.validation.passwordRequired'))
+                .min(8, t('auth.validation.passwordMinLength')),
+            confirmPassword: z.string().min(1, 'Please confirm your password'),
+        })
+        .refine(data => data.newPassword === data.confirmPassword, {
+            message: t('auth.validation.passwordsDoNotMatch'),
+            path: ['confirmPassword'],
+        });
+
+    type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
     const { mutate: resetPassword, isPending } = useMutation({
         mutationFn: authApi.resetPassword,
@@ -55,8 +60,8 @@ function ResetPassword() {
             },
             {
                 onSuccess: () => {
-                    toast.success('Success', {
-                        description: 'Your password has been reset successfully',
+                    toast.success(t('common.success'), {
+                        description: t('auth.passwordResetSuccessDescription'),
                     });
 
                     setTimeout(() => {
@@ -70,17 +75,17 @@ function ResetPassword() {
     return (
         <div className='space-y-6'>
             <div className='space-y-2 text-center'>
-                <h1 className='text-3xl font-bold'>Reset Your Password</h1>
-                <p className='text-muted-foreground'>Enter your new password below</p>
+                <h1 className='text-3xl font-bold'>{t('auth.resetPassword')}</h1>
+                <p className='text-muted-foreground'>{t('auth.enterNewPassword')}</p>
             </div>
 
             <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-4'>
                 {/* New Password Field */}
                 <Field data-invalid={!!errors.newPassword}>
-                    <FieldLabel htmlFor='newPassword'>New Password</FieldLabel>
+                    <FieldLabel htmlFor='newPassword'>{t('auth.newPassword')}</FieldLabel>
                     <PasswordInput
                         id='newPassword'
-                        placeholder='Enter new password'
+                        placeholder={t('auth.newPassword')}
                         autoComplete='new-password'
                         disabled={isPending}
                         {...form.register('newPassword')}
@@ -90,10 +95,10 @@ function ResetPassword() {
 
                 {/* Confirm Password Field */}
                 <Field data-invalid={!!errors.confirmPassword}>
-                    <FieldLabel htmlFor='confirmPassword'>Confirm Password</FieldLabel>
+                    <FieldLabel htmlFor='confirmPassword'>{t('auth.confirmNewPassword')}</FieldLabel>
                     <PasswordInput
                         id='confirmPassword'
-                        placeholder='Confirm new password'
+                        placeholder={t('auth.confirmNewPassword')}
                         autoComplete='new-password'
                         disabled={isPending}
                         {...form.register('confirmPassword')}
@@ -102,13 +107,13 @@ function ResetPassword() {
                 </Field>
 
                 <Button type='submit' className='w-full' disabled={!isValid || isPending}>
-                    {isPending ? 'Resetting...' : 'Reset Password'}
+                    {isPending ? t('auth.resettingPassword') : t('auth.resetPassword')}
                 </Button>
             </form>
 
             <div className='text-center text-sm'>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>Back to Login</Link>
+                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>{t('auth.backToLogin')}</Link>
                 </Button>
             </div>
         </div>

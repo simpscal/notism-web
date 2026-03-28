@@ -2,13 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { memo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { passwordSchema } from '@/app/utils/password-validation.utils';
+import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import GithubLogo from '@/components/github-logo';
@@ -19,23 +20,34 @@ import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { setAuth } from '@/store/auth';
 
-const signupSchema = z.object({
-    firstName: z.string().min(1, { message: 'First name is required' }),
-    lastName: z.string().min(1, { message: 'Last name is required' }),
-    email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
-    password: passwordSchema,
-});
-
-type SignupFormValues = z.infer<typeof signupSchema>;
+type SignupFormValues = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+};
 
 function Signup() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+
+    const signupSchema = z.object({
+        firstName: z.string().min(1, { message: t('auth.validation.firstNameRequired') }),
+        lastName: z.string().min(1, { message: t('auth.validation.lastNameRequired') }),
+        email: z
+            .string()
+            .min(1, { message: t('auth.validation.emailRequired') })
+            .email({ message: t('auth.validation.emailInvalid') }),
+        password: createPasswordSchema(),
+    });
 
     const signupMutation = useMutation({
         mutationFn: authApi.signup,
         onSuccess: data => {
             dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
+            toast.success(t('auth.signupSuccess'));
+            navigate(`/${ROUTES.SETTINGS.PROFILE}`);
         },
     });
 
@@ -64,20 +76,12 @@ function Signup() {
     } = form;
 
     const handleFormSubmit = (values: SignupFormValues) => {
-        signupMutation.mutate(
-            {
-                firstName: values.firstName,
-                lastName: values.lastName,
-                email: values.email,
-                password: values.password,
-            },
-            {
-                onSuccess: () => {
-                    toast.success('Account created successfully! Welcome aboard.');
-                    navigate(`/${ROUTES.SETTINGS.PROFILE}`);
-                },
-            }
-        );
+        signupMutation.mutate({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            password: values.password,
+        });
     };
 
     const handleOAuthSignup = (provider: OAuthProviderType) => {
@@ -88,8 +92,8 @@ function Signup() {
         <div className='space-y-4 sm:space-y-6'>
             {/* Header */}
             <div className='space-y-1 sm:space-y-2 text-center'>
-                <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>Create an account</h1>
-                <p className='text-xs sm:text-sm text-muted-foreground'>Enter your details to get started</p>
+                <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>{t('auth.createAccount')}</h1>
+                <p className='text-xs sm:text-sm text-muted-foreground'>{t('auth.enterCredentials')}</p>
             </div>
 
             {/* Signup Form */}
@@ -98,7 +102,7 @@ function Signup() {
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                     {/* First Name Field */}
                     <Field data-invalid={!!errors.firstName}>
-                        <FieldLabel htmlFor='firstName'>First Name</FieldLabel>
+                        <FieldLabel htmlFor='firstName'>{t('auth.firstName')}</FieldLabel>
                         <Input
                             id='firstName'
                             type='text'
@@ -112,7 +116,7 @@ function Signup() {
 
                     {/* Last Name Field */}
                     <Field data-invalid={!!errors.lastName}>
-                        <FieldLabel htmlFor='lastName'>Last Name</FieldLabel>
+                        <FieldLabel htmlFor='lastName'>{t('auth.lastName')}</FieldLabel>
                         <Input
                             id='lastName'
                             type='text'
@@ -127,7 +131,7 @@ function Signup() {
 
                 {/* Email Field */}
                 <Field data-invalid={!!errors.email}>
-                    <FieldLabel htmlFor='email'>Email</FieldLabel>
+                    <FieldLabel htmlFor='email'>{t('auth.email')}</FieldLabel>
                     <Input
                         id='email'
                         type='email'
@@ -141,10 +145,10 @@ function Signup() {
 
                 {/* Password Field */}
                 <Field data-invalid={!!errors.password}>
-                    <FieldLabel htmlFor='password'>Password</FieldLabel>
+                    <FieldLabel htmlFor='password'>{t('auth.password')}</FieldLabel>
                     <PasswordInput
                         id='password'
-                        placeholder='Create a password'
+                        placeholder={t('auth.createPassword')}
                         autoComplete='new-password'
                         disabled={isLoading}
                         {...form.register('password')}
@@ -154,7 +158,7 @@ function Signup() {
 
                 {/* Submit Button */}
                 <Button type='submit' className='w-full' disabled={isLoading}>
-                    {signupMutation.isPending ? 'Creating account...' : 'Sign up'}
+                    {signupMutation.isPending ? t('auth.creatingAccount') : t('auth.signUp')}
                 </Button>
             </form>
 
@@ -164,7 +168,7 @@ function Signup() {
                     <Separator />
                 </div>
                 <div className='relative flex justify-center text-xs uppercase'>
-                    <span className='bg-card px-2 text-muted-foreground'>Or continue with</span>
+                    <span className='bg-card px-2 text-muted-foreground'>{t('auth.orContinueWith')}</span>
                 </div>
             </div>
 
@@ -194,9 +198,9 @@ function Signup() {
 
             {/* Back to Login Link */}
             <div className='text-center text-xs sm:text-sm'>
-                <span className='text-muted-foreground'>Already have an account? </span>
+                <span className='text-muted-foreground'>{t('auth.alreadyHaveAccount')} </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>Sign in</Link>
+                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>{t('auth.signIn')}</Link>
                 </Button>
             </div>
         </div>

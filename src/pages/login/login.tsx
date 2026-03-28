@@ -2,13 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { memo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { passwordSchema } from '@/app/utils/password-validation.utils';
+import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import GithubLogo from '@/components/github-logo';
@@ -19,24 +20,31 @@ import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { setAuth, setOauthReturnUrl } from '@/store/auth';
 
-const loginSchema = z.object({
-    email: z.string().min(1, { message: 'Email is required' }).email({ message: 'Please enter a valid email address' }),
-    password: passwordSchema,
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = {
+    email: string;
+    password: string;
+};
 
 function Login() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [searchParams] = useSearchParams();
+
+    const loginSchema = z.object({
+        email: z
+            .string()
+            .min(1, { message: t('auth.validation.emailRequired') })
+            .email({ message: t('auth.validation.emailInvalid') }),
+        password: createPasswordSchema(),
+    });
 
     const loginMutation = useMutation({
         mutationFn: authApi.login,
         onSuccess: async data => {
             await dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
 
-            toast.success('Login successful! Welcome back.');
+            toast.success(t('auth.loginSuccess'));
             const returnUrl = searchParams.get('returnUrl');
             if (returnUrl) {
                 navigate(decodeURIComponent(returnUrl), { replace: true });
@@ -85,17 +93,15 @@ function Login() {
         <div className='space-y-4 sm:space-y-6'>
             {/* Header */}
             <div className='space-y-1 sm:space-y-2 text-center'>
-                <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>Welcome back</h1>
-                <p className='text-xs sm:text-sm text-muted-foreground'>
-                    Enter your credentials to access your account
-                </p>
+                <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>{t('auth.welcomeBack')}</h1>
+                <p className='text-xs sm:text-sm text-muted-foreground'>{t('auth.enterCredentials')}</p>
             </div>
 
             {/* Login Form */}
             <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-4'>
                 {/* Email Field */}
                 <Field data-invalid={!!errors.email}>
-                    <FieldLabel htmlFor='email'>Email</FieldLabel>
+                    <FieldLabel htmlFor='email'>{t('auth.email')}</FieldLabel>
                     <Input
                         id='email'
                         type='email'
@@ -110,18 +116,18 @@ function Login() {
                 {/* Password Field */}
                 <Field data-invalid={!!errors.password}>
                     <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0'>
-                        <FieldLabel htmlFor='password'>Password</FieldLabel>
+                        <FieldLabel htmlFor='password'>{t('auth.password')}</FieldLabel>
                         <Button
                             variant='link'
                             className='p-0 h-auto text-xs sm:text-sm font-medium self-start sm:self-auto'
                             asChild
                         >
-                            <Link to={`/${ROUTES.AUTH.REQUEST_RESET_PASSWORD}`}>Forgot password?</Link>
+                            <Link to={`/${ROUTES.AUTH.REQUEST_RESET_PASSWORD}`}>{t('auth.forgotPassword')}</Link>
                         </Button>
                     </div>
                     <PasswordInput
                         id='password'
-                        placeholder='Enter your password'
+                        placeholder={t('auth.enterPassword')}
                         autoComplete='current-password'
                         disabled={isLoading}
                         {...form.register('password')}
@@ -131,7 +137,7 @@ function Login() {
 
                 {/* Submit Button */}
                 <Button type='submit' className='w-full' disabled={isLoading}>
-                    {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
+                    {loginMutation.isPending ? t('auth.signingIn') : t('auth.signIn')}
                 </Button>
             </form>
 
@@ -141,7 +147,7 @@ function Login() {
                     <Separator />
                 </div>
                 <div className='relative flex justify-center text-xs uppercase'>
-                    <span className='bg-card px-2 text-muted-foreground'>Or continue with</span>
+                    <span className='bg-card px-2 text-muted-foreground'>{t('auth.orContinueWith')}</span>
                 </div>
             </div>
 
@@ -171,9 +177,9 @@ function Login() {
 
             {/* Sign Up Link */}
             <div className='text-center text-xs sm:text-sm'>
-                <span className='text-muted-foreground'>Don't have an account? </span>
+                <span className='text-muted-foreground'>{t('auth.dontHaveAccount')} </span>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.AUTH.SIGNUP}`}>Sign up</Link>
+                    <Link to={`/${ROUTES.AUTH.SIGNUP}`}>{t('auth.signUp')}</Link>
                 </Button>
             </div>
         </div>

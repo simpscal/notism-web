@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import './app/assets/styles/index.css';
 import { BrowserRouter } from 'react-router-dom';
+import './app/i18n/i18n';
 
 import App from './app.tsx';
 import { store } from './store';

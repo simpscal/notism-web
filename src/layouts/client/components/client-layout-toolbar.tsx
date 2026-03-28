@@ -11,6 +11,7 @@ import {
     UtensilsCrossed,
 } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, NavLink } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
@@ -27,6 +28,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/sheet';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useAppSelector, useIsMobile } from '@/core/hooks';
@@ -39,6 +41,7 @@ interface ClientLayoutToolbarProps {
 }
 
 function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
+    const { t } = useTranslation();
     const cartItemCount = useAppSelector(selectCartTotalItems);
     const isMobile = useIsMobile();
     const { theme, setTheme } = useTheme();
@@ -74,19 +77,21 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
     const ThemeIcon = getThemeIcon();
 
     const navItems = useMemo(() => {
-        const items: Array<{ label: string; path: string }> = [{ label: 'Foods', path: `/${ROUTES.FOODS.LIST}` }];
+        const items: Array<{ label: string; path: string }> = [
+            { label: t('nav.foods'), path: `/${ROUTES.FOODS.LIST}` },
+        ];
 
         if (user) {
-            items.push({ label: 'Orders', path: `/${ROUTES.ORDERS.LIST}` });
-            items.push({ label: 'Appearance', path: `/${ROUTES.SETTINGS.APPEARANCE}` });
+            items.push({ label: t('nav.orders'), path: `/${ROUTES.ORDERS.LIST}` });
+            items.push({ label: t('nav.appearance'), path: `/${ROUTES.SETTINGS.APPEARANCE}` });
         }
 
         if (isAdmin) {
-            items.push({ label: 'Admin Portal', path: `/${ROUTES.ADMIN.ORDERS}` });
+            items.push({ label: t('nav.adminPortal'), path: `/${ROUTES.ADMIN.ORDERS}` });
         }
 
         return items;
-    }, [isAdmin, user]);
+    }, [isAdmin, user, t]);
 
     return (
         <header className='border-b bg-background sticky top-0 z-50'>
@@ -139,7 +144,7 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                                 className='flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary'
                                             >
                                                 <Settings className='h-4 w-4' />
-                                                <span>Profile</span>
+                                                <span>{t('settings.profile.title')}</span>
                                             </Link>
                                         </SheetClose>
                                     ) : (
@@ -148,7 +153,7 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                                 to={`/${ROUTES.AUTH.LOGIN}`}
                                                 className='flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90'
                                             >
-                                                Log in
+                                                {t('nav.logIn')}
                                             </Link>
                                         </SheetClose>
                                     )}
@@ -188,7 +193,7 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                     </nav>
                 </div>
 
-                {/* Right side - Cart, Theme Toggle & User Avatar or Login/Signup */}
+                {/* Right side - Cart, Theme Toggle, Language Switcher & User Avatar or Login/Signup */}
                 <div className='flex items-center gap-2 md:gap-4'>
                     {/* Cart Icon */}
                     <Button variant='ghost' size='icon' className='relative' asChild>
@@ -201,6 +206,9 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                             )}
                         </Link>
                     </Button>
+
+                    {/* Language Switcher */}
+                    {!isMobile && <LanguageSwitcher />}
 
                     {/* Theme Toggle */}
                     {!isMobile && (
@@ -234,13 +242,13 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                 <DropdownMenuItem asChild>
                                     <Link to={`/${ROUTES.ORDERS.LIST}`}>
                                         <Package className='h-4 w-4' />
-                                        <span>Orders</span>
+                                        <span>{t('nav.orders')}</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>
                                         <Settings className='h-4 w-4' />
-                                        <span>Setting</span>
+                                        <span>{t('nav.setting')}</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 {isAdmin && (
@@ -249,7 +257,7 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                         <DropdownMenuItem asChild>
                                             <Link to={`/${ROUTES.ADMIN.ORDERS}`}>
                                                 <Shield className='h-4 w-4' />
-                                                <span>Admin Portal</span>
+                                                <span>{t('nav.adminPortal')}</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     </>
@@ -257,13 +265,13 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={onLogout}>
                                     <LogOut className='h-4 w-4' />
-                                    <span>Log out</span>
+                                    <span>{t('nav.logOut')}</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
                         <Button size={isMobile ? 'sm' : 'default'} asChild>
-                            <Link to={`/${ROUTES.AUTH.LOGIN}`}>Log in</Link>
+                            <Link to={`/${ROUTES.AUTH.LOGIN}`}>{t('nav.logIn')}</Link>
                         </Button>
                     )}
                 </div>

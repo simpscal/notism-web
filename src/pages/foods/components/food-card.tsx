@@ -1,5 +1,6 @@
 import { ShoppingCart } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { FoodItemViewModel } from '../models';
@@ -16,6 +17,7 @@ interface FoodCardProps {
 }
 
 function FoodCard({ food, onAddToCart }: FoodCardProps) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { effectivePrice, hasSavings } = getFoodPricing(food.price, food.discountPrice);
     const discountPercentage = hasSavings ? Math.round(((food.price - effectivePrice) / food.price) * 100) : 0;
@@ -56,7 +58,7 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
                 {!food.isAvailable && (
                     <div className='absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[2px]'>
                         <span className='rounded-full bg-background px-3 py-1 text-xs font-semibold text-destructive shadow-sm'>
-                            Out of Stock
+                            {t('foodDetail.outOfStock')}
                         </span>
                     </div>
                 )}
@@ -91,7 +93,7 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
                         onClick={handleAddToCartClick}
                     >
                         <ShoppingCart className='mr-1.5 h-3.5 w-3.5' />
-                        Add
+                        {t('common.add')}
                     </Button>
                 </div>
             </CardFooter>

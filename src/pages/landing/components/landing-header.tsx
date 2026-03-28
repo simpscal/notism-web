@@ -1,21 +1,23 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
-
-const NAV_LINKS = [
-    { label: 'Foods', to: `/${ROUTES.FOODS.LIST}` },
-    { label: 'Log in', to: `/${ROUTES.AUTH.LOGIN}` },
-    { label: 'Sign up', to: `/${ROUTES.AUTH.SIGNUP}` },
-] as const;
 
 interface LandingHeaderProps {
     isAuthenticated?: boolean;
 }
 
 function LandingHeader(props: LandingHeaderProps) {
+    const { t } = useTranslation();
     const { isAuthenticated = false } = props;
+
+    const NAV_LINKS = [
+        { label: t('landing.header.foods'), to: `/${ROUTES.FOODS.LIST}` },
+        { label: t('landing.header.logIn'), to: `/${ROUTES.AUTH.LOGIN}` },
+        { label: t('landing.header.signUp'), to: `/${ROUTES.AUTH.SIGNUP}` },
+    ] as const;
 
     return (
         <header className='border-b bg-background/90 backdrop-blur'>

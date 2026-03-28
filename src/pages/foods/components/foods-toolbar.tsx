@@ -1,5 +1,6 @@
 import { SlidersHorizontal, X } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
@@ -19,6 +20,7 @@ function FoodsToolbar({
     onClearFilters,
     onMobileFiltersOpen,
 }: FoodsToolbarProps) {
+    const { t } = useTranslation();
     const hasActiveFilters = selectedCategory !== null || keyword !== '';
 
     return (
@@ -26,7 +28,7 @@ function FoodsToolbar({
             <div className='flex flex-wrap items-center gap-2'>
                 <span className='text-sm text-muted-foreground'>
                     <span className='font-semibold text-foreground'>{totalCount}</span>{' '}
-                    {totalCount === 1 ? 'dish' : 'dishes'} found
+                    {totalCount === 1 ? t('foods.toolbar.dishFound') : t('foods.toolbar.dishesFound')}
                 </span>
 
                 {keyword && (
@@ -37,7 +39,7 @@ function FoodsToolbar({
                             size='icon-xs'
                             onClick={onClearFilters}
                             className='-mr-1 h-3.5 w-3.5 hover:text-destructive'
-                            aria-label='Clear search'
+                            aria-label={t('common.close')}
                         >
                             <X className='h-3 w-3' />
                         </Button>
@@ -52,7 +54,7 @@ function FoodsToolbar({
                             size='icon-xs'
                             onClick={onClearFilters}
                             className='-mr-1 h-3.5 w-3.5 hover:text-destructive'
-                            aria-label='Clear category'
+                            aria-label={t('common.close')}
                         >
                             <X className='h-3 w-3' />
                         </Button>
@@ -66,7 +68,7 @@ function FoodsToolbar({
                         onClick={onClearFilters}
                         className='text-muted-foreground hover:text-foreground'
                     >
-                        Clear all
+                        {t('foods.toolbar.clearAll')}
                     </Button>
                 )}
             </div>
@@ -74,7 +76,7 @@ function FoodsToolbar({
             {/* Mobile filter button */}
             <Button variant='outline' size='sm' className='lg:hidden' onClick={onMobileFiltersOpen}>
                 <SlidersHorizontal className='mr-2 h-3.5 w-3.5' />
-                Filters &amp; Sort
+                {t('foods.toolbar.filtersSort')}
             </Button>
         </div>
     );

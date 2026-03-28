@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -16,6 +17,7 @@ import { getFoodPricing, FoodImage } from '@/features/food';
 import { CheckoutProgress, CheckoutTrustBar, OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
 
 function OrderDetail() {
+    const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
@@ -35,21 +37,22 @@ function OrderDetail() {
     const cancelOrderMutation = useMutation({
         mutationFn: (orderId: string) => orderApi.cancel(orderId),
         onSuccess: () => {
-            toast.success('Order cancelled successfully');
+            toast.success(t('orderDetail.cancelledSuccess'));
             navigate(`/${ROUTES.ORDERS.LIST}`);
         },
     });
 
     const orderDate = useMemo(() => {
         if (!order) return '';
-        return new Date(order.createdAt).toLocaleDateString('en-US', {
+        const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
+        return new Date(order.createdAt).toLocaleDateString(locale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
         });
-    }, [order]);
+    }, [order, i18n.language, t]);
 
     if (isLoading) {
         return (
@@ -73,10 +76,10 @@ function OrderDetail() {
                     <Button variant='ghost' size='sm' className='mb-4 -ml-2' asChild>
                         <Link to={`/${ROUTES.ORDERS.LIST}`}>
                             <ArrowLeft className='h-4 w-4' />
-                            Back to Orders
+                            {t('orderDetail.backToOrders')}
                         </Link>
                     </Button>
-                    <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>Order Details</h1>
+                    <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>{t('orderDetail.title')}</h1>
                     <div className='space-y-3'>
                         <CheckoutTrustBar />
                         <CheckoutProgress currentStep='confirmation' />
@@ -107,7 +110,7 @@ function OrderDetail() {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Order Items</CardTitle>
+                                    <CardTitle>{t('orderDetail.orderItems')}</CardTitle>
                                 </CardHeader>
                                 <CardContent className='space-y-4'>
                                     <div className='space-y-4'>
@@ -130,7 +133,7 @@ function OrderDetail() {
                                                     <div className='flex-1'>
                                                         <div className='font-medium'>{item.foodName}</div>
                                                         <div className='text-sm text-muted-foreground'>
-                                                            Quantity: {item.quantity}
+                                                            {t('orderDetail.quantity')} {item.quantity}
                                                         </div>
                                                         <div className='mt-1 flex items-center gap-2'>
                                                             {hasSavings && item.unitPrice != null && (
@@ -141,7 +144,9 @@ function OrderDetail() {
                                                             <span className='font-bold'>
                                                                 ${effectivePrice.toFixed(2)}
                                                             </span>
-                                                            <span className='text-xs text-muted-foreground'>each</span>
+                                                            <span className='text-xs text-muted-foreground'>
+                                                                {t('orderDetail.each')}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div className='text-right'>
@@ -158,11 +163,13 @@ function OrderDetail() {
 
                                     <div className='space-y-2'>
                                         <div className='flex justify-between text-sm'>
-                                            <span className='text-muted-foreground'>Payment Method</span>
+                                            <span className='text-muted-foreground'>
+                                                {t('orderDetail.paymentMethod')}
+                                            </span>
                                             <span className='font-medium capitalize'>{order.paymentMethod}</span>
                                         </div>
                                         <div className='flex justify-between text-xl font-black'>
-                                            <span>Total</span>
+                                            <span>{t('orderDetail.total')}</span>
                                             <span>${order.totalAmount.toFixed(2)}</span>
                                         </div>
                                     </div>

@@ -1,5 +1,6 @@
 import { LayoutGrid, SlidersHorizontal } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FoodSortOption } from '../enums';
 
@@ -14,14 +15,15 @@ interface FoodsSidebarProps {
     onSortChange: (sort: FoodSortOption) => void;
 }
 
-const sortOptions: { value: FoodSortOption; label: string }[] = [
-    { value: 'default', label: 'Default' },
-    { value: 'price-asc', label: 'Price: Low to High' },
-    { value: 'price-desc', label: 'Price: High to Low' },
-    { value: 'name-asc', label: 'Name: A to Z' },
-];
-
 function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, onSortChange }: FoodsSidebarProps) {
+    const { t } = useTranslation();
+    const sortOptions: { value: FoodSortOption; label: string }[] = [
+        { value: 'default', label: t('foods.sidebar.default') },
+        { value: 'price-asc', label: t('foods.sidebar.priceLowHigh') },
+        { value: 'price-desc', label: t('foods.sidebar.priceHighLow') },
+        { value: 'name-asc', label: t('foods.sidebar.nameAZ') },
+    ];
+
     return (
         <div className='space-y-6'>
             {/* Categories */}
@@ -29,7 +31,7 @@ function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, 
                 <div className='mb-3 flex items-center gap-2'>
                     <LayoutGrid className='h-3.5 w-3.5 text-muted-foreground' />
                     <h3 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                        Categories
+                        {t('foods.sidebar.categories')}
                     </h3>
                 </div>
                 <div className='space-y-0.5'>
@@ -39,7 +41,7 @@ function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, 
                         className='w-full justify-start'
                         onClick={() => onCategoryChange(null)}
                     >
-                        All Items
+                        {t('foods.sidebar.allItems')}
                     </Button>
                     {categories.map(category => (
                         <Button
@@ -61,7 +63,9 @@ function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, 
             <div>
                 <div className='mb-3 flex items-center gap-2'>
                     <SlidersHorizontal className='h-3.5 w-3.5 text-muted-foreground' />
-                    <h3 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>Sort By</h3>
+                    <h3 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
+                        {t('foods.sidebar.sortBy')}
+                    </h3>
                 </div>
                 <div className='space-y-0.5'>
                     {sortOptions.map(option => (

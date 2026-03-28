@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import i18next from 'i18next';
 import { toast } from 'sonner';
 
 import { API_ENDPOINTS, ROUTES, TOKEN_KEYS } from '@/app/constants';
@@ -349,6 +350,15 @@ apiClient.addRequestInterceptor(async (config: RequestConfig) => {
     return config;
 });
 
+// Accept-Language interceptor
+apiClient.addRequestInterceptor(async (config: RequestConfig) => {
+    if (config.headers) {
+        config.headers['Accept-Language'] = i18next.language || 'en';
+    }
+
+    return config;
+});
+
 // XSRF token extraction interceptor
 apiClient.addResponseInterceptor(async (response: Response) => {
     const xsrfToken = response.headers.get(TOKEN_KEYS.XSRF_TOKEN);
@@ -379,33 +389,33 @@ apiClient.addResponseInterceptor(async (response: Response) => {
             // If parsing fails, use default message
         }
 
-        let errorTitle = 'Error';
+        let errorTitle = i18next.t('common:error');
         let errorDescription = errorMessage;
 
         switch (status) {
             case 400:
-                errorTitle = 'Bad Request';
+                errorTitle = i18next.t('common:apiErrors.badRequest');
                 errorDescription = errorMessage || 'The request was invalid. Please check your input.';
                 break;
             case 403:
-                errorTitle = 'Forbidden';
+                errorTitle = i18next.t('common:apiErrors.forbidden');
                 errorDescription = errorMessage || 'You do not have permission to perform this action.';
                 break;
             case 404:
-                errorTitle = 'Not Found';
+                errorTitle = i18next.t('common:apiErrors.notFound');
                 errorDescription = errorMessage || 'The requested resource was not found.';
                 break;
             case 500:
-                errorTitle = 'Server Error';
+                errorTitle = i18next.t('common:apiErrors.serverError');
                 errorDescription = errorMessage || 'An unexpected error occurred. Please try again later.';
                 break;
             case 503:
-                errorTitle = 'Service Unavailable';
+                errorTitle = i18next.t('common:apiErrors.serviceUnavailable');
                 errorDescription = errorMessage || 'The service is temporarily unavailable. Please try again later.';
                 break;
             default:
                 if (status >= 500) {
-                    errorTitle = 'Server Error';
+                    errorTitle = i18next.t('common:apiErrors.serverError');
                     errorDescription = errorMessage || 'An unexpected error occurred. Please try again later.';
                 }
                 break;

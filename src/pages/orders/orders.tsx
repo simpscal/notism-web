@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Clock } from 'lucide-react';
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { OrdersEmpty } from './components';
@@ -29,6 +30,7 @@ const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
 };
 
 function Orders() {
+    const { t, i18n } = useTranslation();
     const { data, isLoading, isError } = useQuery({
         queryKey: ['orders', 'list'] as const,
         queryFn: () => orderApi.getOrders(),
@@ -51,14 +53,14 @@ function Orders() {
             </div>
             <div className='relative container mx-auto max-w-7xl'>
                 <div className='flex items-center gap-3'>
-                    <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>My Orders</h1>
+                    <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>{t('orders.title')}</h1>
                     {orders.length > 0 && (
                         <span className='rounded-full bg-primary/10 px-3 py-0.5 text-sm font-semibold text-primary'>
-                            {orders.length} {orders.length === 1 ? 'order' : 'orders'}
+                            {t('orders.orderCount_one', { count: orders.length })}
                         </span>
                     )}
                 </div>
-                <p className='mt-2 text-sm text-muted-foreground'>View and track all your orders</p>
+                <p className='mt-2 text-sm text-muted-foreground'>{t('orders.subtitle')}</p>
             </div>
         </div>
     );
@@ -68,7 +70,7 @@ function Orders() {
             <div className='bg-background'>
                 {pageHeader}
                 <div className='container mx-auto max-w-7xl px-4 py-8'>
-                    <ErrorState title='Failed to load orders' description='Please try again later.' iconSize='sm' />
+                    <ErrorState title={t('orders.failedToLoad')} description={t('orders.tryAgain')} iconSize='sm' />
                 </div>
             </div>
         );
@@ -84,7 +86,8 @@ function Orders() {
             <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
                 <div className='space-y-4 sm:space-y-6'>
                     {orders.map(order => {
-                        const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+                        const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
+                        const orderDate = new Date(order.createdAt).toLocaleDateString(locale, {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
@@ -104,7 +107,7 @@ function Orders() {
                                     <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
                                         <div className='flex-1'>
                                             <CardTitle className='mb-2 text-lg sm:text-xl'>
-                                                Order #{order.slugId}
+                                                {t('orders.orderNumber', { id: order.slugId })}
                                             </CardTitle>
                                             <div className='mb-2 sm:mb-0'>
                                                 <Badge
@@ -112,7 +115,7 @@ function Orders() {
                                                     className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
                                                 >
                                                     <StatusIcon className='h-3 w-3' />
-                                                    {statusInfo.label}
+                                                    {t(statusInfo.label)}
                                                 </Badge>
                                             </div>
                                             <CardDescription className='mt-2 flex items-center gap-2'>
@@ -125,7 +128,7 @@ function Orders() {
                                                 ${order.totalAmount.toFixed(2)}
                                             </div>
                                             <div className='text-xs text-muted-foreground'>
-                                                {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                                                {t('cart.itemCount', { count: order.items.length })}
                                             </div>
                                         </div>
                                     </div>
@@ -148,7 +151,9 @@ function Orders() {
                                                             {item.foodName}
                                                         </div>
                                                         <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                                                            <span>Qty: {item.quantity}</span>
+                                                            <span>
+                                                                {t('orders.qty')} {item.quantity}
+                                                            </span>
                                                             <span>•</span>
                                                             <span className='font-medium text-foreground'>
                                                                 ${item.totalPrice.toFixed(2)}
@@ -160,8 +165,7 @@ function Orders() {
                                             {order.items.length > 3 && (
                                                 <div className='flex items-center gap-3'>
                                                     <div className='text-sm font-medium text-muted-foreground'>
-                                                        +{order.items.length - 3} more item
-                                                        {order.items.length - 3 > 1 ? 's' : ''}
+                                                        {t('orders.moreItems', { count: order.items.length - 3 })}
                                                     </div>
                                                 </div>
                                             )}
@@ -171,14 +175,14 @@ function Orders() {
 
                                         <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                                             <div className='flex items-center gap-2 text-sm'>
-                                                <span className='text-muted-foreground'>Payment:</span>
+                                                <span className='text-muted-foreground'>{t('orders.payment')}</span>
                                                 <Badge variant='outline' className='font-medium capitalize'>
                                                     {order.paymentMethod}
                                                 </Badge>
                                             </div>
                                             <Button variant='default' size='sm' className='w-full sm:w-auto' asChild>
                                                 <Link to={`/${ROUTES.ORDERS.DETAIL(order.slugId)}`}>
-                                                    View Details
+                                                    {t('orders.viewDetails')}
                                                     <ArrowRight className='ml-2 h-4 w-4' />
                                                 </Link>
                                             </Button>

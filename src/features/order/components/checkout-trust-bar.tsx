@@ -1,5 +1,6 @@
 import { ShieldCheck, Star, Truck } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
 
@@ -8,6 +9,8 @@ export interface CheckoutTrustBarProps {
 }
 
 function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
+    const { t } = useTranslation();
+
     return (
         <div className={cn('rounded-xl bg-primary/5 px-4 py-3', className)}>
             <div className='grid gap-3 sm:grid-cols-3 sm:items-center'>
@@ -16,8 +19,8 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                         <ShieldCheck className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
-                        <div className='text-sm font-semibold'>Secure checkout</div>
-                        <div className='text-xs text-muted-foreground'>Protected payment processing</div>
+                        <div className='text-sm font-semibold'>{t('checkout.trustBar.secureTitle')}</div>
+                        <div className='text-xs text-muted-foreground'>{t('checkout.trustBar.secureDesc')}</div>
                     </div>
                 </div>
 
@@ -26,8 +29,8 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                         <Truck className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
-                        <div className='text-sm font-semibold'>Fast delivery</div>
-                        <div className='text-xs text-muted-foreground'>Reliable order fulfillment</div>
+                        <div className='text-sm font-semibold'>{t('checkout.trustBar.fastDeliveryTitle')}</div>
+                        <div className='text-xs text-muted-foreground'>{t('checkout.trustBar.fastDeliveryDesc')}</div>
                     </div>
                 </div>
 
@@ -36,8 +39,8 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                         <Star className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
-                        <div className='text-sm font-semibold'>Trusted by customers</div>
-                        <div className='text-xs text-muted-foreground'>Top-rated shopping experience</div>
+                        <div className='text-sm font-semibold'>{t('checkout.trustBar.trustedTitle')}</div>
+                        <div className='text-xs text-muted-foreground'>{t('checkout.trustBar.trustedDesc')}</div>
                     </div>
                 </div>
             </div>

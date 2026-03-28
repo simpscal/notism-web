@@ -1,0 +1,567 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "back": "Back",
+        "delete": "Delete",
+        "edit": "Edit",
+        "add": "Add",
+        "search": "Search",
+        "noResults": "No results found",
+        "error": "Error",
+        "success": "Success",
+        "close": "Close",
+        "deleting": "Deleting...",
+        "saving": "Saving...",
+        "view": "View",
+        "backToMenu": "Back to Menu",
+        "browseMenu": "Browse Menu",
+        "browseFoods": "Browse Foods",
+        "goHome": "Go Home",
+        "tryAgainLater": "Please try again later.",
+        "apiErrors": {
+            "badRequest": "Bad Request",
+            "forbidden": "Forbidden",
+            "notFound": "Not Found",
+            "serverError": "Server Error",
+            "serviceUnavailable": "Service Unavailable"
+        }
+    },
+    "auth": {
+        "welcomeBack": "Welcome back",
+        "enterCredentials": "Enter your credentials to access your account",
+        "email": "Email",
+        "password": "Password",
+        "enterPassword": "Enter your password",
+        "createPassword": "Create a password",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "confirmPassword": "Confirm Password",
+        "forgotPassword": "Forgot password?",
+        "signIn": "Sign in",
+        "signUp": "Sign up",
+        "signingIn": "Signing in...",
+        "createAccount": "Create Account",
+        "creatingAccount": "Creating account...",
+        "orContinueWith": "Or continue with",
+        "dontHaveAccount": "Don't have an account?",
+        "alreadyHaveAccount": "Already have an account?",
+        "resetPassword": "Reset Password",
+        "checkEmail": "Check Your Email",
+        "sendResetLink": "Send Reset Link",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password",
+        "backToLogin": "Back to Login",
+        "sendingResetLink": "Sending...",
+        "resettingPassword": "Resetting...",
+        "enterEmail": "Enter your email address and we'll send you a link to reset your password.",
+        "checkEmailDescription": "We've sent a password reset link to your email address. Please check your inbox.",
+        "enterNewPassword": "Enter your new password below",
+        "passwordResetSuccessDescription": "Your password has been reset successfully",
+        "validation": {
+            "emailRequired": "Email is required",
+            "emailInvalid": "Please enter a valid email",
+            "passwordRequired": "Password is required",
+            "passwordMinLength": "Password must be at least 8 characters",
+            "passwordSpecialChar": "Password must contain at least one special character",
+            "passwordUppercase": "Password must contain at least one uppercase letter",
+            "passwordNumber": "Password must contain at least one number",
+            "passwordsDoNotMatch": "Passwords do not match",
+            "firstNameRequired": "First name is required",
+            "lastNameRequired": "Last name is required"
+        },
+        "loginSuccess": "Login successful! Welcome back.",
+        "logoutSuccess": "Logged out successfully",
+        "signupSuccess": "Account created successfully! Welcome aboard.",
+        "passwordResetEmailSent": "If the email exists, a password reset link has been sent.",
+        "passwordResetSuccess": "Password has been successfully reset.",
+        "invalidCredentials": "Invalid email or password",
+        "userNotFound": "User not found",
+        "invalidToken": "Invalid or expired reset token"
+    },
+    "landing": {
+        "hero": {
+            "badge": "Fresh meals, fast checkout",
+            "title": "Order fresh food in minutes",
+            "subtitle": "Browse menus, customize your order, and track delivery in real time.",
+            "startOrdering": "Start ordering",
+            "exploreFoods": "Explore foods",
+            "secureCheckout": "Secure checkout",
+            "fastDelivery": "Fast delivery"
+        },
+        "features": {
+            "title": "Everything you need to order",
+            "subtitle": "A clean flow from browsing to checkout, designed to be fast and easy.",
+            "items": [
+                {
+                    "title": "Curated menu",
+                    "description": "Carefully selected dishes from the best restaurants"
+                },
+                {
+                    "title": "Smart ordering",
+                    "description": "Intuitive menu browsing and customization options"
+                },
+                {
+                    "title": "Secure checkout",
+                    "description": "Safe and encrypted payment processing"
+                },
+                {
+                    "title": "Track delivery",
+                    "description": "Real-time order and delivery tracking"
+                }
+            ]
+        },
+        "faq": {
+            "title": "Frequently asked questions",
+            "subtitle": "Quick answers about ordering, delivery, and checkout.",
+            "items": [
+                {
+                    "question": "How do I start an order?",
+                    "answer": "Browse our Foods section, select items you like, customize them, and proceed to checkout."
+                },
+                {
+                    "question": "Is payment processing secure?",
+                    "answer": "Yes, we use industry-standard encryption to protect all payment information."
+                },
+                {
+                    "question": "Can I track my delivery?",
+                    "answer": "Yes, you can track your order in real-time from the moment it's confirmed."
+                }
+            ]
+        },
+        "trust": {
+            "title": "Built for trust",
+            "subtitle": "Payment security, fast delivery, and real customer confidence.",
+            "tip": "Tip: you can head to Foods anytime and start an order flow from there."
+        },
+        "header": {
+            "foods": "Foods",
+            "logIn": "Log in",
+            "signUp": "Sign up"
+        },
+        "footer": {
+            "allRightsReserved": "All rights reserved."
+        },
+        "cta": {
+            "title": "Ready to order?",
+            "description": "Join thousands of satisfied customers",
+            "signUp": "Sign up",
+            "browseFoods": "Browse foods"
+        }
+    },
+    "nav": {
+        "foods": "Foods",
+        "orders": "Orders",
+        "appearance": "Appearance",
+        "adminPortal": "Admin Portal",
+        "setting": "Setting",
+        "logOut": "Log out",
+        "logIn": "Log in"
+    },
+    "cart": {
+        "title": "Shopping Cart",
+        "orderSummary": "Order Summary",
+        "total": "Total",
+        "proceedToPayment": "Proceed to Payment",
+        "noItemsSelected": "No items selected",
+        "viewMyOrders": "View My Orders",
+        "removeItem": "Remove Item",
+        "updateQuantity": "Update Quantity",
+        "quantity": "Quantity",
+        "price": "Price",
+        "subtotal": "Subtotal",
+        "itemRemoved": "Item removed from cart",
+        "selectAtLeastOne": "Please select at least one item to proceed",
+        "insufficientStock": "Only {{quantity}} items available",
+        "saveBadge": "Save ${{amount}}",
+        "itemCount_one": "{{count}} item",
+        "itemCount_other": "{{count}} items",
+        "empty": {
+            "title": "Your cart is empty",
+            "description": "Add some delicious items to get started!",
+            "browseMenu": "Browse Menu"
+        }
+    },
+    "checkout": {
+        "trustBar": {
+            "secureTitle": "Secure checkout",
+            "secureDesc": "Protected payment processing",
+            "fastDeliveryTitle": "Fast delivery",
+            "fastDeliveryDesc": "Reliable order fulfillment",
+            "trustedTitle": "Trusted by customers",
+            "trustedDesc": "Top-rated shopping experience"
+        },
+        "progress": {
+            "cart": "Cart",
+            "payment": "Payment",
+            "confirmation": "Confirmation",
+            "completed": "Completed",
+            "currentStep": "Current step",
+            "upcoming": "Upcoming"
+        }
+    },
+    "payment": {
+        "title": "Payment",
+        "completeOrder": "Complete Order",
+        "reviewOrder": "Review your order and payment method before placing the order",
+        "paymentMethod": "Payment Method",
+        "selectPaymentMethod": "Select a payment method",
+        "totalAmount": "Total Amount",
+        "placeOrder": "Place Order",
+        "backToCart": "Back to Cart",
+        "processing": "Processing...",
+        "orderPlaced": "Order placed successfully!",
+        "paymentFailed": "Payment failed. Please try again.",
+        "noItemsSelected": "No items selected for checkout",
+        "cashOnDelivery": "Cash on Delivery",
+        "banking": "Banking",
+        "comingSoon": "Coming soon",
+        "payWithCash": "Pay with cash when your order is delivered",
+        "onlineBanking": "Online banking transfer",
+        "selectItem": "Please select at least one item to place an order",
+        "empty": {
+            "title": "Your cart is empty",
+            "description": "Add items to your cart before proceeding to payment.",
+            "browseFoods": "Browse Foods"
+        }
+    },
+    "orders": {
+        "title": "My Orders",
+        "subtitle": "View and track all your orders",
+        "orderId": "Order ID",
+        "orderNumber": "Order #{{id}}",
+        "date": "Date",
+        "status": "Status",
+        "total": "Total",
+        "items": "Items",
+        "actions": "Actions",
+        "viewDetails": "View Details",
+        "noOrders": "No orders found",
+        "searchPlaceholder": "Search orders by ID, customer name, or email...",
+        "failedToLoad": "Failed to load orders",
+        "tryAgain": "Please try again later.",
+        "qty": "Qty:",
+        "moreItems_one": "+{{count}} more item",
+        "moreItems_other": "+{{count}} more items",
+        "payment": "Payment:",
+        "orderCount_one": "{{count}} order",
+        "orderCount_other": "{{count}} orders",
+        "empty": {
+            "title": "No orders yet",
+            "description": "Start shopping to see your orders here.",
+            "browseMenu": "Browse Menu"
+        }
+    },
+    "orderDetail": {
+        "title": "Order Details",
+        "backToOrders": "Back to Orders",
+        "orderId": "Order ID",
+        "orderNumber": "Order #{{id}}",
+        "deliveryStatus": "Delivery Status",
+        "trackYourOrder": "Track your order progress",
+        "customer": "Customer",
+        "email": "Email",
+        "status": "Status",
+        "total": "Total",
+        "items": "Items",
+        "orderItems": "Order Items",
+        "quantity": "Quantity:",
+        "each": "each",
+        "paymentMethod": "Payment Method",
+        "cancelledSuccess": "Order cancelled successfully",
+        "orderInformation": "Order Information",
+        "placedOn": "Placed on",
+        "continueShopping": "Continue Shopping",
+        "cancelOrder": "Cancel Order",
+        "keepOrder": "Keep Order",
+        "cancelling": "Cancelling...",
+        "cancelConfirmTitle": "Cancel Order",
+        "cancelConfirmDescription": "Are you sure you want to cancel this order? This action cannot be undone.",
+        "deliveryStatuses": {
+            "orderPlaced": "Order Placed",
+            "preparing": "Preparing",
+            "onTheWay": "On the Way",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled"
+        },
+        "notFound": {
+            "title": "Order Not Found",
+            "description": "The order you're looking for doesn't exist or has been removed."
+        }
+    },
+    "settings": {
+        "tabs": {
+            "profile": "Profile",
+            "appearance": "Appearance"
+        },
+        "profile": {
+            "title": "Profile Settings",
+            "sectionTitle": "Profile Information",
+            "subtitle": "Manage your account information and preferences",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "Email",
+            "phoneNumber": "Phone Number",
+            "location": "Location",
+            "locationPlaceholder": "City, Country",
+            "saveChanges": "Save Changes",
+            "saving": "Saving...",
+            "cancel": "Cancel",
+            "updateSuccess": "Profile updated successfully!",
+            "updateFailed": "Failed to update profile",
+            "profilePicture": "Profile Picture",
+            "uploadHint": "Upload a photo to personalize your profile. JPG, PNG or GIF. Max size of 5MB.",
+            "uploadPhoto": "Upload Photo",
+            "changePhoto": "Change Photo",
+            "remove": "Remove",
+            "dropImage": "Drop image here",
+            "enterFirstName": "Enter your first name",
+            "enterLastName": "Enter your last name",
+            "imageTypeError": "Please select an image file",
+            "imageSizeError": "Image size must be less than 5MB"
+        },
+        "appearance": {
+            "title": "Appearance",
+            "sectionTitle": "Theme",
+            "subtitle": "Customize the appearance of the application",
+            "themePreference": "Theme Preference",
+            "themeDescription": "Choose your preferred theme for the application",
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System"
+        }
+    },
+    "admin": {
+        "orders": {
+            "title": "Orders",
+            "management": "Orders Management",
+            "subtitle": "Manage and track all orders",
+            "orderId": "Order ID",
+            "customer": "Customer",
+            "email": "Email",
+            "total": "Total",
+            "items": "Items",
+            "status": "Status",
+            "actions": "Actions",
+            "noOrders": "No orders found",
+            "searchPlaceholder": "Search orders by ID, customer name, or email...",
+            "updateStatus": "Update Status",
+            "updateSuccess": "Order status updated successfully",
+            "statusUpdated": "Order status updated successfully",
+            "failedToLoad": "Failed to load orders",
+            "view": "View"
+        },
+        "foods": {
+            "title": "Foods",
+            "management": "Foods Management",
+            "subtitle": "Manage all foods in the system",
+            "name": "Name",
+            "description": "Description",
+            "category": "Category",
+            "price": "Price",
+            "discountPrice": "Discount Price",
+            "available": "Available",
+            "stock": "Stock",
+            "unit": "Unit",
+            "actions": "Actions",
+            "noFoods": "No foods found",
+            "searchPlaceholder": "Search foods by name or keyword...",
+            "addFood": "Add Food",
+            "editFood": "Edit Food",
+            "yes": "Yes",
+            "no": "No",
+            "failedToLoad": "Failed to load foods",
+            "deleteFood": "Delete Food",
+            "deleteFoodConfirm": "Are you sure you want to delete this food? This action cannot be undone.",
+            "addedSuccess": "Food added successfully",
+            "updatedSuccess": "Food updated successfully",
+            "deletedSuccess": "Food deleted successfully"
+        },
+        "categories": {
+            "title": "Categories",
+            "management": "Categories Management",
+            "subtitle": "Manage all food categories in the system",
+            "name": "Name",
+            "actions": "Actions",
+            "noCategories": "No categories found",
+            "addCategory": "Add Category",
+            "editCategory": "Edit Category",
+            "searchPlaceholder": "Search categories by name...",
+            "failedToLoad": "Failed to load categories",
+            "noMatch": "No categories match your search",
+            "deleteCategory": "Delete Category",
+            "deleteCategoryConfirm": "Are you sure you want to delete this category? This action cannot be undone.",
+            "createdSuccess": "Category created successfully",
+            "updatedSuccess": "Category updated successfully",
+            "deletedSuccess": "Category deleted successfully"
+        },
+        "users": {
+            "title": "Users",
+            "management": "Users Management",
+            "subtitle": "Manage all users in the system",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "name": "Name",
+            "email": "Email",
+            "phoneNumber": "Phone Number",
+            "location": "Location",
+            "role": "Role",
+            "actions": "Actions",
+            "noUsers": "No users found",
+            "searchPlaceholder": "Search users by name, email, or phone...",
+            "failedToLoad": "Failed to load users",
+            "deleteUser": "Delete User",
+            "deleteUserConfirm": "Are you sure you want to delete this user? This action cannot be undone.",
+            "updatedSuccess": "User updated successfully",
+            "deletedSuccess": "User deleted successfully"
+        },
+        "food": {
+            "details": "Food Details",
+            "editInformationBelow": "Edit the food information below.",
+            "name": "Name",
+            "namePlaceholder": "Food name",
+            "description": "Description",
+            "descriptionPlaceholder": "Description",
+            "price": "Price ($)",
+            "discountPrice": "Discount Price ($)",
+            "optional": "Optional",
+            "category": "Category",
+            "selectCategory": "Select category",
+            "quantityUnit": "Quantity Unit",
+            "selectUnit": "Select unit",
+            "available": "Available",
+            "stockQuantity": "Stock Quantity"
+        },
+        "foodForm": {
+            "sectionTitle": "Food Details",
+            "sectionDescription": "Edit the food information below.",
+            "namePlaceholder": "Food name",
+            "descriptionPlaceholder": "Description",
+            "discountPricePlaceholder": "Optional",
+            "selectCategory": "Select category",
+            "selectUnit": "Select unit",
+            "stockQuantity": "Stock Quantity",
+            "quantityUnit": "Quantity Unit",
+            "backToFoods": "Back to Foods",
+            "addFood": "Add Food",
+            "saveChanges": "Save Changes",
+            "saving": "Saving...",
+            "failedToLoad": "Failed to load food",
+            "failedToLoadDescription": "Please try again later or go back to the foods list."
+        },
+        "categoryForm": {
+            "addTitle": "Add Category",
+            "editTitle": "Category Details",
+            "addDescription": "Create a new food category.",
+            "editDescription": "Edit the category information below.",
+            "namePlaceholder": "Category name",
+            "backToCategories": "Back to Categories",
+            "createCategory": "Create Category",
+            "creatingCategory": "Creating...",
+            "failedToLoad": "Failed to load category",
+            "failedToLoadDescription": "Please try again later or go back to the categories list."
+        },
+        "orderDetailPage": {
+            "backToOrders": "Back to Orders",
+            "orderItems": "Order Items",
+            "totalItems": "Total Items",
+            "paymentMethod": "Payment Method",
+            "failedToLoad": "Failed to load order details",
+            "failedToLoadDescription": "Please try again later or go back to the orders list."
+        },
+        "userDetail": {
+            "backToUsers": "Back to Users",
+            "title": "User Details",
+            "subtitle": "View user information. Only the role can be updated.",
+            "firstName": "First name",
+            "lastName": "Last name",
+            "phoneNumber": "Phone number",
+            "location": "Location",
+            "selectRole": "Select role",
+            "createdAt": "Created at {{date}}",
+            "saving": "Saving...",
+            "saveChanges": "Save Changes",
+            "deleteUser": "Delete User"
+        },
+        "user": {
+            "details": "User Details",
+            "viewInfoDescription": "View user information. Only the role can be updated.",
+            "phoneNumber": "Phone Number",
+            "location": "Location",
+            "role": "Role",
+            "selectRole": "Select role",
+            "createdAt": "Created at",
+            "deleteUser": "Delete User",
+            "deleteConfirmation": "Are you sure you want to delete user {{email}}? This action cannot be undone.",
+            "updated": "User updated successfully",
+            "deleted": "User deleted successfully",
+            "failedToLoad": "Failed to load user details",
+            "tryAgainOrGoBack": "Please try again later or go back to the users list."
+        }
+    },
+    "foods": {
+        "hero": {
+            "badge": "Fresh & Delicious",
+            "title": "Discover Amazing Food",
+            "subtitle": "Explore our curated selection of delicious dishes",
+            "searchPlaceholder": "Search for your favorite dish..."
+        },
+        "toolbar": {
+            "dishFound": "dish found",
+            "dishesFound": "dishes found",
+            "clearAll": "Clear all",
+            "filtersSort": "Filters & Sort"
+        },
+        "sidebar": {
+            "categories": "Categories",
+            "allItems": "All Items",
+            "sortBy": "Sort By",
+            "default": "Default",
+            "priceLowHigh": "Price: Low to High",
+            "priceHighLow": "Price: High to Low",
+            "nameAZ": "Name: A to Z"
+        },
+        "empty": {
+            "title": "No dishes found",
+            "description": "We couldn't find any dishes matching your criteria.",
+            "clearFilters": "Clear all filters"
+        },
+        "card": {
+            "outOfStock": "Out of Stock",
+            "add": "Add",
+            "addedToCart": "{{name}} added to cart!"
+        }
+    },
+    "foodDetail": {
+        "backToMenu": "Back to Menu",
+        "available": "{{qty}} available",
+        "save": "Save ${{amount}}",
+        "addToCart": "Add to Cart - ${{price}}",
+        "outOfStock": "Out of Stock",
+        "addedToCart": "{{qty}}x {{name}} added to cart!",
+        "total": "Total: ${{amount}}",
+        "empty": {
+            "title": "Food Not Found",
+            "description": "The food item you're looking for doesn't exist or has been removed.",
+            "browseMenu": "Browse Menu"
+        },
+        "error": {
+            "title": "Oops! Something went wrong",
+            "description": "We couldn't load the food details. Please try again later.",
+            "backToMenu": "Back to Menu"
+        }
+    },
+    "notFound": {
+        "title": "404",
+        "message": "Page not found",
+        "description": "The page you're looking for doesn't exist",
+        "goHome": "Go Home"
+    },
+    "validation": {
+        "fieldRequired": "This field is required",
+        "invalidValue": "Invalid value",
+        "skipMustBeNonNegative": "Skip must be greater than or equal to 0",
+        "takeMustBeBetween": "Take must be between 1 and 100"
+    }
+}

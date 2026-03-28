@@ -1,11 +1,13 @@
 import { PackageX, ArrowLeft } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 
 function FoodDetailEmpty() {
+    const { t } = useTranslation();
     return (
         <div className='bg-background'>
             <div className='container mx-auto px-4 py-8'>
@@ -13,7 +15,7 @@ function FoodDetailEmpty() {
                 <Button variant='ghost' className='mb-8' asChild>
                     <Link to={`/${ROUTES.FOODS.LIST}`}>
                         <ArrowLeft className=' h-4 w-4' />
-                        Back to Menu
+                        {t('foodDetail.backToMenu')}
                     </Link>
                 </Button>
 
@@ -22,13 +24,12 @@ function FoodDetailEmpty() {
                     <div className='mb-6 rounded-full bg-muted p-6'>
                         <PackageX className='h-16 w-16 text-muted-foreground' />
                     </div>
-                    <h1 className='mb-4 text-4xl font-black text-foreground'>Food Not Found</h1>
+                    <h1 className='mb-4 text-4xl font-black text-foreground'>{t('foodDetail.empty.title')}</h1>
                     <p className='mb-8 max-w-md text-lg leading-relaxed text-muted-foreground'>
-                        The food item you're looking for doesn't exist or has been removed. Check out our menu for other
-                        delicious options!
+                        {t('foodDetail.empty.description')}
                     </p>
                     <Button asChild>
-                        <Link to={`/${ROUTES.FOODS.LIST}`}>Browse Menu</Link>
+                        <Link to={`/${ROUTES.FOODS.LIST}`}>{t('common.browseMenu')}</Link>
                     </Button>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 
@@ -9,6 +10,8 @@ interface FoodsHeroSectionProps {
 }
 
 function FoodsHeroSection({ searchInput, onSearchChange }: FoodsHeroSectionProps) {
+    const { t } = useTranslation();
+
     return (
         <section className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-12 sm:py-16 lg:py-20'>
             {/* Decorative blobs */}
@@ -20,24 +23,21 @@ function FoodsHeroSection({ searchInput, onSearchChange }: FoodsHeroSectionProps
             <div className='relative mx-auto max-w-3xl text-center'>
                 <div className='mb-5 inline-flex items-center gap-2 rounded-full border bg-background/80 px-4 py-1.5 backdrop-blur-sm'>
                     <span className='h-2 w-2 animate-pulse rounded-full bg-primary' />
-                    <span className='text-xs font-medium sm:text-sm'>Fresh &amp; Delicious</span>
+                    <span className='text-xs font-medium sm:text-sm'>{t('foods.hero.badge')}</span>
                 </div>
 
                 <h1 className='mb-5 text-4xl font-black tracking-tight sm:text-5xl md:text-6xl lg:text-7xl'>
-                    Discover <span className='text-primary'>Amazing</span>
-                    <br />
-                    <span className='text-primary'>Food</span>
+                    {t('foods.hero.title')}
                 </h1>
 
                 <p className='mb-8 text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg'>
-                    Explore our curated selection of mouth-watering dishes,
-                    <br className='hidden sm:block' /> crafted with love and the finest ingredients.
+                    {t('foods.hero.subtitle')}
                 </p>
 
                 <InputGroup className='mx-auto h-12 max-w-2xl rounded-2xl border-2 shadow-sm sm:h-14'>
                     <InputGroupInput
                         type='text'
-                        placeholder='Search for your favorite dish...'
+                        placeholder={t('foods.hero.searchPlaceholder')}
                         value={searchInput}
                         onChange={e => onSearchChange(e.target.value)}
                         className='h-full w-full rounded-[inherit] border-0 bg-background pr-4 text-sm sm:text-base'

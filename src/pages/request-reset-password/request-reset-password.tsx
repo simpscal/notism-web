@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { memo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -11,13 +12,15 @@ import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
 
-const requestResetPasswordSchema = z.object({
-    email: z.string().min(1, 'Email is required').email('Invalid email format'),
-});
-
-type RequestResetPasswordFormData = z.infer<typeof requestResetPasswordSchema>;
-
 function RequestResetPassword() {
+    const { t } = useTranslation();
+
+    const requestResetPasswordSchema = z.object({
+        email: z.string().min(1, t('auth.validation.emailRequired')).email(t('auth.validation.emailInvalid')),
+    });
+
+    type RequestResetPasswordFormData = z.infer<typeof requestResetPasswordSchema>;
+
     const {
         mutate: requestResetPassword,
         isPending,
@@ -45,11 +48,8 @@ function RequestResetPassword() {
     if (isSuccess) {
         return (
             <div className='space-y-2 text-center'>
-                <h1 className='text-3xl font-bold'>Check Your Email</h1>
-                <p className='text-muted-foreground'>
-                    We've sent a password reset link to your email address. Please check your inbox and follow the
-                    instructions.
-                </p>
+                <h1 className='text-3xl font-bold'>{t('auth.checkEmail')}</h1>
+                <p className='text-muted-foreground'>{t('auth.checkEmailDescription')}</p>
             </div>
         );
     }
@@ -57,19 +57,17 @@ function RequestResetPassword() {
     return (
         <div className='space-y-6'>
             <div className='space-y-2 text-center'>
-                <h1 className='text-3xl font-bold'>Reset Password</h1>
-                <p className='text-muted-foreground'>
-                    Enter your email address and we'll send you a link to reset your password.
-                </p>
+                <h1 className='text-3xl font-bold'>{t('auth.resetPassword')}</h1>
+                <p className='text-muted-foreground'>{t('auth.enterEmail')}</p>
             </div>
 
             <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-4'>
                 <Field data-invalid={!!errors.email}>
-                    <FieldLabel htmlFor='email'>Email</FieldLabel>
+                    <FieldLabel htmlFor='email'>{t('auth.email')}</FieldLabel>
                     <Input
                         id='email'
                         type='email'
-                        placeholder='Enter your email'
+                        placeholder={t('auth.email')}
                         autoComplete='email'
                         disabled={isPending}
                         {...form.register('email')}
@@ -78,13 +76,13 @@ function RequestResetPassword() {
                 </Field>
 
                 <Button type='submit' className='w-full' disabled={!isValid || isPending}>
-                    {isPending ? 'Sending...' : 'Send Reset Link'}
+                    {isPending ? t('auth.sendingResetLink') : t('auth.sendResetLink')}
                 </Button>
             </form>
 
             <div className='text-center text-sm'>
                 <Button variant='link' className='p-0 h-auto font-medium' asChild>
-                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>Back to Login</Link>
+                    <Link to={`/${ROUTES.AUTH.LOGIN}`}>{t('auth.backToLogin')}</Link>
                 </Button>
             </div>
         </div>
