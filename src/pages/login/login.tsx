@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { ArrowLeft } from 'lucide-react';
 import { memo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -91,6 +92,15 @@ function Login() {
 
     return (
         <div className='space-y-4 sm:space-y-6'>
+            {/* Back Link */}
+            <Link
+                to={ROUTES.HOME}
+                className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors sm:hidden'
+            >
+                <ArrowLeft className='h-4 w-4' />
+                {t('common.back')}
+            </Link>
+
             {/* Header */}
             <div className='space-y-1 sm:space-y-2 text-center'>
                 <h1 className='text-xl sm:text-2xl font-semibold tracking-tight'>{t('auth.welcomeBack')}</h1>

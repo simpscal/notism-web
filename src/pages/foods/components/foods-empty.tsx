@@ -6,9 +6,10 @@ import { Button } from '@/components/button';
 
 interface FoodsEmptyProps {
     onClearFilters: () => void;
+    hasFilters?: boolean;
 }
 
-function FoodsEmpty({ onClearFilters }: FoodsEmptyProps) {
+function FoodsEmpty({ onClearFilters, hasFilters = false }: FoodsEmptyProps) {
     const { t } = useTranslation();
     return (
         <div className='flex flex-col items-center justify-center py-20 text-center'>
@@ -18,9 +19,11 @@ function FoodsEmpty({ onClearFilters }: FoodsEmptyProps) {
             <h3 className='mb-2 text-xl font-semibold'>{t('foods.empty.title')}</h3>
             <p className='mb-6'>{t('foods.empty.description')}</p>
 
-            <Button variant='outline' onClick={onClearFilters}>
-                {t('foods.empty.clearFilters')}
-            </Button>
+            {hasFilters && (
+                <Button variant='outline' onClick={onClearFilters}>
+                    {t('foods.empty.clearFilters')}
+                </Button>
+            )}
         </div>
     );
 }

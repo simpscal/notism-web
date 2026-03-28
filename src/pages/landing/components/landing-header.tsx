@@ -15,8 +15,8 @@ function LandingHeader(props: LandingHeaderProps) {
 
     const NAV_LINKS = [
         { label: t('landing.header.foods'), to: `/${ROUTES.FOODS.LIST}` },
-        { label: t('landing.header.logIn'), to: `/${ROUTES.AUTH.LOGIN}` },
         { label: t('landing.header.signUp'), to: `/${ROUTES.AUTH.SIGNUP}` },
+        { label: t('landing.header.logIn'), to: `/${ROUTES.AUTH.LOGIN}` },
     ] as const;
 
     return (

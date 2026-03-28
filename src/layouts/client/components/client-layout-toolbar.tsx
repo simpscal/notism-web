@@ -4,6 +4,7 @@ import {
     Moon,
     Monitor,
     Package,
+    Palette,
     Settings,
     ShoppingCart,
     Sun,
@@ -127,6 +128,8 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                                 >
                                                     {item.path === `/${ROUTES.FOODS.LIST}` ? (
                                                         <UtensilsCrossed className='h-4 w-4 text-current' />
+                                                    ) : item.path === `/${ROUTES.SETTINGS.APPEARANCE}` ? (
+                                                        <Palette className='h-4 w-4 text-current' />
                                                     ) : (
                                                         <Package className='h-4 w-4 text-current' />
                                                     )}
@@ -158,11 +161,14 @@ function ClientLayoutToolbar({ user, onLogout }: ClientLayoutToolbarProps) {
                                         </SheetClose>
                                     )}
                                 </div>
+                                <div className='mt-4 border-t px-2 pt-3'>
+                                    <LanguageSwitcher />
+                                </div>
                             </SheetContent>
                         </Sheet>
                     )}
 
-                    <Link to={ROUTES.HOME} className='cursor-pointer'>
+                    <Link to={`/${ROUTES.FOODS.LIST}`} className='cursor-pointer'>
                         <h1 className='text-lg font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity md:text-2xl'>
                             Notism
                         </h1>

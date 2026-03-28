@@ -57,6 +57,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     const totalCount = data?.pages[0]?.totalCount ?? 0;
 
     const foods = useMemo(() => data?.pages.flatMap(page => page.items) ?? [], [data?.pages]);
+    const hasFilters = useMemo(() => !!category || !!keyword, [category, keyword]);
 
     useEffect(() => {
         onTotalCountChange?.(totalCount);
@@ -102,7 +103,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     }
 
     if (foods.length === 0) {
-        return <FoodsEmpty onClearFilters={onClearFilters} />;
+        return <FoodsEmpty onClearFilters={onClearFilters} hasFilters={hasFilters} />;
     }
 
     return (
