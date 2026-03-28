@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Card, CardContent } from '@/components/card';
 import { Separator } from '@/components/separator';
-import { CheckoutTrustBar } from '@/features/order/components';
+import { OrderCheckoutTrustBar } from '@/features/order/components';
 
 function LandingTrustSection() {
     const { t } = useTranslation();
@@ -23,7 +23,7 @@ function LandingTrustSection() {
                                 <p className='text-xs text-muted-foreground'>{t('landing.trust.tip')}</p>
                             </div>
 
-                            <CheckoutTrustBar className='w-full' />
+                            <OrderCheckoutTrustBar className='w-full' />
                         </div>
                     </CardContent>
                 </Card>

@@ -13,7 +13,7 @@ import Spinner from '@/components/spinner';
 import { useAppSelector, useAppDispatch } from '@/core/hooks';
 import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
-import { CheckoutProgress, CheckoutTrustBar } from '@/features/order';
+import { OrderCheckoutProgress, OrderCheckoutTrustBar } from '@/features/order';
 import { selectCartItems, selectCartIsInitialized, setItemSelection } from '@/store/cart';
 
 function Cart() {
@@ -110,8 +110,8 @@ function Cart() {
                         </span>
                     </div>
                     <div className='space-y-3'>
-                        <CheckoutTrustBar />
-                        <CheckoutProgress currentStep='cart' />
+                        <OrderCheckoutTrustBar />
+                        <OrderCheckoutProgress currentStep='cart' />
                     </div>
                 </div>
             </div>

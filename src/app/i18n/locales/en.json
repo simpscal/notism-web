@@ -184,24 +184,6 @@
             "browseMenu": "Browse Menu"
         }
     },
-    "checkout": {
-        "trustBar": {
-            "secureTitle": "Secure checkout",
-            "secureDesc": "Protected payment processing",
-            "fastDeliveryTitle": "Fast delivery",
-            "fastDeliveryDesc": "Reliable order fulfillment",
-            "trustedTitle": "Trusted by customers",
-            "trustedDesc": "Top-rated shopping experience"
-        },
-        "progress": {
-            "cart": "Cart",
-            "payment": "Payment",
-            "confirmation": "Confirmation",
-            "completed": "Completed",
-            "currentStep": "Current step",
-            "upcoming": "Upcoming"
-        }
-    },
     "payment": {
         "title": "Payment",
         "completeOrder": "Complete Order",
@@ -254,13 +236,40 @@
             "browseMenu": "Browse Menu"
         }
     },
-    "orderDetail": {
+    "order": {
         "title": "Order Details",
-        "backToOrders": "Back to Orders",
         "orderId": "Order ID",
-        "orderNumber": "Order #{{id}}",
         "deliveryStatus": "Delivery Status",
         "trackYourOrder": "Track your order progress",
+        "deliveryStatuses": {
+            "orderPlaced": "Order Placed",
+            "preparing": "Preparing",
+            "onTheWay": "On the Way",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled"
+        },
+        "checkout": {
+            "progress": {
+                "cart": "Cart",
+                "payment": "Payment",
+                "confirmation": "Confirmation",
+                "completed": "Completed",
+                "currentStep": "Current step",
+                "upcoming": "Upcoming"
+            },
+            "trustBar": {
+                "secureTitle": "Secure checkout",
+                "secureDesc": "Protected payment processing",
+                "fastDeliveryTitle": "Fast delivery",
+                "fastDeliveryDesc": "Reliable order fulfillment",
+                "trustedTitle": "Trusted by customers",
+                "trustedDesc": "Top-rated shopping experience"
+            }
+        }
+    },
+    "orderDetail": {
+        "backToOrders": "Back to Orders",
+        "orderNumber": "Order #{{id}}",
         "customer": "Customer",
         "email": "Email",
         "status": "Status",
@@ -279,13 +288,6 @@
         "cancelling": "Cancelling...",
         "cancelConfirmTitle": "Cancel Order",
         "cancelConfirmDescription": "Are you sure you want to cancel this order? This action cannot be undone.",
-        "deliveryStatuses": {
-            "orderPlaced": "Order Placed",
-            "preparing": "Preparing",
-            "onTheWay": "On the Way",
-            "delivered": "Delivered",
-            "cancelled": "Cancelled"
-        },
         "notFound": {
             "title": "Order Not Found",
             "description": "The order you're looking for doesn't exist or has been removed."

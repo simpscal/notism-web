@@ -14,7 +14,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { getFoodPricing, FoodImage } from '@/features/food';
-import { CheckoutProgress, CheckoutTrustBar, OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
+import {
+    OrderCheckoutProgress,
+    OrderCheckoutTrustBar,
+    OrderDeliveryStatusTimeline,
+    OrderHeader,
+} from '@/features/order';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
@@ -79,10 +84,10 @@ function OrderDetail() {
                             {t('orderDetail.backToOrders')}
                         </Link>
                     </Button>
-                    <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>{t('orderDetail.title')}</h1>
+                    <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>{t('order.title')}</h1>
                     <div className='space-y-3'>
-                        <CheckoutTrustBar />
-                        <CheckoutProgress currentStep='confirmation' />
+                        <OrderCheckoutTrustBar />
+                        <OrderCheckoutProgress currentStep='confirmation' />
                     </div>
                 </div>
             </div>

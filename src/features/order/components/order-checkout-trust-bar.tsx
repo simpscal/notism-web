@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
 
-export interface CheckoutTrustBarProps {
+export interface OrderCheckoutTrustBarProps {
     className?: string;
 }
 
-function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
+function OrderCheckoutTrustBar({ className }: OrderCheckoutTrustBarProps) {
     const { t } = useTranslation();
 
     return (
@@ -19,8 +19,8 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                         <ShieldCheck className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
-                        <div className='text-sm font-semibold'>{t('checkout.trustBar.secureTitle')}</div>
-                        <div className='text-xs text-muted-foreground'>{t('checkout.trustBar.secureDesc')}</div>
+                        <div className='text-sm font-semibold'>{t('order.checkout.trustBar.secureTitle')}</div>
+                        <div className='text-xs text-muted-foreground'>{t('order.checkout.trustBar.secureDesc')}</div>
                     </div>
                 </div>
 
@@ -29,8 +29,10 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                         <Truck className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
-                        <div className='text-sm font-semibold'>{t('checkout.trustBar.fastDeliveryTitle')}</div>
-                        <div className='text-xs text-muted-foreground'>{t('checkout.trustBar.fastDeliveryDesc')}</div>
+                        <div className='text-sm font-semibold'>{t('order.checkout.trustBar.fastDeliveryTitle')}</div>
+                        <div className='text-xs text-muted-foreground'>
+                            {t('order.checkout.trustBar.fastDeliveryDesc')}
+                        </div>
                     </div>
                 </div>
 
@@ -39,8 +41,8 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
                         <Star className='h-5 w-5' />
                     </div>
                     <div className='min-w-0'>
-                        <div className='text-sm font-semibold'>{t('checkout.trustBar.trustedTitle')}</div>
-                        <div className='text-xs text-muted-foreground'>{t('checkout.trustBar.trustedDesc')}</div>
+                        <div className='text-sm font-semibold'>{t('order.checkout.trustBar.trustedTitle')}</div>
+                        <div className='text-xs text-muted-foreground'>{t('order.checkout.trustBar.trustedDesc')}</div>
                     </div>
                 </div>
             </div>
@@ -48,4 +50,4 @@ function CheckoutTrustBar({ className }: CheckoutTrustBarProps) {
     );
 }
 
-export default memo(CheckoutTrustBar);
+export default memo(OrderCheckoutTrustBar);

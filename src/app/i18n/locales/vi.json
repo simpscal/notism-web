@@ -209,24 +209,6 @@
             "browseFoods": "Duyệt thực phẩm"
         }
     },
-    "checkout": {
-        "trustBar": {
-            "secureTitle": "Thanh toán an toàn",
-            "secureDesc": "Xử lý thanh toán được bảo vệ",
-            "fastDeliveryTitle": "Giao hàng nhanh",
-            "fastDeliveryDesc": "Thực hiện đơn hàng đáng tin cậy",
-            "trustedTitle": "Được khách hàng tin tưởng",
-            "trustedDesc": "Trải nghiệm mua sắm được đánh giá cao"
-        },
-        "progress": {
-            "cart": "Giỏ hàng",
-            "payment": "Thanh toán",
-            "confirmation": "Xác nhận",
-            "completed": "Đã hoàn thành",
-            "currentStep": "Bước hiện tại",
-            "upcoming": "Sắp tới"
-        }
-    },
     "orders": {
         "title": "Đơn hàng của tôi",
         "subtitle": "Xem và theo dõi tất cả đơn hàng của bạn",
@@ -254,13 +236,40 @@
             "browseMenu": "Duyệt menu"
         }
     },
-    "orderDetail": {
+    "order": {
         "title": "Chi tiết đơn hàng",
-        "backToOrders": "Quay lại đơn hàng",
-        "orderNumber": "Đơn hàng #{{id}}",
         "orderId": "ID đơn hàng",
         "deliveryStatus": "Trạng thái giao hàng",
         "trackYourOrder": "Theo dõi tiến trình đơn hàng của bạn",
+        "deliveryStatuses": {
+            "orderPlaced": "Đã đặt hàng",
+            "preparing": "Đang chuẩn bị",
+            "onTheWay": "Đang giao",
+            "delivered": "Đã giao",
+            "cancelled": "Đã hủy"
+        },
+        "checkout": {
+            "progress": {
+                "cart": "Giỏ hàng",
+                "payment": "Thanh toán",
+                "confirmation": "Xác nhận",
+                "completed": "Đã hoàn thành",
+                "currentStep": "Bước hiện tại",
+                "upcoming": "Sắp tới"
+            },
+            "trustBar": {
+                "secureTitle": "Thanh toán an toàn",
+                "secureDesc": "Xử lý thanh toán được bảo vệ",
+                "fastDeliveryTitle": "Giao hàng nhanh",
+                "fastDeliveryDesc": "Thực hiện đơn hàng đáng tin cậy",
+                "trustedTitle": "Được khách hàng tin tưởng",
+                "trustedDesc": "Trải nghiệm mua sắm được đánh giá cao"
+            }
+        }
+    },
+    "orderDetail": {
+        "backToOrders": "Quay lại đơn hàng",
+        "orderNumber": "Đơn hàng #{{id}}",
         "customer": "Khách hàng",
         "email": "Email",
         "status": "Trạng thái",
@@ -282,13 +291,6 @@
         "notFound": {
             "title": "Không tìm thấy đơn hàng",
             "description": "Đơn hàng bạn đang tìm không tồn tại hoặc đã bị xóa."
-        },
-        "deliveryStatuses": {
-            "orderPlaced": "Đã đặt hàng",
-            "preparing": "Đang chuẩn bị",
-            "onTheWay": "Đang giao",
-            "delivered": "Đã giao",
-            "cancelled": "Đã hủy"
         }
     },
     "settings": {

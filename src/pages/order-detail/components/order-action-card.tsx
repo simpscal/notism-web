@@ -63,7 +63,7 @@ function OrderActionCard({
                 <div className='space-y-3 text-sm'>
                     <div>
                         <div className='mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                            {t('orderDetail.orderId')}
+                            {t('order.orderId')}
                         </div>
                         <div className='font-mono rounded bg-muted px-2 py-1 text-sm'>{slugId}</div>
                     </div>

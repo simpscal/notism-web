@@ -6,7 +6,7 @@ import { cn } from '@/app/utils/tailwind.utils';
 
 type CheckoutStep = 'cart' | 'payment' | 'confirmation';
 
-export interface CheckoutProgressProps {
+export interface OrderCheckoutProgressProps {
     currentStep: CheckoutStep;
 }
 
@@ -15,12 +15,12 @@ const steps: Array<{
     label: string;
     icon: ComponentType<{ className?: string }>;
 }> = [
-    { key: 'cart', label: 'checkout.progress.cart', icon: ShoppingCart },
-    { key: 'payment', label: 'checkout.progress.payment', icon: CreditCard },
-    { key: 'confirmation', label: 'checkout.progress.confirmation', icon: CheckCircle2 },
+    { key: 'cart', label: 'order.checkout.progress.cart', icon: ShoppingCart },
+    { key: 'payment', label: 'order.checkout.progress.payment', icon: CreditCard },
+    { key: 'confirmation', label: 'order.checkout.progress.confirmation', icon: CheckCircle2 },
 ];
 
-function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
+function OrderCheckoutProgress({ currentStep }: OrderCheckoutProgressProps) {
     const { t } = useTranslation();
     const currentIndex = steps.findIndex(s => s.key === currentStep);
 
@@ -63,10 +63,10 @@ function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
                                     </div>
                                     <div className='text-xs text-muted-foreground'>
                                         {isCompleted
-                                            ? t('checkout.progress.completed')
+                                            ? t('order.checkout.progress.completed')
                                             : isCurrent
-                                              ? t('checkout.progress.currentStep')
-                                              : t('checkout.progress.upcoming')}
+                                              ? t('order.checkout.progress.currentStep')
+                                              : t('order.checkout.progress.upcoming')}
                                     </div>
                                 </div>
                             </div>
@@ -87,4 +87,4 @@ function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
     );
 }
 
-export default memo(CheckoutProgress);
+export default memo(OrderCheckoutProgress);

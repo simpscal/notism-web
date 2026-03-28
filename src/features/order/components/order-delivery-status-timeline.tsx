@@ -49,8 +49,8 @@ function OrderDeliveryStatusTimeline({
     return (
         <Card>
             <CardHeader>
-                <CardTitle>{t('orderDetail.deliveryStatus')}</CardTitle>
-                <CardDescription>{t('orderDetail.trackYourOrder')}</CardDescription>
+                <CardTitle>{t('order.deliveryStatus')}</CardTitle>
+                <CardDescription>{t('order.trackYourOrder')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <Timeline items={items} />

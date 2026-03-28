@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { CheckoutProgress, CheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
+import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import {
     loadCart,
     selectCartItems,
@@ -85,8 +85,8 @@ function Payment() {
             <div className='relative container mx-auto max-w-7xl'>
                 <h1 className='mb-5 text-3xl font-black tracking-tight sm:text-4xl'>{t('payment.title')}</h1>
                 <div className='space-y-3'>
-                    <CheckoutTrustBar />
-                    <CheckoutProgress currentStep='payment' />
+                    <OrderCheckoutTrustBar />
+                    <OrderCheckoutProgress currentStep='payment' />
                 </div>
             </div>
         </div>
