@@ -1,7 +1,8 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 
+import { ROUTES } from '@/app/constants';
 import { LanguageSwitcher } from '@/components/language-switcher';
 
 function AuthLayout() {
@@ -19,7 +20,9 @@ function AuthLayout() {
                             {t('landing.hero.subtitle')}
                         </div>
 
-                        <h1 className='mt-6 text-4xl font-semibold tracking-tight text-primary'>Notism</h1>
+                        <h1 className='mt-6 text-4xl font-semibold tracking-tight text-primary'>
+                            <Link to={`${ROUTES.HOME}`}>Notism</Link>
+                        </h1>
                         <p className='mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground'>
                             {t('auth.enterCredentials')}
                         </p>
