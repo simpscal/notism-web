@@ -1,5 +1,6 @@
 import { LogOut, Menu, Moon, Monitor, Package, Settings, Sun, Tags, UtensilsCrossed, Users } from 'lucide-react';
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, NavLink } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
@@ -25,14 +26,15 @@ interface AdminLayoutToolbarProps {
 }
 
 function AdminLayoutToolbar({ user, onLogout }: AdminLayoutToolbarProps) {
+    const { t } = useTranslation();
     const isMobile = useIsMobile();
     const { theme, setTheme } = useTheme();
 
     const adminNavItems = [
-        { label: 'Orders', path: `/${ROUTES.ADMIN.ORDERS}`, icon: Package },
-        { label: 'Foods', path: `/${ROUTES.ADMIN.FOODS}`, icon: UtensilsCrossed },
-        { label: 'Categories', path: `/${ROUTES.ADMIN.CATEGORIES}`, icon: Tags },
-        { label: 'Users', path: `/${ROUTES.ADMIN.USERS}`, icon: Users },
+        { label: t('nav.orders'), path: `/${ROUTES.ADMIN.ORDERS}`, icon: Package },
+        { label: t('nav.foods'), path: `/${ROUTES.ADMIN.FOODS}`, icon: UtensilsCrossed },
+        { label: t('admin.categories.title'), path: `/${ROUTES.ADMIN.CATEGORIES}`, icon: Tags },
+        { label: t('admin.users.title'), path: `/${ROUTES.ADMIN.USERS}`, icon: Users },
     ] as const;
 
     const getUserInitials = () => {
@@ -78,7 +80,7 @@ function AdminLayoutToolbar({ user, onLogout }: AdminLayoutToolbarProps) {
                             </SheetTrigger>
                             <SheetContent side='left' className='p-0'>
                                 <SheetHeader className='px-4 pt-4'>
-                                    <SheetTitle className='text-primary text-lg'>Admin Portal</SheetTitle>
+                                    <SheetTitle className='text-primary text-lg'>{t('nav.adminPortal')}</SheetTitle>
                                 </SheetHeader>
                                 <div className='mt-4 grid gap-1 px-2'>
                                     {adminNavItems.map(item => {
@@ -110,7 +112,7 @@ function AdminLayoutToolbar({ user, onLogout }: AdminLayoutToolbarProps) {
                                             to={`/${ROUTES.FOODS.LIST}`}
                                             className='flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary'
                                         >
-                                            <span>Back to Store</span>
+                                            <span>{t('nav.backToStore')}</span>
                                         </Link>
                                     </SheetClose>
                                 </div>
@@ -120,7 +122,7 @@ function AdminLayoutToolbar({ user, onLogout }: AdminLayoutToolbarProps) {
 
                     <Link to={ROUTES.HOME} className='cursor-pointer'>
                         <h1 className='text-lg md:text-2xl font-semibold text-primary tracking-tight hover:opacity-80 transition-opacity'>
-                            Admin Portal
+                            {t('nav.adminPortal')}
                         </h1>
                     </Link>
 
@@ -183,24 +185,24 @@ function AdminLayoutToolbar({ user, onLogout }: AdminLayoutToolbarProps) {
                                 <DropdownMenuItem asChild>
                                     <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>
                                         <Settings className='h-4 w-4' />
-                                        <span>Settings</span>
+                                        <span>{t('nav.setting')}</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link to={`/${ROUTES.FOODS.LIST}`}>
-                                        <span>Back to Store</span>
+                                        <span>{t('nav.backToStore')}</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={onLogout}>
                                     <LogOut className='h-4 w-4' />
-                                    <span>Log out</span>
+                                    <span>{t('nav.logOut')}</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
                         <Button size={isMobile ? 'sm' : 'default'} asChild>
-                            <Link to={`/${ROUTES.AUTH.LOGIN}`}>Log in</Link>
+                            <Link to={`/${ROUTES.AUTH.LOGIN}`}>{t('nav.logIn')}</Link>
                         </Button>
                     )}
                 </div>

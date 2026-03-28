@@ -178,7 +178,7 @@ function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
 
             return {
                 id: status.key,
-                title: status.label,
+                title: t(status.label),
                 items,
                 totalCount,
                 hasMore,

@@ -90,7 +90,11 @@ function AdminCategories() {
     if (isError) {
         return (
             <div className='flex h-full w-full items-center justify-center'>
-                <ErrorState title='Failed to load categories' description='Please try again later.' iconSize='sm' />
+                <ErrorState
+                    title={t('admin.categories.failedToLoad')}
+                    description={t('common.tryAgainLater')}
+                    iconSize='sm'
+                />
             </div>
         );
     }
@@ -98,8 +102,8 @@ function AdminCategories() {
     return (
         <div className='flex h-full flex-col'>
             <div className='mb-6 px-4 pt-6'>
-                <h1 className='text-2xl font-bold'>Categories Management</h1>
-                <p className='mt-1 text-sm text-muted-foreground'>Manage all food categories in the system</p>
+                <h1 className='text-2xl font-bold'>{t('admin.categories.management')}</h1>
+                <p className='mt-1 text-sm text-muted-foreground'>{t('admin.categories.subtitle')}</p>
             </div>
 
             <div className='mb-4 flex flex-wrap items-center justify-between gap-4 px-4'>
@@ -107,7 +111,7 @@ function AdminCategories() {
                     <InputGroupInput
                         type='search'
                         aria-label='Search categories'
-                        placeholder='Search categories by name...'
+                        placeholder={t('admin.categories.searchPlaceholder')}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -118,7 +122,7 @@ function AdminCategories() {
                 <Button asChild>
                     <Link to={`/${ROUTES.ADMIN.CATEGORY_ADD}`}>
                         <Plus className='h-4 w-4' />
-                        Add Category
+                        {t('admin.categories.addCategory')}
                     </Link>
                 </Button>
             </div>
@@ -128,8 +132,10 @@ function AdminCategories() {
                     <Table className={!filteredCategories.length ? 'h-full' : undefined}>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className='min-w-[200px]'>Name</TableHead>
-                                <TableHead className='min-w-[80px] text-right'>Actions</TableHead>
+                                <TableHead className='min-w-[200px]'>{t('admin.categories.name')}</TableHead>
+                                <TableHead className='min-w-[80px] text-right'>
+                                    {t('admin.categories.actions')}
+                                </TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className={!filteredCategories.length ? 'h-full' : undefined}>
@@ -155,14 +161,14 @@ function AdminCategories() {
                                                 <DropdownMenuContent align='end'>
                                                     <DropdownMenuItem onClick={() => handleViewClick(category.id)}>
                                                         <Eye className='h-4 w-4' />
-                                                        View
+                                                        {t('common.view')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant='destructive'
                                                         onClick={() => handleDeleteClick(category.id, category.name)}
                                                     >
                                                         <Trash2 className='h-4 w-4' />
-                                                        Delete
+                                                        {t('common.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -172,7 +178,9 @@ function AdminCategories() {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={2} className='text-center text-muted-foreground'>
-                                        {search.trim() ? 'No categories match your search' : 'No categories found'}
+                                        {search.trim()
+                                            ? t('admin.categories.noMatch')
+                                            : t('admin.categories.noCategories')}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -184,22 +192,21 @@ function AdminCategories() {
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Category</DialogTitle>
+                        <DialogTitle>{t('admin.categories.deleteCategory')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete <strong>{selectedCategory?.name}</strong>? This action
-                            cannot be undone.
+                            {t('admin.categories.deleteCategoryConfirm', { name: selectedCategory?.name })}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             variant='destructive'
                             onClick={handleConfirmDelete}
                             disabled={deleteCategoryMutation.isPending}
                         >
-                            {deleteCategoryMutation.isPending ? 'Deleting...' : 'Delete'}
+                            {deleteCategoryMutation.isPending ? t('common.deleting') : t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

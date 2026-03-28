@@ -209,7 +209,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                                                 <SelectContent>
                                                     {DELIVERY_STATUS.map(status => (
                                                         <SelectItem key={status.key} value={status.key}>
-                                                            {status.label}
+                                                            {t(status.label)}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>

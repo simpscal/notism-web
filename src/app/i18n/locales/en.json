@@ -157,7 +157,8 @@
         "adminPortal": "Admin Portal",
         "setting": "Setting",
         "logOut": "Log out",
-        "logIn": "Log in"
+        "logIn": "Log in",
+        "backToStore": "Back to Store"
     },
     "cart": {
         "title": "Shopping Cart",
@@ -376,7 +377,11 @@
             "deleteFoodConfirm": "Are you sure you want to delete this food? This action cannot be undone.",
             "addedSuccess": "Food added successfully",
             "updatedSuccess": "Food updated successfully",
-            "deletedSuccess": "Food deleted successfully"
+            "deletedSuccess": "Food deleted successfully",
+            "imagesTitle": "Images",
+            "imagesDescription": "Select images to add. They will be uploaded when you click Save Changes.",
+            "noImages": "No images yet.",
+            "uploadImage": "Upload Image"
         },
         "categories": {
             "title": "Categories",

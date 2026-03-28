@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -20,6 +21,7 @@ import Spinner from '@/components/spinner';
 const IS_CREATE_MODE_ID = 'new';
 
 function AdminFoodDetail() {
+    const { t } = useTranslation();
     const { id } = useParams<{ id?: string }>();
     const navigate = useNavigate();
 
@@ -62,7 +64,7 @@ function AdminFoodDetail() {
             });
         },
         onSuccess: () => {
-            toast.success('Food added successfully');
+            toast.success(t('admin.foods.addedSuccess'));
             navigate(`/${ROUTES.ADMIN.FOODS}`);
         },
     });
@@ -84,7 +86,7 @@ function AdminFoodDetail() {
             });
         },
         onSuccess: () => {
-            toast.success('Food updated successfully');
+            toast.success(t('admin.foods.updatedSuccess'));
             navigate(`/${ROUTES.ADMIN.FOODS}`);
         },
     });
@@ -94,7 +96,7 @@ function AdminFoodDetail() {
             return adminApi.deleteFood(id!);
         },
         onSuccess: () => {
-            toast.success('Food deleted successfully');
+            toast.success(t('admin.foods.deletedSuccess'));
             navigate(`/${ROUTES.ADMIN.FOODS}`);
         },
     });
@@ -235,7 +237,7 @@ function AdminFoodDetail() {
             <Button variant='ghost' className='mb-8' asChild>
                 <Link to={`/${ROUTES.ADMIN.FOODS}`}>
                     <ArrowLeft className='h-4 w-4' />
-                    Back to Foods
+                    {t('admin.foodForm.backToFoods')}
                 </Link>
             </Button>
 
@@ -253,7 +255,11 @@ function AdminFoodDetail() {
                                                 : (!hasPendingImages && !form.formState.isDirty) || isSubmitPending
                                         }
                                     >
-                                        {isSubmitPending ? 'Saving...' : isCreateMode ? 'Add Food' : 'Save Changes'}
+                                        {isSubmitPending
+                                            ? t('common.saving')
+                                            : isCreateMode
+                                              ? t('admin.foodForm.addFood')
+                                              : t('admin.foodForm.saveChanges')}
                                     </Button>
                                     {!isCreateMode && (
                                         <Button
@@ -263,7 +269,7 @@ function AdminFoodDetail() {
                                             disabled={deleteFoodMutation.isPending}
                                         >
                                             <Trash2 className='h-4 w-4' />
-                                            Delete Food
+                                            {t('admin.foods.deleteFood')}
                                         </Button>
                                     )}
                                 </div>
@@ -288,22 +294,21 @@ function AdminFoodDetail() {
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Delete Food</DialogTitle>
+                            <DialogTitle>{t('admin.foods.deleteFood')}</DialogTitle>
                             <DialogDescription>
-                                Are you sure you want to delete <strong>{food.name}</strong>? This action cannot be
-                                undone.
+                                {t('admin.foods.deleteFoodConfirm', { name: food.name })}
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
                             <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
-                                Cancel
+                                {t('common.cancel')}
                             </Button>
                             <Button
                                 variant='destructive'
                                 onClick={handleConfirmDelete}
                                 disabled={deleteFoodMutation.isPending}
                             >
-                                {deleteFoodMutation.isPending ? 'Deleting...' : 'Delete'}
+                                {deleteFoodMutation.isPending ? t('common.deleting') : t('common.delete')}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

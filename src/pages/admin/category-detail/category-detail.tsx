@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -26,6 +27,7 @@ import { useAppDispatch } from '@/core/hooks';
 import { addCategory, removeCategory, updateCategory } from '@/store/food';
 
 function AdminCategoryDetail() {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -63,7 +65,7 @@ function AdminCategoryDetail() {
             adminApi.createCategory(categoryDetailFormValuesToRequest(data)),
         onSuccess: created => {
             dispatch(addCategory(created));
-            toast.success('Category created successfully');
+            toast.success(t('admin.categories.createdSuccess'));
             navigate(`/${ROUTES.ADMIN.CATEGORY_DETAIL(created.id)}`);
         },
     });
@@ -75,7 +77,7 @@ function AdminCategoryDetail() {
             queryClient.setQueryData(['admin', 'categories', 'detail', id], updated);
             dispatch(updateCategory(updated));
             form.reset(getDefaultCategoryDetailFormValues(updated));
-            toast.success('Category updated successfully');
+            toast.success(t('admin.categories.updatedSuccess'));
         },
     });
 
@@ -83,7 +85,7 @@ function AdminCategoryDetail() {
         mutationFn: (categoryId: string) => adminApi.deleteCategory(categoryId),
         onSuccess: (_, categoryId) => {
             dispatch(removeCategory(categoryId));
-            toast.success('Category deleted successfully');
+            toast.success(t('admin.categories.deletedSuccess'));
             setDeleteDialogOpen(false);
             navigate(`/${ROUTES.ADMIN.CATEGORIES}`);
         },
@@ -147,7 +149,7 @@ function AdminCategoryDetail() {
             <Button variant='ghost' className='mb-8' asChild>
                 <Link to={`/${ROUTES.ADMIN.CATEGORIES}`}>
                     <ArrowLeft className='h-4 w-4' />
-                    Back to Categories
+                    {t('admin.categoryForm.backToCategories')}
                 </Link>
             </Button>
 
@@ -157,20 +159,24 @@ function AdminCategoryDetail() {
                         <FormProvider {...form}>
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>{isAddMode ? 'Add Category' : 'Category Details'}</CardTitle>
+                                    <CardTitle>
+                                        {isAddMode
+                                            ? t('admin.categoryForm.addTitle')
+                                            : t('admin.categoryForm.editTitle')}
+                                    </CardTitle>
                                     <CardDescription>
                                         {isAddMode
-                                            ? 'Create a new food category.'
-                                            : 'Edit the category information below.'}
+                                            ? t('admin.categoryForm.addDescription')
+                                            : t('admin.categoryForm.editDescription')}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
                                         <Field>
-                                            <FieldLabel>Name</FieldLabel>
+                                            <FieldLabel>{t('admin.categories.name')}</FieldLabel>
                                             <Input
                                                 {...form.register('name')}
-                                                placeholder='Category name'
+                                                placeholder={t('admin.categoryForm.namePlaceholder')}
                                                 aria-invalid={!!form.formState.errors.name}
                                             />
                                             {form.formState.errors.name && (
@@ -180,10 +186,10 @@ function AdminCategoryDetail() {
                                         <div className='flex gap-4'>
                                             <Button type='submit' disabled={!form.formState.isDirty || isPending}>
                                                 {isPending
-                                                    ? 'Saving...'
+                                                    ? t('common.saving')
                                                     : isAddMode
-                                                      ? 'Create Category'
-                                                      : 'Save Changes'}
+                                                      ? t('admin.categoryForm.createCategory')
+                                                      : t('admin.foodForm.saveChanges')}
                                             </Button>
                                             {!isAddMode && (
                                                 <Button
@@ -193,7 +199,7 @@ function AdminCategoryDetail() {
                                                     disabled={deleteCategoryMutation.isPending}
                                                 >
                                                     <Trash2 className='h-4 w-4' />
-                                                    Delete Category
+                                                    {t('admin.categories.deleteCategory')}
                                                 </Button>
                                             )}
                                         </div>
@@ -209,22 +215,21 @@ function AdminCategoryDetail() {
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Delete Category</DialogTitle>
+                            <DialogTitle>{t('admin.categories.deleteCategory')}</DialogTitle>
                             <DialogDescription>
-                                Are you sure you want to delete <strong>{category.name}</strong>? This action cannot be
-                                undone.
+                                {t('admin.categories.deleteCategoryConfirm', { name: category.name })}
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
                             <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
-                                Cancel
+                                {t('common.cancel')}
                             </Button>
                             <Button
                                 variant='destructive'
                                 onClick={handleConfirmDelete}
                                 disabled={deleteCategoryMutation.isPending}
                             >
-                                {deleteCategoryMutation.isPending ? 'Deleting...' : 'Delete'}
+                                {deleteCategoryMutation.isPending ? t('common.deleting') : t('common.delete')}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

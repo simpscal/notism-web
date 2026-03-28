@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MoreVertical, Search, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PatternFormat } from 'react-number-format';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -28,6 +29,7 @@ import {
 import { useAppSelector } from '@/core/hooks/use-redux.hook';
 
 function AdminUsers() {
+    const { t } = useTranslation();
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
     const [searchInput, setSearchInput] = useState('');
@@ -89,7 +91,7 @@ function AdminUsers() {
                 }
             );
 
-            toast.success('User deleted successfully');
+            toast.success(t('admin.users.deletedSuccess'));
             setDeleteDialogOpen(false);
             setSelectedUser(null);
         },
@@ -119,7 +121,11 @@ function AdminUsers() {
     if (isError) {
         return (
             <div className='flex h-full w-full items-center justify-center'>
-                <ErrorState title='Failed to load users' description='Please try again later.' iconSize='sm' />
+                <ErrorState
+                    title={t('admin.users.failedToLoad')}
+                    description={t('common.tryAgainLater')}
+                    iconSize='sm'
+                />
             </div>
         );
     }
@@ -127,8 +133,8 @@ function AdminUsers() {
     return (
         <div className='flex h-full flex-col'>
             <div className='mb-6 px-4 pt-6'>
-                <h1 className='text-2xl font-bold'>Users Management</h1>
-                <p className='mt-1 text-sm text-muted-foreground'>Manage all users in the system</p>
+                <h1 className='text-2xl font-bold'>{t('admin.users.management')}</h1>
+                <p className='mt-1 text-sm text-muted-foreground'>{t('admin.users.subtitle')}</p>
             </div>
 
             {/* Search input */}
@@ -136,7 +142,7 @@ function AdminUsers() {
                 <InputGroup>
                     <InputGroupInput
                         type='text'
-                        placeholder='Search users by name, email, or phone...'
+                        placeholder={t('admin.users.searchPlaceholder')}
                         value={searchInput}
                         onChange={e => setSearchInput(e.target.value)}
                     />
@@ -159,7 +165,7 @@ function AdminUsers() {
                                     onSort={handleSort}
                                     className='min-w-[120px]'
                                 >
-                                    First Name
+                                    {t('admin.users.firstName')}
                                 </SortableTableHead>
                                 <SortableTableHead
                                     field='lastName'
@@ -168,7 +174,7 @@ function AdminUsers() {
                                     onSort={handleSort}
                                     className='min-w-[120px]'
                                 >
-                                    Last Name
+                                    {t('admin.users.lastName')}
                                 </SortableTableHead>
                                 <SortableTableHead
                                     field='email'
@@ -177,10 +183,10 @@ function AdminUsers() {
                                     onSort={handleSort}
                                     className='min-w-[200px]'
                                 >
-                                    Email
+                                    {t('admin.users.email')}
                                 </SortableTableHead>
-                                <TableHead className='min-w-[140px]'>Phone Number</TableHead>
-                                <TableHead className='min-w-[150px]'>Location</TableHead>
+                                <TableHead className='min-w-[140px]'>{t('admin.users.phoneNumber')}</TableHead>
+                                <TableHead className='min-w-[150px]'>{t('admin.users.location')}</TableHead>
                                 <SortableTableHead
                                     field='role'
                                     sortBy={sortBy}
@@ -188,9 +194,9 @@ function AdminUsers() {
                                     onSort={handleSort}
                                     className='min-w-[100px]'
                                 >
-                                    Role
+                                    {t('admin.users.role')}
                                 </SortableTableHead>
-                                <TableHead className='min-w-[80px] text-right'>Actions</TableHead>
+                                <TableHead className='min-w-[80px] text-right'>{t('admin.users.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className={!usersData?.items?.length ? 'h-full' : undefined}>
@@ -236,7 +242,7 @@ function AdminUsers() {
                                                             onClick={() => handleDeleteClick(user.id, user.email)}
                                                         >
                                                             <Trash2 className=' h-4 w-4' />
-                                                            Delete
+                                                            {t('common.delete')}
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -249,7 +255,7 @@ function AdminUsers() {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={7} className='text-center text-muted-foreground'>
-                                        No users found
+                                        {t('admin.users.noUsers')}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -269,18 +275,17 @@ function AdminUsers() {
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete User</DialogTitle>
+                        <DialogTitle>{t('admin.users.deleteUser')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete user <strong>{selectedUser?.email}</strong>? This action
-                            cannot be undone.
+                            {t('admin.users.deleteUserConfirm', { email: selectedUser?.email })}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button variant='destructive' onClick={handleConfirmDelete} disabled={isDeleting}>
-                            {isDeleting ? 'Deleting...' : 'Delete'}
+                            {isDeleting ? t('common.deleting') : t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

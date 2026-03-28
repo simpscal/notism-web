@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Eye, MoreVertical, Plus, Search, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -33,6 +34,7 @@ function truncateDescription(description: string): string {
 }
 
 function AdminFoods() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
@@ -92,7 +94,7 @@ function AdminFoods() {
                 }
             );
 
-            toast.success('Food deleted successfully');
+            toast.success(t('admin.foods.deletedSuccess'));
             setDeleteDialogOpen(false);
             setSelectedFood(null);
         },
@@ -127,7 +129,11 @@ function AdminFoods() {
     if (isError) {
         return (
             <div className='flex h-full w-full items-center justify-center'>
-                <ErrorState title='Failed to load foods' description='Please try again later.' iconSize='sm' />
+                <ErrorState
+                    title={t('admin.foods.failedToLoad')}
+                    description={t('common.tryAgainLater')}
+                    iconSize='sm'
+                />
             </div>
         );
     }
@@ -135,8 +141,8 @@ function AdminFoods() {
     return (
         <div className='flex h-full flex-col'>
             <div className='mb-6 px-4 pt-6'>
-                <h1 className='text-2xl font-bold'>Foods Management</h1>
-                <p className='mt-1 text-sm text-muted-foreground'>Manage all foods in the system</p>
+                <h1 className='text-2xl font-bold'>{t('admin.foods.management')}</h1>
+                <p className='mt-1 text-sm text-muted-foreground'>{t('admin.foods.subtitle')}</p>
             </div>
 
             <div className='mb-4 flex flex-wrap items-center gap-4 px-4 justify-between'>
@@ -144,7 +150,7 @@ function AdminFoods() {
                     <InputGroup>
                         <InputGroupInput
                             type='text'
-                            placeholder='Search foods by name or keyword...'
+                            placeholder={t('admin.foods.searchPlaceholder')}
                             value={searchInput}
                             onChange={e => setSearchInput(e.target.value)}
                         />
@@ -157,7 +163,7 @@ function AdminFoods() {
                 <Button asChild>
                     <Link to={`/${ROUTES.ADMIN.FOOD_ADD}`}>
                         <Plus className='h-4 w-4' />
-                        Add Food
+                        {t('admin.foods.addFood')}
                     </Link>
                 </Button>
             </div>
@@ -174,9 +180,9 @@ function AdminFoods() {
                                     onSort={handleSort}
                                     className='min-w-[160px]'
                                 >
-                                    Name
+                                    {t('admin.foods.name')}
                                 </SortableTableHead>
-                                <TableHead className='min-w-[200px]'>Description</TableHead>
+                                <TableHead className='min-w-[200px]'>{t('admin.foods.description')}</TableHead>
                                 <SortableTableHead
                                     field='price'
                                     sortBy={sortBy}
@@ -184,7 +190,7 @@ function AdminFoods() {
                                     onSort={handleSort}
                                     className='min-w-[80px]'
                                 >
-                                    Price
+                                    {t('admin.foods.price')}
                                 </SortableTableHead>
                                 <SortableTableHead
                                     field='discountPrice'
@@ -193,13 +199,13 @@ function AdminFoods() {
                                     onSort={handleSort}
                                     className='min-w-[100px]'
                                 >
-                                    Discount Price
+                                    {t('admin.foods.discountPrice')}
                                 </SortableTableHead>
-                                <TableHead className='min-w-[100px]'>Category</TableHead>
-                                <TableHead className='min-w-[90px]'>Available</TableHead>
-                                <TableHead className='min-w-[80px]'>Stock</TableHead>
-                                <TableHead className='min-w-[80px]'>Unit</TableHead>
-                                <TableHead className='min-w-[80px] text-right'>Actions</TableHead>
+                                <TableHead className='min-w-[100px]'>{t('admin.foods.category')}</TableHead>
+                                <TableHead className='min-w-[90px]'>{t('admin.foods.available')}</TableHead>
+                                <TableHead className='min-w-[80px]'>{t('admin.foods.stock')}</TableHead>
+                                <TableHead className='min-w-[80px]'>{t('admin.foods.unit')}</TableHead>
+                                <TableHead className='min-w-[80px] text-right'>{t('admin.foods.actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className={!foodsData?.items?.length ? 'h-full' : undefined}>
@@ -222,7 +228,9 @@ function AdminFoods() {
                                             {food.discountPrice != null ? `$${food.discountPrice.toFixed(2)}` : '-'}
                                         </TableCell>
                                         <TableCell>{food.category}</TableCell>
-                                        <TableCell>{food.isAvailable ? 'Yes' : 'No'}</TableCell>
+                                        <TableCell>
+                                            {food.isAvailable ? t('admin.foods.yes') : t('admin.foods.no')}
+                                        </TableCell>
                                         <TableCell>{food.stockQuantity}</TableCell>
                                         <TableCell>{food.quantityUnit}</TableCell>
                                         <TableCell className='text-right'>
@@ -236,14 +244,14 @@ function AdminFoods() {
                                                 <DropdownMenuContent align='end'>
                                                     <DropdownMenuItem onClick={() => handleViewClick(food.id)}>
                                                         <Eye className=' h-4 w-4' />
-                                                        View
+                                                        {t('common.view')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant='destructive'
                                                         onClick={() => handleDeleteClick(food.id, food.name)}
                                                     >
                                                         <Trash2 className=' h-4 w-4' />
-                                                        Delete
+                                                        {t('common.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -253,7 +261,7 @@ function AdminFoods() {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={9} className='text-center text-muted-foreground'>
-                                        No foods found
+                                        {t('admin.foods.noFoods')}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -273,22 +281,21 @@ function AdminFoods() {
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Food</DialogTitle>
+                        <DialogTitle>{t('admin.foods.deleteFood')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete <strong>{selectedFood?.name}</strong>? This action cannot be
-                            undone.
+                            {t('admin.foods.deleteFoodConfirm', { name: selectedFood?.name })}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             variant='destructive'
                             onClick={handleConfirmDelete}
                             disabled={deleteFoodMutation.isPending}
                         >
-                            {deleteFoodMutation.isPending ? 'Deleting...' : 'Delete'}
+                            {deleteFoodMutation.isPending ? t('common.deleting') : t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

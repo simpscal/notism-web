@@ -1,5 +1,6 @@
 import { ImagePlus, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
@@ -21,6 +22,7 @@ function FoodDetailImagesSection({
     onPendingImagesChange,
     isDisabled,
 }: FoodDetailImagesSectionProps) {
+    const { t } = useTranslation();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [pendingPreviewUrls, setPendingPreviewUrls] = useState<string[]>([]);
 
@@ -66,10 +68,8 @@ function FoodDetailImagesSection({
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Images</CardTitle>
-                <CardDescription>
-                    Select images to add. They will be uploaded when you click Save Changes.
-                </CardDescription>
+                <CardTitle>{t('admin.foods.imagesTitle')}</CardTitle>
+                <CardDescription>{t('admin.foods.imagesDescription')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-4'>
                 {hasImages ? (
@@ -121,7 +121,7 @@ function FoodDetailImagesSection({
                         ))}
                     </div>
                 ) : (
-                    <p className='text-sm text-muted-foreground'>No images yet.</p>
+                    <p className='text-sm text-muted-foreground'>{t('admin.foods.noImages')}</p>
                 )}
                 <input
                     ref={fileInputRef}
@@ -133,7 +133,7 @@ function FoodDetailImagesSection({
                 />
                 <Button type='button' variant='outline' onClick={handleUploadClick} disabled={isDisabled}>
                     <ImagePlus className='h-4 w-4' />
-                    Upload Image
+                    {t('admin.foods.uploadImage')}
                 </Button>
             </CardContent>
         </Card>

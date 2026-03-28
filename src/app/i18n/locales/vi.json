@@ -157,7 +157,8 @@
         "adminPortal": "Cổng quản trị",
         "setting": "Cài đặt",
         "logOut": "Đăng xuất",
-        "logIn": "Đăng nhập"
+        "logIn": "Đăng nhập",
+        "backToStore": "Về cửa hàng"
     },
     "cart": {
         "title": "Giỏ hàng",
@@ -376,7 +377,11 @@
             "deleteFoodConfirm": "Bạn có chắc chắn muốn xóa thực phẩm này không? Hành động này không thể được hoàn tác.",
             "addedSuccess": "Thực phẩm đã được thêm thành công",
             "updatedSuccess": "Thực phẩm đã được cập nhật thành công",
-            "deletedSuccess": "Thực phẩm đã được xóa thành công"
+            "deletedSuccess": "Thực phẩm đã được xóa thành công",
+            "imagesTitle": "Hình ảnh",
+            "imagesDescription": "Chọn hình ảnh để thêm. Chúng sẽ được tải lên khi bạn nhấp vào Lưu thay đổi.",
+            "noImages": "Chưa có hình ảnh nào.",
+            "uploadImage": "Tải lên hình ảnh"
         },
         "categories": {
             "title": "Danh mục",

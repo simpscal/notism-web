@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { adminApi } from '@/apis';
@@ -13,6 +14,7 @@ import Spinner from '@/components/spinner';
 import { OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
 
 function AdminOrderDetail() {
+    const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
 
     const {
@@ -29,7 +31,7 @@ function AdminOrderDetail() {
 
     const orderDate = useMemo(() => {
         if (!order) return '';
-        return new Date(order.createdAt).toLocaleDateString('en-US', {
+        return new Date(order.createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -52,15 +54,15 @@ function AdminOrderDetail() {
                 <Button variant='ghost' className='mb-8' asChild>
                     <Link to={`/${ROUTES.ADMIN.ORDERS}`}>
                         <ArrowLeft className='h-4 w-4' />
-                        Back to Orders
+                        {t('admin.orderDetailPage.backToOrders')}
                     </Link>
                 </Button>
                 <ErrorState
-                    title='Failed to load order details'
-                    description='Please try again later or go back to the orders list.'
+                    title={t('admin.orderDetailPage.failedToLoad')}
+                    description={t('admin.orderDetailPage.failedToLoadDescription')}
                     action={
                         <Button asChild>
-                            <Link to={`/${ROUTES.ADMIN.ORDERS}`}>Back to Orders</Link>
+                            <Link to={`/${ROUTES.ADMIN.ORDERS}`}>{t('admin.orderDetailPage.backToOrders')}</Link>
                         </Button>
                     }
                 />
@@ -73,7 +75,7 @@ function AdminOrderDetail() {
             <Button variant='ghost' className='mb-8' asChild>
                 <Link to={`/${ROUTES.ADMIN.ORDERS}`}>
                     <ArrowLeft className=' h-4 w-4' />
-                    Back to Orders
+                    {t('admin.orderDetailPage.backToOrders')}
                 </Link>
             </Button>
 
@@ -99,23 +101,27 @@ function AdminOrderDetail() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Order Items</CardTitle>
+                                <CardTitle>{t('admin.orderDetailPage.orderItems')}</CardTitle>
                             </CardHeader>
                             <CardContent className='space-y-4'>
                                 <div className='space-y-2'>
                                     <div className='flex justify-between text-sm'>
-                                        <span className='text-muted-foreground'>Total Items</span>
+                                        <span className='text-muted-foreground'>
+                                            {t('admin.orderDetailPage.totalItems')}
+                                        </span>
                                         <span className='font-medium'>
                                             {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                                         </span>
                                     </div>
                                     <Separator />
                                     <div className='flex justify-between text-sm'>
-                                        <span className='text-muted-foreground'>Payment Method</span>
+                                        <span className='text-muted-foreground'>
+                                            {t('admin.orderDetailPage.paymentMethod')}
+                                        </span>
                                         <span className='font-medium capitalize'>{order.paymentMethod}</span>
                                     </div>
                                     <div className='flex justify-between text-lg font-semibold'>
-                                        <span>Total</span>
+                                        <span>{t('orderDetail.total')}</span>
                                         <span>${order.totalAmount.toFixed(2)}</span>
                                     </div>
                                 </div>
