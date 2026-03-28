@@ -7,7 +7,7 @@
 
 @theme inline {
     --font-sans:
-        'Nunito Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
@@ -122,6 +122,13 @@
     --success: oklch(0.65 0.12 145);
     --warning: oklch(0.65 0.12 70);
     --info: oklch(0.65 0.12 240);
+}
+
+/* Font family definitions for dynamic font switching */
+:root {
+    --font-noto-sans:
+        'Noto Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
 }
 
 @layer base {
