@@ -4,14 +4,15 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { oauthApi, OAuthProviderType } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 import Spinner from '@/components/spinner';
-import { useAppDispatch } from '@/core/hooks';
-import { setAuth } from '@/store/auth/auth.slice';
+import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { setAuth, setOauthReturnUrl } from '@/store/auth';
 
 function OAuthCallback() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const oauthReturnUrl = useAppSelector(state => state.auth.oauthReturnUrl);
     const params = useParams<{ provider: OAuthProviderType }>();
     const [searchParams] = useSearchParams();
 
@@ -19,7 +20,7 @@ function OAuthCallback() {
         mutationFn: ({ provider, data }: { provider: OAuthProviderType; data: { code: string; state?: string } }) =>
             oauthApi.handleOAuthCallback(provider, data),
         onSuccess: data => {
-            dispatch(setAuth(data.token, data.user));
+            dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
         },
     });
 
@@ -37,9 +38,14 @@ function OAuthCallback() {
     useEffect(() => {
         if (oauthCallbackMutation.isSuccess) {
             toast.success('Login successful! Welcome back.');
-            navigate(`/${ROUTES.profile}`);
+            if (oauthReturnUrl) {
+                dispatch(setOauthReturnUrl(null));
+                navigate(decodeURIComponent(oauthReturnUrl), { replace: true });
+            } else {
+                navigate(`/${ROUTES.SETTINGS.PROFILE}`);
+            }
         }
-    }, [oauthCallbackMutation.isSuccess, navigate]);
+    }, [oauthCallbackMutation.isSuccess, oauthReturnUrl, dispatch, navigate]);
 
     return (
         <div className='flex flex-col items-center justify-center gap-4 h-36'>

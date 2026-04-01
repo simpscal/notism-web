@@ -1,0 +1,574 @@
+{
+    "common": {
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "loading": "Đang tải...",
+        "back": "Quay lại",
+        "delete": "Xóa",
+        "edit": "Chỉnh sửa",
+        "add": "Thêm",
+        "search": "Tìm kiếm",
+        "noResults": "Không tìm thấy kết quả",
+        "error": "Lỗi",
+        "success": "Thành công",
+        "close": "Đóng",
+        "deleting": "Đang xóa...",
+        "saving": "Đang lưu...",
+        "view": "Xem",
+        "backToMenu": "Quay lại menu",
+        "browseMenu": "Duyệt menu",
+        "browseFoods": "Duyệt thực phẩm",
+        "goHome": "Về trang chủ",
+        "tryAgainLater": "Vui lòng thử lại sau.",
+        "apiErrors": {
+            "badRequest": "Yêu cầu không hợp lệ",
+            "forbidden": "Bị cấm",
+            "notFound": "Không tìm thấy",
+            "serverError": "Lỗi máy chủ",
+            "serviceUnavailable": "Dịch vụ không khả dụng"
+        }
+    },
+    "auth": {
+        "welcomeBack": "Chào mừng quay lại",
+        "enterCredentials": "Nhập thông tin đăng nhập của bạn để truy cập tài khoản",
+        "email": "Email",
+        "password": "Mật khẩu",
+        "enterPassword": "Nhập mật khẩu của bạn",
+        "createPassword": "Tạo mật khẩu",
+        "firstName": "Tên",
+        "lastName": "Họ",
+        "confirmPassword": "Xác nhận mật khẩu",
+        "forgotPassword": "Quên mật khẩu?",
+        "signIn": "Đăng nhập",
+        "signUp": "Đăng ký",
+        "signingIn": "Đang đăng nhập...",
+        "createAccount": "Tạo tài khoản",
+        "creatingAccount": "Đang tạo tài khoản...",
+        "orContinueWith": "Hoặc tiếp tục với",
+        "dontHaveAccount": "Chưa có tài khoản?",
+        "alreadyHaveAccount": "Đã có tài khoản?",
+        "resetPassword": "Đặt lại mật khẩu",
+        "checkEmail": "Kiểm tra email của bạn",
+        "sendResetLink": "Gửi liên kết đặt lại",
+        "newPassword": "Mật khẩu mới",
+        "confirmNewPassword": "Xác nhận mật khẩu mới",
+        "backToLogin": "Quay lại đăng nhập",
+        "sendingResetLink": "Đang gửi...",
+        "resettingPassword": "Đang đặt lại...",
+        "enterEmail": "Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.",
+        "checkEmailDescription": "Chúng tôi đã gửi một liên kết đặt lại mật khẩu đến địa chỉ email của bạn. Vui lòng kiểm tra hộp thư đến của bạn.",
+        "enterNewPassword": "Nhập mật khẩu mới của bạn dưới đây",
+        "passwordResetSuccessDescription": "Mật khẩu của bạn đã được đặt lại thành công",
+        "validation": {
+            "emailRequired": "Email là bắt buộc",
+            "emailInvalid": "Vui lòng nhập email hợp lệ",
+            "passwordRequired": "Mật khẩu là bắt buộc",
+            "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+            "passwordSpecialChar": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt",
+            "passwordUppercase": "Mật khẩu phải chứa ít nhất một chữ hoa",
+            "passwordNumber": "Mật khẩu phải chứa ít nhất một số",
+            "passwordsDoNotMatch": "Mật khẩu không khớp",
+            "firstNameRequired": "Tên là bắt buộc",
+            "lastNameRequired": "Họ là bắt buộc"
+        },
+        "loginSuccess": "Đăng nhập thành công! Chào mừng quay lại.",
+        "logoutSuccess": "Đã đăng xuất thành công",
+        "signupSuccess": "Tài khoản được tạo thành công! Chào mừng.",
+        "passwordResetEmailSent": "Nếu email tồn tại, liên kết đặt lại mật khẩu đã được gửi.",
+        "passwordResetSuccess": "Mật khẩu đã được đặt lại thành công.",
+        "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
+        "userNotFound": "Không tìm thấy người dùng",
+        "invalidToken": "Token không hợp lệ hoặc đã hết hạn"
+    },
+    "landing": {
+        "hero": {
+            "badge": "Thực phẩm tươi, thanh toán nhanh",
+            "title": "Đặt thức ăn tươi trong vài phút",
+            "subtitle": "Duyệt menu, tùy chỉnh đơn hàng của bạn và theo dõi giao hàng trong thời gian thực.",
+            "startOrdering": "Bắt đầu đặt hàng",
+            "exploreFoods": "Khám phá thực phẩm",
+            "secureCheckout": "Thanh toán an toàn",
+            "fastDelivery": "Giao hàng nhanh"
+        },
+        "features": {
+            "title": "Mọi thứ bạn cần để đặt hàng",
+            "subtitle": "Quy trình sạch sẽ từ duyệt đến thanh toán, được thiết kế để nhanh chóng và dễ dàng.",
+            "items": [
+                {
+                    "title": "Menu được sắp chọn",
+                    "description": "Những món ăn được chọn cẩn thận từ những nhà hàng tốt nhất"
+                },
+                {
+                    "title": "Đặt hàng thông minh",
+                    "description": "Duyệt menu trực quan và các tùy chọn tùy chỉnh"
+                },
+                {
+                    "title": "Thanh toán an toàn",
+                    "description": "Xử lý thanh toán an toàn và mã hóa"
+                },
+                {
+                    "title": "Theo dõi giao hàng",
+                    "description": "Theo dõi đơn hàng và giao hàng trong thời gian thực"
+                }
+            ]
+        },
+        "faq": {
+            "title": "Các câu hỏi thường gặp",
+            "subtitle": "Câu trả lời nhanh chóng về đặt hàng, giao hàng và thanh toán.",
+            "items": [
+                {
+                    "question": "Làm cách nào để bắt đầu một đơn hàng?",
+                    "answer": "Duyệt phần Thực phẩm của chúng tôi, chọn các mục bạn thích, tùy chỉnh chúng và tiếp tục thanh toán."
+                },
+                {
+                    "question": "Xử lý thanh toán có an toàn không?",
+                    "answer": "Có, chúng tôi sử dụng mã hóa tiêu chuẩn công nghiệp để bảo vệ tất cả thông tin thanh toán."
+                },
+                {
+                    "question": "Tôi có thể theo dõi giao hàng của mình không?",
+                    "answer": "Có, bạn có thể theo dõi đơn hàng của mình trong thời gian thực từ lúc được xác nhận."
+                }
+            ]
+        },
+        "trust": {
+            "title": "Xây dựng để tin tưởng",
+            "subtitle": "Bảo mật thanh toán, giao hàng nhanh và sự tự tin của khách hàng thực sự.",
+            "tip": "Mẹo: bạn có thể đi tới phần Thực phẩm bất cứ lúc nào và bắt đầu một quy trình đặt hàng từ đó."
+        },
+        "header": {
+            "foods": "Thực phẩm",
+            "logIn": "Đăng nhập",
+            "signUp": "Đăng ký"
+        },
+        "footer": {
+            "allRightsReserved": "Bảo lưu mọi quyền."
+        },
+        "cta": {
+            "title": "Sẵn sàng đặt hàng?",
+            "description": "Tham gia hàng nghìn khách hàng hài lòng",
+            "signUp": "Đăng ký",
+            "browseFoods": "Duyệt thực phẩm"
+        }
+    },
+    "nav": {
+        "foods": "Thực phẩm",
+        "orders": "Đơn hàng",
+        "appearance": "Giao diện",
+        "adminPortal": "Cổng quản trị",
+        "setting": "Cài đặt",
+        "logOut": "Đăng xuất",
+        "logIn": "Đăng nhập",
+        "backToStore": "Về cửa hàng"
+    },
+    "cart": {
+        "title": "Giỏ hàng",
+        "orderSummary": "Tóm tắt đơn hàng",
+        "total": "Tổng cộng",
+        "proceedToPayment": "Tiếp tục thanh toán",
+        "noItemsSelected": "Chưa chọn mục nào",
+        "viewMyOrders": "Xem đơn hàng của tôi",
+        "removeItem": "Xóa mục",
+        "updateQuantity": "Cập nhật số lượng",
+        "quantity": "Số lượng",
+        "price": "Giá",
+        "subtotal": "Tổng phụ",
+        "itemRemoved": "Mục đã bị xóa khỏi giỏ hàng",
+        "selectAtLeastOne": "Vui lòng chọn ít nhất một mục để tiếp tục",
+        "insufficientStock": "Chỉ còn {{quantity}} mục khả dụng",
+        "saveBadge": "Tiết kiệm ${{amount}}",
+        "itemCount_one": "{{count}} mục",
+        "itemCount_other": "{{count}} mục",
+        "empty": {
+            "title": "Giỏ hàng của bạn trống",
+            "description": "Thêm một số mục ngon lành để bắt đầu!",
+            "browseMenu": "Duyệt menu"
+        }
+    },
+    "payment": {
+        "title": "Thanh toán",
+        "completeOrder": "Hoàn thành đơn hàng",
+        "reviewOrder": "Kiểm tra lại đơn hàng và phương thức thanh toán của bạn trước khi đặt hàng",
+        "paymentMethod": "Phương thức thanh toán",
+        "selectPaymentMethod": "Chọn phương thức thanh toán",
+        "totalAmount": "Tổng số tiền",
+        "placeOrder": "Đặt hàng",
+        "backToCart": "Quay lại giỏ hàng",
+        "processing": "Đang xử lý...",
+        "orderPlaced": "Đơn hàng đã được đặt thành công!",
+        "paymentFailed": "Thanh toán thất bại. Vui lòng thử lại.",
+        "noItemsSelected": "Không có mục nào được chọn để thanh toán",
+        "cashOnDelivery": "Thanh toán khi nhận hàng",
+        "banking": "Ngân hàng",
+        "comingSoon": "Sắp ra mắt",
+        "payWithCash": "Thanh toán bằng tiền mặt khi đơn hàng được giao",
+        "onlineBanking": "Chuyển khoản ngân hàng trực tuyến",
+        "selectItem": "Vui lòng chọn ít nhất một mục để đặt hàng",
+        "empty": {
+            "title": "Giỏ hàng của bạn trống",
+            "description": "Thêm mục vào giỏ hàng của bạn trước khi tiếp tục thanh toán.",
+            "browseFoods": "Duyệt thực phẩm"
+        }
+    },
+    "orders": {
+        "title": "Đơn hàng của tôi",
+        "subtitle": "Xem và theo dõi tất cả đơn hàng của bạn",
+        "orderNumber": "Đơn hàng #{{id}}",
+        "orderId": "ID đơn hàng",
+        "date": "Ngày",
+        "status": "Trạng thái",
+        "total": "Tổng cộng",
+        "items": "Mục",
+        "actions": "Hành động",
+        "viewDetails": "Xem chi tiết",
+        "noOrders": "Không tìm thấy đơn hàng",
+        "searchPlaceholder": "Tìm kiếm đơn hàng theo ID, tên khách hàng hoặc email...",
+        "failedToLoad": "Không thể tải đơn hàng",
+        "tryAgain": "Vui lòng thử lại sau.",
+        "qty": "Số lượng:",
+        "moreItems_one": "+{{count}} mục nữa",
+        "moreItems_other": "+{{count}} mục nữa",
+        "payment": "Thanh toán:",
+        "orderCount_one": "{{count}} đơn hàng",
+        "orderCount_other": "{{count}} đơn hàng",
+        "empty": {
+            "title": "Chưa có đơn hàng nào",
+            "description": "Bắt đầu mua sắm để xem các đơn hàng của bạn tại đây.",
+            "browseMenu": "Duyệt menu"
+        }
+    },
+    "order": {
+        "title": "Chi tiết đơn hàng",
+        "orderId": "ID đơn hàng",
+        "deliveryStatus": "Trạng thái giao hàng",
+        "trackYourOrder": "Theo dõi tiến trình đơn hàng của bạn",
+        "deliveryStatuses": {
+            "orderPlaced": "Đã đặt hàng",
+            "preparing": "Đang chuẩn bị",
+            "onTheWay": "Đang giao",
+            "delivered": "Đã giao",
+            "cancelled": "Đã hủy"
+        },
+        "checkout": {
+            "progress": {
+                "cart": "Giỏ hàng",
+                "payment": "Thanh toán",
+                "confirmation": "Xác nhận",
+                "completed": "Đã hoàn thành",
+                "currentStep": "Bước hiện tại",
+                "upcoming": "Sắp tới"
+            },
+            "trustBar": {
+                "secureTitle": "Thanh toán an toàn",
+                "secureDesc": "Xử lý thanh toán được bảo vệ",
+                "fastDeliveryTitle": "Giao hàng nhanh",
+                "fastDeliveryDesc": "Thực hiện đơn hàng đáng tin cậy",
+                "trustedTitle": "Được khách hàng tin tưởng",
+                "trustedDesc": "Trải nghiệm mua sắm được đánh giá cao"
+            }
+        }
+    },
+    "orderDetail": {
+        "backToOrders": "Quay lại đơn hàng",
+        "orderNumber": "Đơn hàng #{{id}}",
+        "customer": "Khách hàng",
+        "email": "Email",
+        "status": "Trạng thái",
+        "total": "Tổng cộng",
+        "items": "Mục",
+        "orderItems": "Mục đơn hàng",
+        "quantity": "Số lượng:",
+        "each": "cái",
+        "paymentMethod": "Phương thức thanh toán",
+        "cancelledSuccess": "Đơn hàng đã được hủy thành công",
+        "orderInformation": "Thông tin đơn hàng",
+        "placedOn": "Đặt vào",
+        "continueShopping": "Tiếp tục mua sắm",
+        "cancelOrder": "Hủy đơn hàng",
+        "keepOrder": "Giữ đơn hàng",
+        "cancelling": "Đang hủy...",
+        "cancelConfirmTitle": "Hủy đơn hàng",
+        "cancelConfirmDescription": "Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể được hoàn tác.",
+        "notFound": {
+            "title": "Không tìm thấy đơn hàng",
+            "description": "Đơn hàng bạn đang tìm không tồn tại hoặc đã bị xóa."
+        }
+    },
+    "settings": {
+        "tabs": {
+            "profile": "Hồ sơ",
+            "appearance": "Giao diện"
+        },
+        "profile": {
+            "title": "Cài đặt hồ sơ",
+            "sectionTitle": "Thông tin hồ sơ",
+            "subtitle": "Quản lý thông tin tài khoản và tùy chọn của bạn",
+            "firstName": "Tên",
+            "lastName": "Họ",
+            "email": "Email",
+            "phoneNumber": "Số điện thoại",
+            "location": "Vị trí",
+            "locationPlaceholder": "Thành phố, Quốc gia",
+            "saveChanges": "Lưu thay đổi",
+            "saving": "Đang lưu...",
+            "cancel": "Hủy",
+            "updateSuccess": "Hồ sơ đã được cập nhật thành công!",
+            "updateFailed": "Không thể cập nhật hồ sơ",
+            "profilePicture": "Ảnh hồ sơ",
+            "uploadHint": "Tải lên một ảnh để cá nhân hóa hồ sơ của bạn. JPG, PNG hoặc GIF. Kích thước tối đa 5MB.",
+            "uploadPhoto": "Tải lên ảnh",
+            "changePhoto": "Thay đổi ảnh",
+            "remove": "Xóa",
+            "dropImage": "Thả hình ảnh ở đây",
+            "enterFirstName": "Nhập tên của bạn",
+            "enterLastName": "Nhập họ của bạn",
+            "imageTypeError": "Vui lòng chọn một tệp hình ảnh",
+            "imageSizeError": "Kích thước hình ảnh phải nhỏ hơn 5MB"
+        },
+        "appearance": {
+            "title": "Giao diện",
+            "sectionTitle": "Chủ đề",
+            "subtitle": "Tùy chỉnh giao diện của ứng dụng",
+            "themePreference": "Tùy chọn chủ đề",
+            "themeDescription": "Chọn chủ đề ưa thích của bạn cho ứng dụng",
+            "light": "Sáng",
+            "dark": "Tối",
+            "system": "Hệ thống"
+        }
+    },
+    "admin": {
+        "orders": {
+            "title": "Đơn hàng",
+            "management": "Quản lý đơn hàng",
+            "subtitle": "Quản lý và theo dõi tất cả các đơn hàng",
+            "orderId": "ID đơn hàng",
+            "customer": "Khách hàng",
+            "email": "Email",
+            "total": "Tổng cộng",
+            "items": "Mục",
+            "status": "Trạng thái",
+            "actions": "Hành động",
+            "noOrders": "Không tìm thấy đơn hàng",
+            "searchPlaceholder": "Tìm kiếm đơn hàng theo ID, tên khách hàng hoặc email...",
+            "updateStatus": "Cập nhật trạng thái",
+            "updateSuccess": "Trạng thái đơn hàng đã được cập nhật thành công",
+            "statusUpdated": "Trạng thái đơn hàng đã được cập nhật thành công",
+            "failedToLoad": "Không thể tải đơn hàng",
+            "view": "Xem"
+        },
+        "foods": {
+            "title": "Thực phẩm",
+            "management": "Quản lý thực phẩm",
+            "subtitle": "Quản lý tất cả thực phẩm trong hệ thống",
+            "name": "Tên",
+            "description": "Mô tả",
+            "category": "Danh mục",
+            "price": "Giá",
+            "discountPrice": "Giá khuyến mãi",
+            "available": "Có sẵn",
+            "stock": "Hàng tồn kho",
+            "unit": "Đơn vị",
+            "actions": "Hành động",
+            "noFoods": "Không tìm thấy thực phẩm",
+            "searchPlaceholder": "Tìm kiếm thực phẩm theo tên hoặc từ khóa...",
+            "addFood": "Thêm thực phẩm",
+            "editFood": "Chỉnh sửa thực phẩm",
+            "yes": "Có",
+            "no": "Không",
+            "failedToLoad": "Không thể tải thực phẩm",
+            "deleteFood": "Xóa thực phẩm",
+            "deleteFoodConfirm": "Bạn có chắc chắn muốn xóa thực phẩm này không? Hành động này không thể được hoàn tác.",
+            "addedSuccess": "Thực phẩm đã được thêm thành công",
+            "updatedSuccess": "Thực phẩm đã được cập nhật thành công",
+            "deletedSuccess": "Thực phẩm đã được xóa thành công",
+            "imagesTitle": "Hình ảnh",
+            "imagesDescription": "Chọn hình ảnh để thêm. Chúng sẽ được tải lên khi bạn nhấp vào Lưu thay đổi.",
+            "noImages": "Chưa có hình ảnh nào.",
+            "uploadImage": "Tải lên hình ảnh"
+        },
+        "categories": {
+            "title": "Danh mục",
+            "management": "Quản lý danh mục",
+            "subtitle": "Quản lý tất cả danh mục thực phẩm trong hệ thống",
+            "name": "Tên",
+            "actions": "Hành động",
+            "noCategories": "Không tìm thấy danh mục",
+            "addCategory": "Thêm danh mục",
+            "editCategory": "Chỉnh sửa danh mục",
+            "searchPlaceholder": "Tìm kiếm danh mục theo tên...",
+            "failedToLoad": "Không thể tải danh mục",
+            "noMatch": "Không có danh mục nào phù hợp với tìm kiếm của bạn",
+            "deleteCategory": "Xóa danh mục",
+            "deleteCategoryConfirm": "Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể được hoàn tác.",
+            "createdSuccess": "Danh mục đã được tạo thành công",
+            "updatedSuccess": "Danh mục đã được cập nhật thành công",
+            "deletedSuccess": "Danh mục đã được xóa thành công"
+        },
+        "users": {
+            "title": "Người dùng",
+            "management": "Quản lý người dùng",
+            "subtitle": "Quản lý tất cả người dùng trong hệ thống",
+            "firstName": "Tên",
+            "lastName": "Họ",
+            "name": "Tên",
+            "email": "Email",
+            "phoneNumber": "Số điện thoại",
+            "location": "Vị trí",
+            "role": "Vai trò",
+            "actions": "Hành động",
+            "noUsers": "Không tìm thấy người dùng",
+            "searchPlaceholder": "Tìm kiếm người dùng theo tên, email hoặc số điện thoại...",
+            "failedToLoad": "Không thể tải người dùng",
+            "deleteUser": "Xóa người dùng",
+            "deleteUserConfirm": "Bạn có chắc chắn muốn xóa người dùng này không? Hành động này không thể được hoàn tác.",
+            "updatedSuccess": "Người dùng đã được cập nhật thành công",
+            "deletedSuccess": "Người dùng đã được xóa thành công"
+        },
+        "food": {
+            "details": "Chi tiết thực phẩm",
+            "editInformationBelow": "Chỉnh sửa thông tin thực phẩm dưới đây.",
+            "name": "Tên",
+            "namePlaceholder": "Tên thực phẩm",
+            "description": "Mô tả",
+            "descriptionPlaceholder": "Mô tả",
+            "price": "Giá ($)",
+            "discountPrice": "Giá khuyến mãi ($)",
+            "optional": "Tùy chọn",
+            "category": "Danh mục",
+            "selectCategory": "Chọn danh mục",
+            "quantityUnit": "Đơn vị số lượng",
+            "selectUnit": "Chọn đơn vị",
+            "available": "Có sẵn",
+            "stockQuantity": "Số lượng hàng tồn kho"
+        },
+        "foodForm": {
+            "sectionTitle": "Chi tiết thực phẩm",
+            "sectionDescription": "Chỉnh sửa thông tin thực phẩm dưới đây.",
+            "namePlaceholder": "Tên thực phẩm",
+            "descriptionPlaceholder": "Mô tả",
+            "discountPricePlaceholder": "Tùy chọn",
+            "selectCategory": "Chọn danh mục",
+            "selectUnit": "Chọn đơn vị",
+            "stockQuantity": "Số lượng hàng tồn kho",
+            "quantityUnit": "Đơn vị số lượng",
+            "backToFoods": "Quay lại thực phẩm",
+            "addFood": "Thêm thực phẩm",
+            "saveChanges": "Lưu thay đổi",
+            "saving": "Đang lưu...",
+            "failedToLoad": "Không thể tải thông tin món ăn",
+            "failedToLoadDescription": "Vui lòng thử lại sau hoặc quay lại danh sách món ăn."
+        },
+        "categoryForm": {
+            "addTitle": "Thêm danh mục",
+            "editTitle": "Chi tiết danh mục",
+            "addDescription": "Tạo một danh mục thực phẩm mới.",
+            "editDescription": "Chỉnh sửa thông tin danh mục dưới đây.",
+            "namePlaceholder": "Tên danh mục",
+            "backToCategories": "Quay lại danh mục",
+            "createCategory": "Tạo danh mục",
+            "creatingCategory": "Đang tạo...",
+            "failedToLoad": "Không thể tải danh mục",
+            "failedToLoadDescription": "Vui lòng thử lại sau hoặc quay lại danh sách danh mục."
+        },
+        "orderDetailPage": {
+            "backToOrders": "Quay lại đơn hàng",
+            "orderItems": "Mục đơn hàng",
+            "totalItems": "Tổng mục",
+            "paymentMethod": "Phương thức thanh toán",
+            "failedToLoad": "Không thể tải chi tiết đơn hàng",
+            "failedToLoadDescription": "Vui lòng thử lại sau hoặc quay lại danh sách đơn hàng."
+        },
+        "userDetail": {
+            "backToUsers": "Quay lại người dùng",
+            "title": "Chi tiết người dùng",
+            "subtitle": "Xem thông tin người dùng. Chỉ có thể cập nhật vai trò.",
+            "firstName": "Tên",
+            "lastName": "Họ",
+            "phoneNumber": "Số điện thoại",
+            "location": "Vị trí",
+            "selectRole": "Chọn vai trò",
+            "createdAt": "Được tạo vào {{date}}",
+            "saving": "Đang lưu...",
+            "saveChanges": "Lưu thay đổi",
+            "deleteUser": "Xóa người dùng"
+        },
+        "user": {
+            "details": "Chi tiết người dùng",
+            "viewInfoDescription": "Xem thông tin người dùng. Chỉ có thể cập nhật vai trò.",
+            "phoneNumber": "Số điện thoại",
+            "location": "Vị trí",
+            "role": "Vai trò",
+            "selectRole": "Chọn vai trò",
+            "createdAt": "Được tạo vào",
+            "deleteUser": "Xóa người dùng",
+            "deleteConfirmation": "Bạn có chắc chắn muốn xóa người dùng {{email}} không? Hành động này không thể được hoàn tác.",
+            "updated": "Người dùng đã được cập nhật thành công",
+            "deleted": "Người dùng đã được xóa thành công",
+            "failedToLoad": "Không thể tải chi tiết người dùng",
+            "tryAgainOrGoBack": "Vui lòng thử lại sau hoặc quay lại danh sách người dùng."
+        }
+    },
+    "foods": {
+        "hero": {
+            "badge": "Tươi & Ngon lành",
+            "title": "Khám phá thức ăn tuyệt vời",
+            "subtitle": "Khám phá lựa chọn các món ăn ngon được sắp chọn của chúng tôi",
+            "searchPlaceholder": "Tìm kiếm món ăn yêu thích của bạn..."
+        },
+        "toolbar": {
+            "dishFound": "tìm thấy 1 món",
+            "dishesFound": "tìm thấy các món",
+            "clearAll": "Xóa tất cả",
+            "filtersSort": "Bộ lọc & Sắp xếp"
+        },
+        "sidebar": {
+            "categories": "Danh mục",
+            "allItems": "Tất cả mục",
+            "sortBy": "Sắp xếp theo",
+            "default": "Mặc định",
+            "priceLowHigh": "Giá: Thấp đến cao",
+            "priceHighLow": "Giá: Cao đến thấp",
+            "nameAZ": "Tên: A đến Z"
+        },
+        "empty": {
+            "title": "Không tìm thấy món nào",
+            "description": "Chúng tôi không thể tìm thấy bất kỳ món nào phù hợp với tiêu chí của bạn.",
+            "clearFilters": "Xóa tất cả bộ lọc"
+        },
+        "card": {
+            "outOfStock": "Hết hàng",
+            "add": "Thêm",
+            "addedToCart": "{{name}} đã được thêm vào giỏ hàng!"
+        }
+    },
+    "foodDetail": {
+        "backToMenu": "Quay lại menu",
+        "available": "{{qty}} có sẵn",
+        "save": "Tiết kiệm ${{amount}}",
+        "addToCart": "Thêm vào giỏ hàng - ${{price}}",
+        "outOfStock": "Hết hàng",
+        "addedToCart": "{{qty}}x {{name}} đã được thêm vào giỏ hàng!",
+        "total": "Tổng cộng: ${{amount}}",
+        "empty": {
+            "title": "Không tìm thấy thực phẩm",
+            "description": "Mục thực phẩm bạn đang tìm không tồn tại hoặc đã bị xóa.",
+            "browseMenu": "Duyệt menu"
+        },
+        "error": {
+            "title": "Oops! Có lỗi xảy ra",
+            "description": "Chúng tôi không thể tải chi tiết thực phẩm. Vui lòng thử lại sau.",
+            "backToMenu": "Quay lại menu"
+        }
+    },
+    "notFound": {
+        "title": "404",
+        "message": "Trang không tìm thấy",
+        "description": "Trang bạn đang tìm kiếm không tồn tại",
+        "goHome": "Về trang chủ"
+    },
+    "validation": {
+        "fieldRequired": "Trường này là bắt buộc",
+        "invalidValue": "Giá trị không hợp lệ",
+        "skipMustBeNonNegative": "Skip phải lớn hơn hoặc bằng 0",
+        "takeMustBeBetween": "Take phải từ 1 đến 100"
+    }
+}

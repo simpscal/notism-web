@@ -1,12 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import authReducer from './auth/auth.slice';
-import userReducer from './user/user.slice';
+import authReducer, { type IAuthState } from './auth/auth.slice';
+import cartReducer, { type ICartState } from './cart/cart.slice';
+import foodReducer, { type IFoodState } from './food/food.slice';
+import userReducer, { type IUserState } from './user/user.slice';
+
+export type RootState = {
+    auth: IAuthState;
+    user: IUserState;
+    cart: ICartState;
+    food: IFoodState;
+};
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
         user: userReducer,
+        cart: cartReducer,
+        food: foodReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
@@ -17,6 +28,5 @@ export const store = configureStore({
     devTools: import.meta.env.DEV,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type Store = typeof store;

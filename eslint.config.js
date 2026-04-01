@@ -29,6 +29,7 @@ export default tseslint.config(
             ...reactRefresh.configs.recommended.rules,
             ...tanstackQuery.configs.recommended.rules,
 
+            'react-hooks/exhaustive-deps': 'off',
             'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
             // Import/Export rules
@@ -52,6 +53,20 @@ export default tseslint.config(
             'import/no-cycle': 'warn',
             'import/newline-after-import': 'error',
             'import/no-useless-path-segments': 'error',
+            'import/no-restricted-paths': [
+                'error',
+                {
+                    zones: [
+                        {
+                            target: './src/**/*',
+                            from: './src/apis/models',
+                            except: ['./src/apis'],
+                            message:
+                                'Do not import models directly from @/apis/models/. Use viewmodels from features instead.',
+                        },
+                    ],
+                },
+            ],
 
             // TypeScript rules
             '@typescript-eslint/no-inferrable-types': [

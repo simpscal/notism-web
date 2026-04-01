@@ -430,3 +430,21 @@ Global application state management using Redux Toolkit. The store manages appli
 ```text
 store → features (models only), app
 ```
+
+---
+
+## Reference Implementations
+
+These files serve as canonical examples of each pattern. When implementing a new feature, follow these as templates:
+
+| Pattern                     | Reference File(s)                                                             |
+| --------------------------- | ----------------------------------------------------------------------------- |
+| **Feature Module**          | `src/features/food/` — ViewModels, hooks, components organized by feature     |
+| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration        |
+| **API Module**              | `src/apis/auth.api.ts` — API functions with proper request/response models    |
+| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                |
+| **Shared UI Component**     | `src/components/` — shadcn/ui-based reusable components                       |
+| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic |
+| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern    |
+
+Use these as templates: examine the full folder structure, naming conventions, import order, component memoization, and state management patterns from these examples.

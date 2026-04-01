@@ -1,0 +1,201 @@
+import { useQuery } from '@tanstack/react-query';
+import { ArrowRight, Clock } from 'lucide-react';
+import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+
+import { OrdersEmpty } from './components';
+
+import { orderApi } from '@/apis';
+import { ROUTES } from '@/app/constants/routes.constant';
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
+import ErrorState from '@/components/error-state';
+import { Separator } from '@/components/separator';
+import Spinner from '@/components/spinner';
+import { FoodImage } from '@/features/food';
+import { DELIVERY_STATUS, DeliveryStatusEnum, type DeliveryStatusConfig } from '@/features/order';
+
+const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
+    const step = DELIVERY_STATUS.find(s => s.key === status);
+    return (
+        step || {
+            key: status as DeliveryStatusEnum,
+            label: status,
+            icon: Clock,
+            colorClass: 'bg-secondary text-secondary-foreground border-secondary/50',
+        }
+    );
+};
+
+function Orders() {
+    const { t, i18n } = useTranslation();
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ['orders', 'list'] as const,
+        queryFn: () => orderApi.getOrders(),
+    });
+
+    const orders = useMemo(() => data?.orders || [], [data]);
+
+    if (isLoading) {
+        return (
+            <div className='flex h-full w-full items-center justify-center'>
+                <Spinner size='lg' />
+            </div>
+        );
+    }
+
+    const pageHeader = (
+        <div className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-8 sm:py-10'>
+            <div className='pointer-events-none absolute inset-0 overflow-hidden' aria-hidden='true'>
+                <div className='absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl' />
+            </div>
+            <div className='relative container mx-auto max-w-7xl'>
+                <div className='flex items-center gap-3'>
+                    <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>{t('orders.title')}</h1>
+                    {orders.length > 0 && (
+                        <span className='rounded-full bg-primary/10 px-3 py-0.5 text-sm font-semibold text-primary'>
+                            {t('orders.orderCount_one', { count: orders.length })}
+                        </span>
+                    )}
+                </div>
+                <p className='mt-2 text-sm text-muted-foreground'>{t('orders.subtitle')}</p>
+            </div>
+        </div>
+    );
+
+    if (isError) {
+        return (
+            <div className='bg-background'>
+                {pageHeader}
+                <div className='container mx-auto max-w-7xl px-4 py-8'>
+                    <ErrorState title={t('orders.failedToLoad')} description={t('orders.tryAgain')} iconSize='sm' />
+                </div>
+            </div>
+        );
+    }
+
+    if (orders.length === 0) {
+        return <OrdersEmpty />;
+    }
+
+    return (
+        <div className='bg-background'>
+            {pageHeader}
+            <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
+                <div className='space-y-4 sm:space-y-6'>
+                    {orders.map(order => {
+                        const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
+                        const orderDate = new Date(order.createdAt).toLocaleDateString(locale, {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
+
+                        const statusInfo = getDeliveryStatusInfo(order.deliveryStatus);
+                        const StatusIcon = statusInfo.icon;
+
+                        return (
+                            <Card
+                                key={order.id}
+                                className='overflow-hidden border border-border transition-all hover:border-primary/40 hover:shadow-md'
+                            >
+                                <CardHeader className='pb-4'>
+                                    <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+                                        <div className='flex-1'>
+                                            <CardTitle className='mb-2 text-lg sm:text-xl'>
+                                                {t('orders.orderNumber', { id: order.slugId })}
+                                            </CardTitle>
+                                            <div className='mb-2 sm:mb-0'>
+                                                <Badge
+                                                    variant='outline'
+                                                    className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
+                                                >
+                                                    <StatusIcon className='h-3 w-3' />
+                                                    {t(statusInfo.label)}
+                                                </Badge>
+                                            </div>
+                                            <CardDescription className='mt-2 flex items-center gap-2'>
+                                                <Clock className='h-3.5 w-3.5' />
+                                                {orderDate}
+                                            </CardDescription>
+                                        </div>
+                                        <div className='flex items-baseline gap-2 sm:flex-col sm:items-end sm:gap-1'>
+                                            <div className='text-xl sm:text-2xl font-bold'>
+                                                ${order.totalAmount.toFixed(2)}
+                                            </div>
+                                            <div className='text-xs text-muted-foreground'>
+                                                {t('cart.itemCount', { count: order.items.length })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className='pt-0'>
+                                    <div className='space-y-4'>
+                                        {/* Order Items with Images */}
+                                        <div className='space-y-3'>
+                                            {order.items.slice(0, 3).map(item => (
+                                                <div key={item.id} className='flex items-center gap-3'>
+                                                    <div className='relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border bg-muted'>
+                                                        <FoodImage
+                                                            src={item.imageUrl}
+                                                            alt={item.foodName}
+                                                            className='h-full w-full object-cover'
+                                                        />
+                                                    </div>
+                                                    <div className='flex-1 min-w-0'>
+                                                        <div className='font-medium text-sm truncate'>
+                                                            {item.foodName}
+                                                        </div>
+                                                        <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+                                                            <span>
+                                                                {t('orders.qty')} {item.quantity}
+                                                            </span>
+                                                            <span>•</span>
+                                                            <span className='font-medium text-foreground'>
+                                                                ${item.totalPrice.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {order.items.length > 3 && (
+                                                <div className='flex items-center gap-3'>
+                                                    <div className='text-sm font-medium text-muted-foreground'>
+                                                        {t('orders.moreItems', { count: order.items.length - 3 })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <Separator />
+
+                                        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                                            <div className='flex items-center gap-2 text-sm'>
+                                                <span className='text-muted-foreground'>{t('orders.payment')}</span>
+                                                <Badge variant='outline' className='font-medium capitalize'>
+                                                    {order.paymentMethod}
+                                                </Badge>
+                                            </div>
+                                            <Button variant='default' size='sm' className='w-full sm:w-auto' asChild>
+                                                <Link to={`/${ROUTES.ORDERS.DETAIL(order.slugId)}`}>
+                                                    {t('orders.viewDetails')}
+                                                    <ArrowRight className='ml-2 h-4 w-4' />
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default memo(Orders);

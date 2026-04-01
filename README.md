@@ -7,6 +7,7 @@ A modern web application built with React, TypeScript, and Vite. Notism provides
 - [Technologies](#-technologies)
 - [Getting Started](#-getting-started)
 - [Environment Variables](#️-environment-variables)
+- [Mocking Data](#-mocking-data)
 - [Documents](#-documents)
 
 ---
@@ -80,8 +81,19 @@ Create a `.env` file in the root directory and add the following variables:
 
 ```env
 VITE_API_BASE_URL=your_api_url_here
+VITE_ENABLE_MOCK=true  # Enable Mock Service Worker for development
 # Add other environment variables here
 ```
+
+---
+
+## 🎭 Mocking Data
+
+This project uses [Mock Service Worker (MSW)](https://mswjs.io/) to mock API endpoints during development.
+
+**Enable mocking** by setting `VITE_ENABLE_MOCK=true` in your `.env` file. The mock server intercepts API requests and returns responses from `mocks/data/foods.json`.
+
+**Customization:** Edit `mocks/data/foods.json` for data and `mocks/handlers.ts` for request handling. See `mocks/README.md` for details.
 
 ---
 

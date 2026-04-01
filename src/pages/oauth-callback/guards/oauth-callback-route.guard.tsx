@@ -2,7 +2,7 @@ import { Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { OAuthProviderType } from '@/apis';
-import { ROUTES } from '@/app/configs';
+import { ROUTES } from '@/app/constants';
 
 interface OAuthCallbackRouteGuardProps {
     children: React.ReactNode;
@@ -16,7 +16,7 @@ export const OAuthCallbackRouteGuard = ({ children }: OAuthCallbackRouteGuardPro
         toast.error('Invalid provider', {
             description: 'OAuth provider is missing.',
         });
-        return <Navigate to={`/${ROUTES.logIn}`} replace />;
+        return <Navigate to={`/${ROUTES.AUTH.LOGIN}`} replace />;
     }
 
     const code = searchParams.get('code');
@@ -26,14 +26,14 @@ export const OAuthCallbackRouteGuard = ({ children }: OAuthCallbackRouteGuardPro
         toast.error('Authentication failed', {
             description: `An error occurred during ${provider} authentication. Please try again.`,
         });
-        return <Navigate to={`/${ROUTES.logIn}`} replace />;
+        return <Navigate to={`/${ROUTES.AUTH.LOGIN}`} replace />;
     }
 
     if (!code) {
         toast.error('Invalid callback', {
             description: `No authorization code received from ${provider}.`,
         });
-        return <Navigate to={`/${ROUTES.logIn}`} replace />;
+        return <Navigate to={`/${ROUTES.AUTH.LOGIN}`} replace />;
     }
 
     return <>{children}</>;

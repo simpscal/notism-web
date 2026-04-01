@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import i18next from 'i18next';
 import { toast } from 'sonner';
 
-import { ROUTES } from '@/app/configs';
-import { API_ENDPOINTS, TOKEN_KEYS } from '@/app/constants';
+import { API_ENDPOINTS, ROUTES, TOKEN_KEYS } from '@/app/constants';
 import { tokenManagerUtils } from '@/app/utils';
 import { navigationUtils } from '@/app/utils/navigation.utils';
 
@@ -320,7 +320,7 @@ export class ApiClient {
 
     private _handleTokenError(): never {
         tokenManagerUtils.clearAll();
-        navigationUtils.navigate(`/${ROUTES.logIn}`, { replace: true });
+        navigationUtils.navigate(`/${ROUTES.AUTH.LOGIN}`, { replace: true });
 
         throw new Error('Unauthorized: please log in again');
     }
@@ -345,6 +345,15 @@ apiClient.addRequestInterceptor(async (config: RequestConfig) => {
     const xsrfToken = tokenManagerUtils.getXsrfToken();
     if (xsrfToken && config.headers) {
         config.headers[TOKEN_KEYS.XSRF_TOKEN] = xsrfToken;
+    }
+
+    return config;
+});
+
+// Accept-Language interceptor
+apiClient.addRequestInterceptor(async (config: RequestConfig) => {
+    if (config.headers) {
+        config.headers['Accept-Language'] = i18next.language || 'en';
     }
 
     return config;
@@ -380,33 +389,33 @@ apiClient.addResponseInterceptor(async (response: Response) => {
             // If parsing fails, use default message
         }
 
-        let errorTitle = 'Error';
+        let errorTitle = i18next.t('common:error');
         let errorDescription = errorMessage;
 
         switch (status) {
             case 400:
-                errorTitle = 'Bad Request';
+                errorTitle = i18next.t('common:apiErrors.badRequest');
                 errorDescription = errorMessage || 'The request was invalid. Please check your input.';
                 break;
             case 403:
-                errorTitle = 'Forbidden';
+                errorTitle = i18next.t('common:apiErrors.forbidden');
                 errorDescription = errorMessage || 'You do not have permission to perform this action.';
                 break;
             case 404:
-                errorTitle = 'Not Found';
+                errorTitle = i18next.t('common:apiErrors.notFound');
                 errorDescription = errorMessage || 'The requested resource was not found.';
                 break;
             case 500:
-                errorTitle = 'Server Error';
+                errorTitle = i18next.t('common:apiErrors.serverError');
                 errorDescription = errorMessage || 'An unexpected error occurred. Please try again later.';
                 break;
             case 503:
-                errorTitle = 'Service Unavailable';
+                errorTitle = i18next.t('common:apiErrors.serviceUnavailable');
                 errorDescription = errorMessage || 'The service is temporarily unavailable. Please try again later.';
                 break;
             default:
                 if (status >= 500) {
-                    errorTitle = 'Server Error';
+                    errorTitle = i18next.t('common:apiErrors.serverError');
                     errorDescription = errorMessage || 'An unexpected error occurred. Please try again later.';
                 }
                 break;

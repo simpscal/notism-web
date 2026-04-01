@@ -9,9 +9,7 @@ function Spinner({ size = 'md', className = '' }: { size: 'xs' | 'sm' | 'md' | '
 
     return (
         <div className={`${sizes[size]} ${className}`}>
-            <div
-                className={`animate-spin rounded-full border-2  border-blue-400 border-t-transparent h-full w-full`}
-            ></div>
+            <div className='h-full w-full animate-spin rounded-full border-2 border-primary border-t-transparent'></div>
         </div>
     );
 }
