@@ -76,6 +76,7 @@ function BankAccountForm({ initialData, isPending, isDisabled, onSubmit, onCance
                             <FieldLabel htmlFor='accountNumber'>{t('settings.payment.accountNumber')}</FieldLabel>
                             <Input
                                 id='accountNumber'
+                                placeholder={t('settings.payment.accountNumberPlaceholder')}
                                 disabled={isPending || isDisabled}
                                 {...form.register('accountNumber')}
                             />
@@ -90,6 +91,7 @@ function BankAccountForm({ initialData, isPending, isDisabled, onSubmit, onCance
                             </FieldLabel>
                             <Input
                                 id='accountHolderName'
+                                placeholder={t('settings.payment.accountHolderNamePlaceholder')}
                                 disabled={isPending || isDisabled}
                                 {...form.register('accountHolderName')}
                             />
