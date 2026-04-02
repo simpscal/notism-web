@@ -3,7 +3,8 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import BankAccountForm, { BankAccountFormValues, BankAccountViewModel } from './components/bank-account-form';
+import BankAccountForm, { BankAccountFormValues } from './components/settings-bank-account-form';
+import { BankAccountViewModel } from './models';
 
 import { paymentApi } from '@/apis';
 import { Card, CardContent } from '@/components/card';
