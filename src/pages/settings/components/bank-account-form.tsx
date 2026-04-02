@@ -4,13 +4,17 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { BankAccountViewModel } from '../models/bank-account.model';
-
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
 import Spinner from '@/components/spinner';
+
+export interface BankAccountViewModel {
+    bankCode: string | null;
+    accountNumber: string | null;
+    accountHolderName: string | null;
+}
 
 interface BankAccountFormProps {
     initialData: BankAccountViewModel | null;

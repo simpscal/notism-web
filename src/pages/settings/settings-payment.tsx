@@ -3,11 +3,12 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
+import BankAccountForm, { BankAccountFormValues, BankAccountViewModel } from './components/bank-account-form';
+
 import { paymentApi } from '@/apis';
 import { Card, CardContent } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
-import { BankAccountForm, BankAccountFormValues, BankAccountViewModel } from '@/features/payment';
 
 const BANK_ACCOUNT_QUERY_KEY = ['bank-account'];
 
