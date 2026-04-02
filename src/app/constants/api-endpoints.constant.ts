@@ -35,6 +35,9 @@ export const API_ENDPOINTS = {
         DETAIL: (id: string) => `orders/${id}`,
         CANCEL: (id: string) => `orders/${id}/cancel`,
     },
+    PAYMENT: {
+        BANK_ACCOUNT: 'payments/bank-account',
+    },
     ADMIN: {
         ORDERS: 'admin/orders',
         ORDERS_TABLE: 'admin/orders/table',
