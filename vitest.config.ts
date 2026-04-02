@@ -6,10 +6,11 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
-        setupFiles: ['./src/test/setup.ts'],
+        setupFiles: ['./test/setup.ts'],
     },
     resolve: {
         alias: {
+            '@/test': path.resolve(__dirname, './test'),
             '@': path.resolve(__dirname, './src'),
             '@/components': path.resolve(__dirname, './src/components'),
             '@/utils': path.resolve(__dirname, './src/app/utils'),

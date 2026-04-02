@@ -23,6 +23,7 @@
         "noUncheckedSideEffectImports": true,
 
         "paths": {
+            "@/test/*": ["./test/*"],
             "@/*": ["./src/*"],
             "@/components": ["./src/components"],
             "@/components/*": ["./src/components/*"],
@@ -38,5 +39,5 @@
             "@/contexts/*": ["./src/core/contexts/*"]
         }
     },
-    "include": ["src"]
+    "include": ["src", "test"]
 }
