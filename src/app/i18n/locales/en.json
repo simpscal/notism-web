@@ -296,7 +296,8 @@
     "settings": {
         "tabs": {
             "profile": "Profile",
-            "appearance": "Appearance"
+            "appearance": "Appearance",
+            "payment": "Payment"
         },
         "profile": {
             "title": "Profile Settings",
@@ -323,6 +324,27 @@
             "enterLastName": "Enter your last name",
             "imageTypeError": "Please select an image file",
             "imageSizeError": "Image size must be less than 5MB"
+        },
+        "payment": {
+            "title": "Payment Settings",
+            "bankAccount": "Bank Account",
+            "bankAccountDescription": "Configure your bank details to enable QR code payments for orders.",
+            "noAccount": "No bank account configured yet. Add your details to enable QR payments.",
+            "bankName": "Bank Name",
+            "bankNamePlaceholder": "e.g. Vietcombank",
+            "accountNumber": "Account Number",
+            "accountNumberPlaceholder": "e.g. 1234567890",
+            "accountHolderName": "Account Holder Name",
+            "accountHolderNamePlaceholder": "e.g. Nguyen Van A",
+            "saveChanges": "Save Changes",
+            "saving": "Saving...",
+            "cancel": "Cancel",
+            "saveSuccess": "Bank account saved successfully!",
+            "bankNameRequired": "Bank name is required",
+            "accountNumberRequired": "Account number is required",
+            "accountHolderNameRequired": "Account holder name is required",
+            "loadErrorTitle": "Failed to load bank account",
+            "loadErrorDescription": "An error occurred while loading your bank account details. Please try again."
         },
         "appearance": {
             "title": "Appearance",

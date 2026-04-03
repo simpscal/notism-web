@@ -15,6 +15,7 @@ export const ROUTES = {
         BASE: 'settings',
         PROFILE: 'settings/profile',
         APPEARANCE: 'settings/appearance',
+        PAYMENT: 'settings/payment',
     },
     CART: 'cart',
     PAYMENT: 'payment',

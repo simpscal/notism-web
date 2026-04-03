@@ -27,6 +27,7 @@ import { RequestResetPassword } from '@/pages/request-reset-password';
 import { ResetPassword } from '@/pages/reset-password';
 import { Settings } from '@/pages/settings';
 import SettingsAppearance from '@/pages/settings/settings-appearance';
+import SettingsPayment from '@/pages/settings/settings-payment';
 import SettingsProfile from '@/pages/settings/settings-profile';
 import { Signup } from '@/pages/signup';
 
@@ -73,6 +74,9 @@ function AppRoutes() {
                         <Route index element={<Navigate replace to='profile' />} />
                         <Route path='profile' element={<SettingsProfile />} />
                         <Route path='appearance' element={<SettingsAppearance />} />
+                        <Route element={<AdminRouteGuard />}>
+                            <Route path='payment' element={<SettingsPayment />} />
+                        </Route>
                     </Route>
                 </Route>
             </Route>
