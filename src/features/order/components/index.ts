@@ -2,3 +2,4 @@ export { default as OrderDeliveryStatusTimeline } from './order-delivery-status-
 export { default as OrderHeader } from './order-header';
 export { default as OrderCheckoutProgress } from './order-checkout-progress';
 export { default as OrderCheckoutTrustBar } from './order-checkout-trust-bar';
+export { default as OrderPaymentQr } from './order-payment-qr';

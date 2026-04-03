@@ -19,6 +19,7 @@ import {
     OrderCheckoutTrustBar,
     OrderDeliveryStatusTimeline,
     OrderHeader,
+    OrderPaymentQr,
 } from '@/features/order';
 
 function OrderDetail() {
@@ -111,6 +112,14 @@ function OrderDetail() {
                                     onTheWayCompletedAt: order.deliveryStatusTiming.onTheWayCompletedAt,
                                     deliveredCompletedAt: order.deliveryStatusTiming.deliveredCompletedAt,
                                 }}
+                            />
+
+                            <OrderPaymentQr
+                                paymentMethod={order.paymentMethod}
+                                paymentStatus={order.paymentStatus}
+                                paymentQr={order.paymentQr}
+                                slugId={order.slugId}
+                                paidAt={order.paidAt}
                             />
 
                             <Card>
