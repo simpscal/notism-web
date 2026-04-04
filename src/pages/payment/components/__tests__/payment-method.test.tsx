@@ -8,45 +8,28 @@ import { renderWithProviders } from '@/test/utils';
 
 describe('PaymentMethod', () => {
     it('renders Cash on Delivery option always', () => {
-        renderWithProviders(
-            <PaymentMethod
-                value={PaymentMethodEnum.CashOnDelivery}
-                onValueChange={() => {}}
-                bankAccountConfigured={false}
-            />
-        );
+        renderWithProviders(<PaymentMethod value={PaymentMethodEnum.CashOnDelivery} onValueChange={() => {}} />);
 
         expect(screen.getByText('Cash on Delivery')).toBeInTheDocument();
     });
 
-    it('renders Banking option when bankAccountConfigured is true', () => {
-        renderWithProviders(
-            <PaymentMethod
-                value={PaymentMethodEnum.CashOnDelivery}
-                onValueChange={() => {}}
-                bankAccountConfigured={true}
-            />
-        );
+    it('renders Banking option always', () => {
+        renderWithProviders(<PaymentMethod value={PaymentMethodEnum.CashOnDelivery} onValueChange={() => {}} />);
 
         expect(screen.getByText('Banking')).toBeInTheDocument();
         expect(screen.getByText('Online banking transfer')).toBeInTheDocument();
     });
 
-    it('does NOT render Banking option when bankAccountConfigured is false', () => {
-        renderWithProviders(
-            <PaymentMethod
-                value={PaymentMethodEnum.CashOnDelivery}
-                onValueChange={() => {}}
-                bankAccountConfigured={false}
-            />
-        );
-
-        expect(screen.queryByText('Banking')).not.toBeInTheDocument();
-    });
-
-    it('does NOT render Banking option when bankAccountConfigured is undefined', () => {
+    it('renders both payment options when value is Cash on Delivery', () => {
         renderWithProviders(<PaymentMethod value={PaymentMethodEnum.CashOnDelivery} onValueChange={() => {}} />);
 
-        expect(screen.queryByText('Banking')).not.toBeInTheDocument();
+        expect(screen.getByText('Cash on Delivery')).toBeInTheDocument();
+        expect(screen.getByText('Banking')).toBeInTheDocument();
+    });
+
+    it('highlights Banking when selected', () => {
+        renderWithProviders(<PaymentMethod value={PaymentMethodEnum.Banking} onValueChange={() => {}} />);
+
+        expect(screen.getByText('Banking')).toBeInTheDocument();
     });
 });

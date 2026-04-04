@@ -11,10 +11,9 @@ import { PaymentMethodEnum } from '@/features/order';
 interface PaymentMethodProps {
     value: PaymentMethodEnum;
     onValueChange: (value: string) => void;
-    bankAccountConfigured?: boolean;
 }
 
-function PaymentMethodComponent({ value, onValueChange, bankAccountConfigured }: PaymentMethodProps) {
+function PaymentMethodComponent({ value, onValueChange }: PaymentMethodProps) {
     const { t } = useTranslation();
     return (
         <Card>
@@ -53,34 +52,32 @@ function PaymentMethodComponent({ value, onValueChange, bankAccountConfigured }:
                             </div>
                         </Label>
                     </div>
-                    {bankAccountConfigured ? (
+                    <div
+                        className={cn(
+                            'flex items-center space-x-3 rounded-lg border p-4 transition-colors',
+                            value === PaymentMethodEnum.Banking
+                                ? 'border-primary bg-primary/5'
+                                : 'hover:border-primary/40'
+                        )}
+                    >
+                        <RadioGroupItem value={PaymentMethodEnum.Banking} id={PaymentMethodEnum.Banking} />
                         <div
                             className={cn(
-                                'flex items-center space-x-3 rounded-lg border p-4 transition-colors',
+                                'flex size-9 shrink-0 items-center justify-center rounded-full',
                                 value === PaymentMethodEnum.Banking
-                                    ? 'border-primary bg-primary/5'
-                                    : 'hover:border-primary/40'
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'bg-muted text-muted-foreground'
                             )}
                         >
-                            <RadioGroupItem value={PaymentMethodEnum.Banking} id={PaymentMethodEnum.Banking} />
-                            <div
-                                className={cn(
-                                    'flex size-9 shrink-0 items-center justify-center rounded-full',
-                                    value === PaymentMethodEnum.Banking
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'bg-muted text-muted-foreground'
-                                )}
-                            >
-                                <CreditCard className='h-5 w-5' />
-                            </div>
-                            <Label htmlFor={PaymentMethodEnum.Banking} className='flex-1 cursor-pointer font-normal'>
-                                <div className='flex flex-col'>
-                                    <span className='font-semibold'>{t('payment.banking')}</span>
-                                    <span className='text-sm text-muted-foreground'>{t('payment.onlineBanking')}</span>
-                                </div>
-                            </Label>
+                            <CreditCard className='h-5 w-5' />
                         </div>
-                    ) : null}
+                        <Label htmlFor={PaymentMethodEnum.Banking} className='flex-1 cursor-pointer font-normal'>
+                            <div className='flex flex-col'>
+                                <span className='font-semibold'>{t('payment.banking')}</span>
+                                <span className='text-sm text-muted-foreground'>{t('payment.onlineBanking')}</span>
+                            </div>
+                        </Label>
+                    </div>
                 </RadioGroup>
             </CardContent>
         </Card>
