@@ -51,6 +51,7 @@ export interface OrderResponseModel {
     updatedAt: string;
     items: OrderItemResponseModel[];
     deliveryStatusTiming: DeliveryStatusTimingResponseModel;
+    bankAccountConfigured: boolean;
 }
 
 export interface GetOrdersResponseModel {

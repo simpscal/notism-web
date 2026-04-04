@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
 
-import { orderApi } from '@/apis';
+import { orderApi, paymentApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
@@ -31,6 +31,13 @@ function Payment() {
     const totalPrice = useAppSelector(selectSelectedCartTotalPrice);
     const isInitialized = useAppSelector(selectCartIsInitialized);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
+
+    const { data: bankAccount } = useQuery({
+        queryKey: ['bankAccount'],
+        queryFn: () => paymentApi.getBankAccount(),
+    });
+
+    const bankAccountConfigured = bankAccount !== null;
 
     const { mutate: createOrder, isPending: isCreatingOrder } = useMutation({
         mutationFn: (data: { paymentMethod: string; cartItemIds: string[] }) => orderApi.create(data),
@@ -115,7 +122,11 @@ function Payment() {
                 <div className='grid gap-8 lg:grid-cols-3'>
                     {/* Payment Method Selection */}
                     <div className='lg:col-span-2 space-y-6'>
-                        <PaymentMethod value={paymentMethod} onValueChange={handlePaymentMethodChange} />
+                        <PaymentMethod
+                            value={paymentMethod}
+                            onValueChange={handlePaymentMethodChange}
+                            bankAccountConfigured={bankAccountConfigured}
+                        />
                         <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
                     </div>
 
