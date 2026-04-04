@@ -24,6 +24,7 @@ A modern web application built with React, TypeScript, and Vite. Notism provides
 - TanStack Query
 - Zod
 - Date-fns
+- i18next (en/vi)
 
 ---
 
@@ -94,6 +95,18 @@ This project uses [Mock Service Worker (MSW)](https://mswjs.io/) to mock API end
 **Enable mocking** by setting `VITE_ENABLE_MOCK=true` in your `.env` file. The mock server intercepts API requests and returns responses from `mocks/data/foods.json`.
 
 **Customization:** Edit `mocks/data/foods.json` for data and `mocks/handlers.ts` for request handling. See `mocks/README.md` for details.
+
+---
+
+## 🌐 Internationalization
+
+This project supports multiple languages via **i18next**:
+
+- **Supported locales**: English (`en`), Vietnamese (`vi`)
+- **Translation files**: `src/app/i18n/locales/`
+- **Language detection**: Reads from `localStorage`, falls back to browser language, then `en`
+
+To add or update translations, edit the JSON files in `src/app/i18n/locales/` and ensure all keys are present in every locale file.
 
 ---
 

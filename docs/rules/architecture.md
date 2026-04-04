@@ -124,6 +124,7 @@ graph TD
 │   ├── 📁 configs/  # App, API, routes configuration
 │   ├── 📁 constants/# Application constants
 │   ├── 📁 enums/    # TypeScript enums
+│   ├── 📁 i18n/     # i18next setup and locale translation files (en, vi)
 │   ├── 📁 utils/    # Utility functions
 │   └── 📁 styles/   # Global styles
 │
@@ -216,13 +217,14 @@ Centralized location for all API-related code including the API client, API func
 
 ### App Folder
 
-Contains application-wide configurations, static assets, constants, enums, and utilities.
+Contains application-wide configurations, static assets, constants, enums, utilities, and i18n setup.
 
 **Contents:**
 
 - **configs/**: Application, API, and routes configuration
 - **constants/**: Application-wide constants (API endpoints, keys, etc.)
 - **enums/**: TypeScript enums for type-safe values
+- **i18n/**: i18next initialization (`i18n.ts`) and locale translation files (`locales/en.json`, `locales/vi.json`)
 - **utils/**: Pure utility functions (no React dependencies)
 - **assets/**: Static assets (images, fonts, icons)
 - **styles/**: Global CSS styles

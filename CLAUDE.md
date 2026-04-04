@@ -59,6 +59,7 @@ ESLint enforces: no importing directly from `@/apis/models/` — use viewmodels 
 - **Path aliases**: `@/` maps to `src/`. Additional shortcuts: `@/components`, `@/utils`, `@/enums`, `@/constants`, `@/hooks`, `@/contexts`.
 - **MSW mocking**: Enabled via `VITE_ENABLE_MOCK=true` env var. Mock handlers in `mocks/` directory.
 - **Guards**: Route guards in `src/core/guards/` handle auth, admin, and reset-password access control.
+- **i18n** (`src/app/i18n/`): i18next with `react-i18next`. Supports English (`en`) and Vietnamese (`vi`). Language is detected from `localStorage` then browser, with `en` as fallback. Use `useTranslation` hook and `t()` in components — never hardcode user-facing strings. Locale files: `src/app/i18n/locales/{en,vi}.json`.
 
 ## Code Conventions
 
@@ -89,7 +90,7 @@ Follow the detailed rules in `docs/rules/`. Key points:
 
 ### Key Principles
 
-- **No React in `app` layer** — pure TypeScript only
+- **No React in `app` layer** — pure TypeScript only; exception: `src/app/i18n/i18n.ts` uses `initReactI18next` as a bootstrap adapter only
 - **No API calls in store** — use features/hooks for side effects
 - **No business logic in components** — use features/hooks
 - **Import order enforced**: builtin → external → internal → parent → sibling → index (alphabetized, with blank lines between groups)
