@@ -207,6 +207,20 @@
             "title": "Your cart is empty",
             "description": "Add items to your cart before proceeding to payment.",
             "browseFoods": "Browse Foods"
+        },
+        "qr": {
+            "confirmed": "Payment Confirmed",
+            "completePayment": "Complete Your Payment",
+            "scanDescription": "Scan the QR code with your Vietnamese bank app to pay",
+            "unavailableTitle": "Payment Details Unavailable",
+            "unavailableDescription": "The storer has not yet configured bank account details.",
+            "qrUnavailable": "QR Unavailable",
+            "bank": "Bank",
+            "accountNumber": "Account Number",
+            "accountHolder": "Account Holder",
+            "totalAmount": "Total Amount",
+            "includeReference": "Include reference",
+            "inTransferDescription": "in your transfer description"
         }
     },
     "orders": {

@@ -20,6 +20,7 @@ import {
     OrderDeliveryStatusTimeline,
     OrderHeader,
 } from '@/features/order';
+import { PaymentQr } from '@/features/payment';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
@@ -111,6 +112,14 @@ function OrderDetail() {
                                     onTheWayCompletedAt: order.deliveryStatusTiming.onTheWayCompletedAt,
                                     deliveredCompletedAt: order.deliveryStatusTiming.deliveredCompletedAt,
                                 }}
+                            />
+
+                            <PaymentQr
+                                paymentMethod={order.paymentMethod}
+                                paymentStatus={order.paymentStatus}
+                                paymentQr={order.paymentQr}
+                                slugId={order.slugId}
+                                paidAt={order.paidAt}
                             />
 
                             <Card>
