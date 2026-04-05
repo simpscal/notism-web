@@ -12,6 +12,7 @@ import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
+import { PaymentStatusEnum } from '@/features/payment';
 
 function AdminOrderDetail() {
     const { t, i18n } = useTranslation();
@@ -32,6 +33,17 @@ function AdminOrderDetail() {
     const orderDate = useMemo(() => {
         if (!order) return '';
         return new Date(order.createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }, [order]);
+
+    const paidAtDate = useMemo(() => {
+        if (!order?.paidAt) return '';
+        return new Date(order.paidAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -69,6 +81,8 @@ function AdminOrderDetail() {
             </div>
         );
     }
+
+    const isPaid = order.paymentStatus === PaymentStatusEnum.Paid;
 
     return (
         <div className='container mx-auto px-4 py-8'>
@@ -127,6 +141,25 @@ function AdminOrderDetail() {
                                 </div>
                             </CardContent>
                         </Card>
+
+                        {isPaid && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Payment Details</CardTitle>
+                                </CardHeader>
+                                <CardContent className='space-y-2'>
+                                    <div className='flex justify-between text-sm'>
+                                        <span className='text-muted-foreground'>Amount Paid</span>
+                                        <span className='font-medium'>${order.totalAmount.toFixed(2)}</span>
+                                    </div>
+                                    <Separator />
+                                    <div className='flex justify-between text-sm'>
+                                        <span className='text-muted-foreground'>Payment Confirmed</span>
+                                        <span className='font-medium'>{paidAtDate}</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
                 </div>
             </div>

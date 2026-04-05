@@ -32,6 +32,7 @@ export const adminApi = {
         if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
         if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
         if (params?.keyword) searchParams.append('keyword', params.keyword);
+        if (params?.paymentStatus) searchParams.append('paymentStatus', params.paymentStatus);
         const queryString = searchParams.toString();
         return apiClient.get(`${API_ENDPOINTS.ADMIN.ORDERS_TABLE}${queryString ? `?${queryString}` : ''}`);
     },
@@ -43,6 +44,7 @@ export const adminApi = {
         searchParams.append('status', params.status);
         if (params.skip !== undefined) searchParams.append('skip', params.skip.toString());
         if (params.take !== undefined) searchParams.append('take', params.take.toString());
+        if (params.paymentStatus) searchParams.append('paymentStatus', params.paymentStatus);
         return apiClient.get(`${API_ENDPOINTS.ADMIN.ORDERS_KANBAN}?${searchParams.toString()}`);
     },
 

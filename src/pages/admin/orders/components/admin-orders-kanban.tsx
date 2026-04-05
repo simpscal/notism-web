@@ -14,19 +14,21 @@ import { DELIVERY_STATUS } from '@/features/order';
 
 interface AdminOrdersKanbanProps {
     onOrderClick: (slugId: string) => void;
+    paymentStatus?: string;
 }
 
-function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
+function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanProps) {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
 
     const placedQuery = useInfiniteQuery({
-        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[0].key] as const,
+        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[0].key, { paymentStatus }] as const,
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[0].key,
                 skip: pageParam,
                 take: PAGE_SIZE,
+                paymentStatus,
             }),
         getNextPageParam: (lastPage, allPages) => {
             const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
@@ -38,12 +40,13 @@ function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
     });
 
     const preparingQuery = useInfiniteQuery({
-        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[1].key] as const,
+        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[1].key, { paymentStatus }] as const,
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[1].key,
                 skip: pageParam,
                 take: PAGE_SIZE,
+                paymentStatus,
             }),
         getNextPageParam: (lastPage, allPages) => {
             const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
@@ -55,12 +58,13 @@ function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
     });
 
     const onTheWayQuery = useInfiniteQuery({
-        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[2].key] as const,
+        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[2].key, { paymentStatus }] as const,
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[2].key,
                 skip: pageParam,
                 take: PAGE_SIZE,
+                paymentStatus,
             }),
         getNextPageParam: (lastPage, allPages) => {
             const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
@@ -72,12 +76,13 @@ function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
     });
 
     const deliveredQuery = useInfiniteQuery({
-        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[3].key] as const,
+        queryKey: ['admin', 'orders', 'kanban', DELIVERY_STATUS[3].key, { paymentStatus }] as const,
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[3].key,
                 skip: pageParam,
                 take: PAGE_SIZE,
+                paymentStatus,
             }),
         getNextPageParam: (lastPage, allPages) => {
             const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
@@ -105,7 +110,7 @@ function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
 
             // Remove the order from the source column
             queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(
-                ['admin', 'orders', 'kanban', sourceColumnId] as const,
+                ['admin', 'orders', 'kanban', sourceColumnId, { paymentStatus }] as const,
                 oldData => {
                     if (!oldData) return oldData;
 
@@ -124,7 +129,7 @@ function AdminOrdersKanban({ onOrderClick }: AdminOrdersKanbanProps) {
 
             // Add the order to the destination column
             queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(
-                ['admin', 'orders', 'kanban', targetColumnId] as const,
+                ['admin', 'orders', 'kanban', targetColumnId, { paymentStatus }] as const,
                 oldData => {
                     if (!oldData) {
                         return {

@@ -8,6 +8,8 @@ export interface AdminOrderDetailResponseModel {
     totalAmount: number;
     paymentMethod: string;
     deliveryStatus: string;
+    paymentStatus: string;
+    paidAt: string | null;
     createdAt: string;
     updatedAt: string;
     items: OrderItemResponseModel[];
@@ -22,6 +24,7 @@ export interface AdminOrderResponseModel {
     userName: string;
     totalAmount: number;
     deliveryStatus: string;
+    paymentStatus: string;
     createdAt: string;
     updatedAt: string;
     totalItems: number;
@@ -76,6 +79,7 @@ export interface GetAdminOrdersRequestModel {
     sortBy?: string;
     sortOrder?: SortOrderEnum;
     keyword?: string;
+    paymentStatus?: string;
 }
 
 export interface GetAdminOrdersResponseModel {
@@ -87,6 +91,7 @@ export interface GetAdminOrdersForKanbanRequestModel {
     status: string;
     skip?: number;
     take?: number;
+    paymentStatus?: string;
 }
 
 export interface GetAdminOrdersForKanbanResponseModel {

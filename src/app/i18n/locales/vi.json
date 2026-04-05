@@ -262,6 +262,11 @@
             "delivered": "Đã giao",
             "cancelled": "Đã hủy"
         },
+        "paymentStatuses": {
+            "all": "Tất cả",
+            "paid": "Đã thanh toán",
+            "unpaid": "Chờ thanh toán"
+        },
         "checkout": {
             "progress": {
                 "cart": "Giỏ hàng",

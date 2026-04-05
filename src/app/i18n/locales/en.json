@@ -262,6 +262,11 @@
             "delivered": "Delivered",
             "cancelled": "Cancelled"
         },
+        "paymentStatuses": {
+            "all": "All",
+            "paid": "Paid",
+            "unpaid": "Pending Payment"
+        },
         "checkout": {
             "progress": {
                 "cart": "Cart",
