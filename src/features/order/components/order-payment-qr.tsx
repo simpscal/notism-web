@@ -1,5 +1,6 @@
 import { CheckCircle2 } from 'lucide-react';
 import { memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { PaymentMethodEnum, PaymentStatusEnum } from '../enums';
 import { OrderPaymentQrViewModel } from '../models';
@@ -33,6 +34,7 @@ interface OrderPaymentQrProps {
 }
 
 function OrderPaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: OrderPaymentQrProps) {
+    const { t } = useTranslation();
     const [imgError, setImgError] = useState(false);
 
     if (paymentMethod.toLowerCase() !== PaymentMethodEnum.Banking) {
@@ -46,7 +48,7 @@ function OrderPaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidA
             <Card className='border-success/30 bg-success/5' role='status'>
                 <CardContent className='flex flex-col items-center text-center gap-3 py-6'>
                     <CheckCircle2 className='text-success h-8 w-8' aria-hidden='true' />
-                    <CardTitle>Payment Confirmed</CardTitle>
+                    <CardTitle>{t('payment.qr.confirmed')}</CardTitle>
                     {formattedPaidAt && <p className='text-muted-foreground text-sm'>{formattedPaidAt}</p>}
                 </CardContent>
             </Card>
@@ -59,8 +61,8 @@ function OrderPaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidA
                 <CardContent>
                     <ErrorState
                         iconSize='sm'
-                        title='Payment Details Unavailable'
-                        description='The storer has not yet configured bank account details.'
+                        title={t('payment.qr.unavailableTitle')}
+                        description={t('payment.qr.unavailableDescription')}
                     />
                 </CardContent>
             </Card>
@@ -72,14 +74,14 @@ function OrderPaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidA
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Complete Your Payment</CardTitle>
-                <CardDescription>Scan the QR code with your Vietnamese bank app to pay</CardDescription>
+                <CardTitle>{t('payment.qr.completePayment')}</CardTitle>
+                <CardDescription>{t('payment.qr.scanDescription')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-4'>
                 <div className='flex justify-center'>
                     {imgError ? (
                         <div className='w-full'>
-                            <ErrorState iconSize='sm' title='QR Unavailable' />
+                            <ErrorState iconSize='sm' title={t('payment.qr.qrUnavailable')} />
                             <p className='text-center text-sm text-muted-foreground'>
                                 <span className='font-medium text-foreground'>{paymentQr.bankCode}</span>
                                 {' — '}
@@ -100,25 +102,26 @@ function OrderPaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidA
 
                 <div className='space-y-1'>
                     <div className='flex justify-between'>
-                        <span className='text-muted-foreground text-sm'>Bank</span>
+                        <span className='text-muted-foreground text-sm'>{t('payment.qr.bank')}</span>
                         <span className='text-foreground font-medium'>{paymentQr.bankCode}</span>
                     </div>
                     <div className='flex justify-between'>
-                        <span className='text-muted-foreground text-sm'>Account Number</span>
+                        <span className='text-muted-foreground text-sm'>{t('payment.qr.accountNumber')}</span>
                         <span className='text-foreground font-medium'>{paymentQr.accountNumber}</span>
                     </div>
                     <div className='flex justify-between'>
-                        <span className='text-muted-foreground text-sm'>Account Holder</span>
+                        <span className='text-muted-foreground text-sm'>{t('payment.qr.accountHolder')}</span>
                         <span className='text-foreground font-medium'>{paymentQr.accountHolderName}</span>
                     </div>
                     <div className='flex justify-between'>
-                        <span className='text-muted-foreground text-sm'>Total Amount</span>
+                        <span className='text-muted-foreground text-sm'>{t('payment.qr.totalAmount')}</span>
                         <span className='text-foreground font-bold'>{formatVndAmount(paymentQr.amount)}</span>
                     </div>
                 </div>
 
                 <p className='text-muted-foreground text-xs'>
-                    Include reference <span className='font-medium'>{slugId}</span> in your transfer description
+                    {t('payment.qr.includeReference')} <span className='font-medium'>{slugId}</span>{' '}
+                    {t('payment.qr.inTransferDescription')}
                 </p>
             </CardContent>
         </Card>

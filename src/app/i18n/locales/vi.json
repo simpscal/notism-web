@@ -207,6 +207,20 @@
             "title": "Giỏ hàng của bạn trống",
             "description": "Thêm mục vào giỏ hàng của bạn trước khi tiếp tục thanh toán.",
             "browseFoods": "Duyệt thực phẩm"
+        },
+        "qr": {
+            "confirmed": "Đã thanh toán",
+            "completePayment": "Hoàn tất thanh toán",
+            "scanDescription": "Quét mã QR bằng ứng dụng ngân hàng Việt Nam để thanh toán",
+            "unavailableTitle": "Không có thông tin thanh toán",
+            "unavailableDescription": "Người bán chưa cấu hình thông tin tài khoản ngân hàng.",
+            "qrUnavailable": "Mã QR không khả dụng",
+            "bank": "Ngân hàng",
+            "accountNumber": "Số tài khoản",
+            "accountHolder": "Chủ tài khoản",
+            "totalAmount": "Tổng số tiền",
+            "includeReference": "Ghi nội dung chuyển khoản",
+            "inTransferDescription": "trong mô tả chuyển khoản"
         }
     },
     "orders": {
