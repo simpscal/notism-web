@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest';
 
 import PaymentQr from '../payment-qr';
 
+import i18n from '@/app/i18n/i18n';
 import { renderWithProviders } from '@/test/utils';
+
+const t = (key: string) => i18n.t(key);
 
 const UNPAID_BANKING_ORDER_WITH_QR = {
     paymentMethod: 'banking',
@@ -52,8 +55,8 @@ describe('PaymentQr', () => {
     it('renders QR payment card for unpaid banking order with bank configured', () => {
         renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
-        expect(screen.getByText('Complete Your Payment')).toBeInTheDocument();
-        expect(screen.getByText('Scan the QR code with your Vietnamese bank app to pay')).toBeInTheDocument();
+        expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
+        expect(screen.getByText(t('payment.qr.scanDescription'))).toBeInTheDocument();
 
         const qrImg = screen.getByAltText('VietQR payment code for order ABC123');
         expect(qrImg).toBeInTheDocument();
@@ -74,7 +77,7 @@ describe('PaymentQr', () => {
     it('renders order reference note', () => {
         renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
-        expect(screen.getByText(/Include reference/)).toBeInTheDocument();
+        expect(screen.getByText(new RegExp(t('payment.qr.includeReference')))).toBeInTheDocument();
         expect(screen.getByText('ABC123')).toBeInTheDocument();
     });
 
@@ -84,14 +87,14 @@ describe('PaymentQr', () => {
         const qrImg = screen.getByAltText('VietQR payment code for order ABC123');
         fireEvent.error(qrImg);
 
-        expect(screen.getByText('QR Unavailable')).toBeInTheDocument();
+        expect(screen.getByText(t('payment.qr.qrUnavailable'))).toBeInTheDocument();
         expect(screen.queryByAltText('VietQR payment code for order ABC123')).not.toBeInTheDocument();
     });
 
     it('renders Payment Confirmed banner for paid banking order', () => {
         renderWithProviders(<PaymentQr {...PAID_BANKING_ORDER} />);
 
-        expect(screen.getByText('Payment Confirmed')).toBeInTheDocument();
+        expect(screen.getByText(t('payment.qr.confirmed'))).toBeInTheDocument();
         const card = screen.getByRole('status');
         expect(card).toBeInTheDocument();
     });
@@ -99,7 +102,7 @@ describe('PaymentQr', () => {
     it('renders Payment Details Unavailable error state when bank is not configured', () => {
         renderWithProviders(<PaymentQr {...BANKING_ORDER_NO_BANK_CONFIG} />);
 
-        expect(screen.getByText('Payment Details Unavailable')).toBeInTheDocument();
-        expect(screen.getByText('The storer has not yet configured bank account details.')).toBeInTheDocument();
+        expect(screen.getByText(t('payment.qr.unavailableTitle'))).toBeInTheDocument();
+        expect(screen.getByText(t('payment.qr.unavailableDescription'))).toBeInTheDocument();
     });
 });
