@@ -3,11 +3,11 @@ import { memo } from 'react';
 import { Badge } from '@/components/badge';
 import { PaymentStatusEnum } from '@/features/payment';
 
-interface OrderPaymentStatusBadgeProps {
-    paymentStatus: string;
+interface PaymentStatusBadgeProps {
+    paymentStatus: PaymentStatusEnum;
 }
 
-function OrderPaymentStatusBadge({ paymentStatus }: OrderPaymentStatusBadgeProps) {
+function PaymentStatusBadge({ paymentStatus }: PaymentStatusBadgeProps) {
     if (paymentStatus === PaymentStatusEnum.Paid) {
         return <Badge variant='success'>Paid</Badge>;
     }
@@ -15,4 +15,4 @@ function OrderPaymentStatusBadge({ paymentStatus }: OrderPaymentStatusBadgeProps
     return <Badge variant='secondary'>Pending Payment</Badge>;
 }
 
-export default memo(OrderPaymentStatusBadge);
+export default memo(PaymentStatusBadge);

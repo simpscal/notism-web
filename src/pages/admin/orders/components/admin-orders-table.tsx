@@ -25,7 +25,8 @@ import {
     TablePagination,
     useTableSort,
 } from '@/components/table';
-import { DELIVERY_STATUS, OrderPaymentStatusBadge } from '@/features/order';
+import { DELIVERY_STATUS } from '@/features/order';
+import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
 
 const EMPTY_STATE_COL_SPAN = 8;
 
@@ -230,7 +231,9 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
                                             </Select>
                                         </TableCell>
                                         <TableCell>
-                                            <OrderPaymentStatusBadge paymentStatus={order.paymentStatus} />
+                                            <PaymentStatusBadge
+                                                paymentStatus={order.paymentStatus as PaymentStatusEnum}
+                                            />
                                         </TableCell>
                                         <TableCell className='text-right'>
                                             <DropdownMenu>
