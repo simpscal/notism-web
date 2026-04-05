@@ -2,16 +2,17 @@ import { CheckCircle2 } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PaymentMethodEnum, PaymentStatusEnum } from '../enums';
-import { OrderPaymentQrViewModel } from '../models';
+import { PaymentStatusEnum } from '../enums';
+import { PaymentQrViewModel } from '../models';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
+import { PaymentMethodEnum } from '@/features/order';
 
 const VIETQR_BASE_URL = 'https://img.vietqr.io/image';
 
-function buildVietQrUrl(paymentQr: OrderPaymentQrViewModel): string {
+function buildVietQrUrl(paymentQr: PaymentQrViewModel): string {
     const { bankCode, accountNumber, amount, orderReference, accountHolderName } = paymentQr;
     const params = new URLSearchParams({
         amount: String(amount),
@@ -25,15 +26,15 @@ function formatVndAmount(amount: number): string {
     return amount.toLocaleString('vi-VN') + ' ₫';
 }
 
-interface OrderPaymentQrProps {
+interface PaymentQrProps {
     paymentMethod: string;
     paymentStatus: string;
-    paymentQr: OrderPaymentQrViewModel | null;
+    paymentQr: PaymentQrViewModel | null;
     slugId: string;
     paidAt: string | null;
 }
 
-function OrderPaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: OrderPaymentQrProps) {
+function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: PaymentQrProps) {
     const { t } = useTranslation();
     const [imgError, setImgError] = useState(false);
 
@@ -128,4 +129,4 @@ function OrderPaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidA
     );
 }
 
-export default memo(OrderPaymentQr);
+export default memo(PaymentQr);

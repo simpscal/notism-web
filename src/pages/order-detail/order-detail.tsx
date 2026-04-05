@@ -19,8 +19,8 @@ import {
     OrderCheckoutTrustBar,
     OrderDeliveryStatusTimeline,
     OrderHeader,
-    OrderPaymentQr,
 } from '@/features/order';
+import { PaymentQr } from '@/features/payment';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
@@ -114,7 +114,7 @@ function OrderDetail() {
                                 }}
                             />
 
-                            <OrderPaymentQr
+                            <PaymentQr
                                 paymentMethod={order.paymentMethod}
                                 paymentStatus={order.paymentStatus}
                                 paymentQr={order.paymentQr}

@@ -1,7 +1,7 @@
 import { screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import OrderPaymentQr from '../order-payment-qr';
+import PaymentQr from '../payment-qr';
 
 import { renderWithProviders } from '@/test/utils';
 
@@ -43,14 +43,14 @@ const BANKING_ORDER_NO_BANK_CONFIG = {
     paidAt: null,
 };
 
-describe('OrderPaymentQr', () => {
+describe('PaymentQr', () => {
     it('renders nothing for COD orders', () => {
-        const { container } = renderWithProviders(<OrderPaymentQr {...COD_ORDER} />);
+        const { container } = renderWithProviders(<PaymentQr {...COD_ORDER} />);
         expect(container.firstChild).toBeNull();
     });
 
     it('renders QR payment card for unpaid banking order with bank configured', () => {
-        renderWithProviders(<OrderPaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
+        renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
         expect(screen.getByText('Complete Your Payment')).toBeInTheDocument();
         expect(screen.getByText('Scan the QR code with your Vietnamese bank app to pay')).toBeInTheDocument();
@@ -63,7 +63,7 @@ describe('OrderPaymentQr', () => {
     });
 
     it('renders bank details in QR payment card', () => {
-        renderWithProviders(<OrderPaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
+        renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
         expect(screen.getByText('VCB')).toBeInTheDocument();
         expect(screen.getByText('1234567890')).toBeInTheDocument();
@@ -72,14 +72,14 @@ describe('OrderPaymentQr', () => {
     });
 
     it('renders order reference note', () => {
-        renderWithProviders(<OrderPaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
+        renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
         expect(screen.getByText(/Include reference/)).toBeInTheDocument();
         expect(screen.getByText('ABC123')).toBeInTheDocument();
     });
 
     it('swaps QR image for ErrorState fallback on image load error', () => {
-        renderWithProviders(<OrderPaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
+        renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
         const qrImg = screen.getByAltText('VietQR payment code for order ABC123');
         fireEvent.error(qrImg);
@@ -89,7 +89,7 @@ describe('OrderPaymentQr', () => {
     });
 
     it('renders Payment Confirmed banner for paid banking order', () => {
-        renderWithProviders(<OrderPaymentQr {...PAID_BANKING_ORDER} />);
+        renderWithProviders(<PaymentQr {...PAID_BANKING_ORDER} />);
 
         expect(screen.getByText('Payment Confirmed')).toBeInTheDocument();
         const card = screen.getByRole('status');
@@ -97,7 +97,7 @@ describe('OrderPaymentQr', () => {
     });
 
     it('renders Payment Details Unavailable error state when bank is not configured', () => {
-        renderWithProviders(<OrderPaymentQr {...BANKING_ORDER_NO_BANK_CONFIG} />);
+        renderWithProviders(<PaymentQr {...BANKING_ORDER_NO_BANK_CONFIG} />);
 
         expect(screen.getByText('Payment Details Unavailable')).toBeInTheDocument();
         expect(screen.getByText('The storer has not yet configured bank account details.')).toBeInTheDocument();

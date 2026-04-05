@@ -1,4 +1,4 @@
-export interface OrderPaymentQrViewModel {
+export interface PaymentQrViewModel {
     bankCode: string;
     accountNumber: string;
     accountHolderName: string;
