@@ -3,6 +3,7 @@ import { memo, useCallback } from 'react';
 import { AdminOrderResponseModel } from '@/apis/models';
 import { Badge } from '@/components/badge';
 import { Card, CardContent } from '@/components/card';
+import { OrderPaymentStatusBadge } from '@/features/order';
 
 interface AdminOrderCardProps {
     order: AdminOrderResponseModel;
@@ -24,6 +25,7 @@ function AdminOrderCard({ order, onOrderClick }: AdminOrderCardProps) {
                             ${order.totalAmount.toFixed(2)}
                         </Badge>
                     </div>
+                    <OrderPaymentStatusBadge paymentStatus={order.paymentStatus} />
                     <div className='text-xs text-muted-foreground'>
                         <div>{order.userName}</div>
                         <div>{order.userEmail}</div>

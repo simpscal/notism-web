@@ -25,19 +25,26 @@ import {
     TablePagination,
     useTableSort,
 } from '@/components/table';
-import { DELIVERY_STATUS } from '@/features/order';
+import { DELIVERY_STATUS, OrderPaymentStatusBadge } from '@/features/order';
+
+const EMPTY_STATE_COL_SPAN = 8;
 
 interface AdminOrdersTableProps {
     onOrderClick: (slugId: string) => void;
+    paymentStatus?: string;
 }
 
-function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
+function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps) {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
     const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const { sortBy, sortOrder, handleSort } = useTableSort<string>(() => setPage(1));
+
+    useEffect(() => {
+        setPage(1);
+    }, [paymentStatus]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -53,7 +60,12 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['admin', 'orders', 'table', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }] as const,
+        queryKey: [
+            'admin',
+            'orders',
+            'table',
+            { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search, paymentStatus },
+        ] as const,
         queryFn: () =>
             adminApi.getOrdersForTable({
                 skip: (page - 1) * PAGE_SIZE,
@@ -61,6 +73,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                 sortBy,
                 sortOrder,
                 keyword: search || undefined,
+                paymentStatus,
             }),
         placeholderData: keepPreviousData,
     });
@@ -75,7 +88,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
         onSuccess: updatedOrder => {
             // Update table view cache
             queryClient.setQueryData<GetAdminOrdersResponseModel>(
-                ['admin', 'orders', 'table', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }],
+                ['admin', 'orders', 'table', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search, paymentStatus }],
                 oldData => {
                     if (!oldData) return oldData;
                     return {
@@ -177,6 +190,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                             </SortableTableHead>
                             <TableHead className='min-w-[80px]'>{t('orders.items')}</TableHead>
                             <TableHead className='min-w-[150px]'>{t('orders.status')}</TableHead>
+                            <TableHead className='min-w-[140px]'>Payment</TableHead>
                             <TableHead className='min-w-[120px] text-right'>{t('orders.actions')}</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -215,6 +229,9 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                                                 </SelectContent>
                                             </Select>
                                         </TableCell>
+                                        <TableCell>
+                                            <OrderPaymentStatusBadge paymentStatus={order.paymentStatus} />
+                                        </TableCell>
                                         <TableCell className='text-right'>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -236,7 +253,7 @@ function AdminOrdersTable({ onOrderClick }: AdminOrdersTableProps) {
                             })
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={7} className='text-center text-muted-foreground'>
+                                <TableCell colSpan={EMPTY_STATE_COL_SPAN} className='text-center text-muted-foreground'>
                                     {t('orders.noOrders')}
                                 </TableCell>
                             </TableRow>
