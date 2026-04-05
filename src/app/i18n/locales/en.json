@@ -263,6 +263,7 @@
             "cancelled": "Cancelled"
         },
         "paymentStatuses": {
+            "all": "All",
             "paid": "Paid",
             "unpaid": "Pending Payment"
         },

@@ -263,6 +263,7 @@
             "cancelled": "Đã hủy"
         },
         "paymentStatuses": {
+            "all": "Tất cả",
             "paid": "Đã thanh toán",
             "unpaid": "Chờ thanh toán"
         },
