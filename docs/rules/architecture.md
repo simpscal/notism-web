@@ -132,7 +132,10 @@ graph TD
 │   ├── 📁 login/
 │   ├── 📁 signup/
 │   ├── 📁 profile/
-│   │   ├── 📁 components/ # Page-specific components
+│   │   ├── 📁 components/
+│   │   │   ├── 📁 __tests__/ # Page-specific component tests
+│   │   │   └── ...
+│   │   ├── 📁 __tests__/     # Page-level integration tests
 │   │   └── ...
 │   └── ...
 │
@@ -141,6 +144,9 @@ graph TD
 │   │   ├── 📁 models/     # ViewModels for UI
 │   │   │   ├── 📄 user.model.ts
 │   │   │   └── 📄 index.ts
+│   │   ├── 📁 components/
+│   │   │   ├── 📁 __tests__/ # Feature component tests
+│   │   │   └── ...
 │   │   └── ...
 │   └── ...
 │
@@ -153,6 +159,7 @@ graph TD
 │   └── ...
 │
 ├── 📁 components/   # Reusable UI components
+│   ├── 📁 __tests__/ # Shared component unit tests
 │   ├── 📄 button.tsx
 │   ├── 📄 input.tsx
 │   ├── 📄 modal.tsx
@@ -170,6 +177,20 @@ graph TD
 │
 ├── 📄 main.tsx
 └── 📄 app.tsx
+
+📁 test/             # Global test setup and utilities
+├── 📄 setup.ts      # jest-dom matchers setup
+└── 📄 utils.tsx     # renderWithProviders, createTestQueryClient
+
+📁 mocks/            # MSW mock infrastructure (dev + test)
+├── 📄 browser.ts    # Browser service worker setup
+├── 📄 index.ts
+├── 📄 utils.ts
+├── 📁 handlers/     # Request handlers per domain
+│   ├── 📄 index.ts
+│   ├── 📄 food.handlers.ts
+│   └── 📄 admin-*.handlers.ts
+└── 📁 data/         # Static mock data (JSON + TS)
 ```
 
 ---
