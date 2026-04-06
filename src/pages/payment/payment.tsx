@@ -149,7 +149,7 @@ function Payment() {
                                     size='lg'
                                     className='w-full'
                                     onClick={handlePlaceOrder}
-                                    disabled={isCreatingOrder || paymentMethod === PaymentMethodEnum.Banking}
+                                    disabled={isCreatingOrder}
                                 >
                                     {isCreatingOrder ? (
                                         <>

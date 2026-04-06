@@ -30,12 +30,23 @@ export interface DeliveryStatusTimingResponseModel {
     deliveredCompletedAt: string | null;
 }
 
+export interface OrderPaymentQrResponseModel {
+    bankCode: string;
+    accountNumber: string;
+    accountHolderName: string;
+    amount: number;
+    orderReference: string;
+}
+
 export interface OrderResponseModel {
     id: string;
     slugId: string;
     totalAmount: number;
     paymentMethod: string;
     deliveryStatus: string;
+    paymentStatus: string;
+    paidAt: string | null;
+    paymentQr: OrderPaymentQrResponseModel | null;
     createdAt: string;
     updatedAt: string;
     items: OrderItemResponseModel[];

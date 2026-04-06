@@ -207,6 +207,20 @@
             "title": "Giỏ hàng của bạn trống",
             "description": "Thêm mục vào giỏ hàng của bạn trước khi tiếp tục thanh toán.",
             "browseFoods": "Duyệt thực phẩm"
+        },
+        "qr": {
+            "confirmed": "Đã thanh toán",
+            "completePayment": "Hoàn tất thanh toán",
+            "scanDescription": "Quét mã QR bằng ứng dụng ngân hàng Việt Nam để thanh toán",
+            "unavailableTitle": "Không có thông tin thanh toán",
+            "unavailableDescription": "Người bán chưa cấu hình thông tin tài khoản ngân hàng.",
+            "qrUnavailable": "Mã QR không khả dụng",
+            "bank": "Ngân hàng",
+            "accountNumber": "Số tài khoản",
+            "accountHolder": "Chủ tài khoản",
+            "totalAmount": "Tổng số tiền",
+            "includeReference": "Ghi nội dung chuyển khoản",
+            "inTransferDescription": "trong mô tả chuyển khoản"
         }
     },
     "orders": {
@@ -247,6 +261,11 @@
             "onTheWay": "Đang giao",
             "delivered": "Đã giao",
             "cancelled": "Đã hủy"
+        },
+        "paymentStatuses": {
+            "all": "Tất cả",
+            "paid": "Đã thanh toán",
+            "unpaid": "Chờ thanh toán"
         },
         "checkout": {
             "progress": {
@@ -296,7 +315,8 @@
     "settings": {
         "tabs": {
             "profile": "Hồ sơ",
-            "appearance": "Giao diện"
+            "appearance": "Giao diện",
+            "payment": "Thanh toán"
         },
         "profile": {
             "title": "Cài đặt hồ sơ",
@@ -323,6 +343,27 @@
             "enterLastName": "Nhập họ của bạn",
             "imageTypeError": "Vui lòng chọn một tệp hình ảnh",
             "imageSizeError": "Kích thước hình ảnh phải nhỏ hơn 5MB"
+        },
+        "payment": {
+            "title": "Cài đặt thanh toán",
+            "bankAccount": "Tài khoản ngân hàng",
+            "bankAccountDescription": "Cấu hình thông tin ngân hàng để kích hoạt thanh toán QR cho đơn hàng.",
+            "noAccount": "Chưa cấu hình tài khoản ngân hàng. Thêm thông tin của bạn để kích hoạt thanh toán QR.",
+            "bankName": "Tên ngân hàng",
+            "bankNamePlaceholder": "Ví dụ: Vietcombank",
+            "accountNumber": "Số tài khoản",
+            "accountNumberPlaceholder": "VD: 1234567890",
+            "accountHolderName": "Tên chủ tài khoản",
+            "accountHolderNamePlaceholder": "VD: Nguyễn Văn A",
+            "saveChanges": "Lưu thay đổi",
+            "saving": "Đang lưu...",
+            "cancel": "Hủy",
+            "saveSuccess": "Tài khoản ngân hàng đã được lưu thành công!",
+            "bankNameRequired": "Tên ngân hàng là bắt buộc",
+            "accountNumberRequired": "Số tài khoản là bắt buộc",
+            "accountHolderNameRequired": "Tên chủ tài khoản là bắt buộc",
+            "loadErrorTitle": "Không thể tải tài khoản ngân hàng",
+            "loadErrorDescription": "Đã xảy ra lỗi khi tải thông tin tài khoản ngân hàng. Vui lòng thử lại."
         },
         "appearance": {
             "title": "Giao diện",
