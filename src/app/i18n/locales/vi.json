@@ -22,10 +22,15 @@
         "tryAgainLater": "Vui lòng thử lại sau.",
         "apiErrors": {
             "badRequest": "Yêu cầu không hợp lệ",
+            "badRequestDescription": "Yêu cầu không hợp lệ. Vui lòng kiểm tra lại thông tin đầu vào.",
             "forbidden": "Bị cấm",
+            "forbiddenDescription": "Bạn không có quyền thực hiện hành động này.",
             "notFound": "Không tìm thấy",
+            "notFoundDescription": "Không tìm thấy tài nguyên yêu cầu.",
             "serverError": "Lỗi máy chủ",
-            "serviceUnavailable": "Dịch vụ không khả dụng"
+            "serverErrorDescription": "Đã xảy ra lỗi không mong đợi. Vui lòng thử lại sau.",
+            "serviceUnavailable": "Dịch vụ không khả dụng",
+            "serviceUnavailableDescription": "Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau."
         }
     },
     "auth": {
@@ -69,7 +74,8 @@
             "passwordNumber": "Mật khẩu phải chứa ít nhất một số",
             "passwordsDoNotMatch": "Mật khẩu không khớp",
             "firstNameRequired": "Tên là bắt buộc",
-            "lastNameRequired": "Họ là bắt buộc"
+            "lastNameRequired": "Họ là bắt buộc",
+            "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu của bạn"
         },
         "loginSuccess": "Đăng nhập thành công! Chào mừng quay lại.",
         "logoutSuccess": "Đã đăng xuất thành công",
@@ -78,7 +84,8 @@
         "passwordResetSuccess": "Mật khẩu đã được đặt lại thành công.",
         "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
         "userNotFound": "Không tìm thấy người dùng",
-        "invalidToken": "Token không hợp lệ hoặc đã hết hạn"
+        "invalidToken": "Token không hợp lệ hoặc đã hết hạn",
+        "completingAuthentication": "Đang hoàn tất xác thực..."
     },
     "landing": {
         "hero": {

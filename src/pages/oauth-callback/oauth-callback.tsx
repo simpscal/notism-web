@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { memo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -10,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { setAuth, setOauthReturnUrl } from '@/store/auth';
 
 function OAuthCallback() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const oauthReturnUrl = useAppSelector(state => state.auth.oauthReturnUrl);
@@ -37,7 +39,7 @@ function OAuthCallback() {
 
     useEffect(() => {
         if (oauthCallbackMutation.isSuccess) {
-            toast.success('Login successful! Welcome back.');
+            toast.success(t('auth.loginSuccess'));
             if (oauthReturnUrl) {
                 dispatch(setOauthReturnUrl(null));
                 navigate(decodeURIComponent(oauthReturnUrl), { replace: true });
@@ -50,7 +52,7 @@ function OAuthCallback() {
     return (
         <div className='flex flex-col items-center justify-center gap-4 h-36'>
             <Spinner size='lg' />
-            <p className='text-sm text-muted-foreground'>Completing authentication...</p>
+            <p className='text-sm text-muted-foreground'>{t('auth.completingAuthentication')}</p>
         </div>
     );
 }

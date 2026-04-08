@@ -25,7 +25,7 @@ function ResetPassword() {
                 .string()
                 .min(1, t('auth.validation.passwordRequired'))
                 .min(8, t('auth.validation.passwordMinLength')),
-            confirmPassword: z.string().min(1, 'Please confirm your password'),
+            confirmPassword: z.string().min(1, { message: t('auth.validation.confirmPasswordRequired') }),
         })
         .refine(data => data.newPassword === data.confirmPassword, {
             message: t('auth.validation.passwordsDoNotMatch'),

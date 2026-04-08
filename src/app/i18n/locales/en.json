@@ -22,10 +22,15 @@
         "tryAgainLater": "Please try again later.",
         "apiErrors": {
             "badRequest": "Bad Request",
+            "badRequestDescription": "The request was invalid. Please check your input.",
             "forbidden": "Forbidden",
+            "forbiddenDescription": "You do not have permission to perform this action.",
             "notFound": "Not Found",
+            "notFoundDescription": "The requested resource was not found.",
             "serverError": "Server Error",
-            "serviceUnavailable": "Service Unavailable"
+            "serverErrorDescription": "An unexpected error occurred. Please try again later.",
+            "serviceUnavailable": "Service Unavailable",
+            "serviceUnavailableDescription": "The service is temporarily unavailable. Please try again later."
         }
     },
     "auth": {
@@ -69,7 +74,8 @@
             "passwordNumber": "Password must contain at least one number",
             "passwordsDoNotMatch": "Passwords do not match",
             "firstNameRequired": "First name is required",
-            "lastNameRequired": "Last name is required"
+            "lastNameRequired": "Last name is required",
+            "confirmPasswordRequired": "Please confirm your password"
         },
         "loginSuccess": "Login successful! Welcome back.",
         "logoutSuccess": "Logged out successfully",
@@ -78,7 +84,8 @@
         "passwordResetSuccess": "Password has been successfully reset.",
         "invalidCredentials": "Invalid email or password",
         "userNotFound": "User not found",
-        "invalidToken": "Invalid or expired reset token"
+        "invalidToken": "Invalid or expired reset token",
+        "completingAuthentication": "Completing authentication..."
     },
     "landing": {
         "hero": {

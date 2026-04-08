@@ -389,34 +389,34 @@ apiClient.addResponseInterceptor(async (response: Response) => {
             // If parsing fails, use default message
         }
 
-        let errorTitle = i18next.t('common:error');
+        let errorTitle = i18next.t('common.error');
         let errorDescription = errorMessage;
 
         switch (status) {
             case 400:
-                errorTitle = i18next.t('common:apiErrors.badRequest');
-                errorDescription = errorMessage || 'The request was invalid. Please check your input.';
+                errorTitle = i18next.t('common.apiErrors.badRequest');
+                errorDescription = errorMessage || i18next.t('common.apiErrors.badRequestDescription');
                 break;
             case 403:
-                errorTitle = i18next.t('common:apiErrors.forbidden');
-                errorDescription = errorMessage || 'You do not have permission to perform this action.';
+                errorTitle = i18next.t('common.apiErrors.forbidden');
+                errorDescription = errorMessage || i18next.t('common.apiErrors.forbiddenDescription');
                 break;
             case 404:
-                errorTitle = i18next.t('common:apiErrors.notFound');
-                errorDescription = errorMessage || 'The requested resource was not found.';
+                errorTitle = i18next.t('common.apiErrors.notFound');
+                errorDescription = errorMessage || i18next.t('common.apiErrors.notFoundDescription');
                 break;
             case 500:
-                errorTitle = i18next.t('common:apiErrors.serverError');
-                errorDescription = errorMessage || 'An unexpected error occurred. Please try again later.';
+                errorTitle = i18next.t('common.apiErrors.serverError');
+                errorDescription = errorMessage || i18next.t('common.apiErrors.serverErrorDescription');
                 break;
             case 503:
-                errorTitle = i18next.t('common:apiErrors.serviceUnavailable');
-                errorDescription = errorMessage || 'The service is temporarily unavailable. Please try again later.';
+                errorTitle = i18next.t('common.apiErrors.serviceUnavailable');
+                errorDescription = errorMessage || i18next.t('common.apiErrors.serviceUnavailableDescription');
                 break;
             default:
                 if (status >= 500) {
-                    errorTitle = i18next.t('common:apiErrors.serverError');
-                    errorDescription = errorMessage || 'An unexpected error occurred. Please try again later.';
+                    errorTitle = i18next.t('common.apiErrors.serverError');
+                    errorDescription = errorMessage || i18next.t('common.apiErrors.serverErrorDescription');
                 }
                 break;
         }
