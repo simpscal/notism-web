@@ -42,9 +42,11 @@ export class ApiClient {
     private _defaultHeaders: Record<string, string> = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...(import.meta.env.DEV && { 'ngrok-skip-browser-warning': '1' }),
     };
     private _defaultFormDataHeaders: Record<string, string> = {
         Accept: 'application/json',
+        ...(import.meta.env.DEV && { 'ngrok-skip-browser-warning': '1' }),
     };
     private _interceptors: Interceptors;
     private _failedQueue: {
