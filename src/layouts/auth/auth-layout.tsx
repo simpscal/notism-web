@@ -12,7 +12,7 @@ function AuthLayout() {
             <div className='absolute right-4 top-4 md:right-6 md:top-6'>
                 <LanguageSwitcher />
             </div>
-            <div className='mx-auto flex min-h-screen max-w-7xl flex-col items-stretch lg:flex-row'>
+            <div className='mx-auto flex min-h-screen flex-col items-stretch lg:flex-row'>
                 <section className='relative hidden w-full flex-1 items-center justify-center overflow-hidden lg:block lg:w-1/2'>
                     <div className='absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/10 to-transparent' />
                     <div className='relative px-10'>
