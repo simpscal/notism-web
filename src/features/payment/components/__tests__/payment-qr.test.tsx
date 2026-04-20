@@ -58,11 +58,11 @@ describe('PaymentQr', () => {
         expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
         expect(screen.getByText(t('payment.qr.scanDescription'))).toBeInTheDocument();
 
-        const qrImg = screen.getByAltText('VietQR payment code for order ORD-ABC123');
+        const qrImg = screen.getByAltText('VietQR payment code for order ABC123');
         expect(qrImg).toBeInTheDocument();
         expect(qrImg.getAttribute('src')).toContain('VCB-1234567890-compact2.jpg');
         expect(qrImg.getAttribute('src')).toContain('amount=150000');
-        expect(qrImg.getAttribute('src')).toContain('addInfo=ORD-ABC123');
+        expect(qrImg.getAttribute('src')).toContain('addInfo=ABC123');
     });
 
     it('renders bank details in QR payment card', () => {
@@ -78,17 +78,17 @@ describe('PaymentQr', () => {
         renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
         expect(screen.getByText(new RegExp(t('payment.qr.includeReference')))).toBeInTheDocument();
-        expect(screen.getByText('ORD-ABC123')).toBeInTheDocument();
+        expect(screen.getByText('ABC123')).toBeInTheDocument();
     });
 
     it('swaps QR image for ErrorState fallback on image load error', () => {
         renderWithProviders(<PaymentQr {...UNPAID_BANKING_ORDER_WITH_QR} />);
 
-        const qrImg = screen.getByAltText('VietQR payment code for order ORD-ABC123');
+        const qrImg = screen.getByAltText('VietQR payment code for order ABC123');
         fireEvent.error(qrImg);
 
         expect(screen.getByText(t('payment.qr.qrUnavailable'))).toBeInTheDocument();
-        expect(screen.queryByAltText('VietQR payment code for order ORD-ABC123')).not.toBeInTheDocument();
+        expect(screen.queryByAltText('VietQR payment code for order ABC123')).not.toBeInTheDocument();
     });
 
     it('renders Payment Confirmed banner for paid banking order', () => {
