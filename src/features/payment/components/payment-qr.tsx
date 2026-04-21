@@ -8,7 +8,7 @@ import { PaymentQrViewModel } from '../models';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
-import { PaymentMethodEnum } from '@/features/order';
+import { ORDER_SLUG_PREFIX, PaymentMethodEnum } from '@/features/order';
 
 const VIETQR_BASE_URL = 'https://img.vietqr.io/image';
 
@@ -16,7 +16,7 @@ function buildVietQrUrl(paymentQr: PaymentQrViewModel): string {
     const { bankCode, accountNumber, amount, orderReference, accountHolderName } = paymentQr;
     const params = new URLSearchParams({
         amount: String(amount),
-        addInfo: orderReference,
+        addInfo: orderReference.replace(ORDER_SLUG_PREFIX, ''),
         accountName: accountHolderName,
     });
     return `${VIETQR_BASE_URL}/${bankCode}-${accountNumber}-compact2.jpg?${params.toString()}`;
@@ -70,6 +70,7 @@ function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: 
         );
     }
 
+    const displaySlugId = slugId.replace(ORDER_SLUG_PREFIX, '');
     const qrUrl = buildVietQrUrl(paymentQr);
 
     return (
@@ -92,7 +93,7 @@ function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: 
                     ) : (
                         <img
                             src={qrUrl}
-                            alt={`VietQR payment code for order ${slugId}`}
+                            alt={`VietQR payment code for order ${displaySlugId}`}
                             className='w-48 h-48 max-w-full mx-auto border-border rounded-lg'
                             onError={() => setImgError(true)}
                         />
@@ -121,7 +122,7 @@ function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: 
                 </div>
 
                 <p className='text-muted-foreground text-xs'>
-                    {t('payment.qr.includeReference')} <span className='font-medium'>{slugId}</span>{' '}
+                    {t('payment.qr.includeReference')} <span className='font-medium'>{displaySlugId}</span>{' '}
                     {t('payment.qr.inTransferDescription')}
                 </p>
             </CardContent>

@@ -18,7 +18,7 @@ const UNPAID_BANKING_ORDER_WITH_QR = {
         amount: 150000,
         orderReference: 'ORD-ABC123',
     },
-    slugId: 'ABC123',
+    slugId: 'ORD-ABC123',
     paidAt: null,
 };
 
@@ -26,7 +26,7 @@ const PAID_BANKING_ORDER = {
     paymentMethod: 'banking',
     paymentStatus: 'paid',
     paymentQr: null,
-    slugId: 'ABC123',
+    slugId: 'ORD-ABC123',
     paidAt: '2024-03-15T10:30:00Z',
 };
 
@@ -34,7 +34,7 @@ const COD_ORDER = {
     paymentMethod: 'cashOnDelivery',
     paymentStatus: 'unpaid',
     paymentQr: null,
-    slugId: 'ABC123',
+    slugId: 'ORD-ABC123',
     paidAt: null,
 };
 
@@ -42,7 +42,7 @@ const BANKING_ORDER_NO_BANK_CONFIG = {
     paymentMethod: 'banking',
     paymentStatus: 'unpaid',
     paymentQr: null,
-    slugId: 'ABC123',
+    slugId: 'ORD-ABC123',
     paidAt: null,
 };
 
@@ -62,7 +62,7 @@ describe('PaymentQr', () => {
         expect(qrImg).toBeInTheDocument();
         expect(qrImg.getAttribute('src')).toContain('VCB-1234567890-compact2.jpg');
         expect(qrImg.getAttribute('src')).toContain('amount=150000');
-        expect(qrImg.getAttribute('src')).toContain('addInfo=ORD-ABC123');
+        expect(qrImg.getAttribute('src')).toContain('addInfo=ABC123');
     });
 
     it('renders bank details in QR payment card', () => {
