@@ -8,6 +8,7 @@ import { PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
 
 import { orderApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
@@ -139,7 +140,7 @@ function Payment() {
                                     <Separator />
                                     <div className='flex justify-between text-lg font-semibold'>
                                         <span>{t('payment.totalAmount')}</span>
-                                        <span>${totalPrice.toFixed(2)}</span>
+                                        <span>{formatVnd(totalPrice)}</span>
                                     </div>
                                 </div>
                             </CardContent>

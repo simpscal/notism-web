@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { adminApi } from '@/apis';
 import { GetAdminOrdersResponseModel } from '@/apis/models';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
 import ErrorState from '@/components/error-state';
@@ -210,7 +211,7 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
                                         </TableCell>
                                         <TableCell>{order.userName}</TableCell>
                                         <TableCell>{order.userEmail}</TableCell>
-                                        <TableCell className='font-semibold'>${order.totalAmount.toFixed(2)}</TableCell>
+                                        <TableCell className='font-semibold'>{formatVnd(order.totalAmount)}</TableCell>
                                         <TableCell>{order.totalItems}</TableCell>
                                         <TableCell>
                                             <Select

@@ -8,6 +8,7 @@ import { OrdersEmpty } from './components';
 
 import { orderApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
+import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
@@ -125,7 +126,7 @@ function Orders() {
                                         </div>
                                         <div className='flex items-baseline gap-2 sm:flex-col sm:items-end sm:gap-1'>
                                             <div className='text-xl sm:text-2xl font-bold'>
-                                                ${order.totalAmount.toFixed(2)}
+                                                {formatVnd(order.totalAmount)}
                                             </div>
                                             <div className='text-xs text-muted-foreground'>
                                                 {t('cart.itemCount', { count: order.items.length })}
@@ -156,7 +157,7 @@ function Orders() {
                                                             </span>
                                                             <span>•</span>
                                                             <span className='font-medium text-foreground'>
-                                                                ${item.totalPrice.toFixed(2)}
+                                                                {formatVnd(item.totalPrice)}
                                                             </span>
                                                         </div>
                                                     </div>

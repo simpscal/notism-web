@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { adminApi } from '@/apis';
 import { GetAdminFoodsResponseModel } from '@/apis/models';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
@@ -223,9 +224,9 @@ function AdminFoods() {
                                         <TableCell className='max-w-[200px] truncate' title={food.description}>
                                             {truncateDescription(food.description)}
                                         </TableCell>
-                                        <TableCell>${food.price.toFixed(2)}</TableCell>
+                                        <TableCell>{formatVnd(food.price)}</TableCell>
                                         <TableCell>
-                                            {food.discountPrice != null ? `$${food.discountPrice.toFixed(2)}` : '-'}
+                                            {food.discountPrice != null ? formatVnd(food.discountPrice) : '-'}
                                         </TableCell>
                                         <TableCell>{food.category}</TableCell>
                                         <TableCell>

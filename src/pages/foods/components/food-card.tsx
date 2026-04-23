@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { FoodItemViewModel } from '../models';
 
 import { ROUTES } from '@/app/constants';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Card, CardFooter } from '@/components/card';
 import { getFoodPricing } from '@/features/food';
@@ -80,9 +81,9 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
                 <div className='flex items-center justify-between gap-2'>
                     <div className='flex flex-col'>
                         {hasSavings && (
-                            <span className='text-xs line-through text-muted-foreground'>${food.price.toFixed(2)}</span>
+                            <span className='text-xs line-through text-muted-foreground'>{formatVnd(food.price)}</span>
                         )}
-                        <span className='text-base font-bold sm:text-lg'>${effectivePrice.toFixed(2)}</span>
+                        <span className='text-base font-bold sm:text-lg'>{formatVnd(effectivePrice)}</span>
                     </div>
 
                     <Button

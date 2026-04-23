@@ -6,6 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
@@ -136,7 +137,7 @@ function AdminOrderDetail() {
                                     </div>
                                     <div className='flex justify-between text-lg font-semibold'>
                                         <span>{t('orderDetail.total')}</span>
-                                        <span>${order.totalAmount.toFixed(2)}</span>
+                                        <span>{formatVnd(order.totalAmount)}</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -150,7 +151,7 @@ function AdminOrderDetail() {
                                 <CardContent className='space-y-2'>
                                     <div className='flex justify-between text-sm'>
                                         <span className='text-muted-foreground'>Amount Paid</span>
-                                        <span className='font-medium'>${order.totalAmount.toFixed(2)}</span>
+                                        <span className='font-medium'>{formatVnd(order.totalAmount)}</span>
                                     </div>
                                     <Separator />
                                     <div className='flex justify-between text-sm'>

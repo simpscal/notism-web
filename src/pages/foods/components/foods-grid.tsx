@@ -13,6 +13,7 @@ import FoodsEmpty from './foods-empty';
 
 import { foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
+import { formatVnd } from '@/app/utils';
 import Spinner from '@/components/spinner';
 import { CartItemViewModel, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
@@ -86,7 +87,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
 
             await addToCart(cartItem, 1);
             toast.success(t('foods.card.addedToCart', { name: food.name }), {
-                description: `$${effectivePrice.toFixed(2)}`,
+                description: formatVnd(effectivePrice),
             });
         },
         [addToCart]

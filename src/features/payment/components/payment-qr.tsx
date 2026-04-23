@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { PaymentStatusEnum } from '../enums';
 import { PaymentQrViewModel } from '../models';
 
+import { formatVnd } from '@/app/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
@@ -20,10 +21,6 @@ function buildVietQrUrl(paymentQr: PaymentQrViewModel): string {
         accountName: accountHolderName,
     });
     return `${VIETQR_BASE_URL}/${bankCode}-${accountNumber}-compact2.jpg?${params.toString()}`;
-}
-
-function formatVndAmount(amount: number): string {
-    return amount.toLocaleString('vi-VN') + ' ₫';
 }
 
 interface PaymentQrProps {
@@ -117,7 +114,7 @@ function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: 
                     </div>
                     <div className='flex justify-between'>
                         <span className='text-muted-foreground text-sm'>{t('payment.qr.totalAmount')}</span>
-                        <span className='text-foreground font-bold'>{formatVndAmount(paymentQr.amount)}</span>
+                        <span className='text-foreground font-bold'>{formatVnd(paymentQr.amount)}</span>
                     </div>
                 </div>
 

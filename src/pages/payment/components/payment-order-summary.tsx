@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { formatVnd } from '@/app/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import { CartItemViewModel } from '@/features/cart/models';
@@ -37,7 +38,7 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
                                 <span className='min-w-0 flex-1 truncate text-muted-foreground'>
                                     {item.name} ×{item.quantity}
                                 </span>
-                                <span className='shrink-0 font-medium'>${itemTotal.toFixed(2)}</span>
+                                <span className='shrink-0 font-medium'>{formatVnd(itemTotal)}</span>
                             </div>
                         );
                     })}
@@ -47,7 +48,7 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
 
                 <div className='flex justify-between text-xl font-black'>
                     <span>{t('payment.totalAmount')}</span>
-                    <span>${totalPrice.toFixed(2)}</span>
+                    <span>{formatVnd(totalPrice)}</span>
                 </div>
             </CardContent>
         </Card>
