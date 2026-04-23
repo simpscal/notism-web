@@ -7,18 +7,12 @@ describe('formatVnd', () => {
         expect(formatVnd(0)).toBe('0 ₫');
     });
 
-    it('formats a large amount with ₫ symbol and no decimal digits', () => {
-        const result = formatVnd(1000000);
-        expect(result).toContain('₫');
-        // Must not end with a decimal pattern like ".00" or ".50" — vi-VN uses "." as thousands separator,
-        // so we check for a decimal: a dot followed by exactly 1-2 digits then a space or end of string
-        expect(result).not.toMatch(/\.\d{1,2}(\s|$)/);
+    it('formats 2000 as "2,000 ₫"', () => {
+        expect(formatVnd(2000)).toBe('2,000 ₫');
     });
 
-    it('formats a small amount with ₫ symbol and no decimal digits', () => {
-        const result = formatVnd(1500);
-        expect(result).toContain('₫');
-        expect(result).not.toMatch(/\.\d{1,2}(\s|$)/);
+    it('formats 1000000 as "1,000,000 ₫"', () => {
+        expect(formatVnd(1000000)).toBe('1,000,000 ₫');
     });
 
     it('never contains the $ symbol', () => {
@@ -27,12 +21,9 @@ describe('formatVnd', () => {
         expect(formatVnd(1000000)).not.toContain('$');
     });
 
-    it('never contains a decimal fraction (no .00 or .50 style suffix)', () => {
-        // toFixed(2) produces "1000000.00" — a literal decimal with exactly 2 fractional digits.
-        // vi-VN locale uses "." as thousands separator so "1.000.000 ₫" is expected — the dot
-        // there is always followed by exactly 3 digits, never 1-2. This pattern catches only decimals.
-        expect(formatVnd(0)).not.toMatch(/\.\d{1,2}(\s|$)/);
-        expect(formatVnd(1500)).not.toMatch(/\.\d{1,2}(\s|$)/);
-        expect(formatVnd(1000000)).not.toMatch(/\.\d{1,2}(\s|$)/);
+    it('never contains decimal places', () => {
+        expect(formatVnd(0)).not.toContain('.');
+        expect(formatVnd(1500)).not.toContain('.');
+        expect(formatVnd(1000000)).not.toContain('.');
     });
 });
