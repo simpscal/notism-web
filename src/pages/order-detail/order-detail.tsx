@@ -9,6 +9,7 @@ import { OrderActionCard, OrderDetailError } from './components';
 
 import { orderApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
@@ -152,11 +153,11 @@ function OrderDetail() {
                                                         <div className='mt-1 flex items-center gap-2'>
                                                             {hasSavings && item.unitPrice != null && (
                                                                 <span className='text-xs text-muted-foreground line-through'>
-                                                                    ${item.unitPrice.toFixed(2)}
+                                                                    {formatVnd(item.unitPrice)}
                                                                 </span>
                                                             )}
                                                             <span className='font-bold'>
-                                                                ${effectivePrice.toFixed(2)}
+                                                                {formatVnd(effectivePrice)}
                                                             </span>
                                                             <span className='text-xs text-muted-foreground'>
                                                                 {t('orderDetail.each')}
@@ -165,7 +166,7 @@ function OrderDetail() {
                                                     </div>
                                                     <div className='text-right'>
                                                         <div className='font-bold'>
-                                                            ${(item.totalPrice ?? 0).toFixed(2)}
+                                                            {formatVnd(item.totalPrice ?? 0)}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -184,7 +185,7 @@ function OrderDetail() {
                                         </div>
                                         <div className='flex justify-between text-xl font-black'>
                                             <span>{t('orderDetail.total')}</span>
-                                            <span>${order.totalAmount.toFixed(2)}</span>
+                                            <span>{formatVnd(order.totalAmount)}</span>
                                         </div>
                                     </div>
                                 </CardContent>

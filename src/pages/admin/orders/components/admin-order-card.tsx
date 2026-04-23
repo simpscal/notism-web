@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react';
 
 import { AdminOrderResponseModel } from '@/apis/models';
+import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Card, CardContent } from '@/components/card';
 import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
@@ -22,7 +23,7 @@ function AdminOrderCard({ order, onOrderClick }: AdminOrderCardProps) {
                     <div className='flex items-center justify-between'>
                         <span className='font-semibold text-sm'>#{order.slugId}</span>
                         <Badge variant='outline' className='text-xs'>
-                            ${order.totalAmount.toFixed(2)}
+                            {formatVnd(order.totalAmount)}
                         </Badge>
                     </div>
                     <PaymentStatusBadge paymentStatus={order.paymentStatus as PaymentStatusEnum} />

@@ -9,6 +9,7 @@ import { FoodDetailSkeleton, FoodDetailError, FoodDetailEmpty, FoodDetailImageSe
 
 import { foodApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { CartItemViewModel, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
@@ -53,7 +54,7 @@ function FoodDetail() {
 
         await addToCart(cartItem, quantity);
         toast.success(t('foodDetail.addedToCart', { qty: quantity, name: food.name }), {
-            description: t('foodDetail.total', { amount: (effectivePrice * quantity).toFixed(2) }),
+            description: t('foodDetail.total', { amount: formatVnd(effectivePrice * quantity) }),
         });
     }, [addToCart, food, quantity]);
 
@@ -125,16 +126,16 @@ function FoodDetail() {
                         <div className='mb-8'>
                             {hasSavings && (
                                 <span className='mb-2 block text-base text-muted-foreground line-through'>
-                                    ${food.price.toFixed(2)}
+                                    {formatVnd(food.price)}
                                 </span>
                             )}
                             <div className='flex items-baseline gap-3'>
                                 <span className='font-sans text-6xl font-bold text-primary tabular-nums'>
-                                    ${effectivePrice.toFixed(2)}
+                                    {formatVnd(effectivePrice)}
                                 </span>
                                 {hasSavings && (
                                     <span className='rounded-full bg-destructive/20 px-3 py-1 text-sm font-semibold text-destructive'>
-                                        {t('cart.saveBadge', { amount: (food.price - effectivePrice).toFixed(2) })}
+                                        {t('cart.saveBadge', { amount: formatVnd(food.price - effectivePrice) })}
                                     </span>
                                 )}
                             </div>
@@ -175,7 +176,7 @@ function FoodDetail() {
                             >
                                 <ShoppingCart className='h-5 w-5 shrink-0' />
                                 <span className='truncate'>
-                                    {t('foodDetail.addToCart', { price: (effectivePrice * quantity).toFixed(2) })}
+                                    {t('foodDetail.addToCart', { price: formatVnd(effectivePrice * quantity) })}
                                 </span>
                             </Button>
                         </div>

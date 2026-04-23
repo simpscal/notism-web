@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { CartEmpty, CartItem } from './components';
 
 import { ROUTES } from '@/app/constants/routes.constant';
+import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/card';
 import { Separator } from '@/components/separator';
@@ -163,9 +164,7 @@ function Cart() {
                                                             {item.name} ×{item.quantity}
                                                         </span>
                                                     </div>
-                                                    <span className='shrink-0 font-medium'>
-                                                        ${itemTotal.toFixed(2)}
-                                                    </span>
+                                                    <span className='shrink-0 font-medium'>{formatVnd(itemTotal)}</span>
                                                 </div>
                                             );
                                         })
@@ -178,7 +177,7 @@ function Cart() {
 
                                 <div className='flex justify-between'>
                                     <span className='text-lg font-semibold'>{t('cart.total')}</span>
-                                    <span className='text-xl font-black'>${selectedTotalPrice.toFixed(2)}</span>
+                                    <span className='text-xl font-black'>{formatVnd(selectedTotalPrice)}</span>
                                 </div>
                             </CardContent>
                             <CardFooter className='flex flex-col gap-2'>

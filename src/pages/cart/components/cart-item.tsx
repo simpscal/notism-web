@@ -2,6 +2,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { formatVnd } from '@/app/utils';
 import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
@@ -123,13 +124,13 @@ function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange
                         <div className='text-right'>
                             {hasSavings && (
                                 <span className='block text-xs text-muted-foreground line-through'>
-                                    ${originalTotal.toFixed(2)}
+                                    {formatVnd(originalTotal)}
                                 </span>
                             )}
-                            <span className='text-xl font-bold'>${itemTotal.toFixed(2)}</span>
+                            <span className='text-xl font-bold'>{formatVnd(itemTotal)}</span>
                             {hasSavings && (
                                 <span className='block text-xs text-destructive'>
-                                    {t('cart.saveBadge', { amount: discountAmount.toFixed(2) })}
+                                    {t('cart.saveBadge', { amount: formatVnd(discountAmount) })}
                                 </span>
                             )}
                         </div>

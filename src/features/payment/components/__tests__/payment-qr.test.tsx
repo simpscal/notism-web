@@ -71,7 +71,7 @@ describe('PaymentQr', () => {
         expect(screen.getByText('VCB')).toBeInTheDocument();
         expect(screen.getByText('1234567890')).toBeInTheDocument();
         expect(screen.getByText('Nguyen Van A')).toBeInTheDocument();
-        expect(screen.getByText('150.000 ₫')).toBeInTheDocument();
+        expect(screen.getByText('150,000 ₫')).toBeInTheDocument();
     });
 
     it('renders order reference note', () => {

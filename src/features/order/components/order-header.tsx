@@ -1,6 +1,8 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { formatVnd } from '@/app/utils';
+
 export interface OrderHeaderProps {
     slugId: string;
     totalAmount: number;
@@ -21,7 +23,7 @@ function OrderHeader({ slugId, totalAmount, deliveryStatus, orderDate }: OrderHe
                 <p className='text-sm text-muted-foreground'>{orderDate}</p>
             </div>
             <div className='text-right'>
-                <div className='text-2xl font-bold'>${totalAmount.toFixed(2)}</div>
+                <div className='text-2xl font-bold'>{formatVnd(totalAmount)}</div>
                 <div className='text-sm text-muted-foreground'>{t(`order.deliveryStatuses.${deliveryStatus}`)}</div>
             </div>
         </div>
