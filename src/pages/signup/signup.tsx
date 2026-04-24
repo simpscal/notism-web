@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { authApi, oauthApi } from '@/apis';
+import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
@@ -83,7 +83,7 @@ function Signup() {
         });
     };
 
-    const handleOAuthSignup = (provider: string) => {
+    const handleOAuthSignup = (provider: OAuthProviderType) => {
         oauthRedirectMutation.mutate(provider);
     };
 

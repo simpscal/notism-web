@@ -8,7 +8,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { authApi } from '@/apis';
+import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
@@ -18,7 +18,7 @@ import { Input } from '@/components/input';
 import { PasswordInput } from '@/components/password-input';
 import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
-import { setAuth } from '@/store/auth';
+import { setAuth, setOauthReturnUrl } from '@/store/auth';
 
 type LoginFormValues = {
     email: string;
@@ -54,7 +54,14 @@ function Login() {
         },
     });
 
-    const isLoading = loginMutation.isPending;
+    const oauthRedirectMutation = useMutation({
+        mutationFn: oauthApi.getOAuthRedirect,
+        onSuccess: data => {
+            window.location.href = data.redirectUrl;
+        },
+    });
+
+    const isLoading = loginMutation.isPending || oauthRedirectMutation.isPending;
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -74,6 +81,12 @@ function Login() {
             email: values.email,
             password: values.password,
         });
+    };
+
+    const handleOAuthLogin = (provider: OAuthProviderType) => {
+        const returnUrl = searchParams.get('returnUrl');
+        dispatch(setOauthReturnUrl(returnUrl ?? null));
+        oauthRedirectMutation.mutate(provider);
     };
 
     return (
