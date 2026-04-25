@@ -13,7 +13,6 @@ import { ROUTES } from '@/app/constants';
 import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { Button } from '@/components/button';
 import { Field, FieldError, FieldLabel } from '@/components/field';
-import GithubLogo from '@/components/github-logo';
 import GoogleLogo from '@/components/google-logo';
 import { Input } from '@/components/input';
 import { PasswordInput } from '@/components/password-input';
@@ -162,7 +161,7 @@ function Login() {
             </div>
 
             {/* Social Login Buttons */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3'>
+            <div className='grid grid-cols-1 gap-2 sm:gap-3'>
                 <Button
                     type='button'
                     variant='outline'
@@ -172,16 +171,6 @@ function Login() {
                 >
                     <GoogleLogo className='h-4 w-4' />
                     <span>Google</span>
-                </Button>
-                <Button
-                    type='button'
-                    variant='outline'
-                    disabled={isLoading}
-                    onClick={() => handleOAuthLogin('github')}
-                    className='w-full gap-2'
-                >
-                    <GithubLogo className='h-4 w-4' />
-                    <span>GitHub</span>
                 </Button>
             </div>
 
