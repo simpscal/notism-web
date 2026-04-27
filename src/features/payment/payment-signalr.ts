@@ -20,10 +20,3 @@ export interface PaymentNotificationPayload {
 export function createPaymentHubConnection(): HubConnection {
     return createHubConnection(HUBS.PAYMENT);
 }
-
-export function subscribeToPaymentEvents(
-    connection: HubConnection,
-    onNotification: (payload: PaymentNotificationPayload) => void
-): void {
-    connection.on('ReceivePaymentNotification', onNotification);
-}

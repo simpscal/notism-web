@@ -1,11 +1,7 @@
 import type { HubConnection } from '@microsoft/signalr';
 import { useEffect, useRef } from 'react';
 
-import {
-    createPaymentHubConnection,
-    subscribeToPaymentEvents,
-    type PaymentNotificationPayload,
-} from '../payment-signalr';
+import { createPaymentHubConnection, type PaymentNotificationPayload } from '../payment-signalr';
 
 export interface UsePaymentSignalROptions {
     onNotification: (payload: PaymentNotificationPayload) => void;
@@ -27,7 +23,7 @@ export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions):
 
         connection.invoke('SubscribeToPaymentEvents').catch(() => {});
 
-        subscribeToPaymentEvents(connection, onNotification);
+        connection.on('ReceivePaymentNotification', onNotification);
 
         return () => {
             connection.stop().catch(() => {});

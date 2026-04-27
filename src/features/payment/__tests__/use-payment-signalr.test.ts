@@ -17,7 +17,6 @@ const mockConnection = {
 
 vi.mock('../payment-signalr', () => ({
     createPaymentHubConnection: vi.fn(() => mockConnection),
-    subscribeToPaymentEvents: vi.fn(),
 }));
 
 describe('usePaymentSignalR', () => {
@@ -48,9 +47,8 @@ describe('usePaymentSignalR', () => {
         expect(mockInvoke).toHaveBeenCalledWith('SubscribeToPaymentEvents');
     });
 
-    it('registers the onNotification callback via subscribeToPaymentEvents', async () => {
+    it('registers the onNotification callback via connection.on', async () => {
         const onNotification = vi.fn();
-        const { subscribeToPaymentEvents } = await import('../payment-signalr');
 
         renderHook(() => usePaymentSignalR({ onNotification }));
 
@@ -58,7 +56,7 @@ describe('usePaymentSignalR', () => {
             await new Promise(resolve => setTimeout(resolve, 0));
         });
 
-        expect(subscribeToPaymentEvents).toHaveBeenCalledWith(mockConnection, onNotification);
+        expect(mockOn).toHaveBeenCalledWith('ReceivePaymentNotification', onNotification);
     });
 
     it('stops the connection on unmount', async () => {
