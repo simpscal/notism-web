@@ -14,15 +14,15 @@ describe('subscribeToPaymentEvents', () => {
     });
 
     it('registers a listener for ReceivePaymentNotification event', () => {
-        const onSuccess = vi.fn();
-        subscribeToPaymentEvents(mockConnection as never, onSuccess);
+        const onNotification = vi.fn();
+        subscribeToPaymentEvents(mockConnection as never, onNotification);
 
         expect(mockOn).toHaveBeenCalledWith('ReceivePaymentNotification', expect.any(Function));
     });
 
-    it('calls onSuccess when payload type is payment-success', () => {
-        const onSuccess = vi.fn();
-        subscribeToPaymentEvents(mockConnection as never, onSuccess);
+    it('passes through any notification type to the callback', () => {
+        const onNotification = vi.fn();
+        subscribeToPaymentEvents(mockConnection as never, onNotification);
 
         const registeredCallback = mockOn.mock.calls[0][1];
         const payload: PaymentNotificationPayload = {
@@ -34,16 +34,16 @@ describe('subscribeToPaymentEvents', () => {
 
         registeredCallback(payload);
 
-        expect(onSuccess).toHaveBeenCalledWith(payload);
+        expect(onNotification).toHaveBeenCalledWith(payload);
     });
 
-    it('does not call onSuccess when payload type is not payment-success', () => {
-        const onSuccess = vi.fn();
-        subscribeToPaymentEvents(mockConnection as never, onSuccess);
+    it('passes through payment-failure notification type to the callback', () => {
+        const onNotification = vi.fn();
+        subscribeToPaymentEvents(mockConnection as never, onNotification);
 
         const registeredCallback = mockOn.mock.calls[0][1];
         const payload: PaymentNotificationPayload = {
-            type: 'payment-failed',
+            type: 'payment-failure',
             orderId: 'order-123',
             message: 'Payment failed',
             timestamp: '2024-01-01T00:00:00Z',
@@ -51,6 +51,6 @@ describe('subscribeToPaymentEvents', () => {
 
         registeredCallback(payload);
 
-        expect(onSuccess).not.toHaveBeenCalled();
+        expect(onNotification).toHaveBeenCalledWith(payload);
     });
 });

@@ -15,7 +15,7 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
-import { usePaymentSignalR } from '@/features/payment/use-payment-signalr';
+import { PaymentNotificationType, usePaymentSignalR } from '@/features/payment';
 import {
     loadCart,
     selectCartItems,
@@ -26,7 +26,13 @@ import {
 
 function Payment() {
     const { t } = useTranslation();
-    usePaymentSignalR();
+    usePaymentSignalR({
+        onNotification: payload => {
+            if (payload.type === PaymentNotificationType.Success) {
+                toast.success(payload.message);
+            }
+        },
+    });
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const allItems = useAppSelector(selectCartItems);

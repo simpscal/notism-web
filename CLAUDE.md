@@ -13,7 +13,7 @@ bun run build:prod     # Build for production
 bun run lint           # ESLint (flat config, eslint.config.js)
 ```
 
-No test framework is configured. Pre-commit hooks run `eslint --fix` and `prettier --write` via husky + lint-staged.
+Tests: `bun run test` (Vitest, jsdom). Pre-commit hooks run `eslint --fix` and `prettier --write` via husky + lint-staged.
 
 ## Tech Stack
 

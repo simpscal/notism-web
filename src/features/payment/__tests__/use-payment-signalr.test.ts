@@ -1,8 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
-import { toast } from 'sonner';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import { usePaymentSignalR } from '../use-payment-signalr';
+import { usePaymentSignalR } from '../hooks/use-payment-signalr';
 
 const mockStart = vi.fn().mockResolvedValue(undefined);
 const mockStop = vi.fn().mockResolvedValue(undefined);
@@ -18,16 +17,7 @@ const mockConnection = {
 
 vi.mock('../payment-signalr', () => ({
     createPaymentHubConnection: vi.fn(() => mockConnection),
-    subscribeToPaymentEvents: vi.fn((connection, onSuccess) => {
-        // Simulate the subscription by storing the callback for tests to trigger
-        (connection as { _testOnSuccess?: (payload: unknown) => void })._testOnSuccess = onSuccess;
-    }),
-}));
-
-vi.mock('sonner', () => ({
-    toast: {
-        success: vi.fn(),
-    },
+    subscribeToPaymentEvents: vi.fn(),
 }));
 
 describe('usePaymentSignalR', () => {
@@ -39,7 +29,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('starts the connection on mount', async () => {
-        renderHook(() => usePaymentSignalR());
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -49,7 +39,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('invokes SubscribeToPaymentEvents after connection starts', async () => {
-        renderHook(() => usePaymentSignalR());
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -58,8 +48,21 @@ describe('usePaymentSignalR', () => {
         expect(mockInvoke).toHaveBeenCalledWith('SubscribeToPaymentEvents');
     });
 
+    it('registers the onNotification callback via subscribeToPaymentEvents', async () => {
+        const onNotification = vi.fn();
+        const { subscribeToPaymentEvents } = await import('../payment-signalr');
+
+        renderHook(() => usePaymentSignalR({ onNotification }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        expect(subscribeToPaymentEvents).toHaveBeenCalledWith(mockConnection, onNotification);
+    });
+
     it('stops the connection on unmount', async () => {
-        const { unmount } = renderHook(() => usePaymentSignalR());
+        const { unmount } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -70,30 +73,10 @@ describe('usePaymentSignalR', () => {
         expect(mockStop).toHaveBeenCalledTimes(1);
     });
 
-    it('shows a success toast when payment-success event fires', async () => {
-        const { subscribeToPaymentEvents } = await import('../payment-signalr');
-
-        renderHook(() => usePaymentSignalR());
-
-        await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
-        });
-
-        // Retrieve the onSuccess callback that was passed to subscribeToPaymentEvents
-        const onSuccess = (subscribeToPaymentEvents as ReturnType<typeof vi.fn>).mock.calls[0]?.[1];
-        expect(onSuccess).toBeDefined();
-
-        act(() => {
-            onSuccess({ type: 'payment-success', orderId: '1', message: 'Paid!', timestamp: '' });
-        });
-
-        expect(toast.success).toHaveBeenCalledWith('Paid!');
-    });
-
     it('does not throw when connection start fails', async () => {
         mockStart.mockRejectedValueOnce(new Error('Network error'));
 
-        expect(() => renderHook(() => usePaymentSignalR())).not.toThrow();
+        expect(() => renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }))).not.toThrow();
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));

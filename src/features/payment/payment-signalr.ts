@@ -1,25 +1,29 @@
 import { HubConnection } from '@microsoft/signalr';
 
+import { HUBS } from '@/app/constants/hubs.constant';
 import { createHubConnection } from '@/core/signalr';
 
+export const PaymentNotificationType = {
+    Success: 'payment-success',
+    Failure: 'payment-failure',
+} as const;
+
+export type PaymentNotificationType = (typeof PaymentNotificationType)[keyof typeof PaymentNotificationType];
+
 export interface PaymentNotificationPayload {
-    type: string;
+    type: PaymentNotificationType;
     orderId: string;
     message: string;
     timestamp: string;
 }
 
 export function createPaymentHubConnection(): HubConnection {
-    return createHubConnection('/hubs/payment');
+    return createHubConnection(HUBS.PAYMENT);
 }
 
 export function subscribeToPaymentEvents(
     connection: HubConnection,
-    onSuccess: (payload: PaymentNotificationPayload) => void
+    onNotification: (payload: PaymentNotificationPayload) => void
 ): void {
-    connection.on('ReceivePaymentNotification', (payload: PaymentNotificationPayload) => {
-        if (payload.type === 'payment-success') {
-            onSuccess(payload);
-        }
-    });
+    connection.on('ReceivePaymentNotification', onNotification);
 }
