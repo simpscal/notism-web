@@ -15,6 +15,7 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
+import { usePaymentSignalR } from '@/features/payment/use-payment-signalr';
 import {
     loadCart,
     selectCartItems,
@@ -25,6 +26,7 @@ import {
 
 function Payment() {
     const { t } = useTranslation();
+    usePaymentSignalR();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const allItems = useAppSelector(selectCartItems);
