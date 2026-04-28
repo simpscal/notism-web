@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,12 +27,17 @@ function OrderDetail() {
     const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const handlePaymentNotification = useCallback((payload: PaymentNotificationPayload) => {
-        if (payload.type === PaymentNotificationType.Success) {
-            toast.success(payload.message);
-        }
-    }, []);
+    const handlePaymentNotification = useCallback(
+        (payload: PaymentNotificationPayload) => {
+            if (payload.type === PaymentNotificationType.Success) {
+                toast.success(payload.message);
+                queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });
+            }
+        },
+        [queryClient, id]
+    );
 
     usePaymentSignalR({ onNotification: handlePaymentNotification });
 
