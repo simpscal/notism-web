@@ -17,11 +17,12 @@ export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions):
     useEffect(() => {
         const connection = connectionRef.current!;
 
-        connection.start().catch(() => {
-            // Connection errors are non-critical; payment notifications simply won't appear
-        });
-
-        connection.invoke('SubscribeToPaymentEvents').catch(() => {});
+        connection
+            .start()
+            .then(() => connection.invoke('SubscribeToPaymentEvents'))
+            .catch(() => {
+                // Connection errors are non-critical; payment notifications simply won't appear
+            });
 
         connection.on('ReceivePaymentNotification', onNotification);
 
