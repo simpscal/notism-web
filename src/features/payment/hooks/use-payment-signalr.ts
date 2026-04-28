@@ -27,5 +27,9 @@ export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions):
             .then(() => console.log('[SignalR] Connection established'))
             .then(subscribe)
             .catch(err => console.error('[SignalR] Connection failed:', err));
+
+        return () => {
+            connection.stop().catch(() => {});
+        };
     }, []);
 }

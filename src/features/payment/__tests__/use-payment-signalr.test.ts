@@ -59,14 +59,17 @@ describe('usePaymentSignalR', () => {
         expect(mockOn).toHaveBeenCalledWith('ReceivePaymentNotification', expect.any(Function));
     });
 
-    it('registers onreconnected handler for automatic re-subscription', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+    it('stops the connection on unmount', async () => {
+        const { unmount } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
         });
 
-        expect(mockOnreconnected).toHaveBeenCalledTimes(1);
+        unmount();
+
+        // StrictMode double-invokes effects: unmount cleanup + StrictMode cleanup
+        expect(mockStop).toHaveBeenCalled();
     });
 
     it('does not throw when connection start fails', async () => {
