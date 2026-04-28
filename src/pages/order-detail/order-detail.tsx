@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -21,12 +21,20 @@ import {
     OrderDeliveryStatusTimeline,
     OrderHeader,
 } from '@/features/order';
-import { PaymentQr } from '@/features/payment';
+import { PaymentNotificationPayload, PaymentNotificationType, PaymentQr, usePaymentSignalR } from '@/features/payment';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+
+    const handlePaymentNotification = useCallback((payload: PaymentNotificationPayload) => {
+        if (payload.type === PaymentNotificationType.Success) {
+            toast.success(payload.message);
+        }
+    }, []);
+
+    usePaymentSignalR({ onNotification: handlePaymentNotification });
 
     const {
         data: order,
