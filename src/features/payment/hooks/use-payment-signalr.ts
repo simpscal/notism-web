@@ -9,6 +9,8 @@ export interface UsePaymentSignalROptions {
 
 export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions): void {
     const connectionRef = useRef<HubConnection | null>(null);
+    const onNotificationRef = useRef(onNotification);
+    onNotificationRef.current = onNotification;
 
     if (connectionRef.current === null) {
         connectionRef.current = createPaymentHubConnection();
@@ -17,15 +19,18 @@ export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions):
     useEffect(() => {
         const connection = connectionRef.current!;
 
+        const subscribe = () => connection.invoke('SubscribeToPaymentEvents').catch(() => {});
+
+        connection.onreconnected(subscribe);
+        connection.on('ReceivePaymentNotification', payload => onNotificationRef.current(payload));
+
         connection
             .start()
-            .then(() => connection.invoke('SubscribeToPaymentEvents'))
+            .then(subscribe)
             .catch(() => {});
-
-        connection.on('ReceivePaymentNotification', onNotification);
 
         return () => {
             connection.stop().catch(() => {});
         };
-    }, [onNotification]);
+    }, []);
 }

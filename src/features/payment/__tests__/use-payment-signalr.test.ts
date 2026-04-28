@@ -7,12 +7,14 @@ const mockStart = vi.fn().mockResolvedValue(undefined);
 const mockStop = vi.fn().mockResolvedValue(undefined);
 const mockInvoke = vi.fn().mockResolvedValue(undefined);
 const mockOn = vi.fn();
+const mockOnreconnected = vi.fn();
 
 const mockConnection = {
     start: mockStart,
     stop: mockStop,
     invoke: mockInvoke,
     on: mockOn,
+    onreconnected: mockOnreconnected,
 };
 
 vi.mock('../payment-signalr', () => ({
@@ -48,15 +50,13 @@ describe('usePaymentSignalR', () => {
     });
 
     it('registers the onNotification callback via connection.on', async () => {
-        const onNotification = vi.fn();
-
-        renderHook(() => usePaymentSignalR({ onNotification }));
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
         });
 
-        expect(mockOn).toHaveBeenCalledWith('ReceivePaymentNotification', onNotification);
+        expect(mockOn).toHaveBeenCalledWith('ReceivePaymentNotification', expect.any(Function));
     });
 
     it('stops the connection on unmount', async () => {
