@@ -20,9 +20,7 @@ export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions):
         connection
             .start()
             .then(() => connection.invoke('SubscribeToPaymentEvents'))
-            .catch(() => {
-                // Connection errors are non-critical; payment notifications simply won't appear
-            });
+            .catch(() => {});
 
         connection.on('ReceivePaymentNotification', onNotification);
 
