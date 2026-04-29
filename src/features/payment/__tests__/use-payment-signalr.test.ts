@@ -81,4 +81,32 @@ describe('usePaymentSignalR', () => {
             await new Promise(resolve => setTimeout(resolve, 0));
         });
     });
+
+    it('calls onNotification with payment-failure payload when ReceivePaymentNotification fires with failure type', async () => {
+        const onNotification = vi.fn();
+        renderHook(() => usePaymentSignalR({ onNotification }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        const registeredHandler = mockOn.mock.calls.find(
+            (args: unknown[]) => args[0] === 'ReceivePaymentNotification'
+        )?.[1] as ((payload: unknown) => void) | undefined;
+
+        expect(registeredHandler).toBeDefined();
+
+        const failurePayload = {
+            type: 'payment-failure',
+            orderId: 'test-order-id',
+            message: 'Payment failed',
+            timestamp: '2026-04-29T00:00:00.000Z',
+        };
+
+        act(() => {
+            registeredHandler!(failurePayload);
+        });
+
+        expect(onNotification).toHaveBeenCalledWith(failurePayload);
+    });
 });
