@@ -34,6 +34,8 @@ function OrderDetail() {
             if (payload.type === PaymentNotificationType.Success) {
                 toast.success(payload.message);
                 queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });
+            } else if (payload.type === PaymentNotificationType.Failure) {
+                toast.error(payload.message);
             }
         },
         [queryClient, id]
