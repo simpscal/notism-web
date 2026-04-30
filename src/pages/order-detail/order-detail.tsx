@@ -130,14 +130,6 @@ function OrderDetail() {
                                 }}
                             />
 
-                            <PaymentQr
-                                paymentMethod={order.paymentMethod}
-                                paymentStatus={order.paymentStatus}
-                                paymentQr={order.paymentQr}
-                                slugId={order.slugId}
-                                paidAt={order.paidAt}
-                            />
-
                             <Card>
                                 <CardHeader>
                                     <CardTitle>{t('orderDetail.orderItems')}</CardTitle>
@@ -207,7 +199,14 @@ function OrderDetail() {
                             </Card>
                         </div>
 
-                        <div className='lg:col-span-1'>
+                        <div className='lg:col-span-1 space-y-6'>
+                            <PaymentQr
+                                paymentMethod={order.paymentMethod}
+                                paymentStatus={order.paymentStatus}
+                                paymentQr={order.paymentQr}
+                                slugId={order.slugId}
+                                paidAt={order.paidAt}
+                            />
                             <OrderActionCard
                                 slugId={order.slugId}
                                 orderDate={orderDate}

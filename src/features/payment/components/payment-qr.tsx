@@ -91,7 +91,7 @@ function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: 
                         <img
                             src={qrUrl}
                             alt={`VietQR payment code for order ${displaySlugId}`}
-                            className='w-48 h-48 max-w-full mx-auto border-border rounded-lg'
+                            className='w-full border-border rounded-lg'
                             onError={() => setImgError(true)}
                         />
                     )}
