@@ -1,102 +1,113 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Technologies
 
-## Development Commands
+| Category      | Technology                     |
+| ------------- | ------------------------------ |
+| Framework     | React 19                       |
+| TypeScript    | ~5.8                           |
+| Build tool    | Vite 6                         |
+| CSS           | Tailwind v4                    |
+| UI components | shadcn/ui (Radix UI)           |
+| State         | Redux Toolkit                  |
+| Data fetching | TanStack Query                 |
+| Routing       | React Router v7                |
+| Forms         | React Hook Form + Zod          |
+| i18n          | i18next                        |
+| Real-time     | Microsoft SignalR              |
+| Testing       | Vitest + Testing Library + MSW |
+
+Package manager: **bun** (not npm)
+
+## Commands
 
 ```bash
-bun run start          # Dev server on localhost:4200
-bun run start:mock     # Dev server with MSW mocking enabled
-bun run build          # TypeScript check + Vite build (default mode)
-bun run build:dev      # Build for development
-bun run build:prod     # Build for production
-bun run lint           # ESLint (flat config, eslint.config.js)
+bun run build        # production build
+bun run build:dev    # dev build
+bun run lint         # ESLint check
+bun run start        # dev server
+bun run start:mock  # dev server with MSW mocking
+bun run test         # Vitest run
 ```
 
-No test framework is configured. Pre-commit hooks run `eslint --fix` and `prettier --write` via husky + lint-staged.
-
-## Tech Stack
-
-React 19 + TypeScript + Vite. State: Redux Toolkit (global) + TanStack React Query (server). Routing: react-router-dom v7. Styling: Tailwind CSS v4 (via `@tailwindcss/vite`). UI primitives: Radix UI + shadcn/ui components. Forms: react-hook-form + zod. i18n: i18next (en/vi). API mocking: MSW. Animations: motion (Framer Motion).
-
-## Architecture
-
-Layered architecture with strict unidirectional imports — higher layers import from lower layers only.
+## Folder Structure
 
 ```
 src/
-├── layouts/        # Page shells (admin, auth, client) — wraps pages with nav/sidebar
-├── pages/          # Route-level components — one folder per route
-├── features/       # Domain logic modules (food, cart, order, user) — hooks, components, utils
-├── components/     # Shared UI components (shadcn/ui-based, Radix primitives)
-├── core/           # Cross-cutting: hooks (useRedux, useReloadUser), guards, contexts (theme)
-├── store/          # Redux slices (auth, user, cart, food) — no API calls here
-├── apis/           # API layer: ApiClient (custom fetch wrapper), endpoint modules, response models
-├── app/            # Pure TS only — constants, enums, i18n, models, utils, assets
-├── app.tsx         # Root component — initializes cart, categories, navigation
-├── app.routes.tsx  # All route definitions
-└── main.tsx        # Entry — providers (Redux, React Query, Router, Theme, MSW)
+  app/              # Constants, enums, i18n, utils, styles
+  apis/             # API clients + request/response DTOs
+  components/       # Reusable UI components (shadcn/ui)
+    [feature]/      # Feature-specific components
+    ui/             # Base components (button, card, dialog, etc.)
+  core/             # Hooks, contexts, route guards
+  features/        # Feature business logic (ViewModels)
+  layouts/          # AdminLayout, AuthLayout, ClientLayout
+  pages/            # Page components + routing
+  store/            # Redux slices (auth, cart, food, user)
+  mocks/            # MSW handlers for API mocking
 ```
 
-### Import Rules
+## Architecture
 
-```
-layouts    → pages, features, components, core, store, apis, app
-pages      → layouts(store only), features, components, core, store, apis, app
-features   → components, core, store, apis, app
-components → core, app
-core       → apis, app
-store      → features(models only), app
-apis       → app
-app        → (no imports from other layers)
-```
+| Layer         | Responsibility                      |
+| ------------- | ----------------------------------- |
+| `layouts/`    | Top-level structural containers     |
+| `pages/`      | Page components, route rendering    |
+| `features/`   | Shared business logic between pages |
+| `components/` | Reusable UI components              |
+| `core/`       | Hooks, contexts, guards             |
+| `store/`      | Redux state                         |
+| `apis/`       | API calls                           |
 
-ESLint enforces: no importing directly from `@/apis/models/` — use viewmodels from features instead.
+Dependency rule: higher layers import from lower layers only. Never reverse.
 
-### Key Patterns
+State: Redux Toolkit (global) + TanStack Query (server state)
+Forms: React Hook Form + Zod validation
+Routing: React Router v7 via `app.routes.tsx`
 
-- **API client** (`src/apis/client.ts`): Custom fetch wrapper with request/response interceptors, automatic token refresh on 401, XSRF token handling. All API modules use the shared `apiClient` instance.
-- **Path aliases**: `@/` maps to `src/`. Additional shortcuts: `@/components`, `@/utils`, `@/enums`, `@/constants`, `@/hooks`, `@/contexts`.
-- **MSW mocking**: Enabled via `VITE_ENABLE_MOCK=true` env var. Mock handlers in `mocks/` directory.
-- **Guards**: Route guards in `src/core/guards/` handle auth, admin, and reset-password access control.
-- **i18n** (`src/app/i18n/`): i18next with `react-i18next`. Supports English (`en`) and Vietnamese (`vi`). Language is detected from `localStorage` then browser, with `en` as fallback. Use `useTranslation` hook and `t()` in components — never hardcode user-facing strings. Locale files: `src/app/i18n/locales/{en,vi}.json`.
+## State Management
 
-## Code Conventions
+TanStack Query owns all server data. Redux owns auth, cart, and cross-route reference data only. Never put fetched data in Redux. Never call API functions directly in components.
 
-Follow the detailed rules in `docs/rules/`. Key points:
+## Tailwind v4 Tokens
 
-### Naming
+No `tailwind.config.js`. All colors are CSS custom properties. Use semantic tokens only:
+`bg-background`, `bg-primary`, `text-primary-foreground`, `text-destructive`, `text-muted-foreground`, `bg-card`, `border-border`.
 
-| Type          | Convention                     | Example                     |
-| ------------- | ------------------------------ | --------------------------- |
-| Files/Folders | kebab-case                     | `user-profile.tsx`, `auth/` |
-| Components    | PascalCase                     | `UserCard`                  |
-| Props         | PascalCase + `Props`           | `UserCardProps`             |
-| Types         | PascalCase (+ `Type` optional) | `UserRoleType`              |
-| Enums         | PascalCase + `Enum`            | `StatusEnum`                |
-| Models        | PascalCase + `Model`           | `UserViewModel`             |
-| Hooks         | `use` prefix                   | `useAuth`                   |
-| APIs          | camelCase + `Api`              | `userApi`                   |
-| Utils         | camelCase + `Utils`            | `dateUtils`                 |
-| Constants     | UPPERCASE_SNAKE_CASE           | `PAGE_SIZE`                 |
+Never use raw palette values (`bg-blue-500`, `text-red-600`, `bg-white`).
 
-### Component Structure Order
+Conditional class merging: `cn()` from `@/app/utils/tailwind.utils`.
 
-1. Imports → 2. Types → 3. Component definition → 4. Hooks → 5. useEffect → 6. Helpers → 7. Event handlers (useCallback) → 8. Early returns → 9. Render → 10. Export (wrapped with `memo`)
+## Import Aliases
 
-### Formatting (Prettier)
+| Alias          | Path                 |
+| -------------- | -------------------- |
+| `@/components` | `src/components/`    |
+| `@/constants`  | `src/app/constants/` |
+| `@/hooks`      | `src/core/hooks/`    |
+| `@/contexts`   | `src/core/contexts/` |
+| `@/utils`      | `src/app/utils/`     |
+| `@/test/utils` | `test/utils.tsx`     |
+| `@/`           | `src/` (fallback)    |
 
-120 char line width, 4-space indent, single quotes, JSX single quotes, trailing commas (es5), arrow parens: avoid.
+## Tests
 
-### Key Principles
+Test helper: `import { renderWithProviders } from '@/test/utils'` (wraps Redux, QueryClient, i18n, Router).
+File placement: co-locate in `__tests__/` under the feature/page/component being tested.
 
-- **No React in `app` layer** — pure TypeScript only; exception: `src/app/i18n/i18n.ts` uses `initReactI18next` as a bootstrap adapter only
-- **No API calls in store** — use features/hooks for side effects
-- **No business logic in components** — use features/hooks
-- **Import order enforced**: builtin → external → internal → parent → sibling → index (alphabetized, with blank lines between groups)
+## Document Navigation
 
-## Full Documentation
+| Topic              | Location                               |
+| ------------------ | -------------------------------------- |
+| Architecture       | `docs/rules/architecture.md`           |
+| Best practices     | `docs/rules/best-practices.md`         |
+| Naming conventions | `docs/rules/naming.md`                 |
+| OAuth flow         | `docs/integration-flows/oauth-flow.md` |
 
-- **Architecture & Layer Rules**: `docs/rules/architecture.md`
-- **Naming Conventions**: `docs/rules/naming.md`
-- **Best Practices & Patterns**: `docs/rules/best-practices.md`
+## CI/CD
+
+| Workflow        | Trigger          | Target              |
+| --------------- | ---------------- | ------------------- |
+| `deploy-s3.yml` | Push to dev/main | AWS S3 + CloudFront |
+
+Branch → environment: `main` = prod, `dev` = dev
