@@ -45,8 +45,8 @@ function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: 
         return (
             <Card className='border-success/30 bg-success/5' role='status'>
                 <CardContent className='flex flex-col items-center text-center gap-3 py-6'>
-                    <CheckCircle2 className='text-success h-8 w-8' aria-hidden='true' />
-                    <CardTitle>{t('payment.qr.confirmed')}</CardTitle>
+                    <CheckCircle2 className='text-success h-16 w-16' aria-hidden='true' />
+                    <CardTitle className='text-2xl'>{t('payment.qr.confirmed')}</CardTitle>
                     {formattedPaidAt && <p className='text-muted-foreground text-sm'>{formattedPaidAt}</p>}
                 </CardContent>
             </Card>
