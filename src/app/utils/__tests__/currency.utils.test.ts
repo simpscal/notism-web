@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatVnd } from './currency.utils';
+import { formatVnd } from '../currency.utils';
 
 describe('formatVnd', () => {
     it('formats zero as "0 ₫"', () => {

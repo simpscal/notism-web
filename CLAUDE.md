@@ -93,7 +93,12 @@ Conditional class merging: `cn()` from `@/app/utils/tailwind.utils`.
 ## Tests
 
 Test helper: `import { renderWithProviders } from '@/test/utils'` (wraps Redux, QueryClient, i18n, Router).
-File placement: co-locate in `__tests__/` under the feature/page/component being tested.
+File placement: always in a `__tests__/` subdirectory co-located with the module under test. This applies to every layer — `app/utils/`, `features/`, `pages/`, `components/`, etc.
+
+```
+src/app/utils/__tests__/currency.utils.test.ts   ✅
+src/app/utils/currency.utils.test.ts             ❌ (flat co-location)
+```
 
 ## Document Navigation
 

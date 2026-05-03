@@ -126,6 +126,7 @@ graph TD
 │   ├── 📁 enums/    # TypeScript enums
 │   ├── 📁 i18n/     # i18next setup and locale translation files (en, vi)
 │   ├── 📁 utils/    # Utility functions
+│   │   └── 📁 __tests__/ # Utility unit tests
 │   └── 📁 styles/   # Global styles
 │
 ├── 📁 pages/        # Complete application pages
@@ -246,7 +247,7 @@ Contains application-wide configurations, static assets, constants, enums, utili
 - **constants/**: Application-wide constants (API endpoints, keys, etc.)
 - **enums/**: TypeScript enums for type-safe values
 - **i18n/**: i18next initialization (`i18n.ts`) and locale translation files (`locales/en.json`, `locales/vi.json`)
-- **utils/**: Pure utility functions (no React dependencies)
+- **utils/**: Pure utility functions (no React dependencies); unit tests live in `utils/__tests__/`
 - **assets/**: Static assets (images, fonts, icons)
 - **styles/**: Global CSS styles
 

@@ -110,6 +110,32 @@ To add or update translations, edit the JSON files in `src/app/i18n/locales/` an
 
 ---
 
+## 🧪 Testing
+
+This project uses [Vitest](https://vitest.dev/) with [Testing Library](https://testing-library.com/) and [MSW](https://mswjs.io/) for mocking.
+
+```bash
+bun run test          # run all tests
+bun run start:mock    # dev server with MSW mocking enabled
+```
+
+**Test file placement:** Tests live in a `__tests__/` subdirectory co-located with the module under test.
+
+```
+src/app/utils/
+  __tests__/
+    currency.utils.test.ts   ✅
+  currency.utils.ts
+
+src/features/payment/
+  __tests__/
+    use-payment-signalr.test.ts
+```
+
+**Test helper:** `import { renderWithProviders } from '@/test/utils'` — wraps Redux, QueryClient, i18n, and Router for component tests.
+
+---
+
 ## 📚 Documents
 
 Project documentation is located in the `docs/` folder:

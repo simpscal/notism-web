@@ -143,6 +143,8 @@ This document defines the naming conventions used throughout the React applicati
 
 - Pattern: `{file-name}.test.{ext}`
 - Examples: `user.api.test.ts`, `auth.guard.test.tsx`
+- Placement: always inside a `__tests__/` subdirectory co-located with the module under test
+- Example tree: `src/app/utils/__tests__/currency.utils.test.ts`
 
 ## Constants
 
