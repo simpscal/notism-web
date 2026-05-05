@@ -48,6 +48,11 @@ function Payment() {
     }, []);
 
     const handlePlaceOrder = useCallback(() => {
+        if (paymentMethod === PaymentMethodEnum.Banking) {
+            navigate(`/${ROUTES.CHECKOUT}`, { state: { paymentMethod: PaymentMethodEnum.Banking } });
+            return;
+        }
+
         if (selectedItems.length === 0) {
             toast.error(t('payment.selectItem'));
             navigate(`/${ROUTES.CART}`);

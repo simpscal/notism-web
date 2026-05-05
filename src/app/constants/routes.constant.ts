@@ -19,6 +19,7 @@ export const ROUTES = {
     },
     CART: 'cart',
     PAYMENT: 'payment',
+    CHECKOUT: 'checkout',
     DELIVERY_STATUS: 'delivery-status',
     ORDERS: {
         LIST: 'orders',

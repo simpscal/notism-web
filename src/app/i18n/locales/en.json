@@ -613,6 +613,12 @@
         "description": "The page you're looking for doesn't exist",
         "goHome": "Go Home"
     },
+    "checkout": {
+        "title": "Checkout",
+        "awaitingTransfer": "Awaiting Bank Transfer",
+        "pending": "Pending",
+        "awaitingDescription": "Complete your bank transfer to confirm the order"
+    },
     "validation": {
         "fieldRequired": "This field is required",
         "invalidValue": "Invalid value",

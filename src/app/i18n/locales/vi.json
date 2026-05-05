@@ -613,6 +613,12 @@
         "description": "Trang bạn đang tìm kiếm không tồn tại",
         "goHome": "Về trang chủ"
     },
+    "checkout": {
+        "title": "Thanh toán",
+        "awaitingTransfer": "Chờ chuyển khoản",
+        "pending": "Đang chờ",
+        "awaitingDescription": "Hoàn tất chuyển khoản để xác nhận đơn hàng"
+    },
     "validation": {
         "fieldRequired": "Trường này là bắt buộc",
         "invalidValue": "Giá trị không hợp lệ",

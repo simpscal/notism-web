@@ -13,6 +13,7 @@ import AdminOrders from '@/pages/admin/orders/orders';
 import AdminUserDetail from '@/pages/admin/user-detail';
 import AdminUsers from '@/pages/admin/users/users';
 import { Cart } from '@/pages/cart';
+import { Checkout } from '@/pages/checkout';
 import { FoodDetail } from '@/pages/food-detail';
 import { Foods } from '@/pages/foods';
 import { Landing } from '@/pages/landing';
@@ -68,6 +69,7 @@ function AppRoutes() {
 
                 <Route element={<AuthRouteGuard mode='authenticated' />}>
                     <Route path='payment' element={<Payment />} />
+                    <Route path='checkout' element={<Checkout />} />
                     <Route path='orders' element={<Orders />} />
                     <Route path='orders/:id' element={<OrderDetail />} />
                     <Route path='settings' element={<Settings />}>
