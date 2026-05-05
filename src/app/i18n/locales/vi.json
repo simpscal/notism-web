@@ -210,6 +210,9 @@
         "payWithCash": "Thanh toán bằng tiền mặt khi đơn hàng được giao",
         "onlineBanking": "Chuyển khoản ngân hàng trực tuyến",
         "selectItem": "Vui lòng chọn ít nhất một mục để đặt hàng",
+        "pending": "Đang chờ",
+        "awaitingTransfer": "Chờ chuyển khoản",
+        "awaitingTransferDescription": "Hoàn tất chuyển khoản để xác nhận đơn hàng",
         "empty": {
             "title": "Giỏ hàng của bạn trống",
             "description": "Thêm mục vào giỏ hàng của bạn trước khi tiếp tục thanh toán.",
