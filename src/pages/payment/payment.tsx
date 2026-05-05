@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
 
-import { orderApi } from '@/apis';
+import { orderApi, paymentApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
@@ -16,6 +16,7 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
+import { PaymentQr, PaymentStatusEnum } from '@/features/payment';
 import {
     loadCart,
     selectCartItems,
@@ -34,6 +35,12 @@ function Payment() {
     const isInitialized = useAppSelector(selectCartIsInitialized);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
     const [bankingCheckout, setBankingCheckout] = useState(false);
+
+    const { data: bankAccount } = useQuery({
+        queryKey: ['bank-account'],
+        queryFn: () => paymentApi.getBankAccount(),
+        enabled: bankingCheckout,
+    });
 
     const { mutate: createOrder, isPending: isCreatingOrder } = useMutation({
         mutationFn: (data: { paymentMethod: string; cartItemIds: string[] }) => orderApi.create(data),
@@ -124,6 +131,23 @@ function Payment() {
                     <div className='grid gap-8 lg:grid-cols-3'>
                         {/* Banking checkout info */}
                         <div className='lg:col-span-2 space-y-6'>
+                            <PaymentQr
+                                paymentMethod={PaymentMethodEnum.Banking}
+                                paymentStatus={PaymentStatusEnum.Unpaid}
+                                paymentQr={
+                                    bankAccount
+                                        ? {
+                                              bankCode: bankAccount.bankCode,
+                                              accountNumber: bankAccount.accountNumber,
+                                              accountHolderName: bankAccount.accountHolderName,
+                                              amount: totalPrice,
+                                              orderReference: '',
+                                          }
+                                        : null
+                                }
+                                slugId=''
+                                paidAt={null}
+                            />
                             <Card>
                                 <CardHeader>
                                     <CardTitle>{t('payment.awaitingTransfer')}</CardTitle>
