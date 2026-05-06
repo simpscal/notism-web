@@ -1,4 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { CheckCircle2 } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -6,15 +7,23 @@ import { toast } from 'sonner';
 
 import { PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
 
-import { orderApi } from '@/apis';
+import { orderApi, paymentApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
+import {
+    PaymentNotificationPayload,
+    PaymentNotificationType,
+    PaymentQr,
+    PaymentStatusEnum,
+    usePaymentSignalR,
+} from '@/features/payment';
 import {
     loadCart,
     selectCartItems,
@@ -32,6 +41,15 @@ function Payment() {
     const totalPrice = useAppSelector(selectSelectedCartTotalPrice);
     const isInitialized = useAppSelector(selectCartIsInitialized);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
+    const [bankingCheckout, setBankingCheckout] = useState(false);
+    const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+    const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
+
+    const { data: bankAccount } = useQuery({
+        queryKey: ['bank-account'],
+        queryFn: () => paymentApi.getBankAccount(),
+        enabled: bankingCheckout,
+    });
 
     const { mutate: createOrder, isPending: isCreatingOrder } = useMutation({
         mutationFn: (data: { paymentMethod: string; cartItemIds: string[] }) => orderApi.create(data),
@@ -43,11 +61,35 @@ function Payment() {
         },
     });
 
+    const handlePaymentNotification = useCallback(
+        (payload: PaymentNotificationPayload) => {
+            if (payload.type === PaymentNotificationType.Success) {
+                setPaymentConfirmed(true);
+                setConfirmedSlugId(payload.slugId);
+                toast.success(t('payment.paymentConfirmed'));
+            }
+        },
+        [t]
+    );
+
+    usePaymentSignalR({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
+
+    const handleBankingPlaceOrder = useCallback(async () => {
+        if (!confirmedSlugId) return;
+        await dispatch(loadCart()).unwrap();
+        navigate(`/${ROUTES.ORDERS.DETAIL(confirmedSlugId)}`);
+    }, [confirmedSlugId, dispatch, navigate]);
+
     const handlePaymentMethodChange = useCallback((value: string) => {
         setPaymentMethod(value as PaymentMethodEnum);
     }, []);
 
     const handlePlaceOrder = useCallback(() => {
+        if (paymentMethod === PaymentMethodEnum.Banking) {
+            setBankingCheckout(true);
+            return;
+        }
+
         if (selectedItems.length === 0) {
             toast.error(t('payment.selectItem'));
             navigate(`/${ROUTES.CART}`);
@@ -103,6 +145,98 @@ function Payment() {
                         <Button size='lg' onClick={handleBackToCart}>
                             {t('payment.backToCart')}
                         </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (bankingCheckout) {
+        return (
+            <div className='bg-background'>
+                {pageHeader}
+                <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
+                    <div className='grid gap-8 lg:grid-cols-3'>
+                        {/* Banking checkout info */}
+                        <div className='lg:col-span-2 space-y-6'>
+                            <PaymentQr
+                                paymentMethod={PaymentMethodEnum.Banking}
+                                paymentStatus={PaymentStatusEnum.Unpaid}
+                                paymentQr={
+                                    bankAccount
+                                        ? {
+                                              bankCode: bankAccount.bankCode,
+                                              accountNumber: bankAccount.accountNumber,
+                                              accountHolderName: bankAccount.accountHolderName,
+                                              amount: totalPrice,
+                                              orderReference: '',
+                                          }
+                                        : null
+                                }
+                                slugId=''
+                                paidAt={null}
+                            />
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>{t('payment.awaitingTransfer')}</CardTitle>
+                                    <CardDescription>{t('payment.awaitingTransferDescription')}</CardDescription>
+                                </CardHeader>
+                                <CardContent className='space-y-4'>
+                                    <div className='flex justify-between text-sm'>
+                                        <span className='text-muted-foreground'>{t('payment.paymentMethod')}</span>
+                                        <span className='font-medium'>{t('payment.banking')}</span>
+                                    </div>
+                                    <div className='flex justify-between text-sm'>
+                                        <span className='text-muted-foreground'>{t('orders.status')}</span>
+                                        {paymentConfirmed ? (
+                                            <Badge variant='success'>
+                                                <CheckCircle2 className='mr-1 h-3 w-3' />
+                                                {t('payment.confirmed')}
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant='secondary'>{t('payment.pending')}</Badge>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Action card */}
+                        <div className='lg:col-span-1'>
+                            <Card className='sticky top-4'>
+                                <CardHeader>
+                                    <CardTitle>{t('payment.completeOrder')}</CardTitle>
+                                    <CardDescription>{t('payment.awaitingTransferDescription')}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className='space-y-2'>
+                                        <div className='flex justify-between text-sm'>
+                                            <span className='text-muted-foreground'>{t('payment.paymentMethod')}</span>
+                                            <span className='font-medium'>{t('payment.banking')}</span>
+                                        </div>
+                                        <Separator />
+                                        <div className='flex justify-between text-lg font-semibold'>
+                                            <span>{t('payment.totalAmount')}</span>
+                                            <span>{formatVnd(totalPrice)}</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className='flex flex-col gap-2'>
+                                    <Button
+                                        variant='default'
+                                        size='lg'
+                                        className='w-full'
+                                        disabled={!paymentConfirmed}
+                                        onClick={paymentConfirmed ? handleBankingPlaceOrder : undefined}
+                                    >
+                                        {t('payment.placeOrder')}
+                                    </Button>
+                                    <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
+                                        {t('payment.backToCart')}
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        </div>
                     </div>
                 </div>
             </div>

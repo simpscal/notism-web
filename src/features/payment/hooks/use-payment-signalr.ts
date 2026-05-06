@@ -4,10 +4,13 @@ import { createPaymentHubConnection, type PaymentNotificationPayload } from '../
 
 export interface UsePaymentSignalROptions {
     onNotification: (payload: PaymentNotificationPayload) => void;
+    enabled?: boolean;
 }
 
-export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions): void {
+export function usePaymentSignalR({ onNotification, enabled = true }: UsePaymentSignalROptions): void {
     useEffect(() => {
+        if (!enabled) return;
+
         const connection = createPaymentHubConnection();
 
         connection.on('ReceivePaymentNotification', onNotification);
@@ -24,5 +27,5 @@ export function usePaymentSignalR({ onNotification }: UsePaymentSignalROptions):
         return () => {
             connection.stop().catch(() => {});
         };
-    }, [onNotification]);
+    }, [onNotification, enabled]);
 }

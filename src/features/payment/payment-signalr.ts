@@ -13,6 +13,7 @@ export type PaymentNotificationType = (typeof PaymentNotificationType)[keyof typ
 export interface PaymentNotificationPayload {
     type: PaymentNotificationType;
     orderId: string;
+    slugId: string;
     message: string;
     timestamp: string;
 }
