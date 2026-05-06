@@ -75,7 +75,7 @@ describe('Payment — bankingCheckout flow', () => {
         });
     });
 
-    it('renders pending badge and disabled Place Order button after banking method triggers checkout', async () => {
+    it('renders pending badge and disabled View Order button after banking method triggers checkout', async () => {
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
@@ -94,12 +94,12 @@ describe('Payment — bankingCheckout flow', () => {
             expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
         });
 
-        // Place Order button should be disabled
-        const disabledBtn = screen.getByRole('button', { name: t('payment.placeOrder') });
+        // View Order button should be disabled
+        const disabledBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
         expect(disabledBtn).toBeDisabled();
     });
 
-    it('shows confirmed badge and active Place Order button after payment notification arrives', async () => {
+    it('shows confirmed badge and active View Order button after payment notification arrives', async () => {
         const { usePaymentSignalR } = await import('@/features/payment');
         const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
 
@@ -145,8 +145,8 @@ describe('Payment — bankingCheckout flow', () => {
 
         expect(screen.queryByText(t('payment.pending'))).not.toBeInTheDocument();
 
-        // Place Order button should now be enabled
-        const placeOrderBtn = screen.getByRole('button', { name: t('payment.placeOrder') });
+        // View Order button should now be enabled
+        const placeOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
         expect(placeOrderBtn).not.toBeDisabled();
     });
 });

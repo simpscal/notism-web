@@ -229,7 +229,7 @@ function Payment() {
                                         disabled={!paymentConfirmed}
                                         onClick={paymentConfirmed ? handleBankingPlaceOrder : undefined}
                                     >
-                                        {t('payment.placeOrder')}
+                                        {t('payment.viewOrder')}
                                     </Button>
                                     <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
                                         {t('payment.backToCart')}
