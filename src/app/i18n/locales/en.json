@@ -210,6 +210,9 @@
         "payWithCash": "Pay with cash when your order is delivered",
         "onlineBanking": "Online banking transfer",
         "selectItem": "Please select at least one item to place an order",
+        "pending": "Pending",
+        "awaitingTransfer": "Awaiting Bank Transfer",
+        "awaitingTransferDescription": "Complete your bank transfer to confirm the order",
         "empty": {
             "title": "Your cart is empty",
             "description": "Add items to your cart before proceeding to payment.",
