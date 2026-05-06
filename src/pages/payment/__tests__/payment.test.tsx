@@ -146,7 +146,7 @@ describe('Payment — bankingCheckout flow', () => {
         expect(screen.queryByText(t('payment.pending'))).not.toBeInTheDocument();
 
         // View Order button should now be enabled
-        const placeOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
-        expect(placeOrderBtn).not.toBeDisabled();
+        const viewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
+        expect(viewOrderBtn).not.toBeDisabled();
     });
 });

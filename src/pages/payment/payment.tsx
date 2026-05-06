@@ -74,7 +74,7 @@ function Payment() {
 
     usePaymentSignalR({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
 
-    const handleBankingPlaceOrder = useCallback(async () => {
+    const handleViewOrder = useCallback(async () => {
         if (!confirmedSlugId) return;
         await dispatch(loadCart()).unwrap();
         navigate(`/${ROUTES.ORDERS.DETAIL(confirmedSlugId)}`);
@@ -227,7 +227,7 @@ function Payment() {
                                         size='lg'
                                         className='w-full'
                                         disabled={!paymentConfirmed}
-                                        onClick={paymentConfirmed ? handleBankingPlaceOrder : undefined}
+                                        onClick={paymentConfirmed ? handleViewOrder : undefined}
                                     >
                                         {t('payment.viewOrder')}
                                     </Button>
