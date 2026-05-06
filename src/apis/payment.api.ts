@@ -11,4 +11,8 @@ export const paymentApi = {
     saveBankAccount: (data: SaveBankAccountRequestModel) => {
         return apiClient.put<void>(API_ENDPOINTS.PAYMENT.BANK_ACCOUNT, data);
     },
+
+    createBankingCheckout: (data: { cartItemIds: string[]; totalAmount: number }) => {
+        return apiClient.post<{ checkoutId: string }>(API_ENDPOINTS.PAYMENT.BANKING_CHECKOUT, data);
+    },
 };

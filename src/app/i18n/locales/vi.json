@@ -199,6 +199,7 @@
         "selectPaymentMethod": "Chọn phương thức thanh toán",
         "totalAmount": "Tổng số tiền",
         "placeOrder": "Đặt hàng",
+        "viewOrder": "Xem đơn hàng",
         "backToCart": "Quay lại giỏ hàng",
         "processing": "Đang xử lý...",
         "orderPlaced": "Đơn hàng đã được đặt thành công!",
@@ -211,6 +212,8 @@
         "onlineBanking": "Chuyển khoản ngân hàng trực tuyến",
         "selectItem": "Vui lòng chọn ít nhất một mục để đặt hàng",
         "pending": "Đang chờ",
+        "confirmed": "Đã xác nhận thanh toán",
+        "paymentConfirmed": "Thanh toán đã được xác nhận. Bạn có thể xem đơn hàng ngay bây giờ.",
         "awaitingTransfer": "Chờ chuyển khoản",
         "awaitingTransferDescription": "Hoàn tất chuyển khoản để xác nhận đơn hàng",
         "empty": {

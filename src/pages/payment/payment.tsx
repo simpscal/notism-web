@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { CheckCircle2 } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +17,13 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
-import { PaymentQr, PaymentStatusEnum } from '@/features/payment';
+import {
+    PaymentQr,
+    PaymentStatusEnum,
+    PaymentNotificationPayload,
+    PaymentNotificationType,
+    usePaymentSignalR,
+} from '@/features/payment';
 import {
     loadCart,
     selectCartItems,
@@ -35,11 +42,22 @@ function Payment() {
     const isInitialized = useAppSelector(selectCartIsInitialized);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
     const [bankingCheckout, setBankingCheckout] = useState(false);
+    const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+    const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
+    const [checkoutId, setCheckoutId] = useState<string | null>(null);
 
     const { data: bankAccount } = useQuery({
         queryKey: ['bank-account'],
         queryFn: () => paymentApi.getBankAccount(),
         enabled: bankingCheckout,
+    });
+
+    const { mutate: createBankingCheckout, isPending: isCreatingCheckout } = useMutation({
+        mutationFn: (data: { cartItemIds: string[]; totalAmount: number }) => paymentApi.createBankingCheckout(data),
+        onSuccess: result => {
+            setCheckoutId(result.checkoutId);
+            setBankingCheckout(true);
+        },
     });
 
     const { mutate: createOrder, isPending: isCreatingOrder } = useMutation({
@@ -52,13 +70,37 @@ function Payment() {
         },
     });
 
+    const handlePaymentNotification = useCallback(
+        (payload: PaymentNotificationPayload) => {
+            if (payload.type === PaymentNotificationType.Success) {
+                setPaymentConfirmed(true);
+                setConfirmedSlugId(payload.slugId);
+                toast.success(t('payment.paymentConfirmed'));
+            } else if (payload.type === PaymentNotificationType.Failure) {
+                toast.error(t('payment.paymentFailed'));
+            }
+        },
+        [t]
+    );
+
+    usePaymentSignalR({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
+
+    const handleViewOrder = useCallback(async () => {
+        if (!confirmedSlugId) return;
+        await dispatch(loadCart()).unwrap();
+        navigate(`/${ROUTES.ORDERS.DETAIL(confirmedSlugId)}`);
+    }, [confirmedSlugId, dispatch, navigate]);
+
     const handlePaymentMethodChange = useCallback((value: string) => {
         setPaymentMethod(value as PaymentMethodEnum);
     }, []);
 
     const handlePlaceOrder = useCallback(() => {
         if (paymentMethod === PaymentMethodEnum.Banking) {
-            setBankingCheckout(true);
+            createBankingCheckout({
+                cartItemIds: selectedItems.map(i => i.id),
+                totalAmount: totalPrice,
+            });
             return;
         }
 
@@ -74,7 +116,7 @@ function Payment() {
             paymentMethod: paymentMethod,
             cartItemIds,
         });
-    }, [selectedItems, paymentMethod, navigate, createOrder, setBankingCheckout]);
+    }, [selectedItems, totalPrice, paymentMethod, navigate, createOrder, createBankingCheckout]);
 
     const handleBackToCart = useCallback(() => {
         navigate(`/${ROUTES.CART}`);
@@ -141,7 +183,7 @@ function Payment() {
                                               accountNumber: bankAccount.accountNumber,
                                               accountHolderName: bankAccount.accountHolderName,
                                               amount: totalPrice,
-                                              orderReference: '',
+                                              orderReference: checkoutId ? checkoutId.replace(/-/g, '') : '',
                                           }
                                         : null
                                 }
@@ -160,7 +202,14 @@ function Payment() {
                                     </div>
                                     <div className='flex justify-between text-sm'>
                                         <span className='text-muted-foreground'>{t('orders.status')}</span>
-                                        <Badge variant='secondary'>{t('payment.pending')}</Badge>
+                                        {paymentConfirmed ? (
+                                            <Badge variant='success'>
+                                                <CheckCircle2 className='mr-1 h-3 w-3' />
+                                                {t('payment.confirmed')}
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant='secondary'>{t('payment.pending')}</Badge>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -187,8 +236,14 @@ function Payment() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className='flex flex-col gap-2'>
-                                    <Button variant='default' size='lg' className='w-full' disabled>
-                                        {t('payment.placeOrder')}
+                                    <Button
+                                        variant='default'
+                                        size='lg'
+                                        className='w-full'
+                                        disabled={!paymentConfirmed}
+                                        onClick={paymentConfirmed ? handleViewOrder : undefined}
+                                    >
+                                        {t('payment.viewOrder')}
                                     </Button>
                                     <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
                                         {t('payment.backToCart')}
@@ -243,9 +298,9 @@ function Payment() {
                                     size='lg'
                                     className='w-full'
                                     onClick={handlePlaceOrder}
-                                    disabled={isCreatingOrder}
+                                    disabled={isCreatingOrder || isCreatingCheckout}
                                 >
-                                    {isCreatingOrder ? (
+                                    {isCreatingOrder || isCreatingCheckout ? (
                                         <>
                                             <Spinner size='sm' className='' />
                                             {t('payment.processing')}
