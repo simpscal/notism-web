@@ -24,6 +24,7 @@ vi.mock('@/features/payment', async importOriginal => {
 });
 
 const BANK_ACCOUNT_URL = '*/payments/bank-account';
+const BANKING_CHECKOUT_URL = '*/payments/banking/checkout';
 
 const server = setupServer(
     http.get(BANK_ACCOUNT_URL, () =>
@@ -31,6 +32,11 @@ const server = setupServer(
             bankCode: 'VCB',
             accountNumber: '1234567890',
             accountHolderName: 'Nguyen Van A',
+        })
+    ),
+    http.post(BANKING_CHECKOUT_URL, () =>
+        HttpResponse.json({
+            checkoutId: '550e8400-e29b-41d4-a716-446655440000',
         })
     )
 );
@@ -85,7 +91,7 @@ describe('Payment — bankingCheckout flow', () => {
         const bankingOption = screen.getByRole('radio', { name: /banking/i });
         await userEvent.click(bankingOption);
 
-        // Click Place Order to enter bankingCheckout mode
+        // Click Place Order to enter bankingCheckout mode (triggers createBankingCheckout mutation)
         const placeOrderBtn = screen.getByRole('button', { name: t('payment.placeOrder') });
         await userEvent.click(placeOrderBtn);
 
@@ -148,5 +154,54 @@ describe('Payment — bankingCheckout flow', () => {
         // View Order button should now be enabled
         const viewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
         expect(viewOrderBtn).not.toBeDisabled();
+    });
+
+    it('shows error toast when payment failure notification arrives', async () => {
+        const { usePaymentSignalR } = await import('@/features/payment');
+        const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
+
+        let capturedCallback:
+            | ((payload: { type: string; orderId: string; slugId: string; message: string; timestamp: string }) => void)
+            | null = null;
+
+        mockUsePaymentSignalR.mockImplementation(({ onNotification }) => {
+            capturedCallback = onNotification as typeof capturedCallback;
+        });
+
+        renderWithProviders(<Payment />);
+
+        // Enter banking checkout mode
+        await waitFor(() => {
+            expect(screen.getByText(t('payment.banking'))).toBeInTheDocument();
+        });
+
+        await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
+        await userEvent.click(screen.getByRole('button', { name: t('payment.placeOrder') }));
+
+        await waitFor(() => {
+            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+        });
+
+        // Simulate payment failure notification
+        expect(capturedCallback).not.toBeNull();
+
+        act(() => {
+            capturedCallback!({
+                type: PaymentNotificationType.Failure,
+                orderId: '',
+                slugId: '',
+                message: 'Payment failed',
+                timestamp: '2026-05-06T00:00:00Z',
+            });
+        });
+
+        // QR view should still be visible (badge still pending — no order created)
+        await waitFor(() => {
+            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+        });
+
+        // View Order button should remain disabled
+        const viewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
+        expect(viewOrderBtn).toBeDisabled();
     });
 });

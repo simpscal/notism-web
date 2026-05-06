@@ -44,11 +44,20 @@ function Payment() {
     const [bankingCheckout, setBankingCheckout] = useState(false);
     const [paymentConfirmed, setPaymentConfirmed] = useState(false);
     const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
+    const [checkoutId, setCheckoutId] = useState<string | null>(null);
 
     const { data: bankAccount } = useQuery({
         queryKey: ['bank-account'],
         queryFn: () => paymentApi.getBankAccount(),
         enabled: bankingCheckout,
+    });
+
+    const { mutate: createBankingCheckout, isPending: isCreatingCheckout } = useMutation({
+        mutationFn: (data: { cartItemIds: string[]; totalAmount: number }) => paymentApi.createBankingCheckout(data),
+        onSuccess: result => {
+            setCheckoutId(result.checkoutId);
+            setBankingCheckout(true);
+        },
     });
 
     const { mutate: createOrder, isPending: isCreatingOrder } = useMutation({
@@ -67,6 +76,8 @@ function Payment() {
                 setPaymentConfirmed(true);
                 setConfirmedSlugId(payload.slugId);
                 toast.success(t('payment.paymentConfirmed'));
+            } else if (payload.type === PaymentNotificationType.Failure) {
+                toast.error(t('payment.paymentFailed'));
             }
         },
         [t]
@@ -86,7 +97,10 @@ function Payment() {
 
     const handlePlaceOrder = useCallback(() => {
         if (paymentMethod === PaymentMethodEnum.Banking) {
-            setBankingCheckout(true);
+            createBankingCheckout({
+                cartItemIds: selectedItems.map(i => i.id),
+                totalAmount: totalPrice,
+            });
             return;
         }
 
@@ -102,7 +116,7 @@ function Payment() {
             paymentMethod: paymentMethod,
             cartItemIds,
         });
-    }, [selectedItems, paymentMethod, navigate, createOrder]);
+    }, [selectedItems, totalPrice, paymentMethod, navigate, createOrder, createBankingCheckout]);
 
     const handleBackToCart = useCallback(() => {
         navigate(`/${ROUTES.CART}`);
@@ -169,7 +183,7 @@ function Payment() {
                                               accountNumber: bankAccount.accountNumber,
                                               accountHolderName: bankAccount.accountHolderName,
                                               amount: totalPrice,
-                                              orderReference: '',
+                                              orderReference: checkoutId ? checkoutId.replace(/-/g, '') : '',
                                           }
                                         : null
                                 }
@@ -284,9 +298,9 @@ function Payment() {
                                     size='lg'
                                     className='w-full'
                                     onClick={handlePlaceOrder}
-                                    disabled={isCreatingOrder}
+                                    disabled={isCreatingOrder || isCreatingCheckout}
                                 >
-                                    {isCreatingOrder ? (
+                                    {isCreatingOrder || isCreatingCheckout ? (
                                         <>
                                             <Spinner size='sm' className='' />
                                             {t('payment.processing')}
