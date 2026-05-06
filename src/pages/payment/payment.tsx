@@ -18,10 +18,10 @@ import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import {
-    PaymentNotificationPayload,
-    PaymentNotificationType,
     PaymentQr,
     PaymentStatusEnum,
+    PaymentNotificationPayload,
+    PaymentNotificationType,
     usePaymentSignalR,
 } from '@/features/payment';
 import {
