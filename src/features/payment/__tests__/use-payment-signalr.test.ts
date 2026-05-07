@@ -99,6 +99,7 @@ describe('usePaymentSignalR', () => {
         const failurePayload = {
             type: 'payment-failure',
             orderId: 'test-order-id',
+            slugId: 'ORD-ABC123',
             message: 'Payment failed',
             timestamp: '2026-04-29T00:00:00.000Z',
         };
@@ -108,5 +109,35 @@ describe('usePaymentSignalR', () => {
         });
 
         expect(onNotification).toHaveBeenCalledWith(failurePayload);
+    });
+
+    it('does not start the connection when enabled is false', async () => {
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), enabled: false }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        expect(mockStart).not.toHaveBeenCalled();
+    });
+
+    it('starts the connection when enabled is true explicitly', async () => {
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), enabled: true }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        expect(mockStart).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not register ReceivePaymentNotification handler when enabled is false', async () => {
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), enabled: false }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        expect(mockOn).not.toHaveBeenCalled();
     });
 });

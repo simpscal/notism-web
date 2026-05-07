@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
     },
     PAYMENT: {
         BANK_ACCOUNT: 'payments/bank-account',
+        BANKING_CHECKOUT: 'payments/banking/checkout',
     },
     ADMIN: {
         ORDERS: 'admin/orders',
