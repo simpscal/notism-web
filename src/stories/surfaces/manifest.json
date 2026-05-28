@@ -1,0 +1,24 @@
+{
+    "sprint": 6,
+    "surfaces": [
+        {
+            "slug": "landing",
+            "name": "Landing",
+            "route": "/",
+            "story": "src/stories/surfaces/Landing.stories.tsx",
+            "status": "composed",
+            "components": [
+                "LandingHeader",
+                "LandingHeroSection",
+                "LandingTrustSection",
+                "LandingFeaturesSection",
+                "LandingFaqSection",
+                "LandingCtaSection",
+                "LandingFooter"
+            ],
+            "states": ["default", "authenticated"],
+            "layout": "Fixed header -> scrollable main: hero gradient -> trust card -> features grid -> FAQ accordion -> CTA banner -> footer",
+            "changes": ["New landing surface story for sprint 6 warm-kitchen-companion direction"]
+        }
+    ]
+}
