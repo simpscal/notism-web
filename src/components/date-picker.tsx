@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
 import { Button } from '@/components/button';
@@ -8,6 +9,7 @@ import { Calendar } from '@/components/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
 
 export function DatePickerDemo() {
+    const { t } = useTranslation();
     const [date, setDate] = React.useState<Date>();
 
     return (
@@ -18,7 +20,7 @@ export function DatePickerDemo() {
                     className={cn('w-[240px] justify-start text-left font-normal', !date && 'text-muted-foreground')}
                 >
                     <CalendarIcon />
-                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                    {date ? format(date, 'PPP') : <span>{t('common.pickDate')}</span>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className='w-auto p-0' align='start'>

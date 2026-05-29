@@ -2,6 +2,7 @@ import { addDays, format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import * as React from 'react';
 import type { DateRange } from 'react-day-picker';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
 import { Button } from '@/components/button';
@@ -9,6 +10,7 @@ import { Calendar } from '@/components/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
 
 export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivElement>) {
+    const { t } = useTranslation();
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: new Date(2022, 0, 20),
         to: addDays(new Date(2022, 0, 20), 20),
@@ -36,7 +38,7 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
                                 format(date.from, 'LLL dd, y')
                             )
                         ) : (
-                            <span>Pick a date</span>
+                            <span>{t('common.pickDate')}</span>
                         )}
                     </Button>
                 </PopoverTrigger>

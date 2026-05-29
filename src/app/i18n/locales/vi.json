@@ -20,6 +20,8 @@
         "browseFoods": "Duyệt thực phẩm",
         "goHome": "Về trang chủ",
         "tryAgainLater": "Vui lòng thử lại sau.",
+        "pickDate": "Chọn ngày",
+        "select": "Chọn",
         "apiErrors": {
             "badRequest": "Yêu cầu không hợp lệ",
             "badRequestDescription": "Yêu cầu không hợp lệ. Vui lòng kiểm tra lại thông tin đầu vào.",
