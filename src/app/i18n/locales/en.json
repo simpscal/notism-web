@@ -22,6 +22,10 @@
         "tryAgainLater": "Please try again later.",
         "pickDate": "Pick a date",
         "select": "Select",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "inThreeDays": "In 3 days",
+        "inAWeek": "In a week",
         "apiErrors": {
             "badRequest": "Bad Request",
             "badRequestDescription": "The request was invalid. Please check your input.",

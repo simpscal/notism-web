@@ -22,6 +22,10 @@
         "tryAgainLater": "Vui lòng thử lại sau.",
         "pickDate": "Chọn ngày",
         "select": "Chọn",
+        "today": "Hôm nay",
+        "tomorrow": "Ngày mai",
+        "inThreeDays": "Trong 3 ngày",
+        "inAWeek": "Trong một tuần",
         "apiErrors": {
             "badRequest": "Yêu cầu không hợp lệ",
             "badRequestDescription": "Yêu cầu không hợp lệ. Vui lòng kiểm tra lại thông tin đầu vào.",

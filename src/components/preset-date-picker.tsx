@@ -32,10 +32,10 @@ export function DatePickerWithPresets() {
                         <SelectValue placeholder={t('common.select')} />
                     </SelectTrigger>
                     <SelectContent position='popper'>
-                        <SelectItem value='0'>Today</SelectItem>
-                        <SelectItem value='1'>Tomorrow</SelectItem>
-                        <SelectItem value='3'>In 3 days</SelectItem>
-                        <SelectItem value='7'>In a week</SelectItem>
+                        <SelectItem value='0'>{t('common.today')}</SelectItem>
+                        <SelectItem value='1'>{t('common.tomorrow')}</SelectItem>
+                        <SelectItem value='3'>{t('common.inThreeDays')}</SelectItem>
+                        <SelectItem value='7'>{t('common.inAWeek')}</SelectItem>
                     </SelectContent>
                 </Select>
                 <div className='rounded-md border'>
