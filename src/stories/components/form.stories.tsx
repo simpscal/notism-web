@@ -41,7 +41,7 @@ function FormDemo() {
                         <FormItem>
                             <FormLabel>{t('storybook.form.username')}</FormLabel>
                             <FormControl>
-                                <Input placeholder='johndoe' {...field} />
+                                <Input placeholder={t('storybook.form.usernamePlaceholder')} {...field} />
                             </FormControl>
                             <FormDescription>{t('storybook.form.usernamePlaceholderDescription')}</FormDescription>
                             <FormMessage />
@@ -55,7 +55,7 @@ function FormDemo() {
                         <FormItem>
                             <FormLabel>{t('storybook.form.email')}</FormLabel>
                             <FormControl>
-                                <Input type='email' placeholder='you@example.com' {...field} />
+                                <Input type='email' placeholder={t('storybook.form.emailPlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

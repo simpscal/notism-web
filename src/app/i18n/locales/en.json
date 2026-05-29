@@ -730,7 +730,9 @@
             "emailAddress": "Email address",
             "neverShare": "We will never share your email.",
             "invalidEmail": "Invalid email address",
-            "username": "Username"
+            "username": "Username",
+            "emailPlaceholder": "you@example.com",
+            "usernamePlaceholder": "johndoe"
         },
         "form": {
             "username": "Username",
@@ -738,13 +740,26 @@
             "email": "Email",
             "submit": "Submit",
             "usernameMin": "Username must be at least 2 characters.",
-            "emailInvalid": "Invalid email address."
+            "emailInvalid": "Invalid email address.",
+            "usernamePlaceholder": "johndoe",
+            "emailPlaceholder": "you@example.com"
         },
         "inputGroup": {
             "email": "Email"
         },
         "input": {
-            "email": "Email"
+            "email": "Email",
+            "placeholders": {
+                "text": "Enter text...",
+                "email": "you@example.com",
+                "disabled": "Disabled input",
+                "invalid": "Invalid email",
+                "textInput": "Text input",
+                "emailInput": "Email input",
+                "passwordInput": "Password input",
+                "numberInput": "Number input",
+                "searchInput": "Search input"
+            }
         },
         "kanban": {
             "todo": "To Do",

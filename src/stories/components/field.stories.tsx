@@ -24,7 +24,7 @@ export const Default: Story = {
                 <FieldGroup>
                     <Field>
                         <FieldLabel>{t('storybook.field.emailAddress')}</FieldLabel>
-                        <Input type='email' placeholder='you@example.com' />
+                        <Input type='email' placeholder={t('storybook.field.emailPlaceholder')} />
                         <FieldDescription>{t('storybook.field.neverShare')}</FieldDescription>
                     </Field>
                 </FieldGroup>
@@ -41,7 +41,7 @@ export const WithError: Story = {
                 <FieldGroup>
                     <Field>
                         <FieldLabel>{t('storybook.field.emailAddress')}</FieldLabel>
-                        <Input type='email' placeholder='you@example.com' aria-invalid />
+                        <Input type='email' placeholder={t('storybook.field.emailPlaceholder')} aria-invalid />
                         <FieldError errors={[{ message: t('storybook.field.invalidEmail') }]} />
                     </Field>
                 </FieldGroup>
@@ -58,7 +58,7 @@ export const Horizontal: Story = {
                 <FieldGroup>
                     <Field orientation='horizontal'>
                         <FieldLabel>{t('storybook.field.username')}</FieldLabel>
-                        <Input placeholder='johndoe' />
+                        <Input placeholder={t('storybook.field.usernamePlaceholder')} />
                     </Field>
                 </FieldGroup>
             </div>

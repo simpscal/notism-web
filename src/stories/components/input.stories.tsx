@@ -27,13 +27,15 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         type: 'text',
-        placeholder: 'Enter text...',
     },
-    render: args => (
-        <div style={{ width: '280px' }}>
-            <Input {...args} />
-        </div>
-    ),
+    render: function Render(args) {
+        const { t } = useTranslation();
+        return (
+            <div style={{ width: '280px' }}>
+                <Input placeholder={t('storybook.input.placeholders.text')} {...args} />
+            </div>
+        );
+    },
 };
 
 export const WithLabel: Story = {
@@ -42,36 +44,45 @@ export const WithLabel: Story = {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
                 <Label htmlFor='email'>{t('storybook.input.email')}</Label>
-                <Input type='email' id='email' placeholder='you@example.com' />
+                <Input type='email' id='email' placeholder={t('storybook.input.placeholders.email')} />
             </div>
         );
     },
 };
 
 export const Disabled: Story = {
-    render: () => (
-        <div style={{ width: '280px' }}>
-            <Input type='text' placeholder='Disabled input' disabled />
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ width: '280px' }}>
+                <Input type='text' placeholder={t('storybook.input.placeholders.disabled')} disabled />
+            </div>
+        );
+    },
 };
 
 export const Invalid: Story = {
-    render: () => (
-        <div style={{ width: '280px' }}>
-            <Input type='email' placeholder='Invalid email' aria-invalid />
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ width: '280px' }}>
+                <Input type='email' placeholder={t('storybook.input.placeholders.invalid')} aria-invalid />
+            </div>
+        );
+    },
 };
 
 export const Types: Story = {
-    render: () => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '280px' }}>
-            <Input type='text' placeholder='Text input' />
-            <Input type='email' placeholder='Email input' />
-            <Input type='password' placeholder='Password input' />
-            <Input type='number' placeholder='Number input' />
-            <Input type='search' placeholder='Search input' />
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '280px' }}>
+                <Input type='text' placeholder={t('storybook.input.placeholders.textInput')} />
+                <Input type='email' placeholder={t('storybook.input.placeholders.emailInput')} />
+                <Input type='password' placeholder={t('storybook.input.placeholders.passwordInput')} />
+                <Input type='number' placeholder={t('storybook.input.placeholders.numberInput')} />
+                <Input type='search' placeholder={t('storybook.input.placeholders.searchInput')} />
+            </div>
+        );
+    },
 };

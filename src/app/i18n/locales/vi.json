@@ -730,7 +730,9 @@
             "emailAddress": "Địa chỉ email",
             "neverShare": "Chúng tôi sẽ không bao giờ chia sẻ email của bạn.",
             "invalidEmail": "Địa chỉ email không hợp lệ",
-            "username": "Tên người dùng"
+            "username": "Tên người dùng",
+            "emailPlaceholder": "you@example.com",
+            "usernamePlaceholder": "johndoe"
         },
         "form": {
             "username": "Tên người dùng",
@@ -738,13 +740,26 @@
             "email": "Email",
             "submit": "Gửi",
             "usernameMin": "Tên người dùng phải có ít nhất 2 ký tự.",
-            "emailInvalid": "Địa chỉ email không hợp lệ."
+            "emailInvalid": "Địa chỉ email không hợp lệ.",
+            "usernamePlaceholder": "johndoe",
+            "emailPlaceholder": "you@example.com"
         },
         "inputGroup": {
             "email": "Email"
         },
         "input": {
-            "email": "Email"
+            "email": "Email",
+            "placeholders": {
+                "text": "Nhập văn bản...",
+                "email": "you@example.com",
+                "disabled": "Ô nhập bị vô hiệu hóa",
+                "invalid": "Email không hợp lệ",
+                "textInput": "Ô nhập văn bản",
+                "emailInput": "Ô nhập email",
+                "passwordInput": "Ô nhập mật khẩu",
+                "numberInput": "Ô nhập số",
+                "searchInput": "Ô nhập tìm kiếm"
+            }
         },
         "kanban": {
             "todo": "Cần làm",
