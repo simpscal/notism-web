@@ -20,6 +20,12 @@
         "browseFoods": "Browse Foods",
         "goHome": "Go Home",
         "tryAgainLater": "Please try again later.",
+        "pickDate": "Pick a date",
+        "select": "Select",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "inThreeDays": "In 3 days",
+        "inAWeek": "In a week",
         "apiErrors": {
             "badRequest": "Bad Request",
             "badRequestDescription": "The request was invalid. Please check your input.",
@@ -624,5 +630,411 @@
         "invalidValue": "Invalid value",
         "skipMustBeNonNegative": "Skip must be greater than or equal to 0",
         "takeMustBeBetween": "Take must be between 1 and 100"
+    },
+    "storybook": {
+        "accordion": {
+            "q1": "Is it accessible?",
+            "a1": "Yes. It adheres to the WAI-ARIA design pattern.",
+            "q2": "Is it styled?",
+            "a2": "Yes. It comes with default styles that match the other components style.",
+            "q3": "Is it animated?",
+            "a3": "Yes. It is animated by default, but you can disable it if you prefer.",
+            "sectionOne": "Section One",
+            "sectionTwo": "Section Two",
+            "sectionThree": "Section Three",
+            "contentOne": "Content for section one.",
+            "contentTwo": "Content for section two.",
+            "contentThree": "Content for section three."
+        },
+        "badge": {
+            "badge": "Badge",
+            "default": "Default",
+            "secondary": "Secondary",
+            "destructive": "Destructive",
+            "outline": "Outline",
+            "success": "Success"
+        },
+        "button": {
+            "button": "Button",
+            "default": "Default",
+            "destructive": "Destructive",
+            "outline": "Outline",
+            "secondary": "Secondary",
+            "ghost": "Ghost",
+            "link": "Link",
+            "extraSmall": "Extra Small",
+            "small": "Small",
+            "large": "Large",
+            "loginWithEmail": "Login with Email",
+            "pleaseWait": "Please wait",
+            "disabled": "Disabled"
+        },
+        "card": {
+            "title": "Card Title",
+            "description": "Card description goes here",
+            "content": "Card content. This is a simple card component.",
+            "submit": "Submit",
+            "simpleContent": "A simple card with just content.",
+            "notification": "Notification",
+            "unreadMessages": "You have 3 unread messages.",
+            "messagesWaiting": "Messages are waiting in your inbox."
+        },
+        "checkbox": {
+            "acceptTerms": "Accept terms and conditions",
+            "checkedByDefault": "Checked by default",
+            "disabledUnchecked": "Disabled unchecked",
+            "disabledChecked": "Disabled checked"
+        },
+        "collapsible": {
+            "starredRepos": "@peduarte starred 3 repositories",
+            "toggle": "Toggle"
+        },
+        "dialog": {
+            "editProfile": "Edit Profile",
+            "editProfileTitle": "Edit profile",
+            "editProfileDescription": "Make changes to your profile here. Click save when you are done.",
+            "name": "Name",
+            "username": "Username",
+            "saveChanges": "Save changes",
+            "openDialog": "Open Dialog",
+            "areYouSure": "Are you sure?",
+            "cannotBeUndone": "This action cannot be undone."
+        },
+        "drawer": {
+            "openDrawer": "Open Drawer",
+            "moveGoal": "Move Goal",
+            "moveGoalDescription": "Set your daily activity goal.",
+            "content": "Drawer content goes here.",
+            "submit": "Submit"
+        },
+        "dropdownMenu": {
+            "openMenu": "Open Menu",
+            "myAccount": "My Account",
+            "profile": "Profile",
+            "billing": "Billing",
+            "settings": "Settings",
+            "keyboardShortcuts": "Keyboard shortcuts",
+            "team": "Team",
+            "support": "Support",
+            "logOut": "Log out",
+            "options": "Options",
+            "appearance": "Appearance",
+            "statusBar": "Status Bar",
+            "activityBar": "Activity Bar",
+            "panel": "Panel"
+        },
+        "errorState": {
+            "defaultTitle": "Something went wrong",
+            "defaultDescription": "An unexpected error occurred. Please try again later.",
+            "smallTitle": "Error loading data",
+            "smallDescription": "Could not fetch the requested resource.",
+            "noDataTitle": "No data found",
+            "noDataDescription": "The item you are looking for does not exist.",
+            "goBack": "Go back"
+        },
+        "field": {
+            "emailAddress": "Email address",
+            "neverShare": "We will never share your email.",
+            "invalidEmail": "Invalid email address",
+            "username": "Username",
+            "emailPlaceholder": "you@example.com",
+            "usernamePlaceholder": "johndoe"
+        },
+        "form": {
+            "username": "Username",
+            "usernamePlaceholderDescription": "This is your public display name.",
+            "email": "Email",
+            "submit": "Submit",
+            "usernameMin": "Username must be at least 2 characters.",
+            "emailInvalid": "Invalid email address.",
+            "usernamePlaceholder": "johndoe",
+            "emailPlaceholder": "you@example.com"
+        },
+        "inputGroup": {
+            "email": "Email"
+        },
+        "input": {
+            "email": "Email",
+            "placeholders": {
+                "text": "Enter text...",
+                "email": "you@example.com",
+                "disabled": "Disabled input",
+                "invalid": "Invalid email",
+                "textInput": "Text input",
+                "emailInput": "Email input",
+                "passwordInput": "Password input",
+                "numberInput": "Number input",
+                "searchInput": "Search input"
+            }
+        },
+        "kanban": {
+            "todo": "To Do",
+            "inProgress": "In Progress",
+            "done": "Done",
+            "designMockups": "Design mockups",
+            "writeUnitTests": "Write unit tests",
+            "updateDocs": "Update docs",
+            "implementAuthFlow": "Implement auth flow",
+            "refactorApiLayer": "Refactor API layer",
+            "setupProject": "Setup project",
+            "priorityHigh": "high",
+            "priorityMedium": "medium",
+            "priorityLow": "low"
+        },
+        "label": {
+            "emailAddress": "Email address",
+            "acceptTerms": "Accept terms and conditions"
+        },
+        "menubar": {
+            "file": "File",
+            "edit": "Edit",
+            "view": "View",
+            "newTab": "New Tab",
+            "newWindow": "New Window",
+            "newIncognitoWindow": "New Incognito Window",
+            "print": "Print...",
+            "undo": "Undo",
+            "redo": "Redo",
+            "cut": "Cut",
+            "copy": "Copy",
+            "paste": "Paste",
+            "zoomIn": "Zoom In",
+            "zoomOut": "Zoom Out",
+            "fullScreen": "Full Screen"
+        },
+        "navigationMenu": {
+            "gettingStarted": "Getting started",
+            "brand": "Notism",
+            "brandDescription": "A project management tool for modern teams.",
+            "introduction": "Introduction",
+            "introductionDescription": "Learn the core concepts.",
+            "installation": "Installation",
+            "installationDescription": "How to install the package.",
+            "documentation": "Documentation"
+        },
+        "popover": {
+            "openPopover": "Open popover",
+            "dimensions": "Dimensions",
+            "dimensionsDescription": "Set the dimensions for the layer.",
+            "width": "Width",
+            "height": "Height"
+        },
+        "radioGroup": {
+            "default": "Default",
+            "comfortable": "Comfortable",
+            "compact": "Compact",
+            "optionOne": "Option One",
+            "optionTwoDisabled": "Option Two (disabled)"
+        },
+        "resizable": {
+            "panelOne": "Panel One",
+            "panelTwo": "Panel Two",
+            "header": "Header",
+            "content": "Content"
+        },
+        "scrollArea": {
+            "tags": "Tags"
+        },
+        "select": {
+            "selectFruit": "Select a fruit",
+            "fruits": "Fruits",
+            "apple": "Apple",
+            "banana": "Banana",
+            "blueberry": "Blueberry",
+            "grapes": "Grapes",
+            "pineapple": "Pineapple",
+            "disabledSelect": "Disabled select",
+            "optionA": "Option A"
+        },
+        "separator": {
+            "radixPrimitives": "Radix Primitives",
+            "openSourceLibrary": "An open-source UI library.",
+            "blog": "Blog",
+            "docs": "Docs",
+            "source": "Source",
+            "itemOne": "Item One",
+            "itemTwo": "Item Two",
+            "itemThree": "Item Three"
+        },
+        "sheet": {
+            "openSheet": "Open Sheet",
+            "editProfile": "Edit profile",
+            "editProfileDescription": "Make changes to your profile here. Click save when done.",
+            "name": "Name",
+            "username": "Username",
+            "saveChanges": "Save changes",
+            "openLeftSheet": "Open Left Sheet",
+            "navigation": "Navigation",
+            "navigationDescription": "Browse through the available sections.",
+            "dashboard": "Dashboard",
+            "projects": "Projects",
+            "settings": "Settings"
+        },
+        "sidebar": {
+            "brand": "Notism",
+            "application": "Application",
+            "dashboard": "Dashboard",
+            "team": "Team",
+            "reports": "Reports",
+            "documents": "Documents",
+            "settings": "Settings",
+            "mainContent": "Main content area"
+        },
+        "switch": {
+            "airplaneMode": "Airplane Mode",
+            "enableNotifications": "Enable notifications",
+            "disabledOff": "Disabled off",
+            "disabledOn": "Disabled on"
+        },
+        "table": {
+            "caption": "A list of your recent invoices.",
+            "invoice": "Invoice",
+            "status": "Status",
+            "method": "Method",
+            "amount": "Amount",
+            "total": "Total",
+            "statusPaid": "Paid",
+            "statusPending": "Pending",
+            "statusUnpaid": "Unpaid",
+            "methodCreditCard": "Credit Card",
+            "methodPaypal": "PayPal",
+            "methodBankTransfer": "Bank Transfer"
+        },
+        "tabs": {
+            "account": "Account",
+            "password": "Password",
+            "accountDescription": "Make changes to your account here. Click save when done.",
+            "name": "Name",
+            "username": "Username",
+            "saveChanges": "Save changes",
+            "passwordDescription": "Change your password here. After saving, you will be logged out.",
+            "currentPassword": "Current password",
+            "newPassword": "New password",
+            "savePassword": "Save password"
+        },
+        "textarea": {
+            "yourMessage": "Your message",
+            "typeMessage": "Type your message here.",
+            "disabled": "Disabled textarea",
+            "prefilledText": "This is some pre-filled text in the textarea component."
+        },
+        "timeline": {
+            "orderPlaced": "Order placed",
+            "orderPlacedDescription": "Your order has been received",
+            "paymentConfirmed": "Payment confirmed",
+            "paymentConfirmedDescription": "Payment was processed successfully",
+            "shipped": "Shipped",
+            "shippedDescription": "Package is on the way",
+            "delivered": "Delivered",
+            "deliveredDescription": "Package delivered to your door"
+        },
+        "toggle": {
+            "withTextItalic": "Italic"
+        },
+        "chart": {
+            "desktop": "Desktop",
+            "mobile": "Mobile"
+        },
+        "sonner": {
+            "showDefault": "Show Default Toast",
+            "showSuccess": "Show Success Toast",
+            "showError": "Show Error Toast",
+            "showWarning": "Show Warning Toast",
+            "showInfo": "Show Info Toast",
+            "eventCreated": "Event has been created",
+            "eventDescription": "Monday, January 3rd at 6:00pm",
+            "profileUpdated": "Profile updated successfully!",
+            "somethingWrong": "Something went wrong.",
+            "lowStorage": "You are running low on storage.",
+            "updateAvailable": "A new update is available."
+        },
+        "tooltip": {
+            "hoverMe": "Hover me",
+            "addToLibrary": "Add to library",
+            "top": "Top",
+            "right": "Right",
+            "bottom": "Bottom",
+            "left": "Left",
+            "tooltipTop": "Tooltip on top",
+            "tooltipRight": "Tooltip on right",
+            "tooltipBottom": "Tooltip on bottom",
+            "tooltipLeft": "Tooltip on left"
+        },
+        "tokens": {
+            "borders": {
+                "title": "Borders",
+                "description": "Border widths, ring utilities, and outline patterns using semantic color tokens.",
+                "borderWidths": "Border Widths",
+                "borderColors": "Border Colors",
+                "focusRingExamples": "Focus Ring Examples"
+            },
+            "colors": {
+                "title": "Color Tokens",
+                "description": "All CSS custom property color tokens for light and dark modes.",
+                "labels": {
+                    "primary": "Primary",
+                    "primaryForeground": "Primary Foreground",
+                    "secondary": "Secondary",
+                    "secondaryForeground": "Secondary Foreground",
+                    "muted": "Muted",
+                    "mutedForeground": "Muted Foreground",
+                    "accent": "Accent",
+                    "accentForeground": "Accent Foreground",
+                    "destructive": "Destructive",
+                    "success": "Success",
+                    "warning": "Warning",
+                    "info": "Info",
+                    "background": "Background",
+                    "foreground": "Foreground",
+                    "card": "Card",
+                    "cardForeground": "Card Foreground",
+                    "popover": "Popover",
+                    "popoverForeground": "Popover Foreground",
+                    "border": "Border",
+                    "input": "Input",
+                    "ring": "Ring",
+                    "chart1": "Chart 1",
+                    "chart2": "Chart 2",
+                    "chart3": "Chart 3",
+                    "chart4": "Chart 4",
+                    "chart5": "Chart 5",
+                    "sidebar": "Sidebar",
+                    "sidebarForeground": "Sidebar Foreground",
+                    "sidebarPrimary": "Sidebar Primary",
+                    "sidebarPrimaryForeground": "Sidebar Primary Foreground",
+                    "sidebarAccent": "Sidebar Accent",
+                    "sidebarAccentForeground": "Sidebar Accent Foreground",
+                    "sidebarBorder": "Sidebar Border",
+                    "sidebarRing": "Sidebar Ring"
+                }
+            },
+            "elevation": {
+                "title": "Elevation",
+                "description": "Tailwind shadow utilities for elevation levels."
+            },
+            "radius": {
+                "title": "Border Radius",
+                "descriptionBefore": "Radius tokens derived from the base",
+                "descriptionAfter": "variable.",
+                "labels": {
+                    "radiusSm": "radius-sm",
+                    "radiusMd": "radius-md",
+                    "radiusLg": "radius (lg)",
+                    "radiusXl": "radius-xl",
+                    "full": "full"
+                }
+            },
+            "typography": {
+                "title": "Typography",
+                "description": "Noto Sans — the primary typeface at all defined weights and semantic sizes.",
+                "fontWeights": "Font Weights",
+                "fontSizes": "Font Sizes",
+                "sample": "The quick brown fox jumps over the lazy dog",
+                "weightRegular": "Regular (400)",
+                "weightMedium": "Medium (500)",
+                "weightSemiBold": "SemiBold (600)",
+                "weightBold": "Bold (700)"
+            }
+        }
     }
 }
