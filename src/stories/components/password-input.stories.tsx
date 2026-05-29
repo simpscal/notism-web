@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 
 import { Label } from '@/components/label';
 import { PasswordInput } from '@/components/password-input';
@@ -20,18 +21,24 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    render: () => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
-            <Label htmlFor='password'>Password</Label>
-            <PasswordInput id='password' placeholder='Enter your password' />
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
+                <Label htmlFor='password'>{t('auth.password')}</Label>
+                <PasswordInput id='password' placeholder={t('auth.enterPassword')} />
+            </div>
+        );
+    },
 };
 
 export const Disabled: Story = {
-    render: () => (
-        <div style={{ width: '280px' }}>
-            <PasswordInput placeholder='Disabled' disabled />
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ width: '280px' }}>
+                <PasswordInput placeholder={t('storybook.button.disabled')} disabled />
+            </div>
+        );
+    },
 };

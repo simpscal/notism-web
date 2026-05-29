@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const weights = [
-    { label: 'Regular (400)', value: 400 },
-    { label: 'Medium (500)', value: 500 },
-    { label: 'SemiBold (600)', value: 600 },
-    { label: 'Bold (700)', value: 700 },
+    { labelKey: 'weightRegular', value: 400 },
+    { labelKey: 'weightMedium', value: 500 },
+    { labelKey: 'weightSemiBold', value: 600 },
+    { labelKey: 'weightBold', value: 700 },
 ];
 
 const sizes = [
@@ -18,13 +19,15 @@ const sizes = [
 ];
 
 function TypographyPage() {
+    const { t } = useTranslation();
+    const sample = t('storybook.tokens.typography.sample');
     return (
         <div style={{ padding: '32px', backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '8px' }}>
-                Typography
+                {t('storybook.tokens.typography.title')}
             </h1>
             <p style={{ color: 'var(--muted-foreground)', marginBottom: '40px' }}>
-                Noto Sans — the primary typeface at all defined weights and semantic sizes.
+                {t('storybook.tokens.typography.description')}
             </p>
 
             <section style={{ marginBottom: '48px' }}>
@@ -38,7 +41,7 @@ function TypographyPage() {
                         marginBottom: '24px',
                     }}
                 >
-                    Font Weights
+                    {t('storybook.tokens.typography.fontWeights')}
                 </h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {weights.map(w => (
@@ -52,7 +55,7 @@ function TypographyPage() {
                                     flexShrink: 0,
                                 }}
                             >
-                                {w.label}
+                                {t(`storybook.tokens.typography.${w.labelKey}`)}
                             </span>
                             <span
                                 style={{
@@ -62,7 +65,7 @@ function TypographyPage() {
                                     color: 'var(--foreground)',
                                 }}
                             >
-                                The quick brown fox jumps over the lazy dog
+                                {sample}
                             </span>
                         </div>
                     ))}
@@ -80,7 +83,7 @@ function TypographyPage() {
                         marginBottom: '24px',
                     }}
                 >
-                    Font Sizes
+                    {t('storybook.tokens.typography.fontSizes')}
                 </h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {sizes.map(s => (
@@ -122,7 +125,7 @@ function TypographyPage() {
                                     color: 'var(--foreground)',
                                 }}
                             >
-                                The quick brown fox jumps over the lazy dog
+                                {sample}
                             </span>
                         </div>
                     ))}

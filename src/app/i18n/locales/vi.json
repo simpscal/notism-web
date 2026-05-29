@@ -624,5 +624,396 @@
         "invalidValue": "Giá trị không hợp lệ",
         "skipMustBeNonNegative": "Skip phải lớn hơn hoặc bằng 0",
         "takeMustBeBetween": "Take phải từ 1 đến 100"
+    },
+    "storybook": {
+        "accordion": {
+            "q1": "Nó có thể truy cập được không?",
+            "a1": "Có. Nó tuân theo mẫu thiết kế WAI-ARIA.",
+            "q2": "Nó có được tạo kiểu không?",
+            "a2": "Có. Nó đi kèm với các kiểu mặc định khớp với các thành phần khác.",
+            "q3": "Nó có hoạt ảnh không?",
+            "a3": "Có. Nó được tạo hoạt ảnh theo mặc định, nhưng bạn có thể tắt nếu muốn.",
+            "sectionOne": "Phần Một",
+            "sectionTwo": "Phần Hai",
+            "sectionThree": "Phần Ba",
+            "contentOne": "Nội dung cho phần một.",
+            "contentTwo": "Nội dung cho phần hai.",
+            "contentThree": "Nội dung cho phần ba."
+        },
+        "badge": {
+            "badge": "Huy hiệu",
+            "default": "Mặc định",
+            "secondary": "Phụ",
+            "destructive": "Phá hủy",
+            "outline": "Viền",
+            "success": "Thành công"
+        },
+        "button": {
+            "button": "Nút",
+            "default": "Mặc định",
+            "destructive": "Phá hủy",
+            "outline": "Viền",
+            "secondary": "Phụ",
+            "ghost": "Trong suốt",
+            "link": "Liên kết",
+            "extraSmall": "Rất nhỏ",
+            "small": "Nhỏ",
+            "large": "Lớn",
+            "loginWithEmail": "Đăng nhập bằng Email",
+            "pleaseWait": "Vui lòng đợi",
+            "disabled": "Vô hiệu hóa"
+        },
+        "card": {
+            "title": "Tiêu đề thẻ",
+            "description": "Mô tả thẻ ở đây",
+            "content": "Nội dung thẻ. Đây là một thành phần thẻ đơn giản.",
+            "submit": "Gửi",
+            "simpleContent": "Một thẻ đơn giản chỉ có nội dung.",
+            "notification": "Thông báo",
+            "unreadMessages": "Bạn có 3 tin nhắn chưa đọc.",
+            "messagesWaiting": "Các tin nhắn đang chờ trong hộp thư của bạn."
+        },
+        "checkbox": {
+            "acceptTerms": "Chấp nhận các điều khoản và điều kiện",
+            "checkedByDefault": "Được chọn theo mặc định",
+            "disabledUnchecked": "Vô hiệu hóa, chưa chọn",
+            "disabledChecked": "Vô hiệu hóa, đã chọn"
+        },
+        "collapsible": {
+            "starredRepos": "@peduarte đã gắn sao 3 kho lưu trữ",
+            "toggle": "Chuyển đổi"
+        },
+        "dialog": {
+            "editProfile": "Chỉnh sửa hồ sơ",
+            "editProfileTitle": "Chỉnh sửa hồ sơ",
+            "editProfileDescription": "Thực hiện thay đổi hồ sơ của bạn tại đây. Nhấn lưu khi bạn hoàn tất.",
+            "name": "Tên",
+            "username": "Tên người dùng",
+            "saveChanges": "Lưu thay đổi",
+            "openDialog": "Mở hộp thoại",
+            "areYouSure": "Bạn có chắc chắn không?",
+            "cannotBeUndone": "Hành động này không thể hoàn tác."
+        },
+        "drawer": {
+            "openDrawer": "Mở ngăn kéo",
+            "moveGoal": "Mục tiêu di chuyển",
+            "moveGoalDescription": "Đặt mục tiêu hoạt động hàng ngày của bạn.",
+            "content": "Nội dung ngăn kéo ở đây.",
+            "submit": "Gửi"
+        },
+        "dropdownMenu": {
+            "openMenu": "Mở menu",
+            "myAccount": "Tài khoản của tôi",
+            "profile": "Hồ sơ",
+            "billing": "Thanh toán",
+            "settings": "Cài đặt",
+            "keyboardShortcuts": "Phím tắt",
+            "team": "Nhóm",
+            "support": "Hỗ trợ",
+            "logOut": "Đăng xuất",
+            "options": "Tùy chọn",
+            "appearance": "Giao diện",
+            "statusBar": "Thanh trạng thái",
+            "activityBar": "Thanh hoạt động",
+            "panel": "Bảng điều khiển"
+        },
+        "errorState": {
+            "defaultTitle": "Đã xảy ra lỗi",
+            "defaultDescription": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
+            "smallTitle": "Lỗi khi tải dữ liệu",
+            "smallDescription": "Không thể tải tài nguyên được yêu cầu.",
+            "noDataTitle": "Không tìm thấy dữ liệu",
+            "noDataDescription": "Mục bạn đang tìm kiếm không tồn tại.",
+            "goBack": "Quay lại"
+        },
+        "field": {
+            "emailAddress": "Địa chỉ email",
+            "neverShare": "Chúng tôi sẽ không bao giờ chia sẻ email của bạn.",
+            "invalidEmail": "Địa chỉ email không hợp lệ",
+            "username": "Tên người dùng"
+        },
+        "form": {
+            "username": "Tên người dùng",
+            "usernamePlaceholderDescription": "Đây là tên hiển thị công khai của bạn.",
+            "email": "Email",
+            "submit": "Gửi",
+            "usernameMin": "Tên người dùng phải có ít nhất 2 ký tự.",
+            "emailInvalid": "Địa chỉ email không hợp lệ."
+        },
+        "inputGroup": {
+            "email": "Email"
+        },
+        "input": {
+            "email": "Email"
+        },
+        "kanban": {
+            "todo": "Cần làm",
+            "inProgress": "Đang thực hiện",
+            "done": "Hoàn thành",
+            "designMockups": "Thiết kế bản mẫu",
+            "writeUnitTests": "Viết kiểm thử đơn vị",
+            "updateDocs": "Cập nhật tài liệu",
+            "implementAuthFlow": "Triển khai luồng xác thực",
+            "refactorApiLayer": "Tái cấu trúc tầng API",
+            "setupProject": "Thiết lập dự án",
+            "priorityHigh": "cao",
+            "priorityMedium": "trung bình",
+            "priorityLow": "thấp"
+        },
+        "label": {
+            "emailAddress": "Địa chỉ email",
+            "acceptTerms": "Chấp nhận các điều khoản và điều kiện"
+        },
+        "menubar": {
+            "file": "Tệp",
+            "edit": "Chỉnh sửa",
+            "view": "Xem",
+            "newTab": "Tab mới",
+            "newWindow": "Cửa sổ mới",
+            "newIncognitoWindow": "Cửa sổ ẩn danh mới",
+            "print": "In...",
+            "undo": "Hoàn tác",
+            "redo": "Làm lại",
+            "cut": "Cắt",
+            "copy": "Sao chép",
+            "paste": "Dán",
+            "zoomIn": "Phóng to",
+            "zoomOut": "Thu nhỏ",
+            "fullScreen": "Toàn màn hình"
+        },
+        "navigationMenu": {
+            "gettingStarted": "Bắt đầu",
+            "brand": "Notism",
+            "brandDescription": "Một công cụ quản lý dự án cho các nhóm hiện đại.",
+            "introduction": "Giới thiệu",
+            "introductionDescription": "Tìm hiểu các khái niệm cốt lõi.",
+            "installation": "Cài đặt",
+            "installationDescription": "Cách cài đặt gói.",
+            "documentation": "Tài liệu"
+        },
+        "popover": {
+            "openPopover": "Mở popover",
+            "dimensions": "Kích thước",
+            "dimensionsDescription": "Đặt kích thước cho lớp.",
+            "width": "Chiều rộng",
+            "height": "Chiều cao"
+        },
+        "radioGroup": {
+            "default": "Mặc định",
+            "comfortable": "Thoải mái",
+            "compact": "Gọn",
+            "optionOne": "Lựa chọn Một",
+            "optionTwoDisabled": "Lựa chọn Hai (vô hiệu hóa)"
+        },
+        "resizable": {
+            "panelOne": "Bảng Một",
+            "panelTwo": "Bảng Hai",
+            "header": "Đầu trang",
+            "content": "Nội dung"
+        },
+        "scrollArea": {
+            "tags": "Thẻ"
+        },
+        "select": {
+            "selectFruit": "Chọn một loại trái cây",
+            "fruits": "Trái cây",
+            "apple": "Táo",
+            "banana": "Chuối",
+            "blueberry": "Việt quất",
+            "grapes": "Nho",
+            "pineapple": "Dứa",
+            "disabledSelect": "Lựa chọn bị vô hiệu hóa",
+            "optionA": "Lựa chọn A"
+        },
+        "separator": {
+            "radixPrimitives": "Radix Primitives",
+            "openSourceLibrary": "Một thư viện giao diện mã nguồn mở.",
+            "blog": "Blog",
+            "docs": "Tài liệu",
+            "source": "Mã nguồn",
+            "itemOne": "Mục Một",
+            "itemTwo": "Mục Hai",
+            "itemThree": "Mục Ba"
+        },
+        "sheet": {
+            "openSheet": "Mở bảng trượt",
+            "editProfile": "Chỉnh sửa hồ sơ",
+            "editProfileDescription": "Thực hiện thay đổi hồ sơ của bạn tại đây. Nhấn lưu khi hoàn tất.",
+            "name": "Tên",
+            "username": "Tên người dùng",
+            "saveChanges": "Lưu thay đổi",
+            "openLeftSheet": "Mở bảng trượt bên trái",
+            "navigation": "Điều hướng",
+            "navigationDescription": "Duyệt qua các phần có sẵn.",
+            "dashboard": "Bảng điều khiển",
+            "projects": "Dự án",
+            "settings": "Cài đặt"
+        },
+        "sidebar": {
+            "brand": "Notism",
+            "application": "Ứng dụng",
+            "dashboard": "Bảng điều khiển",
+            "team": "Nhóm",
+            "reports": "Báo cáo",
+            "documents": "Tài liệu",
+            "settings": "Cài đặt",
+            "mainContent": "Khu vực nội dung chính"
+        },
+        "switch": {
+            "airplaneMode": "Chế độ máy bay",
+            "enableNotifications": "Bật thông báo",
+            "disabledOff": "Vô hiệu hóa, tắt",
+            "disabledOn": "Vô hiệu hóa, bật"
+        },
+        "table": {
+            "caption": "Danh sách các hóa đơn gần đây của bạn.",
+            "invoice": "Hóa đơn",
+            "status": "Trạng thái",
+            "method": "Phương thức",
+            "amount": "Số tiền",
+            "total": "Tổng cộng",
+            "statusPaid": "Đã thanh toán",
+            "statusPending": "Đang chờ",
+            "statusUnpaid": "Chưa thanh toán",
+            "methodCreditCard": "Thẻ tín dụng",
+            "methodPaypal": "PayPal",
+            "methodBankTransfer": "Chuyển khoản ngân hàng"
+        },
+        "tabs": {
+            "account": "Tài khoản",
+            "password": "Mật khẩu",
+            "accountDescription": "Thực hiện thay đổi tài khoản của bạn tại đây. Nhấn lưu khi hoàn tất.",
+            "name": "Tên",
+            "username": "Tên người dùng",
+            "saveChanges": "Lưu thay đổi",
+            "passwordDescription": "Thay đổi mật khẩu của bạn tại đây. Sau khi lưu, bạn sẽ bị đăng xuất.",
+            "currentPassword": "Mật khẩu hiện tại",
+            "newPassword": "Mật khẩu mới",
+            "savePassword": "Lưu mật khẩu"
+        },
+        "textarea": {
+            "yourMessage": "Tin nhắn của bạn",
+            "typeMessage": "Nhập tin nhắn của bạn tại đây.",
+            "disabled": "Vùng văn bản bị vô hiệu hóa",
+            "prefilledText": "Đây là một số văn bản điền sẵn trong thành phần vùng văn bản."
+        },
+        "timeline": {
+            "orderPlaced": "Đã đặt hàng",
+            "orderPlacedDescription": "Đơn hàng của bạn đã được nhận",
+            "paymentConfirmed": "Đã xác nhận thanh toán",
+            "paymentConfirmedDescription": "Thanh toán đã được xử lý thành công",
+            "shipped": "Đã giao cho vận chuyển",
+            "shippedDescription": "Gói hàng đang trên đường",
+            "delivered": "Đã giao hàng",
+            "deliveredDescription": "Gói hàng đã được giao đến cửa nhà bạn"
+        },
+        "toggle": {
+            "withTextItalic": "Nghiêng"
+        },
+        "chart": {
+            "desktop": "Máy tính để bàn",
+            "mobile": "Di động"
+        },
+        "sonner": {
+            "showDefault": "Hiển thị thông báo mặc định",
+            "showSuccess": "Hiển thị thông báo thành công",
+            "showError": "Hiển thị thông báo lỗi",
+            "showWarning": "Hiển thị thông báo cảnh báo",
+            "showInfo": "Hiển thị thông báo thông tin",
+            "eventCreated": "Sự kiện đã được tạo",
+            "eventDescription": "Thứ Hai, ngày 3 tháng 1 lúc 6:00 chiều",
+            "profileUpdated": "Cập nhật hồ sơ thành công!",
+            "somethingWrong": "Đã xảy ra lỗi.",
+            "lowStorage": "Bạn sắp hết dung lượng lưu trữ.",
+            "updateAvailable": "Đã có bản cập nhật mới."
+        },
+        "tooltip": {
+            "hoverMe": "Di chuột vào đây",
+            "addToLibrary": "Thêm vào thư viện",
+            "top": "Trên",
+            "right": "Phải",
+            "bottom": "Dưới",
+            "left": "Trái",
+            "tooltipTop": "Chú giải ở trên",
+            "tooltipRight": "Chú giải ở bên phải",
+            "tooltipBottom": "Chú giải ở dưới",
+            "tooltipLeft": "Chú giải ở bên trái"
+        },
+        "tokens": {
+            "borders": {
+                "title": "Đường viền",
+                "description": "Độ rộng đường viền, tiện ích vòng và các mẫu đường nét sử dụng các token màu ngữ nghĩa.",
+                "borderWidths": "Độ rộng đường viền",
+                "borderColors": "Màu đường viền",
+                "focusRingExamples": "Ví dụ vòng tiêu điểm"
+            },
+            "colors": {
+                "title": "Token màu sắc",
+                "description": "Tất cả các token màu thuộc tính tùy chỉnh CSS cho chế độ sáng và tối.",
+                "labels": {
+                    "primary": "Chính",
+                    "primaryForeground": "Tiền cảnh chính",
+                    "secondary": "Phụ",
+                    "secondaryForeground": "Tiền cảnh phụ",
+                    "muted": "Mờ",
+                    "mutedForeground": "Tiền cảnh mờ",
+                    "accent": "Nhấn",
+                    "accentForeground": "Tiền cảnh nhấn",
+                    "destructive": "Phá hủy",
+                    "success": "Thành công",
+                    "warning": "Cảnh báo",
+                    "info": "Thông tin",
+                    "background": "Nền",
+                    "foreground": "Tiền cảnh",
+                    "card": "Thẻ",
+                    "cardForeground": "Tiền cảnh thẻ",
+                    "popover": "Popover",
+                    "popoverForeground": "Tiền cảnh popover",
+                    "border": "Đường viền",
+                    "input": "Đầu vào",
+                    "ring": "Vòng",
+                    "chart1": "Biểu đồ 1",
+                    "chart2": "Biểu đồ 2",
+                    "chart3": "Biểu đồ 3",
+                    "chart4": "Biểu đồ 4",
+                    "chart5": "Biểu đồ 5",
+                    "sidebar": "Thanh bên",
+                    "sidebarForeground": "Tiền cảnh thanh bên",
+                    "sidebarPrimary": "Thanh bên chính",
+                    "sidebarPrimaryForeground": "Tiền cảnh thanh bên chính",
+                    "sidebarAccent": "Nhấn thanh bên",
+                    "sidebarAccentForeground": "Tiền cảnh nhấn thanh bên",
+                    "sidebarBorder": "Đường viền thanh bên",
+                    "sidebarRing": "Vòng thanh bên"
+                }
+            },
+            "elevation": {
+                "title": "Độ nâng",
+                "description": "Các tiện ích đổ bóng Tailwind cho các cấp độ nâng."
+            },
+            "radius": {
+                "title": "Bán kính bo góc",
+                "descriptionBefore": "Các token bán kính được suy ra từ biến cơ sở",
+                "descriptionAfter": ".",
+                "labels": {
+                    "radiusSm": "radius-sm",
+                    "radiusMd": "radius-md",
+                    "radiusLg": "radius (lg)",
+                    "radiusXl": "radius-xl",
+                    "full": "full"
+                }
+            },
+            "typography": {
+                "title": "Kiểu chữ",
+                "description": "Noto Sans — kiểu chữ chính ở tất cả các độ đậm và kích thước ngữ nghĩa được xác định.",
+                "fontWeights": "Độ đậm phông chữ",
+                "fontSizes": "Kích thước phông chữ",
+                "sample": "Con cáo nâu nhanh nhẹn nhảy qua chú chó lười biếng",
+                "weightRegular": "Thường (400)",
+                "weightMedium": "Vừa (500)",
+                "weightSemiBold": "Bán đậm (600)",
+                "weightBold": "Đậm (700)"
+            }
+        }
     }
 }

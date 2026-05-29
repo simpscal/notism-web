@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 
 import { Input } from '@/components/input';
 import { Label } from '@/components/label';
@@ -36,12 +37,15 @@ export const Default: Story = {
 };
 
 export const WithLabel: Story = {
-    render: () => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
-            <Label htmlFor='email'>Email</Label>
-            <Input type='email' id='email' placeholder='you@example.com' />
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
+                <Label htmlFor='email'>{t('storybook.input.email')}</Label>
+                <Input type='email' id='email' placeholder='you@example.com' />
+            </div>
+        );
+    },
 };
 
 export const Disabled: Story = {

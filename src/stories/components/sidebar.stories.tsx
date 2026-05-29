@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Home, Settings, Users, FileText, BarChart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import {
     Sidebar,
@@ -17,31 +18,34 @@ import {
 } from '@/components/sidebar';
 
 const navItems = [
-    { title: 'Dashboard', url: '#', icon: Home },
-    { title: 'Team', url: '#', icon: Users },
-    { title: 'Reports', url: '#', icon: BarChart },
-    { title: 'Documents', url: '#', icon: FileText },
-    { title: 'Settings', url: '#', icon: Settings },
+    { titleKey: 'storybook.sidebar.dashboard', url: '#', icon: Home },
+    { titleKey: 'storybook.sidebar.team', url: '#', icon: Users },
+    { titleKey: 'storybook.sidebar.reports', url: '#', icon: BarChart },
+    { titleKey: 'storybook.sidebar.documents', url: '#', icon: FileText },
+    { titleKey: 'storybook.sidebar.settings', url: '#', icon: Settings },
 ];
 
 function SidebarDemo() {
+    const { t } = useTranslation();
     return (
         <SidebarProvider style={{ minHeight: '400px', width: '100%' }}>
             <Sidebar>
                 <SidebarHeader>
-                    <div style={{ padding: '8px 16px', fontWeight: 700, fontSize: '18px' }}>Notism</div>
+                    <div style={{ padding: '8px 16px', fontWeight: 700, fontSize: '18px' }}>
+                        {t('storybook.sidebar.brand')}
+                    </div>
                 </SidebarHeader>
                 <SidebarContent>
                     <SidebarGroup>
-                        <SidebarGroupLabel>Application</SidebarGroupLabel>
+                        <SidebarGroupLabel>{t('storybook.sidebar.application')}</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {navItems.map(item => (
-                                    <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuItem key={item.titleKey}>
                                         <SidebarMenuButton asChild>
                                             <a href={item.url}>
                                                 <item.icon />
-                                                <span>{item.title}</span>
+                                                <span>{t(item.titleKey)}</span>
                                             </a>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -58,7 +62,9 @@ function SidebarDemo() {
             </Sidebar>
             <main style={{ flex: 1, padding: '16px' }}>
                 <SidebarTrigger />
-                <div style={{ marginTop: '16px', color: 'var(--muted-foreground)' }}>Main content area</div>
+                <div style={{ marginTop: '16px', color: 'var(--muted-foreground)' }}>
+                    {t('storybook.sidebar.mainContent')}
+                </div>
             </main>
         </SidebarProvider>
     );

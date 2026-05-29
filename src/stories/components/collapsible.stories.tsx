@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ChevronsUpDown } from 'lucide-react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/collapsible';
@@ -18,6 +19,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function CollapsibleDemo() {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     return (
         <Collapsible
@@ -26,11 +28,11 @@ function CollapsibleDemo() {
             style={{ width: '350px', gap: '8px', display: 'flex', flexDirection: 'column' }}
         >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
-                <h4 style={{ fontSize: '14px', fontWeight: 500 }}>@peduarte starred 3 repositories</h4>
+                <h4 style={{ fontSize: '14px', fontWeight: 500 }}>{t('storybook.collapsible.starredRepos')}</h4>
                 <CollapsibleTrigger asChild>
                     <Button variant='ghost' size='icon-sm'>
                         <ChevronsUpDown />
-                        <span className='sr-only'>Toggle</span>
+                        <span className='sr-only'>{t('storybook.collapsible.toggle')}</span>
                     </Button>
                 </CollapsibleTrigger>
             </div>

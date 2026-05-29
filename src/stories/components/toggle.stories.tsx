@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Bold, Italic, Underline } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Toggle } from '@/components/toggle';
 
@@ -47,14 +48,17 @@ export const Variants: Story = {
 };
 
 export const WithText: Story = {
-    render: () => (
-        <div style={{ display: 'flex', gap: '8px' }}>
-            <Toggle aria-label='Toggle italic'>
-                <Italic />
-                Italic
-            </Toggle>
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', gap: '8px' }}>
+                <Toggle aria-label='Toggle italic'>
+                    <Italic />
+                    {t('storybook.toggle.withTextItalic')}
+                </Toggle>
+            </div>
+        );
+    },
 };
 
 export const Disabled: Story = {

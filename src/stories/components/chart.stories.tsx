@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/chart';
@@ -12,18 +13,22 @@ const barData = [
     { month: 'Jun', desktop: 214, mobile: 140 },
 ];
 
-const chartConfig = {
-    desktop: {
-        label: 'Desktop',
-        color: 'var(--chart-1)',
-    },
-    mobile: {
-        label: 'Mobile',
-        color: 'var(--chart-2)',
-    },
-} satisfies ChartConfig;
+function useChartConfig(): ChartConfig {
+    const { t } = useTranslation();
+    return {
+        desktop: {
+            label: t('storybook.chart.desktop'),
+            color: 'var(--chart-1)',
+        },
+        mobile: {
+            label: t('storybook.chart.mobile'),
+            color: 'var(--chart-2)',
+        },
+    };
+}
 
 function BarChartDemo() {
+    const chartConfig = useChartConfig();
     return (
         <ChartContainer config={chartConfig} style={{ height: '200px', width: '400px' }}>
             <BarChart data={barData}>
@@ -38,6 +43,7 @@ function BarChartDemo() {
 }
 
 function LineChartDemo() {
+    const chartConfig = useChartConfig();
     return (
         <ChartContainer config={chartConfig} style={{ height: '200px', width: '400px' }}>
             <LineChart data={barData}>

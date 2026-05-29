@@ -1,29 +1,33 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/button';
 import { Toaster } from '@/components/sonner';
 
 function SonnerDemo() {
+    const { t } = useTranslation();
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
             <Button
                 variant='outline'
-                onClick={() => toast('Event has been created', { description: 'Monday, January 3rd at 6:00pm' })}
+                onClick={() =>
+                    toast(t('storybook.sonner.eventCreated'), { description: t('storybook.sonner.eventDescription') })
+                }
             >
-                Show Default Toast
+                {t('storybook.sonner.showDefault')}
             </Button>
-            <Button variant='outline' onClick={() => toast.success('Profile updated successfully!')}>
-                Show Success Toast
+            <Button variant='outline' onClick={() => toast.success(t('storybook.sonner.profileUpdated'))}>
+                {t('storybook.sonner.showSuccess')}
             </Button>
-            <Button variant='outline' onClick={() => toast.error('Something went wrong.')}>
-                Show Error Toast
+            <Button variant='outline' onClick={() => toast.error(t('storybook.sonner.somethingWrong'))}>
+                {t('storybook.sonner.showError')}
             </Button>
-            <Button variant='outline' onClick={() => toast.warning('You are running low on storage.')}>
-                Show Warning Toast
+            <Button variant='outline' onClick={() => toast.warning(t('storybook.sonner.lowStorage'))}>
+                {t('storybook.sonner.showWarning')}
             </Button>
-            <Button variant='outline' onClick={() => toast.info('A new update is available.')}>
-                Show Info Toast
+            <Button variant='outline' onClick={() => toast.info(t('storybook.sonner.updateAvailable'))}>
+                {t('storybook.sonner.showInfo')}
             </Button>
             <Toaster />
         </div>

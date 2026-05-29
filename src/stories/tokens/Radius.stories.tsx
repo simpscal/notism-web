@@ -1,22 +1,24 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const radiusTokens = [
-    { label: 'radius-sm', var: '--radius-sm', computed: 'calc(var(--radius) - 4px)', tailwind: 'rounded-sm' },
-    { label: 'radius-md', var: '--radius-md', computed: 'calc(var(--radius) - 2px)', tailwind: 'rounded-md' },
-    { label: 'radius (lg)', var: '--radius', computed: '0.75rem', tailwind: 'rounded-lg' },
-    { label: 'radius-xl', var: '--radius-xl', computed: 'calc(var(--radius) + 4px)', tailwind: 'rounded-xl' },
-    { label: 'full', var: 'none', computed: '9999px', tailwind: 'rounded-full' },
+    { labelKey: 'radiusSm', var: '--radius-sm', computed: 'calc(var(--radius) - 4px)', tailwind: 'rounded-sm' },
+    { labelKey: 'radiusMd', var: '--radius-md', computed: 'calc(var(--radius) - 2px)', tailwind: 'rounded-md' },
+    { labelKey: 'radiusLg', var: '--radius', computed: '0.75rem', tailwind: 'rounded-lg' },
+    { labelKey: 'radiusXl', var: '--radius-xl', computed: 'calc(var(--radius) + 4px)', tailwind: 'rounded-xl' },
+    { labelKey: 'full', var: 'none', computed: '9999px', tailwind: 'rounded-full' },
 ];
 
 function RadiusPage() {
+    const { t } = useTranslation();
     return (
         <div style={{ padding: '32px', backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '8px' }}>
-                Border Radius
+                {t('storybook.tokens.radius.title')}
             </h1>
             <p style={{ color: 'var(--muted-foreground)', marginBottom: '40px' }}>
-                Radius tokens derived from the base{' '}
+                {t('storybook.tokens.radius.descriptionBefore')}{' '}
                 <code
                     style={{
                         fontFamily: 'monospace',
@@ -27,12 +29,12 @@ function RadiusPage() {
                 >
                     --radius: 0.75rem
                 </code>{' '}
-                variable.
+                {t('storybook.tokens.radius.descriptionAfter')}
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', alignItems: 'flex-end' }}>
                 {radiusTokens.map((token, i) => (
                     <div
-                        key={token.label}
+                        key={token.labelKey}
                         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}
                     >
                         <div
@@ -48,7 +50,7 @@ function RadiusPage() {
                         />
                         <div style={{ textAlign: 'center' }}>
                             <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground)' }}>
-                                {token.label}
+                                {t(`storybook.tokens.radius.labels.${token.labelKey}`)}
                             </div>
                             {token.var !== 'none' && (
                                 <div

@@ -1,36 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CheckCircle, Package, Truck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import Timeline from '@/components/timeline';
 
 const timelineItems = [
     {
-        title: 'Order placed',
-        description: 'Your order has been received',
+        titleKey: 'storybook.timeline.orderPlaced',
+        descriptionKey: 'storybook.timeline.orderPlacedDescription',
         icon: Package,
         isCompleted: true,
         isCurrent: false,
         completedAt: '2024-01-15T10:00:00Z',
     },
     {
-        title: 'Payment confirmed',
-        description: 'Payment was processed successfully',
+        titleKey: 'storybook.timeline.paymentConfirmed',
+        descriptionKey: 'storybook.timeline.paymentConfirmedDescription',
         icon: CheckCircle,
         isCompleted: true,
         isCurrent: false,
         completedAt: '2024-01-15T10:05:00Z',
     },
     {
-        title: 'Shipped',
-        description: 'Package is on the way',
+        titleKey: 'storybook.timeline.shipped',
+        descriptionKey: 'storybook.timeline.shippedDescription',
         icon: Truck,
         isCompleted: false,
         isCurrent: true,
         completedAt: null,
     },
     {
-        title: 'Delivered',
-        description: 'Package delivered to your door',
+        titleKey: 'storybook.timeline.delivered',
+        descriptionKey: 'storybook.timeline.deliveredDescription',
         icon: CheckCircle,
         isCompleted: false,
         isCurrent: false,
@@ -51,27 +52,36 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    args: {
-        items: timelineItems,
+    render: function Render() {
+        const { t } = useTranslation();
+        const items = timelineItems.map(({ titleKey, descriptionKey, ...rest }) => ({
+            ...rest,
+            title: t(titleKey),
+            description: t(descriptionKey),
+        }));
+        return (
+            <div style={{ width: '360px' }}>
+                <Timeline items={items} />
+            </div>
+        );
     },
-    render: args => (
-        <div style={{ width: '360px' }}>
-            <Timeline {...args} />
-        </div>
-    ),
 };
 
 export const AllCompleted: Story = {
-    render: () => (
-        <div style={{ width: '360px' }}>
-            <Timeline
-                items={timelineItems.map(item => ({
-                    ...item,
-                    isCompleted: true,
-                    isCurrent: false,
-                    completedAt: '2024-01-15T12:00:00Z',
-                }))}
-            />
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        const items = timelineItems.map(({ titleKey, descriptionKey, ...rest }) => ({
+            ...rest,
+            title: t(titleKey),
+            description: t(descriptionKey),
+            isCompleted: true,
+            isCurrent: false,
+            completedAt: '2024-01-15T12:00:00Z',
+        }));
+        return (
+            <div style={{ width: '360px' }}>
+                <Timeline items={items} />
+            </div>
+        );
+    },
 };

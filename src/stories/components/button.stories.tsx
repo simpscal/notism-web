@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Loader2, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/button';
 
@@ -29,59 +30,77 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        children: 'Button',
         variant: 'default',
         size: 'default',
+    },
+    render: function Render(args) {
+        const { t } = useTranslation();
+        return <Button {...args}>{t('storybook.button.button')}</Button>;
     },
 };
 
 export const Variants: Story = {
-    render: () => (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <Button variant='default'>Default</Button>
-            <Button variant='destructive'>Destructive</Button>
-            <Button variant='outline'>Outline</Button>
-            <Button variant='secondary'>Secondary</Button>
-            <Button variant='ghost'>Ghost</Button>
-            <Button variant='link'>Link</Button>
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <Button variant='default'>{t('storybook.button.default')}</Button>
+                <Button variant='destructive'>{t('storybook.button.destructive')}</Button>
+                <Button variant='outline'>{t('storybook.button.outline')}</Button>
+                <Button variant='secondary'>{t('storybook.button.secondary')}</Button>
+                <Button variant='ghost'>{t('storybook.button.ghost')}</Button>
+                <Button variant='link'>{t('storybook.button.link')}</Button>
+            </div>
+        );
+    },
 };
 
 export const Sizes: Story = {
-    render: () => (
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Button size='xs'>Extra Small</Button>
-            <Button size='sm'>Small</Button>
-            <Button size='default'>Default</Button>
-            <Button size='lg'>Large</Button>
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <Button size='xs'>{t('storybook.button.extraSmall')}</Button>
+                <Button size='sm'>{t('storybook.button.small')}</Button>
+                <Button size='default'>{t('storybook.button.default')}</Button>
+                <Button size='lg'>{t('storybook.button.large')}</Button>
+            </div>
+        );
+    },
 };
 
 export const WithIcon: Story = {
-    render: () => (
-        <div style={{ display: 'flex', gap: '8px' }}>
-            <Button>
-                <Mail />
-                Login with Email
-            </Button>
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', gap: '8px' }}>
+                <Button>
+                    <Mail />
+                    {t('storybook.button.loginWithEmail')}
+                </Button>
+            </div>
+        );
+    },
 };
 
 export const Loading: Story = {
-    render: () => (
-        <Button disabled>
-            <Loader2 className='animate-spin' />
-            Please wait
-        </Button>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <Button disabled>
+                <Loader2 className='animate-spin' />
+                {t('storybook.button.pleaseWait')}
+            </Button>
+        );
+    },
 };
 
 export const Disabled: Story = {
     args: {
-        children: 'Disabled',
         disabled: true,
+    },
+    render: function Render(args) {
+        const { t } = useTranslation();
+        return <Button {...args}>{t('storybook.button.disabled')}</Button>;
     },
 };

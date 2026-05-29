@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 
 import {
     Table,
@@ -12,13 +13,48 @@ import {
 } from '@/components/table';
 
 const invoices = [
-    { invoice: 'INV001', paymentStatus: 'Paid', totalAmount: '$250.00', paymentMethod: 'Credit Card' },
-    { invoice: 'INV002', paymentStatus: 'Pending', totalAmount: '$150.00', paymentMethod: 'PayPal' },
-    { invoice: 'INV003', paymentStatus: 'Unpaid', totalAmount: '$350.00', paymentMethod: 'Bank Transfer' },
-    { invoice: 'INV004', paymentStatus: 'Paid', totalAmount: '$450.00', paymentMethod: 'Credit Card' },
-    { invoice: 'INV005', paymentStatus: 'Paid', totalAmount: '$550.00', paymentMethod: 'PayPal' },
-    { invoice: 'INV006', paymentStatus: 'Pending', totalAmount: '$200.00', paymentMethod: 'Bank Transfer' },
-    { invoice: 'INV007', paymentStatus: 'Unpaid', totalAmount: '$300.00', paymentMethod: 'Credit Card' },
+    {
+        invoice: 'INV001',
+        statusKey: 'storybook.table.statusPaid',
+        totalAmount: '$250.00',
+        methodKey: 'storybook.table.methodCreditCard',
+    },
+    {
+        invoice: 'INV002',
+        statusKey: 'storybook.table.statusPending',
+        totalAmount: '$150.00',
+        methodKey: 'storybook.table.methodPaypal',
+    },
+    {
+        invoice: 'INV003',
+        statusKey: 'storybook.table.statusUnpaid',
+        totalAmount: '$350.00',
+        methodKey: 'storybook.table.methodBankTransfer',
+    },
+    {
+        invoice: 'INV004',
+        statusKey: 'storybook.table.statusPaid',
+        totalAmount: '$450.00',
+        methodKey: 'storybook.table.methodCreditCard',
+    },
+    {
+        invoice: 'INV005',
+        statusKey: 'storybook.table.statusPaid',
+        totalAmount: '$550.00',
+        methodKey: 'storybook.table.methodPaypal',
+    },
+    {
+        invoice: 'INV006',
+        statusKey: 'storybook.table.statusPending',
+        totalAmount: '$200.00',
+        methodKey: 'storybook.table.methodBankTransfer',
+    },
+    {
+        invoice: 'INV007',
+        statusKey: 'storybook.table.statusUnpaid',
+        totalAmount: '$300.00',
+        methodKey: 'storybook.table.methodCreditCard',
+    },
 ];
 
 const meta = {
@@ -34,35 +70,38 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    render: () => (
-        <div style={{ width: '600px', height: '400px' }}>
-            <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className='w-[100px]'>Invoice</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Method</TableHead>
-                        <TableHead className='text-right'>Amount</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {invoices.map(invoice => (
-                        <TableRow key={invoice.invoice}>
-                            <TableCell className='font-medium'>{invoice.invoice}</TableCell>
-                            <TableCell>{invoice.paymentStatus}</TableCell>
-                            <TableCell>{invoice.paymentMethod}</TableCell>
-                            <TableCell className='text-right'>{invoice.totalAmount}</TableCell>
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ width: '600px', height: '400px' }}>
+                <Table>
+                    <TableCaption>{t('storybook.table.caption')}</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className='w-[100px]'>{t('storybook.table.invoice')}</TableHead>
+                            <TableHead>{t('storybook.table.status')}</TableHead>
+                            <TableHead>{t('storybook.table.method')}</TableHead>
+                            <TableHead className='text-right'>{t('storybook.table.amount')}</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={3}>Total</TableCell>
-                        <TableCell className='text-right'>$2,500.00</TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
-        </div>
-    ),
+                    </TableHeader>
+                    <TableBody>
+                        {invoices.map(invoice => (
+                            <TableRow key={invoice.invoice}>
+                                <TableCell className='font-medium'>{invoice.invoice}</TableCell>
+                                <TableCell>{t(invoice.statusKey)}</TableCell>
+                                <TableCell>{t(invoice.methodKey)}</TableCell>
+                                <TableCell className='text-right'>{invoice.totalAmount}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableCell colSpan={3}>{t('storybook.table.total')}</TableCell>
+                            <TableCell className='text-right'>$2,500.00</TableCell>
+                        </TableRow>
+                    </TableFooter>
+                </Table>
+            </div>
+        );
+    },
 };

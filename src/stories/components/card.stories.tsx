@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
@@ -16,45 +17,54 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    render: () => (
-        <Card style={{ width: '380px' }}>
-            <CardHeader>
-                <CardTitle>Card Title</CardTitle>
-                <CardDescription>Card description goes here</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p>Card content. This is a simple card component.</p>
-            </CardContent>
-            <CardFooter>
-                <Button variant='outline' style={{ marginRight: '8px' }}>
-                    Cancel
-                </Button>
-                <Button>Submit</Button>
-            </CardFooter>
-        </Card>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <Card style={{ width: '380px' }}>
+                <CardHeader>
+                    <CardTitle>{t('storybook.card.title')}</CardTitle>
+                    <CardDescription>{t('storybook.card.description')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p>{t('storybook.card.content')}</p>
+                </CardContent>
+                <CardFooter>
+                    <Button variant='outline' style={{ marginRight: '8px' }}>
+                        {t('common.cancel')}
+                    </Button>
+                    <Button>{t('storybook.card.submit')}</Button>
+                </CardFooter>
+            </Card>
+        );
+    },
 };
 
 export const Simple: Story = {
-    render: () => (
-        <Card style={{ width: '380px' }}>
-            <CardContent>
-                <p>A simple card with just content.</p>
-            </CardContent>
-        </Card>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <Card style={{ width: '380px' }}>
+                <CardContent>
+                    <p>{t('storybook.card.simpleContent')}</p>
+                </CardContent>
+            </Card>
+        );
+    },
 };
 
 export const WithoutFooter: Story = {
-    render: () => (
-        <Card style={{ width: '380px' }}>
-            <CardHeader>
-                <CardTitle>Notification</CardTitle>
-                <CardDescription>You have 3 unread messages.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p>Messages are waiting in your inbox.</p>
-            </CardContent>
-        </Card>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <Card style={{ width: '380px' }}>
+                <CardHeader>
+                    <CardTitle>{t('storybook.card.notification')}</CardTitle>
+                    <CardDescription>{t('storybook.card.unreadMessages')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p>{t('storybook.card.messagesWaiting')}</p>
+                </CardContent>
+            </Card>
+        );
+    },
 };

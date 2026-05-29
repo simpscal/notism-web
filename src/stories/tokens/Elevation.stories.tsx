@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const shadows = [
     { label: 'shadow-xs', class: 'shadow-xs', value: '0 1px 2px 0 rgb(0 0 0 / 0.05)' },
@@ -24,13 +25,14 @@ const shadows = [
 ];
 
 function ElevationPage() {
+    const { t } = useTranslation();
     return (
         <div style={{ padding: '32px', backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '8px' }}>
-                Elevation
+                {t('storybook.tokens.elevation.title')}
             </h1>
             <p style={{ color: 'var(--muted-foreground)', marginBottom: '40px' }}>
-                Tailwind shadow utilities for elevation levels.
+                {t('storybook.tokens.elevation.description')}
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', alignItems: 'flex-end' }}>
                 {shadows.map(shadow => (

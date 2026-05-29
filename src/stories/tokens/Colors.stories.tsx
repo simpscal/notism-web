@@ -1,41 +1,42 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const colorTokens = [
-    { name: 'primary', var: '--primary', label: 'Primary' },
-    { name: 'primary-foreground', var: '--primary-foreground', label: 'Primary Foreground' },
-    { name: 'secondary', var: '--secondary', label: 'Secondary' },
-    { name: 'secondary-foreground', var: '--secondary-foreground', label: 'Secondary Foreground' },
-    { name: 'muted', var: '--muted', label: 'Muted' },
-    { name: 'muted-foreground', var: '--muted-foreground', label: 'Muted Foreground' },
-    { name: 'accent', var: '--accent', label: 'Accent' },
-    { name: 'accent-foreground', var: '--accent-foreground', label: 'Accent Foreground' },
-    { name: 'destructive', var: '--destructive', label: 'Destructive' },
-    { name: 'success', var: '--success', label: 'Success' },
-    { name: 'warning', var: '--warning', label: 'Warning' },
-    { name: 'info', var: '--info', label: 'Info' },
-    { name: 'background', var: '--background', label: 'Background' },
-    { name: 'foreground', var: '--foreground', label: 'Foreground' },
-    { name: 'card', var: '--card', label: 'Card' },
-    { name: 'card-foreground', var: '--card-foreground', label: 'Card Foreground' },
-    { name: 'popover', var: '--popover', label: 'Popover' },
-    { name: 'popover-foreground', var: '--popover-foreground', label: 'Popover Foreground' },
-    { name: 'border', var: '--border', label: 'Border' },
-    { name: 'input', var: '--input', label: 'Input' },
-    { name: 'ring', var: '--ring', label: 'Ring' },
-    { name: 'chart-1', var: '--chart-1', label: 'Chart 1' },
-    { name: 'chart-2', var: '--chart-2', label: 'Chart 2' },
-    { name: 'chart-3', var: '--chart-3', label: 'Chart 3' },
-    { name: 'chart-4', var: '--chart-4', label: 'Chart 4' },
-    { name: 'chart-5', var: '--chart-5', label: 'Chart 5' },
-    { name: 'sidebar', var: '--sidebar', label: 'Sidebar' },
-    { name: 'sidebar-foreground', var: '--sidebar-foreground', label: 'Sidebar Foreground' },
-    { name: 'sidebar-primary', var: '--sidebar-primary', label: 'Sidebar Primary' },
-    { name: 'sidebar-primary-foreground', var: '--sidebar-primary-foreground', label: 'Sidebar Primary Foreground' },
-    { name: 'sidebar-accent', var: '--sidebar-accent', label: 'Sidebar Accent' },
-    { name: 'sidebar-accent-foreground', var: '--sidebar-accent-foreground', label: 'Sidebar Accent Foreground' },
-    { name: 'sidebar-border', var: '--sidebar-border', label: 'Sidebar Border' },
-    { name: 'sidebar-ring', var: '--sidebar-ring', label: 'Sidebar Ring' },
+    { name: 'primary', var: '--primary', labelKey: 'primary' },
+    { name: 'primary-foreground', var: '--primary-foreground', labelKey: 'primaryForeground' },
+    { name: 'secondary', var: '--secondary', labelKey: 'secondary' },
+    { name: 'secondary-foreground', var: '--secondary-foreground', labelKey: 'secondaryForeground' },
+    { name: 'muted', var: '--muted', labelKey: 'muted' },
+    { name: 'muted-foreground', var: '--muted-foreground', labelKey: 'mutedForeground' },
+    { name: 'accent', var: '--accent', labelKey: 'accent' },
+    { name: 'accent-foreground', var: '--accent-foreground', labelKey: 'accentForeground' },
+    { name: 'destructive', var: '--destructive', labelKey: 'destructive' },
+    { name: 'success', var: '--success', labelKey: 'success' },
+    { name: 'warning', var: '--warning', labelKey: 'warning' },
+    { name: 'info', var: '--info', labelKey: 'info' },
+    { name: 'background', var: '--background', labelKey: 'background' },
+    { name: 'foreground', var: '--foreground', labelKey: 'foreground' },
+    { name: 'card', var: '--card', labelKey: 'card' },
+    { name: 'card-foreground', var: '--card-foreground', labelKey: 'cardForeground' },
+    { name: 'popover', var: '--popover', labelKey: 'popover' },
+    { name: 'popover-foreground', var: '--popover-foreground', labelKey: 'popoverForeground' },
+    { name: 'border', var: '--border', labelKey: 'border' },
+    { name: 'input', var: '--input', labelKey: 'input' },
+    { name: 'ring', var: '--ring', labelKey: 'ring' },
+    { name: 'chart-1', var: '--chart-1', labelKey: 'chart1' },
+    { name: 'chart-2', var: '--chart-2', labelKey: 'chart2' },
+    { name: 'chart-3', var: '--chart-3', labelKey: 'chart3' },
+    { name: 'chart-4', var: '--chart-4', labelKey: 'chart4' },
+    { name: 'chart-5', var: '--chart-5', labelKey: 'chart5' },
+    { name: 'sidebar', var: '--sidebar', labelKey: 'sidebar' },
+    { name: 'sidebar-foreground', var: '--sidebar-foreground', labelKey: 'sidebarForeground' },
+    { name: 'sidebar-primary', var: '--sidebar-primary', labelKey: 'sidebarPrimary' },
+    { name: 'sidebar-primary-foreground', var: '--sidebar-primary-foreground', labelKey: 'sidebarPrimaryForeground' },
+    { name: 'sidebar-accent', var: '--sidebar-accent', labelKey: 'sidebarAccent' },
+    { name: 'sidebar-accent-foreground', var: '--sidebar-accent-foreground', labelKey: 'sidebarAccentForeground' },
+    { name: 'sidebar-border', var: '--sidebar-border', labelKey: 'sidebarBorder' },
+    { name: 'sidebar-ring', var: '--sidebar-ring', labelKey: 'sidebarRing' },
 ];
 
 function ColorSwatch({ cssVar, label }: { name: string; cssVar: string; label: string }) {
@@ -62,13 +63,14 @@ function ColorSwatch({ cssVar, label }: { name: string; cssVar: string; label: s
 }
 
 function ColorsPage() {
+    const { t } = useTranslation();
     return (
         <div style={{ padding: '32px', backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '8px' }}>
-                Color Tokens
+                {t('storybook.tokens.colors.title')}
             </h1>
             <p style={{ color: 'var(--muted-foreground)', marginBottom: '32px' }}>
-                All CSS custom property color tokens for light and dark modes.
+                {t('storybook.tokens.colors.description')}
             </p>
             <div
                 style={{
@@ -78,7 +80,12 @@ function ColorsPage() {
                 }}
             >
                 {colorTokens.map(token => (
-                    <ColorSwatch key={token.name} name={token.name} cssVar={token.var} label={token.label} />
+                    <ColorSwatch
+                        key={token.name}
+                        name={token.name}
+                        cssVar={token.var}
+                        label={t(`storybook.tokens.colors.labels.${token.labelKey}`)}
+                    />
                 ))}
             </div>
         </div>

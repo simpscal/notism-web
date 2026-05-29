@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CreditCard, Keyboard, LifeBuoy, LogOut, Settings, User, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/button';
 import {
@@ -26,78 +27,84 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    render: () => (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant='outline'>Open Menu</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='w-56'>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant='outline'>{t('storybook.dropdownMenu.openMenu')}</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className='w-56'>
+                    <DropdownMenuLabel>{t('storybook.dropdownMenu.myAccount')}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                            <User />
+                            <span>{t('storybook.dropdownMenu.profile')}</span>
+                            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <CreditCard />
+                            <span>{t('storybook.dropdownMenu.billing')}</span>
+                            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Settings />
+                            <span>{t('storybook.dropdownMenu.settings')}</span>
+                            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Keyboard />
+                            <span>{t('storybook.dropdownMenu.keyboardShortcuts')}</span>
+                            <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                            <Users />
+                            <span>{t('storybook.dropdownMenu.team')}</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                        <User />
-                        <span>Profile</span>
-                        <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        <LifeBuoy />
+                        <span>{t('storybook.dropdownMenu.support')}</span>
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                        <CreditCard />
-                        <span>Billing</span>
-                        <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                        <LogOut />
+                        <span>{t('storybook.dropdownMenu.logOut')}</span>
+                        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Settings />
-                        <span>Settings</span>
-                        <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Keyboard />
-                        <span>Keyboard shortcuts</span>
-                        <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <Users />
-                        <span>Team</span>
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <LifeBuoy />
-                    <span>Support</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <LogOut />
-                    <span>Log out</span>
-                    <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    ),
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    },
 };
 
 export const WithCheckboxes: Story = {
-    render: () => (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant='outline'>Options</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='w-48'>
-                <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <span>Status Bar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <span>Activity Bar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <span>Panel</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant='outline'>{t('storybook.dropdownMenu.options')}</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className='w-48'>
+                    <DropdownMenuLabel>{t('storybook.dropdownMenu.appearance')}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <span>{t('storybook.dropdownMenu.statusBar')}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <span>{t('storybook.dropdownMenu.activityBar')}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <span>{t('storybook.dropdownMenu.panel')}</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    },
 };

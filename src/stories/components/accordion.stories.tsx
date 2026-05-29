@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/accordion';
 
@@ -19,46 +20,48 @@ export const Default: Story = {
         type: 'single',
         collapsible: true,
     },
-    render: args => (
-        <Accordion {...args} style={{ width: '400px' }}>
-            <AccordionItem value='item-1'>
-                <AccordionTrigger>Is it accessible?</AccordionTrigger>
-                <AccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='item-2'>
-                <AccordionTrigger>Is it styled?</AccordionTrigger>
-                <AccordionContent>
-                    Yes. It comes with default styles that match the other components style.
-                </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='item-3'>
-                <AccordionTrigger>Is it animated?</AccordionTrigger>
-                <AccordionContent>
-                    Yes. It is animated by default, but you can disable it if you prefer.
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
-    ),
+    render: function Render(args) {
+        const { t } = useTranslation();
+        return (
+            <Accordion {...args} style={{ width: '400px' }}>
+                <AccordionItem value='item-1'>
+                    <AccordionTrigger>{t('storybook.accordion.q1')}</AccordionTrigger>
+                    <AccordionContent>{t('storybook.accordion.a1')}</AccordionContent>
+                </AccordionItem>
+                <AccordionItem value='item-2'>
+                    <AccordionTrigger>{t('storybook.accordion.q2')}</AccordionTrigger>
+                    <AccordionContent>{t('storybook.accordion.a2')}</AccordionContent>
+                </AccordionItem>
+                <AccordionItem value='item-3'>
+                    <AccordionTrigger>{t('storybook.accordion.q3')}</AccordionTrigger>
+                    <AccordionContent>{t('storybook.accordion.a3')}</AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        );
+    },
 };
 
 export const Multiple: Story = {
     args: {
         type: 'multiple',
     },
-    render: args => (
-        <Accordion {...args} style={{ width: '400px' }}>
-            <AccordionItem value='item-1'>
-                <AccordionTrigger>Section One</AccordionTrigger>
-                <AccordionContent>Content for section one.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='item-2'>
-                <AccordionTrigger>Section Two</AccordionTrigger>
-                <AccordionContent>Content for section two.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value='item-3'>
-                <AccordionTrigger>Section Three</AccordionTrigger>
-                <AccordionContent>Content for section three.</AccordionContent>
-            </AccordionItem>
-        </Accordion>
-    ),
+    render: function Render(args) {
+        const { t } = useTranslation();
+        return (
+            <Accordion {...args} style={{ width: '400px' }}>
+                <AccordionItem value='item-1'>
+                    <AccordionTrigger>{t('storybook.accordion.sectionOne')}</AccordionTrigger>
+                    <AccordionContent>{t('storybook.accordion.contentOne')}</AccordionContent>
+                </AccordionItem>
+                <AccordionItem value='item-2'>
+                    <AccordionTrigger>{t('storybook.accordion.sectionTwo')}</AccordionTrigger>
+                    <AccordionContent>{t('storybook.accordion.contentTwo')}</AccordionContent>
+                </AccordionItem>
+                <AccordionItem value='item-3'>
+                    <AccordionTrigger>{t('storybook.accordion.sectionThree')}</AccordionTrigger>
+                    <AccordionContent>{t('storybook.accordion.contentThree')}</AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        );
+    },
 };

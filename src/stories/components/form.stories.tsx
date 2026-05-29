@@ -1,18 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { Button } from '@/components/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/form';
 import { Input } from '@/components/input';
 
-const formSchema = z.object({
-    username: z.string().min(2, { message: 'Username must be at least 2 characters.' }),
-    email: z.string().email({ message: 'Invalid email address.' }),
-});
-
 function FormDemo() {
+    const { t } = useTranslation();
+
+    const formSchema = z.object({
+        username: z.string().min(2, { message: t('storybook.form.usernameMin') }),
+        email: z.string().email({ message: t('storybook.form.emailInvalid') }),
+    });
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -36,11 +39,11 @@ function FormDemo() {
                     name='username'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel>{t('storybook.form.username')}</FormLabel>
                             <FormControl>
                                 <Input placeholder='johndoe' {...field} />
                             </FormControl>
-                            <FormDescription>This is your public display name.</FormDescription>
+                            <FormDescription>{t('storybook.form.usernamePlaceholderDescription')}</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -50,7 +53,7 @@ function FormDemo() {
                     name='email'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>{t('storybook.form.email')}</FormLabel>
                             <FormControl>
                                 <Input type='email' placeholder='you@example.com' {...field} />
                             </FormControl>
@@ -58,7 +61,7 @@ function FormDemo() {
                         </FormItem>
                     )}
                 />
-                <Button type='submit'>Submit</Button>
+                <Button type='submit'>{t('storybook.form.submit')}</Button>
             </form>
         </Form>
     );

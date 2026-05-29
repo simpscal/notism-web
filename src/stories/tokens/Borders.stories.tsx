@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const borderWidths = [
     { label: 'border (1px)', width: '1px' },
@@ -16,13 +17,14 @@ const ringExamples = [
 ];
 
 function BordersPage() {
+    const { t } = useTranslation();
     return (
         <div style={{ padding: '32px', backgroundColor: 'var(--background)', minHeight: '100vh' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '8px' }}>
-                Borders
+                {t('storybook.tokens.borders.title')}
             </h1>
             <p style={{ color: 'var(--muted-foreground)', marginBottom: '40px' }}>
-                Border widths, ring utilities, and outline patterns using semantic color tokens.
+                {t('storybook.tokens.borders.description')}
             </p>
 
             <section style={{ marginBottom: '48px' }}>
@@ -36,7 +38,7 @@ function BordersPage() {
                         marginBottom: '24px',
                     }}
                 >
-                    Border Widths
+                    {t('storybook.tokens.borders.borderWidths')}
                 </h2>
                 <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
                     {borderWidths.map(b => (
@@ -79,7 +81,7 @@ function BordersPage() {
                         marginBottom: '24px',
                     }}
                 >
-                    Border Colors
+                    {t('storybook.tokens.borders.borderColors')}
                 </h2>
                 <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
                     {[
@@ -129,7 +131,7 @@ function BordersPage() {
                         marginBottom: '24px',
                     }}
                 >
-                    Focus Ring Examples
+                    {t('storybook.tokens.borders.focusRingExamples')}
                 </h2>
                 <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
                     {ringExamples.map(ring => (

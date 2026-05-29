@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useTranslation } from 'react-i18next';
 
 import { Checkbox } from '@/components/checkbox';
 import { Label } from '@/components/label';
@@ -20,16 +21,22 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        children: 'Email address',
         htmlFor: 'email',
+    },
+    render: function Render(args) {
+        const { t } = useTranslation();
+        return <Label {...args}>{t('storybook.label.emailAddress')}</Label>;
     },
 };
 
 export const WithCheckbox: Story = {
-    render: () => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Checkbox id='cb-label' />
-            <Label htmlFor='cb-label'>Accept terms and conditions</Label>
-        </div>
-    ),
+    render: function Render() {
+        const { t } = useTranslation();
+        return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Checkbox id='cb-label' />
+                <Label htmlFor='cb-label'>{t('storybook.label.acceptTerms')}</Label>
+            </div>
+        );
+    },
 };
