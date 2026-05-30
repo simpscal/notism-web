@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { LayoutGrid, Search, SlidersHorizontal, UtensilsCrossed, X } from 'lucide-react';
+import { ArrowUpDown, Search, UtensilsCrossed, X } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardFooter } from '@/components/card';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { Skeleton } from '@/components/skeleton';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 // ---------------------------------------------------------------------------
 // Fixture data
@@ -308,98 +310,86 @@ function PageShell({
 
             {/* Main content */}
             <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8 lg:py-10'>
-                <div className='flex gap-8'>
-                    {/* Sidebar */}
-                    <aside className='hidden w-56 shrink-0 lg:block'>
-                        <div className='sticky top-24 space-y-6'>
-                            <div>
-                                <div className='mb-3 flex items-center gap-2'>
-                                    <LayoutGrid className='h-3.5 w-3.5 text-muted-foreground' />
-                                    <h3 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                                        Categories
-                                    </h3>
-                                </div>
-                                <div className='space-y-0.5'>
-                                    {CATEGORIES.map(cat => (
-                                        <Button
-                                            key={cat}
-                                            variant={
-                                                (selectedCategory === null && cat === 'All Items') ||
-                                                selectedCategory === cat
-                                                    ? 'default'
-                                                    : 'ghost'
-                                            }
-                                            size='sm'
-                                            className='w-full justify-start'
-                                        >
-                                            {cat}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className='h-px bg-border' />
-                            <div>
-                                <div className='mb-3 flex items-center gap-2'>
-                                    <SlidersHorizontal className='h-3.5 w-3.5 text-muted-foreground' />
-                                    <h3 className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                                        Sort by
-                                    </h3>
-                                </div>
-                                <div className='space-y-0.5'>
-                                    {['Default', 'Price: Low to High', 'Price: High to Low', 'Name A–Z'].map(opt => (
-                                        <Button
-                                            key={opt}
-                                            variant={opt === 'Default' ? 'default' : 'ghost'}
-                                            size='sm'
-                                            className='w-full justify-start'
-                                        >
-                                            {opt}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-
-                    {/* Grid area */}
-                    <div className='min-w-0 flex-1'>
-                        {/* Toolbar */}
-                        <div className='mb-4 flex flex-wrap items-center justify-between gap-3 sm:mb-6'>
-                            <div className='flex flex-wrap items-center gap-2'>
-                                <span className='text-sm text-muted-foreground'>
-                                    <span className='font-semibold text-foreground'>{totalCount}</span>{' '}
-                                    {totalCount === 1 ? 'dish found' : 'dishes found'}
-                                </span>
-                                {selectedCategory && (
-                                    <Badge variant='secondary' className='gap-1 text-xs'>
-                                        {selectedCategory}
-                                        <button
-                                            className='-mr-1 h-3.5 w-3.5 hover:text-destructive'
-                                            aria-label='Remove filter'
-                                        >
-                                            <X className='h-3 w-3' />
-                                        </button>
-                                    </Badge>
-                                )}
-                                {hasFilters && (
-                                    <Button
-                                        variant='ghost'
-                                        size='xs'
-                                        className='text-muted-foreground hover:text-foreground'
+                {/* Filter + sort control bar */}
+                <div className='sticky top-16 z-40 -mx-4 mb-5 border-b bg-background/95 px-4 pb-3 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:mb-6'>
+                    {/* Row 1: category toggle row (scrolls horizontally on narrow screens) + sort select */}
+                    <div className='flex items-center gap-3'>
+                        <div className='min-w-0 flex-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
+                            <ToggleGroup
+                                type='single'
+                                value={selectedCategory ?? 'All Items'}
+                                aria-label='Filter by category'
+                                className='w-max flex-nowrap justify-start gap-1.5'
+                            >
+                                {CATEGORIES.map(cat => (
+                                    <ToggleGroupItem
+                                        key={cat}
+                                        value={cat}
+                                        aria-label={cat}
+                                        className='shrink-0 rounded-full border px-3.5 text-xs font-medium data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground sm:text-sm'
                                     >
-                                        Clear all
-                                    </Button>
-                                )}
-                            </div>
-                            <Button variant='outline' size='sm' className='lg:hidden'>
-                                <SlidersHorizontal className='mr-2 h-3.5 w-3.5' />
-                                Filters &amp; Sort
-                            </Button>
+                                        {cat}
+                                    </ToggleGroupItem>
+                                ))}
+                            </ToggleGroup>
                         </div>
 
-                        {children}
+                        <div className='shrink-0'>
+                            <Select defaultValue='default'>
+                                <SelectTrigger size='sm' aria-label='Sort dishes' className='h-9 gap-2 rounded-full'>
+                                    <ArrowUpDown className='h-3.5 w-3.5 text-muted-foreground' />
+                                    <span className='hidden sm:inline'>
+                                        <SelectValue placeholder='Sort' />
+                                    </span>
+                                </SelectTrigger>
+                                <SelectContent align='end'>
+                                    <SelectItem value='default'>Recommended</SelectItem>
+                                    <SelectItem value='price-asc'>Price: Low to High</SelectItem>
+                                    <SelectItem value='price-desc'>Price: High to Low</SelectItem>
+                                    <SelectItem value='name-asc'>Name: A–Z</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    {/* Row 2: result count + active-filter indication + clear-all */}
+                    <div className='mt-2.5 flex flex-wrap items-center gap-2'>
+                        <span className='text-sm text-muted-foreground'>
+                            <span className='font-semibold text-foreground'>{totalCount}</span>{' '}
+                            {totalCount === 1 ? 'dish found' : 'dishes found'}
+                        </span>
+                        {selectedCategory && (
+                            <>
+                                <span className='text-muted-foreground/40' aria-hidden='true'>
+                                    •
+                                </span>
+                                <Badge variant='secondary' className='gap-1 rounded-full pr-1 text-xs'>
+                                    {selectedCategory}
+                                    <button
+                                        type='button'
+                                        className='ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-foreground/10 hover:text-destructive'
+                                        aria-label={`Remove ${selectedCategory} filter`}
+                                    >
+                                        <X className='h-3 w-3' />
+                                    </button>
+                                </Badge>
+                            </>
+                        )}
+                        {hasFilters && (
+                            <Button
+                                variant='ghost'
+                                size='xs'
+                                className='ml-auto text-muted-foreground hover:text-foreground'
+                            >
+                                <X className='mr-1 h-3 w-3' />
+                                Clear all
+                            </Button>
+                        )}
                     </div>
                 </div>
+
+                {/* Grid area — full width now that filters live in the top bar */}
+                <div className='min-w-0'>{children}</div>
             </div>
         </div>
     );
@@ -412,7 +402,7 @@ function PageShell({
 function DefaultPage() {
     return (
         <PageShell totalCount={FOODS.length}>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-6 xl:gap-6'>
                 {FOODS.map(food => (
                     <FoodCard key={food.id} food={food} />
                 ))}
@@ -424,7 +414,7 @@ function DefaultPage() {
 function LoadingPage() {
     return (
         <PageShell totalCount={0}>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-6 xl:gap-6'>
                 {Array.from({ length: 8 }).map((_, i) => (
                     <FoodCardSkeleton key={i} />
                 ))}
@@ -455,7 +445,7 @@ const NO_IMAGE_FOODS: MockFood[] = FOODS.map(f => ({ ...f, imageUrl: null }));
 function NoImagePlaceholderPage() {
     return (
         <PageShell totalCount={NO_IMAGE_FOODS.length}>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-6 xl:gap-6'>
                 {NO_IMAGE_FOODS.map(food => (
                     <FoodCard key={food.id} food={food} />
                 ))}
@@ -497,12 +487,4 @@ export const EmptyCategory: Story = {
 export const NoImagePlaceholder: Story = {
     name: 'No Image — Placeholder Cards',
     render: () => <NoImagePlaceholderPage />,
-};
-
-export const Dark: Story = {
-    name: 'Default — Dark Mode',
-    render: () => <DefaultPage />,
-    parameters: {
-        themes: { themeOverride: 'dark' },
-    },
 };

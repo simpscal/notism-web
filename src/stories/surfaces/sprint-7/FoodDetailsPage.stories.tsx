@@ -862,11 +862,3 @@ export const NoImage: Story = {
     name: 'No Image — Placeholder',
     render: () => <NoImagePage />,
 };
-
-export const Dark: Story = {
-    name: 'Default — Dark Mode',
-    render: () => <DefaultDetailPage />,
-    parameters: {
-        themes: { themeOverride: 'dark' },
-    },
-};
