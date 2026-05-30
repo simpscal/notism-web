@@ -224,7 +224,7 @@ function CustomisationSection({ customisations, selections, onChange }: Customis
 
 function PageShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='overflow-x-clip bg-background' style={{ minHeight: '100vh' }}>
+        <div className='bg-background' style={{ minHeight: '100vh' }}>
             <header className='sticky top-0 z-50 border-b bg-background'>
                 <div className='flex h-16 items-center justify-between px-4 md:px-6'>
                     <div className='flex items-center gap-4'>
@@ -364,7 +364,7 @@ function DefaultDetailPage() {
                     )}
 
                     {/* Sticky CTA — visible on mobile as sticky footer, on desktop inline */}
-                    <div className='sticky bottom-0 z-10 -mx-4 border-t bg-background px-4 py-4 sm:static sm:mx-0 sm:border-t-0 sm:p-0'>
+                    <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
                         <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
                             <div className='flex h-10 shrink-0 items-center justify-between rounded-full bg-muted px-1 py-1'>
                                 <Button
@@ -470,7 +470,7 @@ function NoCustomisationsPage() {
                     </div>
 
                     {/* No customisations — section is entirely absent; CTA follows price directly */}
-                    <div className='sticky bottom-0 z-10 -mx-4 border-t bg-background px-4 py-4 sm:static sm:mx-0 sm:border-t-0 sm:p-0'>
+                    <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
                         <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
                             <div className='flex h-10 shrink-0 items-center justify-between rounded-full bg-muted px-1 py-1'>
                                 <Button
@@ -568,7 +568,7 @@ function DisabledAddToCartPage() {
                         </div>
                     )}
 
-                    <div className='sticky bottom-0 z-10 -mx-4 border-t bg-background px-4 py-4 sm:static sm:mx-0 sm:border-t-0 sm:p-0'>
+                    <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
                         <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
                             <div className='flex h-10 shrink-0 items-center justify-between rounded-full bg-muted px-1 py-1'>
                                 <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full' disabled>
@@ -669,7 +669,7 @@ function AddedToCartPage() {
                         </span>
                     </div>
 
-                    <div className='sticky bottom-0 z-10 -mx-4 border-t bg-background px-4 py-4 sm:static sm:mx-0 sm:border-t-0 sm:p-0'>
+                    <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
                         <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
                             <div className='flex h-10 shrink-0 items-center justify-between rounded-full bg-muted px-1 py-1'>
                                 <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full' disabled>
@@ -783,7 +783,7 @@ function NoImagePage() {
                         </span>
                     </div>
 
-                    <div className='sticky bottom-0 z-10 -mx-4 border-t bg-background px-4 py-4 sm:static sm:mx-0 sm:border-t-0 sm:p-0'>
+                    <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
                         <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
                             <div className='flex h-10 shrink-0 items-center justify-between rounded-full bg-muted px-1 py-1'>
                                 <Button
