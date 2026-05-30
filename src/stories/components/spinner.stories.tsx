@@ -27,6 +27,9 @@ export const Default: Story = {
 };
 
 export const Sizes: Story = {
+    args: {
+        size: 'md',
+    },
     render: () => (
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             <Spinner size='xs' />

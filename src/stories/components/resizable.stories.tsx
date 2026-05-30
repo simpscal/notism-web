@@ -26,6 +26,7 @@ const panelStyle = {
 const labelStyle = { fontSize: '14px', fontWeight: 500 } as const;
 
 export const Horizontal: Story = {
+    args: { direction: 'horizontal' },
     render: function Render() {
         const { t } = useTranslation();
         return (
@@ -47,6 +48,7 @@ export const Horizontal: Story = {
 };
 
 export const Vertical: Story = {
+    args: { direction: 'horizontal' },
     render: function Render() {
         const { t } = useTranslation();
         return (
@@ -68,6 +70,7 @@ export const Vertical: Story = {
 };
 
 export const WithHandle: Story = {
+    args: { direction: 'horizontal' },
     render: function Render() {
         const { t } = useTranslation();
         return (

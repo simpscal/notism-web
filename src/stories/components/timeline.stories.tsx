@@ -52,6 +52,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+    args: { items: [] },
     render: function Render() {
         const { t } = useTranslation();
         const items = timelineItems.map(({ titleKey, descriptionKey, ...rest }) => ({
@@ -68,6 +69,7 @@ export const Default: Story = {
 };
 
 export const AllCompleted: Story = {
+    args: { items: [] },
     render: function Render() {
         const { t } = useTranslation();
         const items = timelineItems.map(({ titleKey, descriptionKey, ...rest }) => ({

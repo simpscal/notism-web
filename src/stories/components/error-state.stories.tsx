@@ -25,6 +25,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+    args: { title: '' },
     render: function Render() {
         const { t } = useTranslation();
         return (
@@ -38,6 +39,7 @@ export const Default: Story = {
 };
 
 export const Small: Story = {
+    args: { title: '' },
     render: function Render() {
         const { t } = useTranslation();
         return (
@@ -51,6 +53,7 @@ export const Small: Story = {
 };
 
 export const WithAction: Story = {
+    args: { title: '' },
     render: function Render() {
         const { t } = useTranslation();
         return (

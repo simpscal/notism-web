@@ -16,6 +16,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+    args: { type: 'multiple' },
     render: () => (
         <ToggleGroup type='multiple'>
             <ToggleGroupItem value='bold' aria-label='Toggle bold'>
@@ -32,6 +33,7 @@ export const Default: Story = {
 };
 
 export const SingleSelect: Story = {
+    args: { type: 'single' },
     render: () => (
         <ToggleGroup type='single' defaultValue='center'>
             <ToggleGroupItem value='left' aria-label='Align left'>
@@ -48,6 +50,7 @@ export const SingleSelect: Story = {
 };
 
 export const Outline: Story = {
+    args: { type: 'multiple' },
     render: () => (
         <ToggleGroup type='multiple' variant='outline'>
             <ToggleGroupItem value='bold' aria-label='Toggle bold'>
