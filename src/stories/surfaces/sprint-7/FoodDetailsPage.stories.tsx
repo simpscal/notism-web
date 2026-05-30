@@ -224,7 +224,7 @@ function CustomisationSection({ customisations, selections, onChange }: Customis
 
 function PageShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='bg-background' style={{ minHeight: '100vh' }}>
+        <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
             <header className='sticky top-0 z-50 border-b bg-background'>
                 <div className='flex h-16 items-center justify-between px-4 md:px-6'>
                     <div className='flex items-center gap-4'>
