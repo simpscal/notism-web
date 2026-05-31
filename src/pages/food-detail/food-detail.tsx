@@ -46,9 +46,14 @@ function FoodDetail() {
         setQuantity(prev => Math.max(1, prev + delta));
     }, []);
 
+    const handleDecrement = useCallback(() => handleQuantityChange(-1), [handleQuantityChange]);
+    const handleIncrement = useCallback(() => handleQuantityChange(1), [handleQuantityChange]);
+
     const handleSelectionChange = useCallback((groupId: string, value: string) => {
         setSelections(prev => ({ ...prev, [groupId]: value }));
     }, []);
+
+    const handleDismissBanner = useCallback(() => setCartAdded(null), []);
 
     const handleAddToCart = useCallback(async () => {
         if (!food) return;
@@ -132,7 +137,7 @@ function FoodDetail() {
                                     <Link to={`/${ROUTES.CART}`}>{t('foodDetail.viewCart')}</Link>
                                 </Button>
                             }
-                            onClose={() => setCartAdded(null)}
+                            onClose={handleDismissBanner}
                         />
                     </div>
                 )}
@@ -214,7 +219,7 @@ function FoodDetail() {
                                         variant='ghost'
                                         size='icon'
                                         className='h-8 w-8 rounded-full'
-                                        onClick={() => handleQuantityChange(-1)}
+                                        onClick={handleDecrement}
                                         disabled={quantity <= 1}
                                     >
                                         <Minus className='h-4 w-4' />
@@ -226,7 +231,7 @@ function FoodDetail() {
                                         variant='ghost'
                                         size='icon'
                                         className='h-8 w-8 rounded-full'
-                                        onClick={() => handleQuantityChange(1)}
+                                        onClick={handleIncrement}
                                         disabled={quantity >= food.stockQuantity}
                                     >
                                         <Plus className='h-4 w-4' />
