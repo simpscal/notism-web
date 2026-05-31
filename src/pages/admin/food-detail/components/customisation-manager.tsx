@@ -1,9 +1,12 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { adminApi } from '@/apis';
-import type { CustomisationGroupModel } from '@/apis/models';
+import type { CustomisationGroupModel, CustomisationOptionModel } from '@/apis/models';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,116 +26,230 @@ import { Input } from '@/components/input';
 import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
 
+// ---------------------------------------------------------------------------
+// Schemas
+// ---------------------------------------------------------------------------
+
+const addGroupSchema = z.object({
+    label: z.string().min(1, 'Label is required').max(100, 'Max 100 characters'),
+    isRequired: z.boolean(),
+});
+
+const addOptionSchema = z.object({
+    label: z.string().min(1, 'Label is required').max(100, 'Max 100 characters'),
+    surcharge: z.string().optional(),
+});
+
+type AddGroupFormValues = z.infer<typeof addGroupSchema>;
+type AddOptionFormValues = z.infer<typeof addOptionSchema>;
+
+// ---------------------------------------------------------------------------
+// AddGroupForm
+// ---------------------------------------------------------------------------
+
+interface AddGroupFormProps {
+    onSubmit: (values: AddGroupFormValues) => void;
+    onCancel: () => void;
+    isPending: boolean;
+}
+
+function AddGroupForm({ onSubmit, onCancel, isPending }: AddGroupFormProps) {
+    const form = useForm<AddGroupFormValues>({
+        resolver: zodResolver(addGroupSchema),
+        defaultValues: { label: '', isRequired: false },
+    });
+
+    return (
+        <Card>
+            <CardContent className='pt-4'>
+                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+                    <div>
+                        <Input
+                            placeholder='Group label'
+                            {...form.register('label')}
+                            aria-invalid={!!form.formState.errors.label}
+                        />
+                        {form.formState.errors.label && <FieldError>{form.formState.errors.label.message}</FieldError>}
+                    </div>
+                    <div className='flex items-center gap-2'>
+                        <Controller
+                            control={form.control}
+                            name='isRequired'
+                            render={({ field }) => (
+                                <Switch
+                                    id='add-group-required'
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                            )}
+                        />
+                        <Label htmlFor='add-group-required'>Required</Label>
+                    </div>
+                    <div className='flex gap-2'>
+                        <Button type='submit' size='sm' disabled={isPending}>
+                            {isPending ? 'Saving...' : 'Save group'}
+                        </Button>
+                        <Button type='button' size='sm' variant='outline' onClick={onCancel}>
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            </CardContent>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// AddOptionForm
+// ---------------------------------------------------------------------------
+
+interface AddOptionFormProps {
+    onSubmit: (values: AddOptionFormValues) => void;
+    isPending: boolean;
+}
+
+function AddOptionForm({ onSubmit, isPending }: AddOptionFormProps) {
+    const form = useForm<AddOptionFormValues>({
+        resolver: zodResolver(addOptionSchema),
+        defaultValues: { label: '', surcharge: '' },
+    });
+
+    const handleSubmit = form.handleSubmit(values => {
+        onSubmit(values);
+        form.reset();
+    });
+
+    return (
+        <form onSubmit={handleSubmit} className='flex items-start gap-2 pt-1'>
+            <div className='flex-1'>
+                <Input
+                    placeholder='Option label'
+                    {...form.register('label')}
+                    aria-invalid={!!form.formState.errors.label}
+                />
+                {form.formState.errors.label && <FieldError>{form.formState.errors.label.message}</FieldError>}
+            </div>
+            <div className='w-24'>
+                <Input type='number' min={0} step='0.01' placeholder='Surcharge' {...form.register('surcharge')} />
+            </div>
+            <Button type='submit' size='sm' variant='outline' disabled={isPending} aria-label='Add option'>
+                <Plus className='h-4 w-4' />
+                Add option
+            </Button>
+        </form>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// CustomisationManager
+// ---------------------------------------------------------------------------
+
 interface CustomisationManagerProps {
     foodId: string;
     customisations: CustomisationGroupModel[];
 }
 
-interface OptionFormState {
-    label: string;
-    surcharge: string;
-}
-
 function CustomisationManager({ foodId, customisations }: CustomisationManagerProps) {
-    const queryClient = useQueryClient();
-
+    const [localGroups, setLocalGroups] = useState<CustomisationGroupModel[]>(customisations);
     const [showAddGroup, setShowAddGroup] = useState(false);
-    const [addGroupLabel, setAddGroupLabel] = useState('');
-    const [addGroupRequired, setAddGroupRequired] = useState(false);
-    const [addGroupError, setAddGroupError] = useState<string | null>(null);
 
-    const [addOptionState, setAddOptionState] = useState<Record<string, OptionFormState>>({});
-
-    const invalidate = () => {
-        queryClient.invalidateQueries({ queryKey: ['admin', 'foods', 'detail', foodId] });
-    };
+    useEffect(() => {
+        setLocalGroups(customisations);
+    }, [customisations]);
 
     const addGroupMutation = useMutation({
-        mutationFn: () =>
+        mutationFn: (values: AddGroupFormValues) =>
             adminApi.addCustomisationGroup(foodId, {
-                label: addGroupLabel,
-                isRequired: addGroupRequired,
-                displayOrder: customisations.length,
+                label: values.label,
+                isRequired: values.isRequired,
+                displayOrder: localGroups.length,
             }),
-        onSuccess: () => {
-            invalidate();
-            setAddGroupLabel('');
-            setAddGroupRequired(false);
-            setAddGroupError(null);
+        onSuccess: created => {
+            setLocalGroups(prev => [
+                ...prev,
+                { id: created.id, label: created.label, required: created.isRequired, options: [] },
+            ]);
             setShowAddGroup(false);
-        },
-        onError: () => {
-            setAddGroupError('Failed to save. Please try again.');
         },
     });
 
     const deleteGroupMutation = useMutation({
         mutationFn: (groupId: string) => adminApi.deleteCustomisationGroup(foodId, groupId),
-        onSuccess: () => {
-            invalidate();
+        onSuccess: (_, groupId) => {
+            setLocalGroups(prev => prev.filter(g => g.id !== groupId));
         },
     });
 
     const addOptionMutation = useMutation({
-        mutationFn: ({ groupId, label, surcharge }: { groupId: string; label: string; surcharge: string }) =>
+        mutationFn: ({ groupId, values }: { groupId: string; values: AddOptionFormValues }) =>
             adminApi.addCustomisationOption(foodId, groupId, {
-                label,
-                surcharge: surcharge !== '' ? Number(surcharge) : null,
-                displayOrder: customisations.find(g => g.id === groupId)?.options.length ?? 0,
+                label: values.label,
+                surcharge: values.surcharge !== '' ? Number(values.surcharge) : null,
+                displayOrder: localGroups.find(g => g.id === groupId)?.options.length ?? 0,
             }),
-        onSuccess: (_data, variables) => {
-            invalidate();
-            setAddOptionState(prev => ({
-                ...prev,
-                [variables.groupId]: { label: '', surcharge: '' },
-            }));
+        onSuccess: (created, { groupId }) => {
+            const newOption: CustomisationOptionModel = {
+                value: created.id,
+                label: created.label,
+                ...(created.surcharge != null && created.surcharge > 0 && { surcharge: created.surcharge }),
+            };
+            setLocalGroups(prev =>
+                prev.map(g => (g.id === groupId ? { ...g, options: [...g.options, newOption] } : g))
+            );
         },
     });
 
     const deleteOptionMutation = useMutation({
         mutationFn: ({ groupId, optionId }: { groupId: string; optionId: string }) =>
             adminApi.deleteCustomisationOption(foodId, groupId, optionId),
-        onSuccess: () => {
-            invalidate();
+        onSuccess: (_, { groupId, optionId }) => {
+            setLocalGroups(prev =>
+                prev.map(g => (g.id === groupId ? { ...g, options: g.options.filter(o => o.value !== optionId) } : g))
+            );
         },
     });
 
-    const getOptionForm = (groupId: string): OptionFormState => addOptionState[groupId] ?? { label: '', surcharge: '' };
+    const handleAddGroup = useCallback(
+        (values: AddGroupFormValues) => {
+            addGroupMutation.mutate(values);
+        },
+        [addGroupMutation.mutate]
+    );
 
-    const setOptionForm = (groupId: string, patch: Partial<OptionFormState>) => {
-        setAddOptionState(prev => ({
-            ...prev,
-            [groupId]: { ...getOptionForm(groupId), ...patch },
-        }));
-    };
+    const handleCancelAddGroup = useCallback(() => {
+        setShowAddGroup(false);
+    }, []);
 
-    const handleSaveGroup = useCallback(() => {
-        if (!addGroupLabel.trim()) {
-            setAddGroupError('Label is required');
-            return;
-        }
-        setAddGroupError(null);
-        addGroupMutation.mutate();
-    }, [addGroupLabel, addGroupMutation.mutate]);
+    const handleDeleteGroup = useCallback(
+        (groupId: string) => {
+            deleteGroupMutation.mutate(groupId);
+        },
+        [deleteGroupMutation.mutate]
+    );
 
     const handleAddOption = useCallback(
-        (groupId: string) => {
-            const form = getOptionForm(groupId);
-            if (!form.label.trim()) return;
-            addOptionMutation.mutate({ groupId, label: form.label, surcharge: form.surcharge });
+        (groupId: string, values: AddOptionFormValues) => {
+            addOptionMutation.mutate({ groupId, values });
         },
-        [addOptionMutation.mutate, addOptionState]
+        [addOptionMutation.mutate]
+    );
+
+    const handleDeleteOption = useCallback(
+        (groupId: string, optionId: string) => {
+            deleteOptionMutation.mutate({ groupId, optionId });
+        },
+        [deleteOptionMutation.mutate]
     );
 
     return (
         <div className='space-y-4'>
             <h2 className='text-lg font-semibold'>Customisation Groups</h2>
 
-            {customisations.length === 0 && !showAddGroup && (
-                <p className='text-muted-foreground text-sm'>No customisation groups yet. Add one below.</p>
+            {localGroups.length === 0 && !showAddGroup && (
+                <p className='text-sm text-muted-foreground'>No customisation groups yet. Add one below.</p>
             )}
 
-            {customisations.map(group => (
+            {localGroups.map(group => (
                 <Card key={group.id}>
                     <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                         <div className='flex items-center gap-2'>
@@ -160,7 +277,7 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => deleteGroupMutation.mutate(group.id)}>
+                                    <AlertDialogAction onClick={() => handleDeleteGroup(group.id)}>
                                         Delete
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
@@ -177,11 +294,9 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                                     >
                                         <span>{option.label}</span>
                                         <div className='flex items-center gap-2'>
-                                            {option.surcharge !== undefined &&
-                                                option.surcharge !== null &&
-                                                option.surcharge > 0 && (
-                                                    <span className='text-muted-foreground'>+{option.surcharge}</span>
-                                                )}
+                                            {option.surcharge != null && option.surcharge > 0 && (
+                                                <span className='text-muted-foreground'>+{option.surcharge}</span>
+                                            )}
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <Button
@@ -197,19 +312,14 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>Delete option</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            This will permanently delete &ldquo;{option.label}&rdquo;.
-                                                            This action cannot be undone.
+                                                            This will permanently delete &ldquo;{option.label}
+                                                            &rdquo;. This action cannot be undone.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                         <AlertDialogAction
-                                                            onClick={() =>
-                                                                deleteOptionMutation.mutate({
-                                                                    groupId: group.id,
-                                                                    optionId: option.value,
-                                                                })
-                                                            }
+                                                            onClick={() => handleDeleteOption(group.id, option.value)}
                                                         >
                                                             Delete
                                                         </AlertDialogAction>
@@ -221,103 +331,20 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                                 ))}
                             </ul>
                         )}
-
-                        {/* Add option inline form */}
-                        <div className='flex items-end gap-2 pt-1'>
-                            <div className='flex-1'>
-                                <Input
-                                    placeholder='Option label'
-                                    value={getOptionForm(group.id).label}
-                                    onChange={e => setOptionForm(group.id, { label: e.target.value })}
-                                    onKeyDown={e => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleAddOption(group.id);
-                                        }
-                                    }}
-                                />
-                            </div>
-                            <div className='w-24'>
-                                <Input
-                                    type='number'
-                                    min={0}
-                                    step='0.01'
-                                    placeholder='Surcharge'
-                                    value={getOptionForm(group.id).surcharge}
-                                    onChange={e => setOptionForm(group.id, { surcharge: e.target.value })}
-                                />
-                            </div>
-                            <Button
-                                size='sm'
-                                variant='outline'
-                                onClick={() => handleAddOption(group.id)}
-                                disabled={addOptionMutation.isPending || !getOptionForm(group.id).label.trim()}
-                                aria-label='Add option'
-                            >
-                                <Plus className='h-4 w-4' />
-                                Add option
-                            </Button>
-                        </div>
+                        <AddOptionForm
+                            onSubmit={values => handleAddOption(group.id, values)}
+                            isPending={addOptionMutation.isPending}
+                        />
                     </CardContent>
                 </Card>
             ))}
 
-            {/* Add group section */}
             {showAddGroup ? (
-                <Card>
-                    <CardContent className='pt-4'>
-                        <div className='space-y-4'>
-                            <div>
-                                <Input
-                                    placeholder='Group label'
-                                    value={addGroupLabel}
-                                    onChange={e => {
-                                        setAddGroupLabel(e.target.value);
-                                        if (addGroupError) setAddGroupError(null);
-                                    }}
-                                    aria-invalid={!!addGroupError}
-                                    onKeyDown={e => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleSaveGroup();
-                                        }
-                                    }}
-                                />
-                                {addGroupError && <FieldError>{addGroupError}</FieldError>}
-                            </div>
-                            <div className='flex items-center gap-2'>
-                                <Switch
-                                    id='add-group-required'
-                                    checked={addGroupRequired}
-                                    onCheckedChange={setAddGroupRequired}
-                                />
-                                <Label htmlFor='add-group-required'>Required</Label>
-                            </div>
-                            <div className='flex gap-2'>
-                                <Button
-                                    size='sm'
-                                    onClick={handleSaveGroup}
-                                    disabled={addGroupMutation.isPending}
-                                    aria-label='Save group'
-                                >
-                                    {addGroupMutation.isPending ? 'Saving...' : 'Save group'}
-                                </Button>
-                                <Button
-                                    size='sm'
-                                    variant='outline'
-                                    onClick={() => {
-                                        setShowAddGroup(false);
-                                        setAddGroupLabel('');
-                                        setAddGroupRequired(false);
-                                        setAddGroupError(null);
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                <AddGroupForm
+                    onSubmit={handleAddGroup}
+                    onCancel={handleCancelAddGroup}
+                    isPending={addGroupMutation.isPending}
+                />
             ) : (
                 <Button
                     variant='outline'
