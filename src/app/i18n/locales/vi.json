@@ -565,6 +565,23 @@
             "deleted": "Người dùng đã được xóa thành công",
             "failedToLoad": "Không thể tải chi tiết người dùng",
             "tryAgainOrGoBack": "Vui lòng thử lại sau hoặc quay lại danh sách người dùng."
+        },
+        "customisationManager": {
+            "title": "Nhóm tuỳ chọn",
+            "empty": "Chưa có nhóm tuỳ chọn nào. Thêm một nhóm bên dưới.",
+            "addGroup": "Thêm nhóm tuỳ chọn",
+            "groupLabel": "Tên nhóm",
+            "required": "Bắt buộc",
+            "saveGroup": "Lưu nhóm",
+            "optionLabel": "Tên tuỳ chọn",
+            "surcharge": "Phụ phí",
+            "addOption": "Thêm tuỳ chọn",
+            "deleteGroupAriaLabel": "Xoá nhóm",
+            "deleteGroupTitle": "Xoá nhóm tuỳ chọn",
+            "deleteGroupDescription": "Thao tác này sẽ xoá vĩnh viễn \"{{label}}\" và tất cả các tuỳ chọn của nó. Không thể hoàn tác.",
+            "deleteOptionAriaLabel": "Xoá tuỳ chọn",
+            "deleteOptionTitle": "Xoá tuỳ chọn",
+            "deleteOptionDescription": "Thao tác này sẽ xoá vĩnh viễn \"{{label}}\". Không thể hoàn tác."
         }
     },
     "foods": {

@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { adminApi } from '@/apis';
@@ -54,6 +55,8 @@ interface AddGroupFormProps {
 }
 
 function AddGroupForm({ onSubmit, onCancel, isPending }: AddGroupFormProps) {
+    const { t } = useTranslation();
+
     const form = useForm<AddGroupFormValues>({
         resolver: zodResolver(addGroupSchema),
         defaultValues: { label: '', isRequired: false },
@@ -65,7 +68,7 @@ function AddGroupForm({ onSubmit, onCancel, isPending }: AddGroupFormProps) {
                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
                     <div>
                         <Input
-                            placeholder='Group label'
+                            placeholder={t('admin.customisationManager.groupLabel')}
                             {...form.register('label')}
                             aria-invalid={!!form.formState.errors.label}
                         />
@@ -83,14 +86,14 @@ function AddGroupForm({ onSubmit, onCancel, isPending }: AddGroupFormProps) {
                                 />
                             )}
                         />
-                        <Label htmlFor='add-group-required'>Required</Label>
+                        <Label htmlFor='add-group-required'>{t('admin.customisationManager.required')}</Label>
                     </div>
                     <div className='flex gap-2'>
                         <Button type='submit' size='sm' disabled={isPending}>
-                            {isPending ? 'Saving...' : 'Save group'}
+                            {isPending ? t('common.saving') : t('admin.customisationManager.saveGroup')}
                         </Button>
                         <Button type='button' size='sm' variant='outline' onClick={onCancel}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                     </div>
                 </form>
@@ -109,6 +112,8 @@ interface AddOptionFormProps {
 }
 
 function AddOptionForm({ onSubmit, isPending }: AddOptionFormProps) {
+    const { t } = useTranslation();
+
     const form = useForm<AddOptionFormValues>({
         resolver: zodResolver(addOptionSchema),
         defaultValues: { label: '', surcharge: '' },
@@ -123,18 +128,30 @@ function AddOptionForm({ onSubmit, isPending }: AddOptionFormProps) {
         <form onSubmit={handleSubmit} className='flex items-start gap-2 pt-1'>
             <div className='flex-1'>
                 <Input
-                    placeholder='Option label'
+                    placeholder={t('admin.customisationManager.optionLabel')}
                     {...form.register('label')}
                     aria-invalid={!!form.formState.errors.label}
                 />
                 {form.formState.errors.label && <FieldError>{form.formState.errors.label.message}</FieldError>}
             </div>
             <div className='w-24'>
-                <Input type='number' min={0} step='0.01' placeholder='Surcharge' {...form.register('surcharge')} />
+                <Input
+                    type='number'
+                    min={0}
+                    step='0.01'
+                    placeholder={t('admin.customisationManager.surcharge')}
+                    {...form.register('surcharge')}
+                />
             </div>
-            <Button type='submit' size='sm' variant='outline' disabled={isPending} aria-label='Add option'>
+            <Button
+                type='submit'
+                size='sm'
+                variant='outline'
+                disabled={isPending}
+                aria-label={t('admin.customisationManager.addOption')}
+            >
                 <Plus className='h-4 w-4' />
-                Add option
+                {t('admin.customisationManager.addOption')}
             </Button>
         </form>
     );
@@ -150,6 +167,7 @@ interface CustomisationManagerProps {
 }
 
 function CustomisationManager({ foodId, customisations }: CustomisationManagerProps) {
+    const { t } = useTranslation();
     const [localGroups, setLocalGroups] = useState<CustomisationGroupModel[]>(customisations);
     const [showAddGroup, setShowAddGroup] = useState(false);
 
@@ -243,10 +261,10 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
 
     return (
         <div className='space-y-4'>
-            <h2 className='text-lg font-semibold'>Customisation Groups</h2>
+            <h2 className='text-lg font-semibold'>{t('admin.customisationManager.title')}</h2>
 
             {localGroups.length === 0 && !showAddGroup && (
-                <p className='text-sm text-muted-foreground'>No customisation groups yet. Add one below.</p>
+                <p className='text-sm text-muted-foreground'>{t('admin.customisationManager.empty')}</p>
             )}
 
             {localGroups.map(group => (
@@ -254,14 +272,16 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                     <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                         <div className='flex items-center gap-2'>
                             <CardTitle className='text-base'>{group.label}</CardTitle>
-                            {group.required && <Badge variant='secondary'>Required</Badge>}
+                            {group.required && (
+                                <Badge variant='secondary'>{t('admin.customisationManager.required')}</Badge>
+                            )}
                         </div>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button
                                     variant='ghost'
                                     size='icon-sm'
-                                    aria-label='Delete group'
+                                    aria-label={t('admin.customisationManager.deleteGroupAriaLabel')}
                                     disabled={deleteGroupMutation.isPending}
                                 >
                                     <Trash2 className='h-4 w-4 text-destructive' />
@@ -269,16 +289,19 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete customisation group</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                        {t('admin.customisationManager.deleteGroupTitle')}
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        This will permanently delete &ldquo;{group.label}&rdquo; and all its options.
-                                        This action cannot be undone.
+                                        {t('admin.customisationManager.deleteGroupDescription', {
+                                            label: group.label,
+                                        })}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                                     <AlertDialogAction onClick={() => handleDeleteGroup(group.id)}>
-                                        Delete
+                                        {t('common.delete')}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -302,7 +325,9 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                                                     <Button
                                                         variant='ghost'
                                                         size='icon-xs'
-                                                        aria-label='Delete option'
+                                                        aria-label={t(
+                                                            'admin.customisationManager.deleteOptionAriaLabel'
+                                                        )}
                                                         disabled={deleteOptionMutation.isPending}
                                                     >
                                                         <Trash2 className='text-destructive' />
@@ -310,18 +335,21 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
-                                                        <AlertDialogTitle>Delete option</AlertDialogTitle>
+                                                        <AlertDialogTitle>
+                                                            {t('admin.customisationManager.deleteOptionTitle')}
+                                                        </AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            This will permanently delete &ldquo;{option.label}
-                                                            &rdquo;. This action cannot be undone.
+                                                            {t('admin.customisationManager.deleteOptionDescription', {
+                                                                label: option.label,
+                                                            })}
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                                                         <AlertDialogAction
                                                             onClick={() => handleDeleteOption(group.id, option.value)}
                                                         >
-                                                            Delete
+                                                            {t('common.delete')}
                                                         </AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
@@ -350,10 +378,10 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                     variant='outline'
                     size='sm'
                     onClick={() => setShowAddGroup(true)}
-                    aria-label='Add customisation group'
+                    aria-label={t('admin.customisationManager.addGroup')}
                 >
                     <Plus className='h-4 w-4' />
-                    Add customisation group
+                    {t('admin.customisationManager.addGroup')}
                 </Button>
             )}
         </div>

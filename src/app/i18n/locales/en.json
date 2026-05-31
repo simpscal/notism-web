@@ -565,6 +565,23 @@
             "deleted": "User deleted successfully",
             "failedToLoad": "Failed to load user details",
             "tryAgainOrGoBack": "Please try again later or go back to the users list."
+        },
+        "customisationManager": {
+            "title": "Customisation Groups",
+            "empty": "No customisation groups yet. Add one below.",
+            "addGroup": "Add customisation group",
+            "groupLabel": "Group label",
+            "required": "Required",
+            "saveGroup": "Save group",
+            "optionLabel": "Option label",
+            "surcharge": "Surcharge",
+            "addOption": "Add option",
+            "deleteGroupAriaLabel": "Delete group",
+            "deleteGroupTitle": "Delete customisation group",
+            "deleteGroupDescription": "This will permanently delete \"{{label}}\" and all its options. This action cannot be undone.",
+            "deleteOptionAriaLabel": "Delete option",
+            "deleteOptionTitle": "Delete option",
+            "deleteOptionDescription": "This will permanently delete \"{{label}}\". This action cannot be undone."
         }
     },
     "foods": {
