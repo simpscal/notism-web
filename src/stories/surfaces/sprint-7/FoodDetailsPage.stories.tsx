@@ -862,3 +862,195 @@ export const NoImage: Story = {
     name: 'No Image — Placeholder',
     render: () => <NoImagePage />,
 };
+
+// ---------------------------------------------------------------------------
+// Story: Surcharge — Price Updates on Selection
+// ---------------------------------------------------------------------------
+
+function SurchargeUpdatesPricePage() {
+    // Grilled Salmon with no discountPrice — effectiveBase = 185,000 ₫
+    const BASE_PRICE = 185000;
+    const portionGroup = {
+        id: 'size',
+        label: 'Portion size',
+        required: true,
+        options: [
+            { value: 'regular', label: 'Regular (180 g)', surcharge: 0 },
+            { value: 'large', label: 'Large (260 g)', surcharge: 30000 },
+        ],
+    };
+
+    const [selectedPortion, setSelectedPortion] = useState<string>('');
+    const [quantity, setQuantity] = useState(1);
+
+    const selectedOption = portionGroup.options.find(o => o.value === selectedPortion);
+    const surcharge = selectedOption?.surcharge ?? 0;
+    const displayedPrice = BASE_PRICE + surcharge;
+    const allRequiredMet = selectedPortion !== '';
+
+    return (
+        <PageShell>
+            <a
+                href='#'
+                className='mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground'
+                onClick={e => e.preventDefault()}
+            >
+                <ArrowLeft className='h-4 w-4' />
+                Back to menu
+            </a>
+
+            <div className='grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16'>
+                {/* Image */}
+                <div className='relative'>
+                    <div className='relative aspect-[4/5] overflow-hidden rounded-3xl bg-gradient-to-br from-card to-secondary shadow-2xl shadow-primary/10 ring-1 ring-border'>
+                        <FoodImageDisplay
+                            src='https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&h=750&fit=crop'
+                            alt='Grilled Salmon'
+                        />
+                    </div>
+                </div>
+
+                {/* Details */}
+                <div className='flex flex-col'>
+                    <span className='mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-primary'>
+                        Mains
+                    </span>
+
+                    <h1 className='mb-2 text-4xl font-bold leading-tight text-foreground lg:text-5xl'>
+                        Grilled Salmon
+                    </h1>
+
+                    <hr className='border-border my-6' />
+
+                    <p className='mb-6 text-base leading-relaxed text-muted-foreground'>
+                        Fresh Norwegian salmon fillet char-grilled to perfection. Served with a zesty lemon butter
+                        sauce, wilted spinach, and your choice of seasonal roasted vegetables.
+                    </p>
+
+                    <div className='mb-6 flex flex-wrap gap-3'>
+                        <div className='flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium'>
+                            <Package className='h-4 w-4' />
+                            <span>Plate</span>
+                        </div>
+                        <div className='flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium'>
+                            <Utensils className='h-4 w-4' />
+                            <span>12 available</span>
+                        </div>
+                    </div>
+
+                    <hr className='border-border mb-6' />
+
+                    {/* Reactive price display — updates when surcharge option selected */}
+                    <div className='mb-6'>
+                        {surcharge > 0 && (
+                            <span className='mb-1 block text-sm text-muted-foreground'>
+                                Base {formatVnd(BASE_PRICE)} + surcharge {formatVnd(surcharge)}
+                            </span>
+                        )}
+                        <div className='flex items-baseline gap-3'>
+                            <span className='font-sans text-5xl font-bold text-primary tabular-nums'>
+                                {formatVnd(displayedPrice)}
+                            </span>
+                            {surcharge > 0 && (
+                                <Badge variant='secondary' className='text-xs'>
+                                    +{formatVnd(surcharge)} for {selectedOption?.label}
+                                </Badge>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Portion size customisation group */}
+                    <div className='mb-6 space-y-6'>
+                        <div className='flex items-center gap-2'>
+                            <Separator className='flex-1' />
+                            <span className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
+                                Customise your order
+                            </span>
+                            <Separator className='flex-1' />
+                        </div>
+
+                        <div className='space-y-2'>
+                            <div className='flex items-center gap-2'>
+                                <Label className='text-sm font-semibold'>{portionGroup.label}</Label>
+                                <Badge variant='secondary' className='text-xs'>
+                                    Required
+                                </Badge>
+                            </div>
+                            <RadioGroup
+                                value={selectedPortion}
+                                onValueChange={val => setSelectedPortion(val)}
+                                className='grid gap-2'
+                            >
+                                {portionGroup.options.map(opt => (
+                                    <div
+                                        key={opt.value}
+                                        className='flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5'
+                                    >
+                                        <RadioGroupItem value={opt.value} id={`surcharge-${opt.value}`} />
+                                        <Label
+                                            htmlFor={`surcharge-${opt.value}`}
+                                            className='flex flex-1 cursor-pointer items-center justify-between text-sm font-normal'
+                                        >
+                                            <span>{opt.label}</span>
+                                            {opt.surcharge > 0 && (
+                                                <span className='text-xs font-semibold text-primary'>
+                                                    +{formatVnd(opt.surcharge)}
+                                                </span>
+                                            )}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </RadioGroup>
+                        </div>
+                    </div>
+
+                    {/* CTA */}
+                    <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
+                        <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
+                            <div className='flex h-10 shrink-0 items-center justify-between rounded-full bg-muted px-1 py-1'>
+                                <Button
+                                    variant='ghost'
+                                    size='icon'
+                                    className='h-8 w-8 rounded-full'
+                                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                    disabled={quantity <= 1}
+                                >
+                                    <Minus className='h-4 w-4' />
+                                </Button>
+                                <span className='w-10 text-center text-sm font-bold text-foreground'>{quantity}</span>
+                                <Button
+                                    variant='ghost'
+                                    size='icon'
+                                    className='h-8 w-8 rounded-full'
+                                    onClick={() => setQuantity(q => Math.min(12, q + 1))}
+                                    disabled={quantity >= 12}
+                                >
+                                    <Plus className='h-4 w-4' />
+                                </Button>
+                            </div>
+                            <Button
+                                variant='default'
+                                size='lg'
+                                disabled={!allRequiredMet}
+                                className='flex-1 rounded-full'
+                            >
+                                <ShoppingCart className='h-5 w-5 shrink-0' />
+                                <span className='truncate'>Add to cart — {formatVnd(displayedPrice * quantity)}</span>
+                            </Button>
+                        </div>
+                        {!allRequiredMet && (
+                            <p className='mt-2 text-xs text-muted-foreground'>
+                                Please select a Portion size to continue.
+                            </p>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </PageShell>
+    );
+}
+
+export const SurchargeUpdatesPrice: Story = {
+    name: 'Surcharge — Price Updates on Selection',
+    render: () => <SurchargeUpdatesPricePage />,
+};
