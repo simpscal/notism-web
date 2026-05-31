@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import { memo } from 'react';
 
 import { cn } from '@/app/utils';
@@ -7,6 +8,7 @@ interface BannerProps {
     icon?: React.ReactNode;
     message: React.ReactNode;
     action?: React.ReactNode;
+    onClose?: () => void;
     className?: string;
 }
 
@@ -16,7 +18,7 @@ const variantStyles: Record<BannerProps['variant'], string> = {
     info: 'border-primary/30 bg-primary/10 text-primary',
 };
 
-function Banner({ variant, icon, message, action, className }: BannerProps) {
+function Banner({ variant, icon, message, action, onClose, className }: BannerProps) {
     return (
         <div
             className={cn(
@@ -27,7 +29,17 @@ function Banner({ variant, icon, message, action, className }: BannerProps) {
         >
             {icon && <span className='shrink-0'>{icon}</span>}
             <div className='min-w-0 flex-1'>{message}</div>
-            {action && <span className='ml-auto shrink-0'>{action}</span>}
+            {action && <span className='shrink-0'>{action}</span>}
+            {onClose && (
+                <button
+                    type='button'
+                    onClick={onClose}
+                    className='ml-auto shrink-0 rounded-md p-0.5 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current'
+                    aria-label='Dismiss'
+                >
+                    <X className='h-4 w-4' />
+                </button>
+            )}
         </div>
     );
 }

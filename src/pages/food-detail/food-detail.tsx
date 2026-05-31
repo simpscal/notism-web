@@ -132,6 +132,7 @@ function FoodDetail() {
                                     <Link to={`/${ROUTES.CART}`}>{t('foodDetail.viewCart')}</Link>
                                 </Button>
                             }
+                            onClose={() => setCartAdded(null)}
                         />
                     </div>
                 )}
