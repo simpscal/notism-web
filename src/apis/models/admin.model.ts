@@ -1,3 +1,4 @@
+import { CustomisationGroupModel } from './food.model';
 import { DeliveryStatusTimingResponseModel, OrderItemResponseModel } from './order.model';
 
 import { SortOrderEnum } from '@/app/enums';
@@ -148,6 +149,7 @@ export interface GetAdminFoodDetailResponseModel {
     quantityUnit: string;
     createdAt: string;
     updatedAt: string | null;
+    customisations: CustomisationGroupModel[];
 }
 
 export interface AdminFoodImageRequestModel {
@@ -195,4 +197,44 @@ export interface CreateCategoryRequestModel {
 
 export interface UpdateCategoryRequestModel {
     name: string;
+}
+
+export interface CreateCustomisationGroupRequestModel {
+    label: string;
+    isRequired: boolean;
+    displayOrder: number;
+}
+
+export interface UpdateCustomisationGroupRequestModel {
+    label?: string;
+    isRequired?: boolean;
+    displayOrder?: number;
+}
+
+export interface CustomisationGroupResponseModel {
+    id: string;
+    foodId: string;
+    label: string;
+    isRequired: boolean;
+    displayOrder: number;
+}
+
+export interface CreateCustomisationOptionRequestModel {
+    label: string;
+    surcharge?: number | null;
+    displayOrder: number;
+}
+
+export interface UpdateCustomisationOptionRequestModel {
+    label?: string;
+    surcharge?: number | null;
+    displayOrder?: number;
+}
+
+export interface CustomisationOptionResponseModel {
+    id: string;
+    groupId: string;
+    label: string;
+    surcharge: number | null;
+    displayOrder: number;
 }

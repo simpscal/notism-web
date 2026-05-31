@@ -55,5 +55,12 @@ export const API_ENDPOINTS = {
         FOOD_UPDATE: (id: string) => `admin/foods/${id}`,
         CATEGORIES: 'admin/categories',
         CATEGORY_DETAIL: (id: string) => `admin/categories/${id}`,
+        FOOD_CUSTOMISATION_GROUPS: (foodId: string) => `admin/foods/${foodId}/customisation-groups`,
+        FOOD_CUSTOMISATION_GROUP: (foodId: string, groupId: string) =>
+            `admin/foods/${foodId}/customisation-groups/${groupId}`,
+        FOOD_CUSTOMISATION_OPTIONS: (foodId: string, groupId: string) =>
+            `admin/foods/${foodId}/customisation-groups/${groupId}/options`,
+        FOOD_CUSTOMISATION_OPTION: (foodId: string, groupId: string, optionId: string) =>
+            `admin/foods/${foodId}/customisation-groups/${groupId}/options/${optionId}`,
     },
 } as const;

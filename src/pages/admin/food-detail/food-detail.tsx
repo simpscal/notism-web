@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { FoodDetailError, FoodDetailForm, FoodDetailImagesSection } from './components';
+import { CustomisationManager, FoodDetailError, FoodDetailForm, FoodDetailImagesSection } from './components';
 import { foodFormSchema, getDefaultFormValues, type FoodFormValues } from './models';
 
 import { adminApi, storageApi } from '@/apis';
@@ -289,6 +289,12 @@ function AdminFoodDetail() {
                     </div>
                 </div>
             </div>
+
+            {!isCreateMode && food && (
+                <div className='mx-auto mt-6 max-w-4xl'>
+                    <CustomisationManager foodId={id!} customisations={food.customisations ?? []} />
+                </div>
+            )}
 
             {!isCreateMode && food && (
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

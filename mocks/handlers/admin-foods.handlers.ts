@@ -126,6 +126,7 @@ export const adminFoodsHandlers = [
             quantityUnit: food.quantityUnit,
             createdAt: food.createdAt || new Date().toISOString(),
             updatedAt: food.updatedAt || null,
+            customisations: [],
         };
 
         return HttpResponse.json(foodDetail);
@@ -184,6 +185,7 @@ export const adminFoodsHandlers = [
             createdAt: food.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             categoryId: food.category,
+            customisations: [],
         };
 
         return HttpResponse.json(updated);
