@@ -158,6 +158,152 @@ function AddOptionForm({ onSubmit, isPending }: AddOptionFormProps) {
 }
 
 // ---------------------------------------------------------------------------
+// OptionRow
+// ---------------------------------------------------------------------------
+
+interface OptionRowProps {
+    groupId: string;
+    option: CustomisationOptionModel;
+    onDeleteOption: (groupId: string, optionId: string) => void;
+    isDeletePending: boolean;
+}
+
+function OptionRow({ groupId, option, onDeleteOption, isDeletePending }: OptionRowProps) {
+    const { t } = useTranslation();
+
+    const handleDeleteOption = useCallback(() => {
+        onDeleteOption(groupId, option.value);
+    }, [onDeleteOption, groupId, option.value]);
+
+    return (
+        <li className='flex items-center justify-between rounded-md border px-3 py-2 text-sm'>
+            <span>{option.label}</span>
+            <div className='flex items-center gap-2'>
+                {option.surcharge != null && option.surcharge > 0 && (
+                    <span className='text-muted-foreground'>+{option.surcharge}</span>
+                )}
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant='ghost'
+                            size='icon-xs'
+                            aria-label={t('admin.customisationManager.deleteOptionAriaLabel')}
+                            disabled={isDeletePending}
+                        >
+                            <Trash2 className='text-destructive' />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>{t('admin.customisationManager.deleteOptionTitle')}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {t('admin.customisationManager.deleteOptionDescription', {
+                                    label: option.label,
+                                })}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteOption}>{t('common.delete')}</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
+        </li>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// GroupCard
+// ---------------------------------------------------------------------------
+
+interface GroupCardProps {
+    group: CustomisationGroupModel;
+    onDeleteGroup: (groupId: string) => void;
+    onAddOption: (groupId: string, values: AddOptionFormValues) => void;
+    onDeleteOption: (groupId: string, optionId: string) => void;
+    isDeleteGroupPending: boolean;
+    isAddOptionPending: boolean;
+    isDeleteOptionPending: boolean;
+}
+
+function GroupCard({
+    group,
+    onDeleteGroup,
+    onAddOption,
+    onDeleteOption,
+    isDeleteGroupPending,
+    isAddOptionPending,
+    isDeleteOptionPending,
+}: GroupCardProps) {
+    const { t } = useTranslation();
+
+    const handleDeleteGroup = useCallback(() => {
+        onDeleteGroup(group.id);
+    }, [onDeleteGroup, group.id]);
+
+    const handleAddOption = useCallback(
+        (values: AddOptionFormValues) => {
+            onAddOption(group.id, values);
+        },
+        [onAddOption, group.id]
+    );
+
+    return (
+        <Card>
+            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <div className='flex items-center gap-2'>
+                    <CardTitle className='text-base'>{group.label}</CardTitle>
+                    {group.required && <Badge variant='secondary'>{t('admin.customisationManager.required')}</Badge>}
+                </div>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant='ghost'
+                            size='icon-sm'
+                            aria-label={t('admin.customisationManager.deleteGroupAriaLabel')}
+                            disabled={isDeleteGroupPending}
+                        >
+                            <Trash2 className='h-4 w-4 text-destructive' />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>{t('admin.customisationManager.deleteGroupTitle')}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {t('admin.customisationManager.deleteGroupDescription', {
+                                    label: group.label,
+                                })}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteGroup}>{t('common.delete')}</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+                {group.options.length > 0 && (
+                    <ul className='space-y-2'>
+                        {group.options.map(option => (
+                            <OptionRow
+                                key={option.value}
+                                groupId={group.id}
+                                option={option}
+                                onDeleteOption={onDeleteOption}
+                                isDeletePending={isDeleteOptionPending}
+                            />
+                        ))}
+                    </ul>
+                )}
+                <AddOptionForm onSubmit={handleAddOption} isPending={isAddOptionPending} />
+            </CardContent>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // CustomisationManager
 // ---------------------------------------------------------------------------
 
@@ -227,6 +373,10 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
         },
     });
 
+    const handleShowAddGroup = useCallback(() => {
+        setShowAddGroup(true);
+    }, []);
+
     const handleAddGroup = useCallback(
         (values: AddGroupFormValues) => {
             addGroupMutation.mutate(values);
@@ -268,103 +418,16 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
             )}
 
             {localGroups.map(group => (
-                <Card key={group.id}>
-                    <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                        <div className='flex items-center gap-2'>
-                            <CardTitle className='text-base'>{group.label}</CardTitle>
-                            {group.required && (
-                                <Badge variant='secondary'>{t('admin.customisationManager.required')}</Badge>
-                            )}
-                        </div>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant='ghost'
-                                    size='icon-sm'
-                                    aria-label={t('admin.customisationManager.deleteGroupAriaLabel')}
-                                    disabled={deleteGroupMutation.isPending}
-                                >
-                                    <Trash2 className='h-4 w-4 text-destructive' />
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        {t('admin.customisationManager.deleteGroupTitle')}
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        {t('admin.customisationManager.deleteGroupDescription', {
-                                            label: group.label,
-                                        })}
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteGroup(group.id)}>
-                                        {t('common.delete')}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </CardHeader>
-                    <CardContent className='space-y-3'>
-                        {group.options.length > 0 && (
-                            <ul className='space-y-2'>
-                                {group.options.map(option => (
-                                    <li
-                                        key={option.value}
-                                        className='flex items-center justify-between rounded-md border px-3 py-2 text-sm'
-                                    >
-                                        <span>{option.label}</span>
-                                        <div className='flex items-center gap-2'>
-                                            {option.surcharge != null && option.surcharge > 0 && (
-                                                <span className='text-muted-foreground'>+{option.surcharge}</span>
-                                            )}
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button
-                                                        variant='ghost'
-                                                        size='icon-xs'
-                                                        aria-label={t(
-                                                            'admin.customisationManager.deleteOptionAriaLabel'
-                                                        )}
-                                                        disabled={deleteOptionMutation.isPending}
-                                                    >
-                                                        <Trash2 className='text-destructive' />
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>
-                                                            {t('admin.customisationManager.deleteOptionTitle')}
-                                                        </AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            {t('admin.customisationManager.deleteOptionDescription', {
-                                                                label: option.label,
-                                                            })}
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                                        <AlertDialogAction
-                                                            onClick={() => handleDeleteOption(group.id, option.value)}
-                                                        >
-                                                            {t('common.delete')}
-                                                        </AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                        <AddOptionForm
-                            onSubmit={values => handleAddOption(group.id, values)}
-                            isPending={addOptionMutation.isPending}
-                        />
-                    </CardContent>
-                </Card>
+                <GroupCard
+                    key={group.id}
+                    group={group}
+                    onDeleteGroup={handleDeleteGroup}
+                    onAddOption={handleAddOption}
+                    onDeleteOption={handleDeleteOption}
+                    isDeleteGroupPending={deleteGroupMutation.isPending}
+                    isAddOptionPending={addOptionMutation.isPending}
+                    isDeleteOptionPending={deleteOptionMutation.isPending}
+                />
             ))}
 
             {showAddGroup ? (
@@ -377,7 +440,7 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                 <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => setShowAddGroup(true)}
+                    onClick={handleShowAddGroup}
                     aria-label={t('admin.customisationManager.addGroup')}
                 >
                     <Plus className='h-4 w-4' />
