@@ -4,7 +4,7 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import CustomisationManager from '../customisation-manager';
+import FoodCustomisationManager from '../food-customisation-manager';
 
 import { renderWithProviders } from '@/test/utils';
 
@@ -31,15 +31,15 @@ const mockCustomisations = [
     },
 ];
 
-describe('CustomisationManager', () => {
+describe('FoodCustomisationManager', () => {
     it('renders empty state when no customisation groups exist', () => {
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={[]} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
 
         expect(screen.getByText(/no customisation groups yet/i)).toBeInTheDocument();
     });
 
     it('renders customisation groups with options', () => {
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
         expect(screen.getByText('Size')).toBeInTheDocument();
         expect(screen.getByText('Small')).toBeInTheDocument();
@@ -47,19 +47,19 @@ describe('CustomisationManager', () => {
     });
 
     it('renders Required badge for required groups', () => {
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
         expect(screen.getByText('Required')).toBeInTheDocument();
     });
 
     it('renders surcharge for options that have one', () => {
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
         expect(screen.getByText('+2')).toBeInTheDocument();
     });
 
     it('shows add group form when Add Group button is clicked', async () => {
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={[]} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
 
         const addGroupBtn = screen.getByRole('button', { name: /add customisation group/i });
         await userEvent.click(addGroupBtn);
@@ -80,7 +80,7 @@ describe('CustomisationManager', () => {
             )
         );
 
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={[]} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
 
         const addGroupBtn = screen.getByRole('button', { name: /add customisation group/i });
         await userEvent.click(addGroupBtn);
@@ -101,7 +101,7 @@ describe('CustomisationManager', () => {
     it('shows inline error when group label is empty on submit', async () => {
         server.use(http.post(GROUPS_URL, () => HttpResponse.json({ message: 'Label is required' }, { status: 400 })));
 
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={[]} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
 
         const addGroupBtn = screen.getByRole('button', { name: /add customisation group/i });
         await userEvent.click(addGroupBtn);
@@ -115,7 +115,7 @@ describe('CustomisationManager', () => {
     });
 
     it('shows add option form for each group', () => {
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
         expect(screen.getByPlaceholderText(/option label/i)).toBeInTheDocument();
     });
@@ -133,7 +133,7 @@ describe('CustomisationManager', () => {
             )
         );
 
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
         const optionLabelInput = screen.getByPlaceholderText(/option label/i);
         await userEvent.type(optionLabelInput, 'Medium');
@@ -155,7 +155,7 @@ describe('CustomisationManager', () => {
             })
         );
 
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
         const deleteGroupBtn = screen.getByRole('button', { name: /delete group/i });
         await userEvent.click(deleteGroupBtn);
@@ -177,7 +177,7 @@ describe('CustomisationManager', () => {
             })
         );
 
-        renderWithProviders(<CustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
         const deleteOptionBtns = screen.getAllByRole('button', { name: /delete option/i });
         await userEvent.click(deleteOptionBtns[0]);

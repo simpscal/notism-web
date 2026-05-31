@@ -304,15 +304,15 @@ function GroupCard({
 }
 
 // ---------------------------------------------------------------------------
-// CustomisationManager
+// FoodCustomisationManager
 // ---------------------------------------------------------------------------
 
-interface CustomisationManagerProps {
+interface FoodCustomisationManagerProps {
     foodId: string;
     customisations: CustomisationGroupModel[];
 }
 
-function CustomisationManager({ foodId, customisations }: CustomisationManagerProps) {
+function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationManagerProps) {
     const { t } = useTranslation();
     const [localGroups, setLocalGroups] = useState<CustomisationGroupModel[]>(customisations);
     const [showAddGroup, setShowAddGroup] = useState(false);
@@ -451,4 +451,4 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
     );
 }
 
-export default memo(CustomisationManager);
+export default memo(FoodCustomisationManager);
