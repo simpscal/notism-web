@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
 import { memo, useState } from 'react';
-import { toast } from 'sonner';
 
 import { adminApi } from '@/apis';
 import type { CustomisationGroupModel } from '@/apis/models';
@@ -62,13 +61,8 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
             setAddGroupError(null);
             setShowAddGroup(false);
         },
-        onError: (error: unknown) => {
-            const msg = extractErrorMessage(error);
-            if (msg) {
-                setAddGroupError(msg);
-            } else {
-                toast.error('Failed to add customisation group');
-            }
+        onError: () => {
+            setAddGroupError('Failed to save. Please try again.');
         },
     });
 
@@ -76,9 +70,6 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
         mutationFn: (groupId: string) => adminApi.deleteCustomisationGroup(foodId, groupId),
         onSuccess: () => {
             invalidate();
-        },
-        onError: () => {
-            toast.error('Failed to delete customisation group');
         },
     });
 
@@ -96,9 +87,6 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
                 [variables.groupId]: { label: '', surcharge: '' },
             }));
         },
-        onError: () => {
-            toast.error('Failed to add option');
-        },
     });
 
     const deleteOptionMutation = useMutation({
@@ -106,9 +94,6 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
             adminApi.deleteCustomisationOption(foodId, groupId, optionId),
         onSuccess: () => {
             invalidate();
-        },
-        onError: () => {
-            toast.error('Failed to delete option');
         },
     });
 
@@ -343,18 +328,6 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
             )}
         </div>
     );
-}
-
-function extractErrorMessage(error: unknown): string | null {
-    if (
-        error &&
-        typeof error === 'object' &&
-        'message' in error &&
-        typeof (error as { message: unknown }).message === 'string'
-    ) {
-        return (error as { message: string }).message;
-    }
-    return null;
 }
 
 export default memo(CustomisationManager);
