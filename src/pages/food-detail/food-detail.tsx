@@ -3,7 +3,6 @@ import { ArrowLeft, CheckCircle2, Minus, Package, Plus, ShoppingCart, Utensils }
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import {
     FoodCustomisationSection,
@@ -69,17 +68,11 @@ function FoodDetail() {
             quantityUnit: food.quantityUnit,
         };
 
-        try {
-            await addToCart(cartItem, quantity);
-            setCartAdded({ quantity });
-            setSelections({});
-            setQuantity(1);
-        } catch {
-            toast.error(t('foodDetail.error.title'), {
-                description: t('foodDetail.error.description'),
-            });
-        }
-    }, [addToCart, food, quantity, t]);
+        await addToCart(cartItem, quantity);
+        setCartAdded({ quantity });
+        setSelections({});
+        setQuantity(1);
+    }, [addToCart, food, quantity]);
 
     if (isError) {
         return <FoodDetailError />;
