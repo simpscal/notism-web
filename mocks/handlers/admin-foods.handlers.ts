@@ -26,9 +26,9 @@ export const adminFoodsHandlers = [
         let filteredFoods: AdminFoodItemResponseModel[] = foodsData.foods.map(food => {
             const imageUrl =
                 food.imageUrl ||
-                (Array.isArray((food as GetFoodByIdResponseModel).imageUrls) &&
-                (food as GetFoodByIdResponseModel).imageUrls?.length
-                    ? (food as GetFoodByIdResponseModel).imageUrls[0]
+                (Array.isArray((food as unknown as GetFoodByIdResponseModel).imageUrls) &&
+                (food as unknown as GetFoodByIdResponseModel).imageUrls?.length
+                    ? (food as unknown as GetFoodByIdResponseModel).imageUrls[0]
                     : '');
             return {
                 id: food.id,
@@ -94,8 +94,9 @@ export const adminFoodsHandlers = [
         }
 
         const imageUrls =
-            (food as GetFoodByIdResponseModel).imageUrls && Array.isArray((food as GetFoodByIdResponseModel).imageUrls)
-                ? (food as GetFoodByIdResponseModel).imageUrls
+            (food as unknown as GetFoodByIdResponseModel).imageUrls &&
+            Array.isArray((food as unknown as GetFoodByIdResponseModel).imageUrls)
+                ? (food as unknown as GetFoodByIdResponseModel).imageUrls
                 : food.imageUrl
                   ? [
                         food.imageUrl,
@@ -155,9 +156,9 @@ export const adminFoodsHandlers = [
         const imageUrls =
             body.images !== undefined
                 ? [...body.images].sort((a, b) => a.displayOrder - b.displayOrder).map(img => img.fileKey)
-                : (food as GetFoodByIdResponseModel).imageUrls &&
-                    Array.isArray((food as GetFoodByIdResponseModel).imageUrls)
-                  ? (food as GetFoodByIdResponseModel).imageUrls
+                : (food as unknown as GetFoodByIdResponseModel).imageUrls &&
+                    Array.isArray((food as unknown as GetFoodByIdResponseModel).imageUrls)
+                  ? (food as unknown as GetFoodByIdResponseModel).imageUrls
                   : food.imageUrl
                     ? [food.imageUrl, food.imageUrl.replace('?w=400', '?w=800')]
                     : ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800'];
