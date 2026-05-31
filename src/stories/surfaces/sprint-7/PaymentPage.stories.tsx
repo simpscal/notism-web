@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CheckCircle2, ChevronRight, CreditCard, Lock, ShieldCheck } from 'lucide-react';
+import { Banknote, CheckCircle2, ChevronRight, CreditCard, Lock, MapPin, ShieldCheck } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { Badge } from '@/components/badge';
@@ -7,8 +7,10 @@ import { Button } from '@/components/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/card';
 import { Input } from '@/components/input';
 import { Label } from '@/components/label';
+import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
+import { Textarea } from '@/components/textarea';
 
 // ---------------------------------------------------------------------------
 // Utilities
@@ -19,7 +21,7 @@ function formatVnd(amount: number): string {
 }
 
 // ---------------------------------------------------------------------------
-// Mock order data — same items as OrderPage
+// Mock order data — same line items as OrderPage / CartPage
 // ---------------------------------------------------------------------------
 
 interface PaymentLineItem {
@@ -68,7 +70,13 @@ const TAX = Math.round(SUBTOTAL * TAX_RATE);
 const TOTAL = SUBTOTAL + TAX;
 
 // ---------------------------------------------------------------------------
-// Shared page shell with checkout steps
+// Payment method types
+// ---------------------------------------------------------------------------
+
+type PaymentMethod = 'cod' | 'banking';
+
+// ---------------------------------------------------------------------------
+// Page shell — cart → order → payment breadcrumb
 // ---------------------------------------------------------------------------
 
 function PageShell({ children }: { children: React.ReactNode }) {
@@ -77,10 +85,8 @@ function PageShell({ children }: { children: React.ReactNode }) {
             <header className='sticky top-0 z-50 border-b bg-background'>
                 <div className='flex h-16 items-center px-4 md:px-6'>
                     <h1 className='text-lg font-semibold tracking-tight text-primary md:text-2xl'>Notism</h1>
-                    <div className='ml-4 hidden items-center gap-1 text-sm text-muted-foreground md:flex'>
-                        <span>Cart</span>
-                        <ChevronRight className='h-3.5 w-3.5' />
-                        <span>Order</span>
+                    <div className='ml-4 hidden items-center gap-1.5 text-sm text-muted-foreground md:flex'>
+                        <span className='text-muted-foreground'>Cart</span>
                         <ChevronRight className='h-3.5 w-3.5' />
                         <span className='font-medium text-foreground'>Payment</span>
                     </div>
@@ -92,7 +98,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Order summary panel — shared across stories
+// Order summary panel — sticky on desktop
 // ---------------------------------------------------------------------------
 
 function OrderSummaryPanel() {
@@ -102,7 +108,7 @@ function OrderSummaryPanel() {
                 <CardTitle className='text-base'>Order summary</CardTitle>
             </CardHeader>
             <CardContent className='space-y-3'>
-                <div className='space-y-0 divide-y'>
+                <div className='divide-y'>
                     {ORDER_ITEMS.map(item => (
                         <div key={item.id} className='flex items-start justify-between py-2.5'>
                             <div>
@@ -135,7 +141,7 @@ function OrderSummaryPanel() {
                     </div>
                     <Separator />
                     <div className='flex justify-between font-bold text-base'>
-                        <span>Total charged</span>
+                        <span>Total</span>
                         <span className='text-primary'>{formatVnd(TOTAL)}</span>
                     </div>
                 </div>
@@ -145,16 +151,128 @@ function OrderSummaryPanel() {
 }
 
 // ---------------------------------------------------------------------------
-// Payment method form (mock card inputs)
+// Payment method selector — radio cards
 // ---------------------------------------------------------------------------
 
-interface PaymentFormProps {
-    disabled?: boolean;
-    onAuthorise?: () => void;
-    authoriseLabel?: string;
+interface PaymentMethodSelectorProps {
+    value: PaymentMethod;
+    onChange: (method: PaymentMethod) => void;
 }
 
-function PaymentForm({ disabled = false, onAuthorise, authoriseLabel }: PaymentFormProps) {
+function PaymentMethodSelector({ value, onChange }: PaymentMethodSelectorProps) {
+    return (
+        <div className='space-y-2'>
+            <p className='text-sm font-semibold text-foreground'>Payment method</p>
+            <RadioGroup
+                value={value}
+                onValueChange={v => onChange(v as PaymentMethod)}
+                className='grid grid-cols-1 gap-3 sm:grid-cols-2'
+            >
+                {/* Cash on Delivery */}
+                <div
+                    className={`flex cursor-pointer items-center gap-4 rounded-xl border px-4 py-4 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5`}
+                >
+                    <RadioGroupItem value='cod' id='method-cod' />
+                    <Label htmlFor='method-cod' className='flex cursor-pointer flex-col gap-0.5'>
+                        <span className='flex items-center gap-2 text-sm font-semibold'>
+                            <Banknote className='h-4 w-4 text-primary' />
+                            Cash on Delivery
+                        </span>
+                        <span className='text-xs text-muted-foreground'>Pay in cash when your order arrives</span>
+                    </Label>
+                </div>
+
+                {/* Banking */}
+                <div
+                    className={`flex cursor-pointer items-center gap-4 rounded-xl border px-4 py-4 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5`}
+                >
+                    <RadioGroupItem value='banking' id='method-banking' />
+                    <Label htmlFor='method-banking' className='flex cursor-pointer flex-col gap-0.5'>
+                        <span className='flex items-center gap-2 text-sm font-semibold'>
+                            <CreditCard className='h-4 w-4 text-primary' />
+                            Banking
+                        </span>
+                        <span className='text-xs text-muted-foreground'>Pay by card or bank transfer</span>
+                    </Label>
+                </div>
+            </RadioGroup>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// COD form — delivery address + notes
+// ---------------------------------------------------------------------------
+
+interface CodFormProps {
+    onPlaceOrder?: () => void;
+    disabled?: boolean;
+}
+
+function CodForm({ onPlaceOrder, disabled = false }: CodFormProps) {
+    const [address, setAddress] = useState('123 Nguyen Hue, District 1, Ho Chi Minh City');
+    const [notes, setNotes] = useState('');
+
+    return (
+        <Card>
+            <CardHeader className='pb-3'>
+                <CardTitle className='flex items-center gap-2 text-base'>
+                    <MapPin className='h-4 w-4' />
+                    Delivery details
+                </CardTitle>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+                <div className='space-y-1.5'>
+                    <Label htmlFor='delivery-address'>Delivery address</Label>
+                    <Input
+                        id='delivery-address'
+                        value={address}
+                        onChange={e => setAddress(e.target.value)}
+                        disabled={disabled}
+                        placeholder='Enter your delivery address'
+                    />
+                </div>
+                <div className='space-y-1.5'>
+                    <Label htmlFor='delivery-notes'>
+                        Delivery notes <span className='text-xs text-muted-foreground'>(optional)</span>
+                    </Label>
+                    <Textarea
+                        id='delivery-notes'
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                        disabled={disabled}
+                        placeholder='E.g. ring the doorbell, leave at reception…'
+                        rows={3}
+                    />
+                </div>
+
+                <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
+                    <Banknote className='h-3.5 w-3.5 shrink-0' />
+                    Please prepare the exact amount of{' '}
+                    <span className='font-semibold text-foreground'>{formatVnd(TOTAL)}</span> in cash for the delivery
+                    rider.
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button className='w-full gap-2' size='lg' disabled={disabled} onClick={onPlaceOrder}>
+                    Place order — {formatVnd(TOTAL)}
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Banking form — card details
+// ---------------------------------------------------------------------------
+
+interface BankingFormProps {
+    onAuthorise?: () => void;
+    disabled?: boolean;
+    processing?: boolean;
+}
+
+function BankingForm({ onAuthorise, disabled = false, processing = false }: BankingFormProps) {
     const [cardNumber, setCardNumber] = useState('4111 1111 1111 1111');
     const [expiry, setExpiry] = useState('12/28');
     const [cvv, setCvv] = useState('123');
@@ -165,7 +283,7 @@ function PaymentForm({ disabled = false, onAuthorise, authoriseLabel }: PaymentF
             <CardHeader className='pb-3'>
                 <CardTitle className='flex items-center gap-2 text-base'>
                     <CreditCard className='h-4 w-4' />
-                    Payment method
+                    Card details
                 </CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
@@ -218,10 +336,9 @@ function PaymentForm({ disabled = false, onAuthorise, authoriseLabel }: PaymentF
                     Your card details are encrypted and never stored.
                 </div>
             </CardContent>
-            <CardFooter className='flex flex-col gap-3'>
-                {/* Total echoed on the CTA — must visually match the order summary total */}
+            <CardFooter>
                 <Button className='w-full gap-2' size='lg' disabled={disabled} onClick={onAuthorise}>
-                    {disabled ? (
+                    {processing ? (
                         <>
                             <Spinner size='sm' />
                             Processing…
@@ -229,29 +346,31 @@ function PaymentForm({ disabled = false, onAuthorise, authoriseLabel }: PaymentF
                     ) : (
                         <>
                             <Lock className='h-4 w-4' />
-                            {authoriseLabel ?? `Authorise payment — ${formatVnd(TOTAL)}`}
+                            Authorise payment — {formatVnd(TOTAL)}
                         </>
                     )}
                 </Button>
-                <p className='text-center text-xs text-muted-foreground'>
-                    By authorising you agree to our terms of service.
-                </p>
             </CardFooter>
         </Card>
     );
 }
 
 // ---------------------------------------------------------------------------
-// Story: Default
+// Story: Default — interactive payment method selection
 // ---------------------------------------------------------------------------
 
 function DefaultPaymentPage() {
+    const [method, setMethod] = useState<PaymentMethod>('cod');
+
     return (
         <PageShell>
             <h2 className='mb-6 text-2xl font-bold text-foreground'>Payment</h2>
 
             <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
-                <PaymentForm />
+                <div className='space-y-5'>
+                    <PaymentMethodSelector value={method} onChange={setMethod} />
+                    {method === 'cod' ? <CodForm /> : <BankingForm />}
+                </div>
                 <OrderSummaryPanel />
             </div>
         </PageShell>
@@ -259,10 +378,50 @@ function DefaultPaymentPage() {
 }
 
 // ---------------------------------------------------------------------------
-// Story: Processing
+// Story: CashOnDelivery — COD pre-selected (static snapshot)
 // ---------------------------------------------------------------------------
 
-function ProcessingPaymentPage() {
+function CashOnDeliveryPage() {
+    return (
+        <PageShell>
+            <h2 className='mb-6 text-2xl font-bold text-foreground'>Payment</h2>
+
+            <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
+                <div className='space-y-5'>
+                    <PaymentMethodSelector value='cod' onChange={() => {}} />
+                    <CodForm />
+                </div>
+                <OrderSummaryPanel />
+            </div>
+        </PageShell>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Story: Banking — card form pre-selected (static snapshot)
+// ---------------------------------------------------------------------------
+
+function BankingPage() {
+    return (
+        <PageShell>
+            <h2 className='mb-6 text-2xl font-bold text-foreground'>Payment</h2>
+
+            <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
+                <div className='space-y-5'>
+                    <PaymentMethodSelector value='banking' onChange={() => {}} />
+                    <BankingForm />
+                </div>
+                <OrderSummaryPanel />
+            </div>
+        </PageShell>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Story: Processing — banking authorisation in progress
+// ---------------------------------------------------------------------------
+
+function ProcessingPage() {
     return (
         <PageShell>
             <h2 className='mb-2 text-2xl font-bold text-foreground'>Payment</h2>
@@ -271,7 +430,10 @@ function ProcessingPaymentPage() {
             </p>
 
             <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
-                <PaymentForm disabled authoriseLabel={`Authorise payment — ${formatVnd(TOTAL)}`} />
+                <div className='space-y-5'>
+                    <PaymentMethodSelector value='banking' onChange={() => {}} />
+                    <BankingForm disabled processing />
+                </div>
                 <OrderSummaryPanel />
             </div>
         </PageShell>
@@ -279,34 +441,45 @@ function ProcessingPaymentPage() {
 }
 
 // ---------------------------------------------------------------------------
-// Story: Success
+// Story: Success — order placed / payment authorised
 // ---------------------------------------------------------------------------
 
-function SuccessPaymentPage() {
+function SuccessPage({ method }: { method: PaymentMethod }) {
     const orderRef = 'ORD-20260601-7843';
+    const isCod = method === 'cod';
 
     return (
         <PageShell>
-            {/* Confirmation header */}
             <div className='mb-8 flex flex-col items-center rounded-2xl bg-primary/5 px-6 py-10 text-center'>
                 <CheckCircle2 className='mb-4 h-14 w-14 text-primary' />
-                <h2 className='mb-1 text-2xl font-bold text-foreground'>Payment authorised</h2>
+                <h2 className='mb-1 text-2xl font-bold text-foreground'>
+                    {isCod ? 'Order placed!' : 'Payment authorised'}
+                </h2>
                 <p className='mb-3 text-sm text-muted-foreground'>
-                    Your payment of <span className='font-semibold text-foreground'>{formatVnd(TOTAL)}</span> has been
-                    charged successfully.
+                    {isCod ? (
+                        <>
+                            Your order is confirmed. Please prepare{' '}
+                            <span className='font-semibold text-foreground'>{formatVnd(TOTAL)}</span> in cash for the
+                            delivery rider.
+                        </>
+                    ) : (
+                        <>
+                            Your payment of <span className='font-semibold text-foreground'>{formatVnd(TOTAL)}</span>{' '}
+                            has been charged successfully.
+                        </>
+                    )}
                 </p>
                 <Badge variant='outline' className='font-mono text-sm'>
                     {orderRef}
                 </Badge>
             </div>
 
-            {/* Charged amount card — echoes the total shown during authorisation */}
             <div className='mx-auto max-w-sm space-y-4'>
                 <Card>
                     <CardContent className='space-y-3 pt-6'>
                         <div className='text-center'>
                             <p className='mb-1 text-xs uppercase tracking-widest text-muted-foreground'>
-                                Amount charged
+                                {isCod ? 'Amount due on delivery' : 'Amount charged'}
                             </p>
                             <p className='text-4xl font-bold text-primary tabular-nums'>{formatVnd(TOTAL)}</p>
                         </div>
@@ -336,7 +509,7 @@ function SuccessPaymentPage() {
 
                 <div className='flex gap-3'>
                     <Button variant='outline' className='flex-1'>
-                        View order
+                        Track order
                     </Button>
                     <Button className='flex-1'>Browse menu</Button>
                 </div>
@@ -361,16 +534,31 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    name: 'Default — Payment Form with Order Summary',
+    name: 'Default — Select Payment Method',
     render: () => <DefaultPaymentPage />,
 };
 
-export const Processing: Story = {
-    name: 'Processing — Authorise Button Disabled',
-    render: () => <ProcessingPaymentPage />,
+export const CashOnDelivery: Story = {
+    name: 'Cash on Delivery — Delivery Details Form',
+    render: () => <CashOnDeliveryPage />,
 };
 
-export const Success: Story = {
-    name: 'Success — Payment Authorised, Amount Confirmed',
-    render: () => <SuccessPaymentPage />,
+export const Banking: Story = {
+    name: 'Banking — Card Details Form',
+    render: () => <BankingPage />,
+};
+
+export const Processing: Story = {
+    name: 'Processing — Banking Authorisation In Progress',
+    render: () => <ProcessingPage />,
+};
+
+export const SuccessCod: Story = {
+    name: 'Success — Order Placed (Cash on Delivery)',
+    render: () => <SuccessPage method='cod' />,
+};
+
+export const SuccessBanking: Story = {
+    name: 'Success — Payment Authorised (Banking)',
+    render: () => <SuccessPage method='banking' />,
 };
