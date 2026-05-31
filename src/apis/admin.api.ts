@@ -20,6 +20,12 @@ import {
     AdminCategoryResponseModel,
     CreateCategoryRequestModel,
     UpdateCategoryRequestModel,
+    CreateCustomisationGroupRequestModel,
+    UpdateCustomisationGroupRequestModel,
+    CustomisationGroupResponseModel,
+    CreateCustomisationOptionRequestModel,
+    UpdateCustomisationOptionRequestModel,
+    CustomisationOptionResponseModel,
 } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
@@ -111,4 +117,38 @@ export const adminApi = {
         apiClient.patch(API_ENDPOINTS.ADMIN.CATEGORY_DETAIL(id), data),
 
     deleteCategory: (id: string): Promise<void> => apiClient.delete(API_ENDPOINTS.ADMIN.CATEGORY_DETAIL(id)),
+
+    addCustomisationGroup: (
+        foodId: string,
+        data: CreateCustomisationGroupRequestModel
+    ): Promise<CustomisationGroupResponseModel> =>
+        apiClient.post(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUPS(foodId), data),
+
+    updateCustomisationGroup: (
+        foodId: string,
+        groupId: string,
+        data: UpdateCustomisationGroupRequestModel
+    ): Promise<CustomisationGroupResponseModel> =>
+        apiClient.patch(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUP(foodId, groupId), data),
+
+    deleteCustomisationGroup: (foodId: string, groupId: string): Promise<void> =>
+        apiClient.delete(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUP(foodId, groupId)),
+
+    addCustomisationOption: (
+        foodId: string,
+        groupId: string,
+        data: CreateCustomisationOptionRequestModel
+    ): Promise<CustomisationOptionResponseModel> =>
+        apiClient.post(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTIONS(foodId, groupId), data),
+
+    updateCustomisationOption: (
+        foodId: string,
+        groupId: string,
+        optionId: string,
+        data: UpdateCustomisationOptionRequestModel
+    ): Promise<CustomisationOptionResponseModel> =>
+        apiClient.patch(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTION(foodId, groupId, optionId), data),
+
+    deleteCustomisationOption: (foodId: string, groupId: string, optionId: string): Promise<void> =>
+        apiClient.delete(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTION(foodId, groupId, optionId)),
 };
