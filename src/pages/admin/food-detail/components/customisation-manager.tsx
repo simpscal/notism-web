@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import { adminApi } from '@/apis';
 import type { CustomisationGroupModel } from '@/apis/models';
@@ -106,20 +106,23 @@ function CustomisationManager({ foodId, customisations }: CustomisationManagerPr
         }));
     };
 
-    const handleSaveGroup = () => {
+    const handleSaveGroup = useCallback(() => {
         if (!addGroupLabel.trim()) {
             setAddGroupError('Label is required');
             return;
         }
         setAddGroupError(null);
         addGroupMutation.mutate();
-    };
+    }, [addGroupLabel, addGroupMutation.mutate]);
 
-    const handleAddOption = (groupId: string) => {
-        const form = getOptionForm(groupId);
-        if (!form.label.trim()) return;
-        addOptionMutation.mutate({ groupId, label: form.label, surcharge: form.surcharge });
-    };
+    const handleAddOption = useCallback(
+        (groupId: string) => {
+            const form = getOptionForm(groupId);
+            if (!form.label.trim()) return;
+            addOptionMutation.mutate({ groupId, label: form.label, surcharge: form.surcharge });
+        },
+        [addOptionMutation.mutate, addOptionState]
+    );
 
     return (
         <div className='space-y-4'>
