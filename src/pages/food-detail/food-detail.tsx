@@ -6,7 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import {
-    CustomisationSection,
+    FoodCustomisationSection,
     FoodDetailSkeleton,
     FoodDetailError,
     FoodDetailEmpty,
@@ -202,7 +202,7 @@ function FoodDetail() {
                         {/* Customisation Section */}
                         {hasCustomisations && (
                             <div className='mb-8'>
-                                <CustomisationSection
+                                <FoodCustomisationSection
                                     customisations={food.customisations}
                                     selections={selections}
                                     onChange={handleSelectionChange}

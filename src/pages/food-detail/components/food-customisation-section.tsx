@@ -8,13 +8,13 @@ import { Label } from '@/components/label';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Separator } from '@/components/separator';
 
-interface CustomisationSectionProps {
+interface FoodCustomisationSectionProps {
     customisations: CustomisationGroupModel[];
     selections: Record<string, string>;
     onChange: (id: string, value: string) => void;
 }
 
-function CustomisationSection({ customisations, selections, onChange }: CustomisationSectionProps) {
+function FoodCustomisationSection({ customisations, selections, onChange }: FoodCustomisationSectionProps) {
     const { t } = useTranslation();
 
     return (
@@ -65,4 +65,4 @@ function CustomisationSection({ customisations, selections, onChange }: Customis
     );
 }
 
-export default memo(CustomisationSection);
+export default memo(FoodCustomisationSection);
