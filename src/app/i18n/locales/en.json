@@ -625,6 +625,12 @@
         "outOfStock": "Out of Stock",
         "addedToCart": "{{qty}}x {{name}} added to cart!",
         "total": "Total: {{amount}}",
+        "customiseYourOrder": "Customise your order",
+        "required": "Required",
+        "selectAllRequired": "Please select all required options to continue.",
+        "addedBanner": "{{name}} × {{qty}} added to your cart",
+        "addedBannerTotal": "— {{amount}} total",
+        "viewCart": "View cart",
         "empty": {
             "title": "Food Not Found",
             "description": "The food item you're looking for doesn't exist or has been removed.",

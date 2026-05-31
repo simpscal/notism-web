@@ -1,15 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Package, Minus, Plus, ShoppingCart, Utensils } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Minus, Package, Plus, ShoppingCart, Utensils } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { FoodDetailSkeleton, FoodDetailError, FoodDetailEmpty, FoodDetailImageSection } from './components';
+import {
+    CustomisationSection,
+    FoodDetailSkeleton,
+    FoodDetailError,
+    FoodDetailEmpty,
+    FoodDetailImageSection,
+} from './components';
 
 import { foodApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
+import Banner from '@/components/banner';
 import { Button } from '@/components/button';
 import { CartItemViewModel, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
@@ -19,6 +26,8 @@ function FoodDetail() {
     const { addToCart } = useCart();
     const { id } = useParams<{ id: string }>();
     const [quantity, setQuantity] = useState(1);
+    const [selections, setSelections] = useState<Record<string, string>>({});
+    const [cartAdded, setCartAdded] = useState<{ quantity: number } | null>(null);
 
     const {
         data: food,
@@ -37,9 +46,12 @@ function FoodDetail() {
         setQuantity(prev => Math.max(1, prev + delta));
     }, []);
 
+    const handleSelectionChange = useCallback((groupId: string, value: string) => {
+        setSelections(prev => ({ ...prev, [groupId]: value }));
+    }, []);
+
     const handleAddToCart = useCallback(async () => {
         if (!food) return;
-        const { effectivePrice } = getFoodPricing(food.price, food.discountPrice);
         const cartItem: Omit<CartItemViewModel, 'quantity'> = {
             id: food.id,
             name: food.name,
@@ -52,11 +64,17 @@ function FoodDetail() {
             quantityUnit: food.quantityUnit,
         };
 
-        await addToCart(cartItem, quantity);
-        toast.success(t('foodDetail.addedToCart', { qty: quantity, name: food.name }), {
-            description: t('foodDetail.total', { amount: formatVnd(effectivePrice * quantity) }),
-        });
-    }, [addToCart, food, quantity]);
+        try {
+            await addToCart(cartItem, quantity);
+            setCartAdded({ quantity });
+            setSelections({});
+            setQuantity(1);
+        } catch {
+            toast.error(t('foodDetail.error.title'), {
+                description: t('foodDetail.error.description'),
+            });
+        }
+    }, [addToCart, food, quantity, t]);
 
     if (isError) {
         return <FoodDetailError />;
@@ -72,6 +90,10 @@ function FoodDetail() {
 
     const { effectivePrice, hasSavings } = getFoodPricing(food.price, food.discountPrice);
 
+    const requiredIds = (food.customisations ?? []).filter(c => c.required).map(c => c.id);
+    const allRequiredMet = requiredIds.every(id => !!selections[id]);
+    const hasCustomisations = (food.customisations ?? []).length > 0;
+
     return (
         <div className='bg-background'>
             <div className='container mx-auto px-4 py-8'>
@@ -83,6 +105,36 @@ function FoodDetail() {
                     <ArrowLeft className='h-4 w-4' />
                     {t('foodDetail.backToMenu')}
                 </Link>
+
+                {/* Success Banner */}
+                {cartAdded && (
+                    <div className='mb-6'>
+                        <Banner
+                            variant='success'
+                            icon={<CheckCircle2 className='h-5 w-5' />}
+                            message={
+                                <span>
+                                    {t('foodDetail.addedBanner', { name: food.name, qty: cartAdded.quantity })}
+                                    <span className='ml-2 font-normal text-success/80'>
+                                        {t('foodDetail.addedBannerTotal', {
+                                            amount: formatVnd(effectivePrice * cartAdded.quantity),
+                                        })}
+                                    </span>
+                                </span>
+                            }
+                            action={
+                                <Button
+                                    variant='outline'
+                                    size='sm'
+                                    asChild
+                                    className='border-success/40 text-success hover:bg-success/10'
+                                >
+                                    <Link to={`/${ROUTES.CART}`}>{t('foodDetail.viewCart')}</Link>
+                                </Button>
+                            }
+                        />
+                    </div>
+                )}
 
                 <div className='grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16'>
                     {/* Image Section */}
@@ -141,44 +193,65 @@ function FoodDetail() {
                             </div>
                         </div>
 
-                        {/* Quantity & Add to Cart */}
-                        <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
-                            {/* Quantity Selector */}
-                            <div className='flex items-center justify-between rounded-full bg-muted px-1 py-1 shrink-0 h-10'>
+                        {/* Customisation Section */}
+                        {hasCustomisations && (
+                            <div className='mb-8'>
+                                <CustomisationSection
+                                    customisations={food.customisations}
+                                    selections={selections}
+                                    onChange={handleSelectionChange}
+                                />
+                            </div>
+                        )}
+
+                        {/* Quantity & Add to Cart — sticky on mobile, static on sm+ */}
+                        <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
+                            <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
+                                {/* Quantity Selector */}
+                                <div className='flex items-center justify-between rounded-full bg-muted px-1 py-1 shrink-0 h-10'>
+                                    <Button
+                                        variant='ghost'
+                                        size='icon'
+                                        className='h-8 w-8 rounded-full'
+                                        onClick={() => handleQuantityChange(-1)}
+                                        disabled={quantity <= 1}
+                                    >
+                                        <Minus className='h-4 w-4' />
+                                    </Button>
+                                    <span className='w-10 text-center text-sm font-bold text-foreground'>
+                                        {quantity}
+                                    </span>
+                                    <Button
+                                        variant='ghost'
+                                        size='icon'
+                                        className='h-8 w-8 rounded-full'
+                                        onClick={() => handleQuantityChange(1)}
+                                        disabled={quantity >= food.stockQuantity}
+                                    >
+                                        <Plus className='h-4 w-4' />
+                                    </Button>
+                                </div>
+
+                                {/* Add to Cart Button */}
                                 <Button
-                                    variant='ghost'
-                                    size='icon'
-                                    className='h-8 w-8 rounded-full'
-                                    onClick={() => handleQuantityChange(-1)}
-                                    disabled={quantity <= 1}
+                                    variant='default'
+                                    size='lg'
+                                    disabled={!food.isAvailable || !allRequiredMet}
+                                    className='w-full rounded-full sm:flex-1'
+                                    onClick={handleAddToCart}
                                 >
-                                    <Minus className='h-4 w-4' />
-                                </Button>
-                                <span className='w-10 text-center text-sm font-bold text-foreground'>{quantity}</span>
-                                <Button
-                                    variant='ghost'
-                                    size='icon'
-                                    className='h-8 w-8 rounded-full'
-                                    onClick={() => handleQuantityChange(1)}
-                                    disabled={quantity >= food.stockQuantity}
-                                >
-                                    <Plus className='h-4 w-4' />
+                                    <ShoppingCart className='h-5 w-5 shrink-0' />
+                                    <span className='truncate'>
+                                        {t('foodDetail.addToCart', { price: formatVnd(effectivePrice * quantity) })}
+                                    </span>
                                 </Button>
                             </div>
 
-                            {/* Add to Cart Button */}
-                            <Button
-                                variant='default'
-                                size='lg'
-                                disabled={!food.isAvailable}
-                                className='flex-1 rounded-full'
-                                onClick={handleAddToCart}
-                            >
-                                <ShoppingCart className='h-5 w-5 shrink-0' />
-                                <span className='truncate'>
-                                    {t('foodDetail.addToCart', { price: formatVnd(effectivePrice * quantity) })}
-                                </span>
-                            </Button>
+                            {!allRequiredMet && requiredIds.length > 0 && (
+                                <p className='mt-2 text-xs text-muted-foreground'>
+                                    {t('foodDetail.selectAllRequired')}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
