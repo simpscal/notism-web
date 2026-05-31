@@ -134,7 +134,7 @@ function AddOptionForm({ onSubmit, isPending }: AddOptionFormProps) {
                 />
                 {form.formState.errors.label && <FieldError>{form.formState.errors.label.message}</FieldError>}
             </div>
-            <div className='w-24'>
+            <div className='w-32'>
                 <Input
                     type='number'
                     min={0}
