@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Banknote, CheckCircle2, ChevronRight, CreditCard, Lock, MapPin, ShieldCheck } from 'lucide-react';
+import { Banknote, CheckCircle2, CreditCard, MapPin, Pencil, ShieldCheck } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { Badge } from '@/components/badge';
@@ -69,6 +69,9 @@ const SUBTOTAL = ORDER_ITEMS.reduce((s, i) => s + lineTotal(i), 0);
 const TAX = Math.round(SUBTOTAL * TAX_RATE);
 const TOTAL = SUBTOTAL + TAX;
 
+// Saved address fixture
+const SAVED_ADDRESS = '123 Nguyen Hue, District 1, Ho Chi Minh City';
+
 // ---------------------------------------------------------------------------
 // Payment method types
 // ---------------------------------------------------------------------------
@@ -82,16 +85,14 @@ type PaymentMethod = 'cod' | 'banking';
 function PageShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
-            <header className='sticky top-0 z-50 border-b bg-background'>
-                <div className='flex h-16 items-center px-4 md:px-6'>
-                    <h1 className='text-lg font-semibold tracking-tight text-primary md:text-2xl'>Notism</h1>
-                    <div className='ml-4 hidden items-center gap-1.5 text-sm text-muted-foreground md:flex'>
-                        <span className='text-muted-foreground'>Cart</span>
-                        <ChevronRight className='h-3.5 w-3.5' />
-                        <span className='font-medium text-foreground'>Payment</span>
-                    </div>
-                </div>
-            </header>
+            {/* Top bar — placeholder; not the focus of this story */}
+            <div className='sticky top-0 z-50 flex h-16 items-center justify-center gap-3 border-b border-dashed bg-muted/20'>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                    nav placeholder
+                </span>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+            </div>
             <div className='container mx-auto max-w-4xl px-4 py-8'>{children}</div>
         </div>
     );
@@ -192,7 +193,7 @@ function PaymentMethodSelector({ value, onChange }: PaymentMethodSelectorProps) 
                             <CreditCard className='h-4 w-4 text-primary' />
                             Banking
                         </span>
-                        <span className='text-xs text-muted-foreground'>Pay by card or bank transfer</span>
+                        <span className='text-xs text-muted-foreground'>Scan QR code and transfer directly</span>
                     </Label>
                 </div>
             </RadioGroup>
@@ -201,7 +202,7 @@ function PaymentMethodSelector({ value, onChange }: PaymentMethodSelectorProps) 
 }
 
 // ---------------------------------------------------------------------------
-// COD form — delivery address + notes
+// COD form — delivery address + notes (no saved address)
 // ---------------------------------------------------------------------------
 
 interface CodFormProps {
@@ -210,7 +211,7 @@ interface CodFormProps {
 }
 
 function CodForm({ onPlaceOrder, disabled = false }: CodFormProps) {
-    const [address, setAddress] = useState('123 Nguyen Hue, District 1, Ho Chi Minh City');
+    const [address, setAddress] = useState('');
     const [notes, setNotes] = useState('');
 
     return (
@@ -263,94 +264,136 @@ function CodForm({ onPlaceOrder, disabled = false }: CodFormProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Banking form — card details
+// COD saved-address row — shown when user already has an address on file
 // ---------------------------------------------------------------------------
 
-interface BankingFormProps {
-    onAuthorise?: () => void;
+interface CodSavedAddressProps {
+    address: string;
+    onPlaceOrder?: () => void;
     disabled?: boolean;
-    processing?: boolean;
 }
 
-function BankingForm({ onAuthorise, disabled = false, processing = false }: BankingFormProps) {
-    const [cardNumber, setCardNumber] = useState('4111 1111 1111 1111');
-    const [expiry, setExpiry] = useState('12/28');
-    const [cvv, setCvv] = useState('123');
-    const [name, setName] = useState('Nguyen Van A');
+function CodSavedAddress({ address, onPlaceOrder, disabled = false }: CodSavedAddressProps) {
+    return (
+        <Card>
+            <CardHeader className='pb-3'>
+                <CardTitle className='flex items-center gap-2 text-base'>
+                    <MapPin className='h-4 w-4' />
+                    Delivery details
+                </CardTitle>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+                {/* Read-only saved address row */}
+                <div className='flex items-start justify-between gap-3 rounded-lg border bg-muted/30 px-4 py-3'>
+                    <div className='space-y-0.5'>
+                        <p className='text-xs font-medium uppercase tracking-widest text-muted-foreground'>
+                            Delivering to
+                        </p>
+                        <p className='text-sm font-medium text-foreground'>{address}</p>
+                    </div>
+                    <button
+                        className='mt-0.5 flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline'
+                        type='button'
+                    >
+                        <Pencil className='h-3 w-3' />
+                        Edit
+                    </button>
+                </div>
 
+                <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
+                    <Banknote className='h-3.5 w-3.5 shrink-0' />
+                    Please prepare the exact amount of{' '}
+                    <span className='font-semibold text-foreground'>{formatVnd(TOTAL)}</span> in cash for the delivery
+                    rider.
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button className='w-full gap-2' size='lg' disabled={disabled} onClick={onPlaceOrder}>
+                    Place order — {formatVnd(TOTAL)}
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// BankingQr — QR code display + bank account details
+// ---------------------------------------------------------------------------
+
+interface BankingQrProps {
+    /** When true, shows the waiting-for-transfer spinner overlay */
+    waiting?: boolean;
+}
+
+function BankingQr({ waiting = false }: BankingQrProps) {
     return (
         <Card>
             <CardHeader className='pb-3'>
                 <CardTitle className='flex items-center gap-2 text-base'>
                     <CreditCard className='h-4 w-4' />
-                    Card details
+                    Bank transfer
                 </CardTitle>
             </CardHeader>
-            <CardContent className='space-y-4'>
-                <div className='space-y-1.5'>
-                    <Label htmlFor='card-name'>Cardholder name</Label>
-                    <Input
-                        id='card-name'
-                        value={name}
-                        onChange={e => setName(e.target.value)}
-                        disabled={disabled}
-                        placeholder='Name on card'
-                    />
-                </div>
-                <div className='space-y-1.5'>
-                    <Label htmlFor='card-number'>Card number</Label>
-                    <Input
-                        id='card-number'
-                        value={cardNumber}
-                        onChange={e => setCardNumber(e.target.value)}
-                        disabled={disabled}
-                        placeholder='0000 0000 0000 0000'
-                    />
-                </div>
-                <div className='grid grid-cols-2 gap-4'>
-                    <div className='space-y-1.5'>
-                        <Label htmlFor='card-expiry'>Expiry</Label>
-                        <Input
-                            id='card-expiry'
-                            value={expiry}
-                            onChange={e => setExpiry(e.target.value)}
-                            disabled={disabled}
-                            placeholder='MM/YY'
+            <CardContent className='space-y-5'>
+                {/* QR placeholder */}
+                <div className='flex flex-col items-center gap-3'>
+                    <div className='relative'>
+                        {/* Checkerboard / grid placeholder representing the QR code */}
+                        <div
+                            className='h-44 w-44 rounded-lg border-2 border-primary/40'
+                            style={{
+                                backgroundImage: 'repeating-conic-gradient(#0001 0% 25%, transparent 0% 50%)',
+                                backgroundSize: '12px 12px',
+                                backgroundColor: 'hsl(var(--muted))',
+                            }}
                         />
+                        {/* Centre label */}
+                        <div className='absolute inset-0 flex items-center justify-center'>
+                            <span className='rounded-md bg-background/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground shadow-sm'>
+                                QR placeholder
+                            </span>
+                        </div>
+                        {/* Waiting overlay */}
+                        {waiting && (
+                            <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-background/80 backdrop-blur-[2px]'>
+                                <Spinner size='md' />
+                            </div>
+                        )}
                     </div>
-                    <div className='space-y-1.5'>
-                        <Label htmlFor='card-cvv'>CVV</Label>
-                        <Input
-                            id='card-cvv'
-                            value={cvv}
-                            onChange={e => setCvv(e.target.value)}
-                            disabled={disabled}
-                            placeholder='000'
-                            type='password'
-                        />
+                    <p className='text-xs text-muted-foreground'>Scan to pay</p>
+                </div>
+
+                {/* Bank / account details */}
+                <div className='space-y-2 rounded-lg border bg-muted/30 px-4 py-3 text-sm'>
+                    <div className='flex justify-between'>
+                        <span className='text-muted-foreground'>Bank</span>
+                        <span className='font-medium text-foreground'>Vietcombank</span>
+                    </div>
+                    <Separator />
+                    <div className='flex justify-between'>
+                        <span className='text-muted-foreground'>Account</span>
+                        <span className='font-mono font-medium text-foreground'>1234567890</span>
+                    </div>
+                    <Separator />
+                    <div className='flex justify-between'>
+                        <span className='text-muted-foreground'>Amount</span>
+                        <span className='font-semibold text-primary'>{formatVnd(TOTAL)}</span>
                     </div>
                 </div>
 
-                <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
-                    <ShieldCheck className='h-3.5 w-3.5 shrink-0' />
-                    Your card details are encrypted and never stored.
-                </div>
+                {/* Status message */}
+                {waiting ? (
+                    <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
+                        <Spinner size='xs' />
+                        Waiting for transfer confirmation…
+                    </div>
+                ) : (
+                    <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
+                        <ShieldCheck className='h-3.5 w-3.5 shrink-0' />
+                        After your transfer the payment will be confirmed automatically.
+                    </div>
+                )}
             </CardContent>
-            <CardFooter>
-                <Button className='w-full gap-2' size='lg' disabled={disabled} onClick={onAuthorise}>
-                    {processing ? (
-                        <>
-                            <Spinner size='sm' />
-                            Processing…
-                        </>
-                    ) : (
-                        <>
-                            <Lock className='h-4 w-4' />
-                            Authorise payment — {formatVnd(TOTAL)}
-                        </>
-                    )}
-                </Button>
-            </CardFooter>
         </Card>
     );
 }
@@ -369,7 +412,7 @@ function DefaultPaymentPage() {
             <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
                 <div className='space-y-5'>
                     <PaymentMethodSelector value={method} onChange={setMethod} />
-                    {method === 'cod' ? <CodForm /> : <BankingForm />}
+                    {method === 'cod' ? <CodForm /> : <BankingQr />}
                 </div>
                 <OrderSummaryPanel />
             </div>
@@ -378,7 +421,7 @@ function DefaultPaymentPage() {
 }
 
 // ---------------------------------------------------------------------------
-// Story: CashOnDelivery — COD pre-selected (static snapshot)
+// Story: CashOnDelivery — COD pre-selected, no saved address (interactive)
 // ---------------------------------------------------------------------------
 
 function CashOnDeliveryPage() {
@@ -398,7 +441,47 @@ function CashOnDeliveryPage() {
 }
 
 // ---------------------------------------------------------------------------
-// Story: Banking — card form pre-selected (static snapshot)
+// Story: CashOnDeliveryNoAddress — COD, no saved address, form shown
+// ---------------------------------------------------------------------------
+
+function CashOnDeliveryNoAddressPage() {
+    return (
+        <PageShell>
+            <h2 className='mb-6 text-2xl font-bold text-foreground'>Payment</h2>
+
+            <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
+                <div className='space-y-5'>
+                    <PaymentMethodSelector value='cod' onChange={() => {}} />
+                    <CodForm />
+                </div>
+                <OrderSummaryPanel />
+            </div>
+        </PageShell>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Story: CashOnDeliveryAddressSet — COD, saved address displayed read-only
+// ---------------------------------------------------------------------------
+
+function CashOnDeliveryAddressSetPage() {
+    return (
+        <PageShell>
+            <h2 className='mb-6 text-2xl font-bold text-foreground'>Payment</h2>
+
+            <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
+                <div className='space-y-5'>
+                    <PaymentMethodSelector value='cod' onChange={() => {}} />
+                    <CodSavedAddress address={SAVED_ADDRESS} />
+                </div>
+                <OrderSummaryPanel />
+            </div>
+        </PageShell>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Story: Banking — QR code displayed (static snapshot)
 // ---------------------------------------------------------------------------
 
 function BankingPage() {
@@ -409,7 +492,7 @@ function BankingPage() {
             <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
                 <div className='space-y-5'>
                     <PaymentMethodSelector value='banking' onChange={() => {}} />
-                    <BankingForm />
+                    <BankingQr />
                 </div>
                 <OrderSummaryPanel />
             </div>
@@ -418,7 +501,7 @@ function BankingPage() {
 }
 
 // ---------------------------------------------------------------------------
-// Story: Processing — banking authorisation in progress
+// Story: Processing — awaiting transfer confirmation, QR still visible
 // ---------------------------------------------------------------------------
 
 function ProcessingPage() {
@@ -426,13 +509,13 @@ function ProcessingPage() {
         <PageShell>
             <h2 className='mb-2 text-2xl font-bold text-foreground'>Payment</h2>
             <p className='mb-6 text-sm text-muted-foreground'>
-                Processing your payment — please do not close this page.
+                Awaiting transfer confirmation — please do not close this page.
             </p>
 
             <div className='grid gap-6 lg:grid-cols-[1fr_360px]'>
                 <div className='space-y-5'>
                     <PaymentMethodSelector value='banking' onChange={() => {}} />
-                    <BankingForm disabled processing />
+                    <BankingQr waiting />
                 </div>
                 <OrderSummaryPanel />
             </div>
@@ -441,7 +524,7 @@ function ProcessingPage() {
 }
 
 // ---------------------------------------------------------------------------
-// Story: Success — order placed / payment authorised
+// Story: Success — order placed / payment auto-confirmed
 // ---------------------------------------------------------------------------
 
 function SuccessPage({ method }: { method: PaymentMethod }) {
@@ -453,7 +536,7 @@ function SuccessPage({ method }: { method: PaymentMethod }) {
             <div className='mb-8 flex flex-col items-center rounded-2xl bg-primary/5 px-6 py-10 text-center'>
                 <CheckCircle2 className='mb-4 h-14 w-14 text-primary' />
                 <h2 className='mb-1 text-2xl font-bold text-foreground'>
-                    {isCod ? 'Order placed!' : 'Payment authorised'}
+                    {isCod ? 'Order placed!' : 'Payment confirmed'}
                 </h2>
                 <p className='mb-3 text-sm text-muted-foreground'>
                     {isCod ? (
@@ -464,8 +547,8 @@ function SuccessPage({ method }: { method: PaymentMethod }) {
                         </>
                     ) : (
                         <>
-                            Your payment of <span className='font-semibold text-foreground'>{formatVnd(TOTAL)}</span>{' '}
-                            has been charged successfully.
+                            Your transfer of <span className='font-semibold text-foreground'>{formatVnd(TOTAL)}</span>{' '}
+                            has been received and confirmed automatically.
                         </>
                     )}
                 </p>
@@ -479,7 +562,7 @@ function SuccessPage({ method }: { method: PaymentMethod }) {
                     <CardContent className='space-y-3 pt-6'>
                         <div className='text-center'>
                             <p className='mb-1 text-xs uppercase tracking-widest text-muted-foreground'>
-                                {isCod ? 'Amount due on delivery' : 'Amount charged'}
+                                {isCod ? 'Amount due on delivery' : 'Amount received'}
                             </p>
                             <p className='text-4xl font-bold text-primary tabular-nums'>{formatVnd(TOTAL)}</p>
                         </div>
@@ -543,13 +626,23 @@ export const CashOnDelivery: Story = {
     render: () => <CashOnDeliveryPage />,
 };
 
+export const CashOnDeliveryNoAddress: Story = {
+    name: 'Cash on Delivery — No Saved Address (Form Shown)',
+    render: () => <CashOnDeliveryNoAddressPage />,
+};
+
+export const CashOnDeliveryAddressSet: Story = {
+    name: 'Cash on Delivery — Saved Address (Read-only)',
+    render: () => <CashOnDeliveryAddressSetPage />,
+};
+
 export const Banking: Story = {
-    name: 'Banking — Card Details Form',
+    name: 'Banking — QR Code Scan & Transfer',
     render: () => <BankingPage />,
 };
 
 export const Processing: Story = {
-    name: 'Processing — Banking Authorisation In Progress',
+    name: 'Processing — Awaiting Transfer Confirmation',
     render: () => <ProcessingPage />,
 };
 
@@ -559,6 +652,6 @@ export const SuccessCod: Story = {
 };
 
 export const SuccessBanking: Story = {
-    name: 'Success — Payment Authorised (Banking)',
+    name: 'Success — Payment Confirmed (Banking)',
     render: () => <SuccessPage method='banking' />,
 };

@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CheckCircle2, ChevronRight, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
 import React from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import { Skeleton } from '@/components/skeleton';
 
@@ -20,231 +18,250 @@ function formatVnd(amount: number): string {
 // Types
 // ---------------------------------------------------------------------------
 
-interface OrderLineItem {
+interface OrderItem {
     id: string;
     foodName: string;
-    customisationLabel: string | null;
+    /** customisation label e.g. "Large (260 g)" */
+    variantLabel: string | null;
+    /** surcharge on top of base price */
     surcharge: number;
     basePrice: number;
     quantity: number;
+    /** placeholder colour for thumbnail — no network requests */
+    thumbColor: string;
 }
 
-function lineTotal(item: OrderLineItem): number {
-    return (item.basePrice + item.surcharge) * item.quantity;
+function itemUnitPrice(item: OrderItem): number {
+    return item.basePrice + item.surcharge;
+}
+
+function itemTotal(item: OrderItem): number {
+    return itemUnitPrice(item) * item.quantity;
+}
+
+function orderTotal(items: OrderItem[]): number {
+    return items.reduce((sum, i) => sum + itemTotal(i), 0);
 }
 
 // ---------------------------------------------------------------------------
-// Mock order data
+// Fixture data
 // ---------------------------------------------------------------------------
 
-const ORDER_ITEMS: OrderLineItem[] = [
+const ITEMS: OrderItem[] = [
     {
         id: 'oi-1',
         foodName: 'Grilled Salmon',
-        customisationLabel: 'Large (260 g)',
-        surcharge: 30000,
-        basePrice: 185000,
+        variantLabel: 'Large (260 g)',
+        surcharge: 30_000,
+        basePrice: 185_000,
         quantity: 1,
+        thumbColor: '#f97316',
     },
     {
         id: 'oi-2',
         foodName: 'Beef Pho',
-        customisationLabel: null,
+        variantLabel: null,
         surcharge: 0,
-        basePrice: 95000,
+        basePrice: 95_000,
         quantity: 2,
+        thumbColor: '#8b5cf6',
     },
     {
         id: 'oi-3',
         foodName: 'Spring Rolls',
-        customisationLabel: 'Extra sauce (+5,000 ₫)',
-        surcharge: 5000,
-        basePrice: 55000,
+        variantLabel: 'Extra sauce',
+        surcharge: 5_000,
+        basePrice: 55_000,
         quantity: 3,
+        thumbColor: '#22c55e',
     },
 ];
 
-const TAX_RATE = 0.08;
-
-function computeSubtotal(items: OrderLineItem[]): number {
-    return items.reduce((sum, item) => sum + lineTotal(item), 0);
-}
-
-function computeTax(subtotal: number): number {
-    return Math.round(subtotal * TAX_RATE);
-}
-
-function computeTotal(subtotal: number): number {
-    return subtotal + computeTax(subtotal);
-}
-
-const SUBTOTAL = computeSubtotal(ORDER_ITEMS);
-const TAX = computeTax(SUBTOTAL);
-const TOTAL = computeTotal(SUBTOTAL);
-
 // ---------------------------------------------------------------------------
-// Shared page shell
+// Inline: OrderItemsCard — FOCUS of sprint 7
+// Total = sum of (basePrice + surcharge) × quantity (surcharge-inclusive)
 // ---------------------------------------------------------------------------
 
-function PageShell({ children }: { children: React.ReactNode }) {
+function OrderItemsCard({ items }: { items: OrderItem[] }) {
+    const total = orderTotal(items);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Order Items</CardTitle>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+                <div className='space-y-4'>
+                    {items.map(item => (
+                        <div key={item.id} className='flex gap-4'>
+                            {/* Thumbnail placeholder — coloured div, no network */}
+                            <div
+                                className='relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl'
+                                style={{ backgroundColor: item.thumbColor + '33' }}
+                            >
+                                <div
+                                    className='flex h-full w-full items-center justify-center'
+                                    style={{ color: item.thumbColor }}
+                                >
+                                    <Package className='h-8 w-8 opacity-60' />
+                                </div>
+                            </div>
+                            <div className='flex-1'>
+                                <div className='font-medium'>{item.foodName}</div>
+                                {item.variantLabel && (
+                                    <div className='text-sm text-muted-foreground'>{item.variantLabel}</div>
+                                )}
+                                <div className='text-sm text-muted-foreground'>Qty: {item.quantity}</div>
+                                <div className='mt-1 font-bold'>
+                                    {formatVnd(itemUnitPrice(item))}{' '}
+                                    <span className='text-xs font-normal text-muted-foreground'>each</span>
+                                </div>
+                            </div>
+                            <div className='text-right'>
+                                <div className='font-bold'>{formatVnd(itemTotal(item))}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <Separator />
+
+                <div className='space-y-2'>
+                    <div className='flex justify-between text-sm'>
+                        <span className='text-muted-foreground'>Payment method</span>
+                        <span className='font-medium capitalize'>Cash</span>
+                    </div>
+                    <div className='flex justify-between text-xl font-black'>
+                        <span>Total</span>
+                        <span>{formatVnd(total)}</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Page shell
+// ---------------------------------------------------------------------------
+
+function NavPlaceholder() {
+    return (
+        <div className='sticky top-0 z-50 flex h-16 items-center justify-center gap-3 border-b border-dashed bg-muted/20'>
+            <div className='h-px w-6 bg-muted-foreground/30' />
+            <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                nav placeholder
+            </span>
+            <div className='h-px w-6 bg-muted-foreground/30' />
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Story: Delivered
+// ---------------------------------------------------------------------------
+
+function DeliveredPage() {
     return (
         <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
-            <header className='sticky top-0 z-50 border-b bg-background'>
-                <div className='flex h-16 items-center px-4 md:px-6'>
-                    <h1 className='text-lg font-semibold tracking-tight text-primary md:text-2xl'>Notism</h1>
-                    <div className='ml-4 hidden items-center gap-1 text-sm text-muted-foreground md:flex'>
-                        <span>Cart</span>
-                        <ChevronRight className='h-3.5 w-3.5' />
-                        <span className='font-medium text-foreground'>Order</span>
-                        <ChevronRight className='h-3.5 w-3.5' />
-                        <span>Payment</span>
+            <NavPlaceholder />
+
+            {/* Hero banner — placeholder; exists in current system, not changed by this sprint */}
+            <div className='flex h-[120px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                    hero banner placeholder
+                </span>
+            </div>
+
+            <div className='container mx-auto max-w-4xl px-4 py-6'>
+                <div className='space-y-6'>
+                    {/* Order header card — placeholder; exists in current system, not changed by this sprint */}
+                    <div className='flex h-[80px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                        <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                            order header card placeholder
+                        </span>
                     </div>
-                </div>
-            </header>
-            <div className='container mx-auto max-w-3xl px-4 py-8'>{children}</div>
-        </div>
-    );
-}
 
-// ---------------------------------------------------------------------------
-// Shared order items list
-// ---------------------------------------------------------------------------
+                    <div className='grid gap-6 lg:grid-cols-[2fr_1fr]'>
+                        {/* Left column */}
+                        <div className='space-y-6'>
+                            {/* Delivery status timeline — placeholder; exists in current system, not changed by this sprint */}
+                            <div className='flex h-[160px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                                    delivery status timeline placeholder
+                                </span>
+                            </div>
 
-function OrderItemsList({ items }: { items: OrderLineItem[] }) {
-    return (
-        <div className='space-y-0 divide-y'>
-            {items.map(item => {
-                const total = lineTotal(item);
-                return (
-                    <div key={item.id} className='flex items-start justify-between py-3'>
-                        <div className='space-y-0.5'>
-                            <p className='text-sm font-medium text-foreground'>{item.foodName}</p>
-                            {item.customisationLabel && (
-                                <p className='text-xs text-muted-foreground'>{item.customisationLabel}</p>
-                            )}
-                            <p className='text-xs text-muted-foreground'>
-                                {formatVnd(item.basePrice + item.surcharge)} × {item.quantity}
-                            </p>
+                            <OrderItemsCard items={ITEMS} />
                         </div>
-                        <span className='text-sm font-semibold text-foreground'>{formatVnd(total)}</span>
+
+                        {/* Right column */}
+                        <div>
+                            {/* Sidebar order action card — placeholder; exists in current system, not changed by this sprint */}
+                            <div className='flex h-[200px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                                    sidebar order action card placeholder
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                );
-            })}
-        </div>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// Shared totals breakdown
-// ---------------------------------------------------------------------------
-
-function TotalsBreakdown({ subtotal, tax, total }: { subtotal: number; tax: number; total: number }) {
-    return (
-        <div className='space-y-2'>
-            <div className='flex justify-between text-sm'>
-                <span className='text-muted-foreground'>Subtotal</span>
-                <span>{formatVnd(subtotal)}</span>
-            </div>
-            <div className='flex justify-between text-sm'>
-                <span className='text-muted-foreground'>Tax (8%)</span>
-                <span>{formatVnd(tax)}</span>
-            </div>
-            <Separator />
-            <div className='flex justify-between text-base font-bold'>
-                <span>Total</span>
-                <span className='text-primary'>{formatVnd(total)}</span>
-            </div>
-        </div>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// Story: OrderReview
-// ---------------------------------------------------------------------------
-
-function OrderReviewPage() {
-    return (
-        <PageShell>
-            <h2 className='mb-2 text-2xl font-bold text-foreground'>Review your order</h2>
-            <p className='mb-6 text-sm text-muted-foreground'>
-                Check everything looks correct before proceeding to payment.
-            </p>
-
-            <div className='space-y-6'>
-                <Card>
-                    <CardHeader className='pb-2'>
-                        <CardTitle className='flex items-center gap-2 text-base'>
-                            <Package className='h-4 w-4' />
-                            Items ({ORDER_ITEMS.length})
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <OrderItemsList items={ORDER_ITEMS} />
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className='pb-2'>
-                        <CardTitle className='text-base'>Price breakdown</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <TotalsBreakdown subtotal={SUBTOTAL} tax={TAX} total={TOTAL} />
-                    </CardContent>
-                    <CardFooter className='flex flex-col gap-2'>
-                        <Button className='w-full' size='lg'>
-                            Continue to payment — {formatVnd(TOTAL)}
-                        </Button>
-                        <Button variant='ghost' className='w-full text-sm text-muted-foreground'>
-                            Back to cart
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </div>
-        </PageShell>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// Story: OrderConfirmation
-// ---------------------------------------------------------------------------
-
-function OrderConfirmationPage() {
-    const orderRef = 'ORD-20260601-7843';
-
-    return (
-        <PageShell>
-            {/* Success banner */}
-            <div className='mb-8 flex flex-col items-center rounded-2xl bg-primary/5 px-6 py-10 text-center'>
-                <CheckCircle2 className='mb-4 h-14 w-14 text-primary' />
-                <h2 className='mb-1 text-2xl font-bold text-foreground'>Order confirmed!</h2>
-                <p className='mb-3 text-sm text-muted-foreground'>
-                    Thank you for your order. We are preparing your food now.
-                </p>
-                <Badge variant='outline' className='font-mono text-sm'>
-                    {orderRef}
-                </Badge>
-            </div>
-
-            <div className='space-y-6'>
-                <Card>
-                    <CardHeader className='pb-2'>
-                        <CardTitle className='text-base'>Order summary</CardTitle>
-                    </CardHeader>
-                    <CardContent className='space-y-4'>
-                        <OrderItemsList items={ORDER_ITEMS} />
-                        <Separator />
-                        <TotalsBreakdown subtotal={SUBTOTAL} tax={TAX} total={TOTAL} />
-                    </CardContent>
-                </Card>
-
-                <div className='flex gap-3'>
-                    <Button variant='outline' className='flex-1'>
-                        Track order
-                    </Button>
-                    <Button className='flex-1'>Browse menu</Button>
                 </div>
             </div>
-        </PageShell>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Story: Preparing
+// ---------------------------------------------------------------------------
+
+function PreparingPage() {
+    return (
+        <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
+            <NavPlaceholder />
+
+            {/* Hero banner — placeholder; exists in current system, not changed by this sprint */}
+            <div className='flex h-[120px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                    hero banner placeholder
+                </span>
+            </div>
+
+            <div className='container mx-auto max-w-4xl px-4 py-6'>
+                <div className='space-y-6'>
+                    {/* Order header card — placeholder; exists in current system, not changed by this sprint */}
+                    <div className='flex h-[80px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                        <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                            order header card placeholder
+                        </span>
+                    </div>
+
+                    <div className='grid gap-6 lg:grid-cols-[2fr_1fr]'>
+                        {/* Left column */}
+                        <div className='space-y-6'>
+                            {/* Delivery status timeline — placeholder; exists in current system, not changed by this sprint */}
+                            <div className='flex h-[160px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                                    delivery status timeline placeholder
+                                </span>
+                            </div>
+
+                            <OrderItemsCard items={ITEMS} />
+                        </div>
+
+                        {/* Right column */}
+                        <div>
+                            {/* Sidebar order action card — placeholder; exists in current system, not changed by this sprint */}
+                            <div className='flex h-[200px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                                    sidebar order action card placeholder
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 
@@ -252,56 +269,66 @@ function OrderConfirmationPage() {
 // Story: Loading
 // ---------------------------------------------------------------------------
 
-function LoadingOrderPage() {
+function LoadingPage() {
     return (
-        <PageShell>
-            <Skeleton className='mb-2 h-8 w-56' />
-            <Skeleton className='mb-6 h-4 w-72' />
+        <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
+            <NavPlaceholder />
 
-            <div className='space-y-6'>
-                <Card>
-                    <CardHeader>
-                        <Skeleton className='h-5 w-32' />
-                    </CardHeader>
-                    <CardContent className='space-y-4'>
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className='flex justify-between'>
-                                <div className='space-y-1.5'>
-                                    <Skeleton className='h-4 w-40' />
-                                    <Skeleton className='h-3 w-28' />
-                                    <Skeleton className='h-3 w-24' />
-                                </div>
-                                <Skeleton className='h-4 w-20' />
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
+            {/* Hero banner skeleton — matches h-[120px] placeholder */}
+            <Skeleton className='h-[120px] w-full rounded-none' />
 
-                <Card>
-                    <CardHeader>
-                        <Skeleton className='h-5 w-36' />
-                    </CardHeader>
-                    <CardContent className='space-y-3'>
-                        <div className='flex justify-between'>
-                            <Skeleton className='h-4 w-20' />
-                            <Skeleton className='h-4 w-24' />
+            <div className='container mx-auto max-w-4xl px-4 py-6'>
+                <div className='space-y-6'>
+                    {/* Order header skeleton — matches h-[80px] placeholder */}
+                    <Skeleton className='h-[80px] w-full rounded-xl' />
+
+                    <div className='grid gap-6 lg:grid-cols-[2fr_1fr]'>
+                        {/* Left column skeleton */}
+                        <div className='space-y-6'>
+                            {/* Delivery timeline skeleton — matches h-[160px] placeholder */}
+                            <Skeleton className='h-[160px] w-full rounded-xl' />
+
+                            {/* Items card skeleton */}
+                            <Card>
+                                <CardHeader>
+                                    <Skeleton className='h-5 w-28' />
+                                </CardHeader>
+                                <CardContent className='space-y-4'>
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className='flex gap-4'>
+                                            <Skeleton className='h-20 w-20 rounded-xl' />
+                                            <div className='flex-1 space-y-2'>
+                                                <Skeleton className='h-4 w-40' />
+                                                <Skeleton className='h-3 w-28' />
+                                                <Skeleton className='h-3 w-20' />
+                                                <Skeleton className='h-4 w-24' />
+                                            </div>
+                                            <Skeleton className='h-5 w-20' />
+                                        </div>
+                                    ))}
+                                    <Separator />
+                                    <div className='space-y-2'>
+                                        <div className='flex justify-between'>
+                                            <Skeleton className='h-4 w-32' />
+                                            <Skeleton className='h-4 w-16' />
+                                        </div>
+                                        <div className='flex justify-between'>
+                                            <Skeleton className='h-6 w-16' />
+                                            <Skeleton className='h-6 w-28' />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                        <div className='flex justify-between'>
-                            <Skeleton className='h-4 w-16' />
-                            <Skeleton className='h-4 w-20' />
+
+                        {/* Sidebar skeleton — matches h-[200px] placeholder */}
+                        <div>
+                            <Skeleton className='h-[200px] w-full rounded-xl' />
                         </div>
-                        <Separator />
-                        <div className='flex justify-between'>
-                            <Skeleton className='h-5 w-12' />
-                            <Skeleton className='h-5 w-28' />
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Skeleton className='h-10 w-full rounded-md' />
-                    </CardFooter>
-                </Card>
+                    </div>
+                </div>
             </div>
-        </PageShell>
+        </div>
     );
 }
 
@@ -320,17 +347,17 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const OrderReview: Story = {
-    name: 'Order Review — Surcharge-Inclusive Total',
-    render: () => <OrderReviewPage />,
+export const Delivered: Story = {
+    name: 'Delivered — All Steps Complete',
+    render: () => <DeliveredPage />,
 };
 
-export const OrderConfirmation: Story = {
-    name: 'Order Confirmation — Total with All Surcharges',
-    render: () => <OrderConfirmationPage />,
+export const Preparing: Story = {
+    name: 'Preparing — In Progress, Cancel Available',
+    render: () => <PreparingPage />,
 };
 
 export const Loading: Story = {
-    name: 'Loading — Skeleton',
-    render: () => <LoadingOrderPage />,
+    name: 'Loading — Skeleton State',
+    render: () => <LoadingPage />,
 };
