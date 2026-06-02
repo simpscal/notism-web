@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
         ITEMS: 'cart/items',
         ITEMS_BULK: 'cart/items/bulk',
         ITEM: (itemId: string) => `cart/items/${itemId}`,
+        ITEM_CUSTOMISATION: (itemId: string) => `cart/items/${itemId}/customisation`,
     },
     ORDER: {
         BASE: 'orders',
