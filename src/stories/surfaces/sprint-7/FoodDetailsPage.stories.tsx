@@ -225,23 +225,14 @@ function CustomisationSection({ customisations, selections, onChange }: Customis
 function PageShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
-            <header className='sticky top-0 z-50 border-b bg-background'>
-                <div className='flex h-16 items-center justify-between px-4 md:px-6'>
-                    <div className='flex items-center gap-4'>
-                        <h1 className='text-lg font-semibold tracking-tight text-primary md:text-2xl'>Notism</h1>
-                        <nav className='hidden items-center gap-2 md:flex'>
-                            <span className='rounded-md px-3 py-2 text-sm font-medium text-muted-foreground'>
-                                Foods
-                            </span>
-                        </nav>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                        <Button variant='ghost' size='icon'>
-                            <ShoppingCart className='h-5 w-5' />
-                        </Button>
-                    </div>
-                </div>
-            </header>
+            {/* Nav — placeholder; exists in current system, not changed by this sprint */}
+            <div className='sticky top-0 z-50 flex h-16 items-center justify-center gap-3 border-b border-dashed bg-muted/20'>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                    nav placeholder
+                </span>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+            </div>
             <div className='bg-background'>
                 <div className='container mx-auto px-4 py-8'>{children}</div>
             </div>

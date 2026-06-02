@@ -84,23 +84,14 @@ const MOCK_FOOD: AdminFoodItem = {
 function AdminShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
-            {/* Top nav */}
-            <header className='sticky top-0 z-50 border-b bg-background'>
-                <div className='flex h-14 items-center justify-between px-6'>
-                    <div className='flex items-center gap-4'>
-                        <span className='text-sm font-bold tracking-tight text-primary'>Notism Admin</span>
-                        <Separator orientation='vertical' className='h-5' />
-                        <nav className='flex items-center gap-1 text-sm text-muted-foreground'>
-                            <span className='cursor-pointer rounded px-2 py-1 hover:text-foreground'>Foods</span>
-                            <span className='text-muted-foreground/40'>/</span>
-                            <span className='font-medium text-foreground'>Grilled Salmon</span>
-                        </nav>
-                    </div>
-                    <Button variant='outline' size='sm'>
-                        View on site
-                    </Button>
-                </div>
-            </header>
+            {/* Nav — placeholder; exists in current system, not changed by this sprint */}
+            <div className='sticky top-0 z-50 flex h-16 items-center justify-center gap-3 border-b border-dashed bg-muted/20'>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                    nav placeholder
+                </span>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+            </div>
 
             {/* Page content */}
             <div className='mx-auto max-w-5xl px-6 py-8'>{children}</div>

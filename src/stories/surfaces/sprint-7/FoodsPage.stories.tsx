@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ArrowUpDown, Search, UtensilsCrossed, X } from 'lucide-react';
+import { ArrowUpDown, UtensilsCrossed, X } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardFooter } from '@/components/card';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { Skeleton } from '@/components/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
@@ -241,72 +240,29 @@ function FoodCardSkeleton() {
 
 interface PageShellProps {
     children: React.ReactNode;
-    searchValue?: string;
     selectedCategory?: string | null;
     totalCount?: number;
     hasFilters?: boolean;
 }
 
-function PageShell({
-    children,
-    searchValue = '',
-    selectedCategory = null,
-    totalCount = 0,
-    hasFilters = false,
-}: PageShellProps) {
+function PageShell({ children, selectedCategory = null, totalCount = 0, hasFilters = false }: PageShellProps) {
     return (
         <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
-            {/* Navbar */}
-            <header className='sticky top-0 z-50 border-b bg-background'>
-                <div className='flex h-16 items-center justify-between px-4 md:px-6'>
-                    <div className='flex items-center gap-4'>
-                        <h1 className='text-lg font-semibold tracking-tight text-primary md:text-2xl'>Notism</h1>
-                        <nav className='hidden items-center gap-2 md:flex'>
-                            <span className='rounded-md bg-primary/10 px-3 py-2 text-sm font-medium text-primary'>
-                                Foods
-                            </span>
-                            <span className='rounded-md px-3 py-2 text-sm font-medium text-muted-foreground'>
-                                Orders
-                            </span>
-                        </nav>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                        <Button variant='ghost' size='icon'>
-                            <Search className='h-5 w-5' />
-                        </Button>
-                    </div>
-                </div>
-            </header>
+            {/* Nav — placeholder; exists in current system, not changed by this sprint */}
+            <div className='sticky top-0 z-50 flex h-16 items-center justify-center gap-3 border-b border-dashed bg-muted/20'>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                    nav placeholder
+                </span>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+            </div>
 
-            {/* Hero */}
-            <section className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-12 sm:py-16 lg:py-20'>
-                <div className='pointer-events-none absolute inset-0 overflow-hidden' aria-hidden='true'>
-                    <div className='absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl' />
-                    <div className='absolute -bottom-16 -left-16 h-72 w-72 rounded-full bg-primary/8 blur-2xl' />
-                </div>
-                <div className='relative mx-auto max-w-3xl text-center'>
-                    <div className='mb-5 inline-flex items-center gap-2 rounded-full border bg-background/80 px-4 py-1.5 backdrop-blur-sm'>
-                        <span className='h-2 w-2 animate-pulse rounded-full bg-primary' />
-                        <span className='text-xs font-medium sm:text-sm'>Freshly prepared daily</span>
-                    </div>
-                    <h1 className='mb-5 text-4xl font-black tracking-tight sm:text-5xl md:text-6xl'>Our Menu</h1>
-                    <p className='mb-8 text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg'>
-                        Discover handcrafted dishes made with locally sourced ingredients
-                    </p>
-                    <InputGroup className='mx-auto h-12 max-w-2xl rounded-2xl border-2 shadow-sm sm:h-14'>
-                        <InputGroupInput
-                            type='text'
-                            placeholder='Search for your favourite dish…'
-                            defaultValue={searchValue}
-                            readOnly
-                            className='h-full w-full rounded-[inherit] border-0 bg-background pr-4 text-sm sm:text-base'
-                        />
-                        <InputGroupAddon className='pl-3.5 sm:[&>svg]:h-5 sm:[&>svg]:w-5'>
-                            <Search />
-                        </InputGroupAddon>
-                    </InputGroup>
-                </div>
-            </section>
+            {/* Hero / banner — placeholder; exists in current system, not changed by this sprint */}
+            <div className='flex h-[200px] items-center justify-center border-b border-dashed bg-muted/20'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                    hero / banner placeholder
+                </span>
+            </div>
 
             {/* Main content */}
             <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8 lg:py-10'>

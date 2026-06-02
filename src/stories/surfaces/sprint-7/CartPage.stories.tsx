@@ -205,14 +205,14 @@ function CartLineItemRow({ item, onQuantityChange, onCustomisationChange, onRemo
 function PageShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
-            <header className='sticky top-0 z-50 border-b bg-background'>
-                <div className='flex h-16 items-center justify-between px-4 md:px-6'>
-                    <h1 className='text-lg font-semibold tracking-tight text-primary md:text-2xl'>Notism</h1>
-                    <div className='flex items-center gap-2'>
-                        <ShoppingCart className='h-5 w-5 text-muted-foreground' />
-                    </div>
-                </div>
-            </header>
+            {/* Nav — placeholder; exists in current system, not changed by this sprint */}
+            <div className='sticky top-0 z-50 flex h-16 items-center justify-center gap-3 border-b border-dashed bg-muted/20'>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                    nav placeholder
+                </span>
+                <div className='h-px w-6 bg-muted-foreground/30' />
+            </div>
             <div className='container mx-auto max-w-4xl px-4 py-8'>{children}</div>
         </div>
     );
