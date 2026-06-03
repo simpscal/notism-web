@@ -75,13 +75,14 @@ function FoodDetail() {
 
     const surchargeOptionLabel = useMemo(() => {
         if (selectedSurcharge <= 0) return '';
+        const labels: string[] = [];
         for (const group of food?.customisations ?? []) {
             const chosen = selections[group.id];
             if (!chosen) continue;
             const opt = group.options.find(o => o.value === chosen);
-            if (opt && (opt.surcharge ?? 0) > 0) return opt.label;
+            if (opt && (opt.surcharge ?? 0) > 0) labels.push(opt.label);
         }
-        return '';
+        return labels.join(', ');
     }, [food?.customisations, selections, selectedSurcharge]);
 
     const requiredIds = useMemo(
