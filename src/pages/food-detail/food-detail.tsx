@@ -15,6 +15,7 @@ import {
 import { foodApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
+import { Badge } from '@/components/badge';
 import Banner from '@/components/banner';
 import { Button } from '@/components/button';
 import { CartItemViewModel, useCart } from '@/features/cart';
@@ -26,7 +27,7 @@ function FoodDetail() {
     const { id } = useParams<{ id: string }>();
     const [quantity, setQuantity] = useState(1);
     const [selections, setSelections] = useState<Record<string, string>>({});
-    const [cartAdded, setCartAdded] = useState<{ quantity: number } | null>(null);
+    const [cartAdded, setCartAdded] = useState<{ quantity: number; displayedPrice: number } | null>(null);
 
     const {
         data: food,
@@ -68,11 +69,20 @@ function FoodDetail() {
             quantityUnit: food.quantityUnit,
         };
 
+        const { effectivePrice: basePrice } = getFoodPricing(food.price, food.discountPrice);
+        const surcharge = (food.customisations ?? []).reduce((sum, group) => {
+            const chosen = selections[group.id];
+            if (!chosen) return sum;
+            const opt = group.options.find(o => o.value === chosen);
+            return sum + (opt?.surcharge ?? 0);
+        }, 0);
+        const snapshotPrice = basePrice + surcharge;
+
         await addToCart(cartItem, quantity);
-        setCartAdded({ quantity });
+        setCartAdded({ quantity, displayedPrice: snapshotPrice });
         setSelections({});
         setQuantity(1);
-    }, [addToCart, food, quantity]);
+    }, [addToCart, food, quantity, selections]);
 
     if (isError) {
         return <FoodDetailError />;
@@ -87,6 +97,25 @@ function FoodDetail() {
     }
 
     const { effectivePrice, hasSavings } = getFoodPricing(food.price, food.discountPrice);
+
+    const selectedSurcharge = (food.customisations ?? []).reduce((sum, group) => {
+        const chosen = selections[group.id];
+        if (!chosen) return sum;
+        const opt = group.options.find(o => o.value === chosen);
+        return sum + (opt?.surcharge ?? 0);
+    }, 0);
+    const displayedPrice = effectivePrice + selectedSurcharge;
+
+    const surchargeOptionLabel = (() => {
+        if (selectedSurcharge <= 0) return '';
+        for (const group of food.customisations ?? []) {
+            const chosen = selections[group.id];
+            if (!chosen) continue;
+            const opt = group.options.find(o => o.value === chosen);
+            if (opt && (opt.surcharge ?? 0) > 0) return opt.label;
+        }
+        return '';
+    })();
 
     const requiredIds = (food.customisations ?? []).filter(c => c.required).map(c => c.id);
     const allRequiredMet = requiredIds.every(id => !!selections[id]);
@@ -115,7 +144,7 @@ function FoodDetail() {
                                     {t('foodDetail.addedBanner', { name: food.name, qty: cartAdded.quantity })}
                                     <span className='ml-2 font-normal text-success/80'>
                                         {t('foodDetail.addedBannerTotal', {
-                                            amount: formatVnd(effectivePrice * cartAdded.quantity),
+                                            amount: formatVnd(cartAdded.displayedPrice * cartAdded.quantity),
                                         })}
                                     </span>
                                 </span>
@@ -180,14 +209,24 @@ function FoodDetail() {
                                     {formatVnd(food.price)}
                                 </span>
                             )}
+                            {selectedSurcharge > 0 && (
+                                <span className='mb-1 block text-sm text-muted-foreground'>
+                                    Base {formatVnd(effectivePrice)} + surcharge {formatVnd(selectedSurcharge)}
+                                </span>
+                            )}
                             <div className='flex items-baseline gap-3'>
                                 <span className='font-sans text-6xl font-bold text-primary tabular-nums'>
-                                    {formatVnd(effectivePrice)}
+                                    {formatVnd(displayedPrice)}
                                 </span>
                                 {hasSavings && (
                                     <span className='rounded-full bg-destructive/20 px-3 py-1 text-sm font-semibold text-destructive'>
                                         {t('cart.saveBadge', { amount: formatVnd(food.price - effectivePrice) })}
                                     </span>
+                                )}
+                                {selectedSurcharge > 0 && (
+                                    <Badge variant='secondary' className='text-xs'>
+                                        +{formatVnd(selectedSurcharge)} for {surchargeOptionLabel}
+                                    </Badge>
                                 )}
                             </div>
                         </div>
@@ -241,7 +280,7 @@ function FoodDetail() {
                                 >
                                     <ShoppingCart className='h-5 w-5 shrink-0' />
                                     <span className='truncate'>
-                                        {t('foodDetail.addToCart', { price: formatVnd(effectivePrice * quantity) })}
+                                        {t('foodDetail.addToCart', { price: formatVnd(displayedPrice * quantity) })}
                                     </span>
                                 </Button>
                             </div>
