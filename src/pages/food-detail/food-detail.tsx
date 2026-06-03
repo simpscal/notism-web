@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, CheckCircle2, Minus, Package, Plus, ShoppingCart, Utensils } from 'lucide-react';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
@@ -55,6 +55,44 @@ function FoodDetail() {
 
     const handleDismissBanner = useCallback(() => setCartAdded(null), []);
 
+    const { effectivePrice, hasSavings } = useMemo(
+        () => getFoodPricing(food?.price ?? 0, food?.discountPrice ?? null),
+        [food?.price, food?.discountPrice]
+    );
+
+    const selectedSurcharge = useMemo(
+        () =>
+            (food?.customisations ?? []).reduce((sum, group) => {
+                const chosen = selections[group.id];
+                if (!chosen) return sum;
+                const opt = group.options.find(o => o.value === chosen);
+                return sum + (opt?.surcharge ?? 0);
+            }, 0),
+        [food?.customisations, selections]
+    );
+
+    const displayedPrice = useMemo(() => effectivePrice + selectedSurcharge, [effectivePrice, selectedSurcharge]);
+
+    const surchargeOptionLabel = useMemo(() => {
+        if (selectedSurcharge <= 0) return '';
+        for (const group of food?.customisations ?? []) {
+            const chosen = selections[group.id];
+            if (!chosen) continue;
+            const opt = group.options.find(o => o.value === chosen);
+            if (opt && (opt.surcharge ?? 0) > 0) return opt.label;
+        }
+        return '';
+    }, [food?.customisations, selections, selectedSurcharge]);
+
+    const requiredIds = useMemo(
+        () => (food?.customisations ?? []).filter(c => c.required).map(c => c.id),
+        [food?.customisations]
+    );
+
+    const allRequiredMet = useMemo(() => requiredIds.every(rid => !!selections[rid]), [requiredIds, selections]);
+
+    const hasCustomisations = useMemo(() => (food?.customisations ?? []).length > 0, [food?.customisations]);
+
     const handleAddToCart = useCallback(async () => {
         if (!food) return;
         const cartItem: Omit<CartItemViewModel, 'quantity'> = {
@@ -69,20 +107,11 @@ function FoodDetail() {
             quantityUnit: food.quantityUnit,
         };
 
-        const { effectivePrice: basePrice } = getFoodPricing(food.price, food.discountPrice);
-        const surcharge = (food.customisations ?? []).reduce((sum, group) => {
-            const chosen = selections[group.id];
-            if (!chosen) return sum;
-            const opt = group.options.find(o => o.value === chosen);
-            return sum + (opt?.surcharge ?? 0);
-        }, 0);
-        const snapshotPrice = basePrice + surcharge;
-
         await addToCart(cartItem, quantity);
-        setCartAdded({ quantity, displayedPrice: snapshotPrice });
+        setCartAdded({ quantity, displayedPrice });
         setSelections({});
         setQuantity(1);
-    }, [addToCart, food, quantity, selections]);
+    }, [addToCart, food, quantity, displayedPrice]);
 
     if (isError) {
         return <FoodDetailError />;
@@ -95,31 +124,6 @@ function FoodDetail() {
     if (!food) {
         return <FoodDetailEmpty />;
     }
-
-    const { effectivePrice, hasSavings } = getFoodPricing(food.price, food.discountPrice);
-
-    const selectedSurcharge = (food.customisations ?? []).reduce((sum, group) => {
-        const chosen = selections[group.id];
-        if (!chosen) return sum;
-        const opt = group.options.find(o => o.value === chosen);
-        return sum + (opt?.surcharge ?? 0);
-    }, 0);
-    const displayedPrice = effectivePrice + selectedSurcharge;
-
-    const surchargeOptionLabel = (() => {
-        if (selectedSurcharge <= 0) return '';
-        for (const group of food.customisations ?? []) {
-            const chosen = selections[group.id];
-            if (!chosen) continue;
-            const opt = group.options.find(o => o.value === chosen);
-            if (opt && (opt.surcharge ?? 0) > 0) return opt.label;
-        }
-        return '';
-    })();
-
-    const requiredIds = (food.customisations ?? []).filter(c => c.required).map(c => c.id);
-    const allRequiredMet = requiredIds.every(id => !!selections[id]);
-    const hasCustomisations = (food.customisations ?? []).length > 0;
 
     return (
         <div className='bg-background'>
