@@ -21,6 +21,8 @@ export interface OrderItemResponseModel {
     quantity: number;
     totalPrice: number;
     imageUrl: string;
+    surcharge: number | null;
+    customisationLabel: string | null;
 }
 
 export interface DeliveryStatusTimingResponseModel {
