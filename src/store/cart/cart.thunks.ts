@@ -73,6 +73,35 @@ export const clearItems = createAsyncThunk('cart/clearCart', async (_, { getStat
     return { isAuthenticated };
 });
 
+export const updateItemCustomisation = createAsyncThunk(
+    'cart/updateItemCustomisation',
+    async ({
+        id,
+        customisationOptionId,
+        customisationGroupId,
+        customisationGroupLabel,
+        customisationLabel,
+        surcharge,
+    }: {
+        id: string;
+        customisationOptionId: string;
+        customisationGroupId: string | null;
+        customisationGroupLabel: string | null;
+        customisationLabel: string;
+        surcharge: number | null;
+    }) => {
+        await cartApi.updateItemCustomisation(id, { customisationOptionId });
+        return {
+            id,
+            customisationOptionId,
+            customisationGroupId,
+            customisationGroupLabel,
+            customisationLabel,
+            surcharge,
+        };
+    }
+);
+
 export const syncCartItems = createAsyncThunk('cart/syncCartItems', async (_, { getState }) => {
     const state = getState() as RootState;
     const isAuthenticated = !!state.user.user?.id;

@@ -8,6 +8,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Checkbox } from '@/components/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 import { FoodImage } from '@/features/food/components';
@@ -17,15 +18,24 @@ interface CartItemProps {
     onQuantityChange: (id: string, delta: number) => void;
     onRemove: (id: string, name: string) => void;
     onSelectionChange: (id: string, selected: boolean) => void;
+    onCustomisationChange?: (id: string, optionId: string) => void;
 }
 
-function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange }: CartItemProps) {
+function CartItemComponent({
+    item,
+    onQuantityChange,
+    onRemove,
+    onSelectionChange,
+    onCustomisationChange,
+}: CartItemProps) {
     const { t } = useTranslation();
     const isSelected = item.isSelected;
     const { effectivePrice, hasSavings } = getFoodPricing(item.price, item.discountPrice);
-    const itemTotal = effectivePrice * item.quantity;
+    const effectiveUnitPrice = effectivePrice + (item.surcharge ?? 0);
+    const itemTotal = effectiveUnitPrice * item.quantity;
     const originalTotal = item.price * item.quantity;
-    const discountAmount = hasSavings ? originalTotal - itemTotal : 0;
+    const discountAmount = hasSavings ? originalTotal - effectivePrice * item.quantity : 0;
+    const hasSurcharge = (item.surcharge ?? 0) > 0;
 
     const handleCardClick = () => {
         onSelectionChange(item.id, !isSelected);
@@ -89,6 +99,40 @@ function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange
                             {item.quantityUnit}
                         </Badge>
                     </div>
+
+                    {/* Customisation select */}
+                    {item.customisationOptions && item.customisationOptions.length > 0 && (
+                        <div
+                            className='flex items-center gap-2'
+                            onClick={handleButtonClick}
+                            onMouseDown={e => e.stopPropagation()}
+                        >
+                            {item.customisationGroupLabel && (
+                                <span className='text-xs text-muted-foreground'>{item.customisationGroupLabel}:</span>
+                            )}
+                            <Select
+                                value={item.customisationOptionId ?? ''}
+                                onValueChange={val => onCustomisationChange?.(item.id, val)}
+                            >
+                                <SelectTrigger className='h-7 w-auto min-w-[160px] text-xs'>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {item.customisationOptions.map(opt => (
+                                        <SelectItem key={opt.id} value={opt.id} className='text-xs'>
+                                            {opt.label}
+                                            {(opt.surcharge ?? 0) > 0 && ` (+${formatVnd(opt.surcharge!)})`}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {hasSurcharge && (
+                                <Badge variant='secondary' className='text-xs'>
+                                    +{formatVnd(item.surcharge!)}
+                                </Badge>
+                            )}
+                        </div>
+                    )}
 
                     {/* Quantity + Price row */}
                     <div className='flex flex-wrap items-center justify-between gap-3 pt-1'>
