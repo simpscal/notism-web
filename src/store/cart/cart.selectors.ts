@@ -33,5 +33,5 @@ export const selectSelectedCartTotalPrice = (state: RootState) =>
         .filter((item: CartItemViewModel) => item.isSelected)
         .reduce((total: number, item: CartItemViewModel) => {
             const itemPrice = getFoodPricing(item.price, item.discountPrice).effectivePrice;
-            return total + itemPrice * item.quantity;
+            return total + (itemPrice + (item.surcharge ?? 0)) * item.quantity;
         }, 0);

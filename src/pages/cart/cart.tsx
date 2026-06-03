@@ -21,7 +21,7 @@ function Cart() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { updateCartItemQuantity, removeFromCart } = useCart();
+    const { updateCartItemQuantity, removeFromCart, updateCartItemCustomisation } = useCart();
 
     const user = useAppSelector(state => state.user.user);
     const items = useAppSelector(selectCartItems);
@@ -33,8 +33,8 @@ function Cart() {
 
     const selectedTotalPrice = useMemo(() => {
         return selectedItemsList.reduce((total, item) => {
-            const itemPrice = getFoodPricing(item.price, item.discountPrice).effectivePrice;
-            return total + itemPrice * item.quantity;
+            const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
+            return total + (effectivePrice + (item.surcharge ?? 0)) * item.quantity;
         }, 0);
     }, [selectedItemsList]);
 
@@ -53,7 +53,7 @@ function Cart() {
                 await updateCartItemQuantity(id, newQuantity);
             }
         },
-        [updateCartItemQuantity, removeFromCart, items]
+        [updateCartItemQuantity, removeFromCart, items, t]
     );
 
     const handleRemoveItem = useCallback(
@@ -71,6 +71,30 @@ function Cart() {
         [dispatch]
     );
 
+    const handleCustomisationChange = useCallback(
+        async (id: string, optionId: string) => {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            const option = item.customisationOptions?.find(o => o.id === optionId);
+            if (!option) return;
+
+            try {
+                await updateCartItemCustomisation({
+                    id,
+                    customisationOptionId: optionId,
+                    customisationGroupId: item.customisationGroupId,
+                    customisationGroupLabel: item.customisationGroupLabel,
+                    customisationLabel: option.label,
+                    surcharge: option.surcharge,
+                });
+            } catch {
+                toast.error(t('cart.customisationUpdateFailed'));
+            }
+        },
+        [items, updateCartItemCustomisation, t]
+    );
+
     const handleProceedToPayment = useCallback(() => {
         if (selectedItemsList.length === 0) {
             toast.error(t('cart.selectAtLeastOne'));
@@ -82,7 +106,7 @@ function Cart() {
         } else {
             navigate(`/${ROUTES.PAYMENT}`);
         }
-    }, [user, navigate, selectedItemsList.length]);
+    }, [user, navigate, selectedItemsList.length, t]);
 
     if (!isInitialized) {
         return (
@@ -127,6 +151,7 @@ function Cart() {
                                 onQuantityChange={handleQuantityChange}
                                 onRemove={handleRemoveItem}
                                 onSelectionChange={handleSelectionChange}
+                                onCustomisationChange={handleCustomisationChange}
                             />
                         ))}
                     </div>
@@ -141,7 +166,7 @@ function Cart() {
                                     {selectedItemsList.length > 0 ? (
                                         selectedItemsList.map(item => {
                                             const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
-                                            const itemTotal = effectivePrice * item.quantity;
+                                            const itemTotal = (effectivePrice + (item.surcharge ?? 0)) * item.quantity;
 
                                             return (
                                                 <div

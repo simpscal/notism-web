@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { CartItemViewModel } from '../models';
 
 import { useAppDispatch } from '@/core/hooks';
-import { addItem, removeItem, updateItemQuantity } from '@/store/cart/cart.thunks';
+import { addItem, removeItem, updateItemCustomisation, updateItemQuantity } from '@/store/cart/cart.thunks';
 
 export function useCart() {
     const dispatch = useAppDispatch();
@@ -29,9 +29,24 @@ export function useCart() {
         [dispatch]
     );
 
+    const updateCartItemCustomisation = useCallback(
+        async (params: {
+            id: string;
+            customisationOptionId: string;
+            customisationGroupId: string | null;
+            customisationGroupLabel: string | null;
+            customisationLabel: string;
+            surcharge: number | null;
+        }) => {
+            await dispatch(updateItemCustomisation(params)).unwrap();
+        },
+        [dispatch]
+    );
+
     return {
         addToCart,
         updateCartItemQuantity,
         removeFromCart,
+        updateCartItemCustomisation,
     };
 }
