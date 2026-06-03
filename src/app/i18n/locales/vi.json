@@ -614,7 +614,8 @@
         "card": {
             "outOfStock": "Hết hàng",
             "add": "Thêm",
-            "addedToCart": "{{name}} đã được thêm vào giỏ hàng!"
+            "addedToCart": "{{name}} đã được thêm vào giỏ hàng!",
+            "addError": "Không thể thêm {{name}} vào giỏ hàng. Vui lòng thử lại."
         }
     },
     "foodDetail": {

@@ -25,8 +25,28 @@ export const addItem = createAsyncThunk(
         const isAuthenticated = !!state.user.user?.id;
 
         if (isAuthenticated) {
-            const response = await cartApi.addItem({ foodId: item.id, quantity });
-            return { item: { ...response, quantity, isSelected: true }, isAuthenticated: true as const };
+            const response = await cartApi.addItem({
+                foodId: item.id,
+                quantity,
+                customisationOptionId: item.customisationOptionId ?? undefined,
+            });
+            // The server response echoes the persisted customisation, but the cart item
+            // model carries an AGGREGATE surcharge across groups that the single-option
+            // response cannot express — preserve the locally computed customisation fields.
+            return {
+                item: {
+                    ...response,
+                    customisationGroupId: item.customisationGroupId,
+                    customisationGroupLabel: item.customisationGroupLabel,
+                    customisationOptionId: item.customisationOptionId,
+                    customisationLabel: item.customisationLabel,
+                    surcharge: item.surcharge,
+                    customisationOptions: item.customisationOptions,
+                    quantity,
+                    isSelected: true,
+                },
+                isAuthenticated: true as const,
+            };
         } else {
             return {
                 item: { ...item, quantity, isSelected: true },

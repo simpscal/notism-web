@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, CheckCircle2, Minus, Package, Plus, ShoppingCart, Utensils } from 'lucide-react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import Banner from '@/components/banner';
 import { Button } from '@/components/button';
-import { CartItemViewModel, useCart } from '@/features/cart';
+import { buildCartCustomisation, CartItemViewModel, getDefaultRequiredSelections, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 
 function FoodDetail() {
@@ -41,6 +41,13 @@ function FoodDetail() {
         },
         enabled: !!id,
     });
+
+    // Pre-select the first option of each required group once the food loads so a
+    // valid starting choice and its surcharge always exist (bug #180 / AC4).
+    useEffect(() => {
+        if (!food) return;
+        setSelections(getDefaultRequiredSelections(food.customisations));
+    }, [food]);
 
     const handleQuantityChange = useCallback((delta: number) => {
         setQuantity(prev => Math.max(1, prev + delta));
@@ -84,6 +91,7 @@ function FoodDetail() {
 
     const handleAddToCart = useCallback(async () => {
         if (!food) return;
+        const customisation = buildCartCustomisation(food.customisations, selections);
         const cartItem: Omit<CartItemViewModel, 'quantity'> = {
             id: food.id,
             name: food.name,
@@ -94,19 +102,14 @@ function FoodDetail() {
             category: food.category,
             stockQuantity: food.stockQuantity,
             quantityUnit: food.quantityUnit,
-            customisationGroupId: null,
-            customisationGroupLabel: null,
-            customisationOptionId: null,
-            customisationLabel: null,
-            surcharge: null,
-            customisationOptions: [],
+            ...customisation,
         };
 
         await addToCart(cartItem, quantity);
         setCartAdded({ quantity, displayedPrice });
-        setSelections({});
+        setSelections(getDefaultRequiredSelections(food.customisations));
         setQuantity(1);
-    }, [addToCart, food, quantity, displayedPrice]);
+    }, [addToCart, food, quantity, displayedPrice, selections]);
 
     if (isError) {
         return <FoodDetailError />;

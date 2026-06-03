@@ -614,7 +614,8 @@
         "card": {
             "outOfStock": "Out of Stock",
             "add": "Add",
-            "addedToCart": "{{name}} added to cart!"
+            "addedToCart": "{{name}} added to cart!",
+            "addError": "Couldn't add {{name}} to cart. Please try again."
         }
     },
     "foodDetail": {

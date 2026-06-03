@@ -15,7 +15,7 @@ import { foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import Spinner from '@/components/spinner';
-import { CartItemViewModel, useCart } from '@/features/cart';
+import { buildCartCustomisation, CartItemViewModel, getDefaultRequiredSelections, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 
 interface FoodsGridProps {
@@ -72,31 +72,37 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
 
     const handleAddToCart = useCallback(
         async (food: FoodItemViewModel) => {
-            const { effectivePrice } = getFoodPricing(food.price, food.discountPrice);
-            const cartItem: Omit<CartItemViewModel, 'quantity'> = {
-                id: food.id,
-                name: food.name,
-                description: food.description,
-                price: food.price,
-                discountPrice: food.discountPrice,
-                imageUrl: food.imageUrl,
-                category: food.category,
-                stockQuantity: food.stockQuantity,
-                quantityUnit: food.quantityUnit,
-                customisationGroupId: null,
-                customisationGroupLabel: null,
-                customisationOptionId: null,
-                customisationLabel: null,
-                surcharge: null,
-                customisationOptions: [],
-            };
+            try {
+                // The foods list response carries no customisations, so resolve the
+                // food's detail to default required choices and capture their surcharge,
+                // mirroring the Food Details behaviour (bug #180 / AC3).
+                const detail = await foodApi.getFoodById(food.id);
+                const selections = getDefaultRequiredSelections(detail.customisations);
+                const customisation = buildCartCustomisation(detail.customisations, selections);
+                const { effectivePrice } = getFoodPricing(food.price, food.discountPrice);
 
-            await addToCart(cartItem, 1);
-            toast.success(t('foods.card.addedToCart', { name: food.name }), {
-                description: formatVnd(effectivePrice),
-            });
+                const cartItem: Omit<CartItemViewModel, 'quantity'> = {
+                    id: food.id,
+                    name: food.name,
+                    description: food.description,
+                    price: food.price,
+                    discountPrice: food.discountPrice,
+                    imageUrl: food.imageUrl,
+                    category: food.category,
+                    stockQuantity: food.stockQuantity,
+                    quantityUnit: food.quantityUnit,
+                    ...customisation,
+                };
+
+                await addToCart(cartItem, 1);
+                toast.success(t('foods.card.addedToCart', { name: food.name }), {
+                    description: formatVnd(effectivePrice + (customisation.surcharge ?? 0)),
+                });
+            } catch {
+                toast.error(t('foods.card.addError', { name: food.name }));
+            }
         },
-        [addToCart]
+        [addToCart, t]
     );
 
     if (isLoading) {
