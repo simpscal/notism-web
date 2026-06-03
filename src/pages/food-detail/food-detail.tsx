@@ -73,18 +73,6 @@ function FoodDetail() {
 
     const displayedPrice = useMemo(() => effectivePrice + selectedSurcharge, [effectivePrice, selectedSurcharge]);
 
-    const surchargeOptionLabel = useMemo(() => {
-        if (selectedSurcharge <= 0) return '';
-        const labels: string[] = [];
-        for (const group of food?.customisations ?? []) {
-            const chosen = selections[group.id];
-            if (!chosen) continue;
-            const opt = group.options.find(o => o.value === chosen);
-            if (opt && (opt.surcharge ?? 0) > 0) labels.push(opt.label);
-        }
-        return labels.join(', ');
-    }, [food?.customisations, selections, selectedSurcharge]);
-
     const requiredIds = useMemo(
         () => (food?.customisations ?? []).filter(c => c.required).map(c => c.id),
         [food?.customisations]
@@ -230,7 +218,7 @@ function FoodDetail() {
                                 )}
                                 {selectedSurcharge > 0 && (
                                     <Badge variant='secondary' className='text-xs'>
-                                        +{formatVnd(selectedSurcharge)} for {surchargeOptionLabel}
+                                        +{formatVnd(selectedSurcharge)}
                                     </Badge>
                                 )}
                             </div>
