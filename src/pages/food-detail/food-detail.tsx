@@ -84,6 +84,12 @@ function FoodDetail() {
 
     const handleAddToCart = useCallback(async () => {
         if (!food) return;
+
+        const firstRequiredGroup = (food.customisations ?? []).find(g => g.required && selections[g.id]);
+        const selectedOption = firstRequiredGroup
+            ? firstRequiredGroup.options.find(o => o.value === selections[firstRequiredGroup.id])
+            : null;
+
         const cartItem: Omit<CartItemViewModel, 'quantity'> = {
             id: food.id,
             name: food.name,
@@ -94,12 +100,17 @@ function FoodDetail() {
             category: food.category,
             stockQuantity: food.stockQuantity,
             quantityUnit: food.quantityUnit,
-            customisationGroupId: null,
-            customisationGroupLabel: null,
-            customisationOptionId: null,
-            customisationLabel: null,
-            surcharge: null,
-            customisationOptions: [],
+            customisationGroupId: firstRequiredGroup?.id ?? null,
+            customisationGroupLabel: firstRequiredGroup?.label ?? null,
+            customisationOptionId: selectedOption?.value ?? null,
+            customisationLabel: selectedOption?.label ?? null,
+            surcharge: selectedOption?.surcharge ?? null,
+            customisationOptions:
+                firstRequiredGroup?.options.map(o => ({
+                    id: o.value,
+                    label: o.label,
+                    surcharge: o.surcharge ?? null,
+                })) ?? [],
         };
 
         await addToCart(cartItem, quantity);

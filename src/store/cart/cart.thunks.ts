@@ -25,7 +25,11 @@ export const addItem = createAsyncThunk(
         const isAuthenticated = !!state.user.user?.id;
 
         if (isAuthenticated) {
-            const response = await cartApi.addItem({ foodId: item.id, quantity });
+            const response = await cartApi.addItem({
+                foodId: item.id,
+                quantity,
+                ...(item.customisationOptionId ? { customisationOptionId: item.customisationOptionId } : {}),
+            });
             return { item: { ...response, quantity, isSelected: true }, isAuthenticated: true as const };
         } else {
             return {
