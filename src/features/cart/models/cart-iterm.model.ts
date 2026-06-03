@@ -4,6 +4,15 @@ export interface CartItemCustomisationOptionViewModel {
     surcharge: number | null;
 }
 
+export interface CartItemCustomisationViewModel {
+    groupId: string | null;
+    groupLabel: string;
+    optionId: string | null;
+    optionLabel: string;
+    surcharge: number | null;
+    availableOptions: CartItemCustomisationOptionViewModel[];
+}
+
 export interface CartItemViewModel {
     id: string;
     name: string;
@@ -16,10 +25,6 @@ export interface CartItemViewModel {
     stockQuantity: number;
     quantityUnit: string;
     isSelected?: boolean;
-    customisationGroupId: string | null;
-    customisationGroupLabel: string | null;
-    customisationOptionId: string | null;
-    customisationLabel: string | null;
-    surcharge: number | null;
-    customisationOptions: CartItemCustomisationOptionViewModel[];
+    customisations: CartItemCustomisationViewModel[];
+    totalSurcharge: number;
 }

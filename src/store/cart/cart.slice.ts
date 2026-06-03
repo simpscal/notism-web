@@ -7,7 +7,7 @@ import {
     clearItems,
     loadCart,
     removeItem,
-    updateItemCustomisation,
+    replaceItemCustomisations,
     updateItemQuantity,
     syncCartItems,
 } from './cart.thunks';
@@ -115,22 +115,12 @@ const cartSlice = createSlice({
             }
         });
 
-        builder.addCase(updateItemCustomisation.fulfilled, (state, action) => {
-            const {
-                id,
-                customisationOptionId,
-                customisationGroupId,
-                customisationGroupLabel,
-                customisationLabel,
-                surcharge,
-            } = action.payload;
+        builder.addCase(replaceItemCustomisations.fulfilled, (state, action) => {
+            const { id, updatedItem } = action.payload;
             const item = state.items.find(item => item.id === id);
             if (item) {
-                item.customisationOptionId = customisationOptionId;
-                item.customisationGroupId = customisationGroupId;
-                item.customisationGroupLabel = customisationGroupLabel;
-                item.customisationLabel = customisationLabel;
-                item.surcharge = surcharge;
+                item.customisations = updatedItem.customisations;
+                item.totalSurcharge = updatedItem.totalSurcharge;
             }
         });
 

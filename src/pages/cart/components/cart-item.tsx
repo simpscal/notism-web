@@ -18,7 +18,7 @@ interface CartItemProps {
     onQuantityChange: (id: string, delta: number) => void;
     onRemove: (id: string, name: string) => void;
     onSelectionChange: (id: string, selected: boolean) => void;
-    onCustomisationChange?: (id: string, optionId: string) => void;
+    onCustomisationsChange?: (id: string, customisations: { groupId: string; optionId: string }[]) => void;
 }
 
 function CartItemComponent({
@@ -26,16 +26,16 @@ function CartItemComponent({
     onQuantityChange,
     onRemove,
     onSelectionChange,
-    onCustomisationChange,
+    onCustomisationsChange,
 }: CartItemProps) {
     const { t } = useTranslation();
     const isSelected = item.isSelected;
     const { effectivePrice, hasSavings } = getFoodPricing(item.price, item.discountPrice);
-    const effectiveUnitPrice = effectivePrice + (item.surcharge ?? 0);
+    const effectiveUnitPrice = effectivePrice + item.totalSurcharge;
     const itemTotal = effectiveUnitPrice * item.quantity;
     const originalTotal = item.price * item.quantity;
     const discountAmount = hasSavings ? originalTotal - effectivePrice * item.quantity : 0;
-    const hasSurcharge = (item.surcharge ?? 0) > 0;
+    const hasSurcharge = item.totalSurcharge > 0;
 
     const handleCardClick = () => {
         onSelectionChange(item.id, !isSelected);
@@ -100,35 +100,49 @@ function CartItemComponent({
                         </Badge>
                     </div>
 
-                    {/* Customisation select */}
-                    {item.customisationOptions && item.customisationOptions.length > 0 && (
+                    {/* Customisation selects */}
+                    {item.customisations && item.customisations.length > 0 && (
                         <div
-                            className='flex items-center gap-2'
+                            className='flex flex-col gap-1.5'
                             onClick={handleButtonClick}
                             onMouseDown={e => e.stopPropagation()}
                         >
-                            {item.customisationGroupLabel && (
-                                <span className='text-xs text-muted-foreground'>{item.customisationGroupLabel}:</span>
-                            )}
-                            <Select
-                                value={item.customisationOptionId ?? ''}
-                                onValueChange={val => onCustomisationChange?.(item.id, val)}
-                            >
-                                <SelectTrigger className='h-7 w-auto min-w-[160px] text-xs'>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {item.customisationOptions.map(opt => (
-                                        <SelectItem key={opt.id} value={opt.id} className='text-xs'>
-                                            {opt.label}
-                                            {(opt.surcharge ?? 0) > 0 && ` (+${formatVnd(opt.surcharge!)})`}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            {item.customisations.map(c => (
+                                <div key={c.groupId ?? c.groupLabel} className='flex items-center gap-2'>
+                                    <span className='text-xs text-muted-foreground'>{c.groupLabel}:</span>
+                                    <Select
+                                        value={c.optionId ?? ''}
+                                        onValueChange={val => {
+                                            const updated = item.customisations.map(existing =>
+                                                existing.groupId === c.groupId
+                                                    ? { ...existing, optionId: val }
+                                                    : existing
+                                            );
+                                            onCustomisationsChange?.(
+                                                item.id,
+                                                updated
+                                                    .filter(x => x.optionId)
+                                                    .map(x => ({ groupId: x.groupId!, optionId: x.optionId! }))
+                                            );
+                                        }}
+                                    >
+                                        <SelectTrigger className='h-7 w-auto min-w-[160px] text-xs'>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {c.availableOptions.map(opt => (
+                                                <SelectItem key={opt.id} value={opt.id} className='text-xs'>
+                                                    {opt.label}
+                                                    {(opt.surcharge ?? 0) > 0 && ` (+${formatVnd(opt.surcharge!)})`}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            ))}
                             {hasSurcharge && (
                                 <Badge variant='secondary' className='text-xs'>
-                                    +{formatVnd(item.surcharge!)}
+                                    +{formatVnd(item.totalSurcharge)}
                                 </Badge>
                             )}
                         </div>

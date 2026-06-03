@@ -21,7 +21,7 @@ function Cart() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { updateCartItemQuantity, removeFromCart, updateCartItemCustomisation } = useCart();
+    const { updateCartItemQuantity, removeFromCart, replaceCartItemCustomisations } = useCart();
 
     const user = useAppSelector(state => state.user.user);
     const items = useAppSelector(selectCartItems);
@@ -34,7 +34,7 @@ function Cart() {
     const selectedTotalPrice = useMemo(() => {
         return selectedItemsList.reduce((total, item) => {
             const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
-            return total + (effectivePrice + (item.surcharge ?? 0)) * item.quantity;
+            return total + (effectivePrice + item.totalSurcharge) * item.quantity;
         }, 0);
     }, [selectedItemsList]);
 
@@ -71,28 +71,15 @@ function Cart() {
         [dispatch]
     );
 
-    const handleCustomisationChange = useCallback(
-        async (id: string, optionId: string) => {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
-
-            const option = item.customisationOptions?.find(o => o.id === optionId);
-            if (!option) return;
-
+    const handleCustomisationsChange = useCallback(
+        async (id: string, customisations: { groupId: string; optionId: string }[]) => {
             try {
-                await updateCartItemCustomisation({
-                    id,
-                    customisationOptionId: optionId,
-                    customisationGroupId: item.customisationGroupId,
-                    customisationGroupLabel: item.customisationGroupLabel,
-                    customisationLabel: option.label,
-                    surcharge: option.surcharge,
-                });
+                await replaceCartItemCustomisations({ id, customisations });
             } catch {
                 toast.error(t('cart.customisationUpdateFailed'));
             }
         },
-        [items, updateCartItemCustomisation, t]
+        [replaceCartItemCustomisations, t]
     );
 
     const handleProceedToPayment = useCallback(() => {
@@ -151,7 +138,7 @@ function Cart() {
                                 onQuantityChange={handleQuantityChange}
                                 onRemove={handleRemoveItem}
                                 onSelectionChange={handleSelectionChange}
-                                onCustomisationChange={handleCustomisationChange}
+                                onCustomisationsChange={handleCustomisationsChange}
                             />
                         ))}
                     </div>
@@ -166,7 +153,7 @@ function Cart() {
                                     {selectedItemsList.length > 0 ? (
                                         selectedItemsList.map(item => {
                                             const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
-                                            const itemTotal = (effectivePrice + (item.surcharge ?? 0)) * item.quantity;
+                                            const itemTotal = (effectivePrice + item.totalSurcharge) * item.quantity;
 
                                             return (
                                                 <div
