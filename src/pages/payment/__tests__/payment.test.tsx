@@ -144,7 +144,7 @@ describe('Payment — bankingCheckout flow', () => {
         await userEvent.click(bankingOption);
 
         // Click Place Order to enter bankingCheckout mode (triggers createBankingCheckout mutation)
-        const placeOrderBtn = screen.getByRole('button', { name: t('payment.placeOrder') });
+        const placeOrderBtn = screen.getByRole('button', { name: /get qr/i });
         await userEvent.click(placeOrderBtn);
 
         // Should now show the banking checkout view with Pending badge
@@ -177,7 +177,7 @@ describe('Payment — bankingCheckout flow', () => {
         });
 
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
-        await userEvent.click(screen.getByRole('button', { name: t('payment.placeOrder') }));
+        await userEvent.click(screen.getByRole('button', { name: /get qr/i }));
 
         await waitFor(() => {
             expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
@@ -196,9 +196,9 @@ describe('Payment — bankingCheckout flow', () => {
             });
         });
 
-        // Badge should switch from pending to confirmed
+        // Badge should switch from pending to confirmed (may appear in multiple elements)
         await waitFor(() => {
-            expect(screen.getByText(t('payment.confirmed'))).toBeInTheDocument();
+            expect(screen.getAllByText(t('payment.confirmed')).length).toBeGreaterThanOrEqual(1);
         });
 
         expect(screen.queryByText(t('payment.pending'))).not.toBeInTheDocument();
@@ -228,7 +228,7 @@ describe('Payment — bankingCheckout flow', () => {
         });
 
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
-        await userEvent.click(screen.getByRole('button', { name: t('payment.placeOrder') }));
+        await userEvent.click(screen.getByRole('button', { name: /get qr/i }));
 
         await waitFor(() => {
             expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();

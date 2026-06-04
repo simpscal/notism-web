@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
@@ -14,11 +13,10 @@ interface PaymentOrderSummaryProps {
 }
 
 function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
-    const { t } = useTranslation();
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{t('payment.orderSummary')}</CardTitle>
+        <Card className='lg:sticky lg:top-24'>
+            <CardHeader className='pb-2'>
+                <CardTitle className='text-base'>Order summary</CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
                 <div className='space-y-3'>
@@ -61,9 +59,9 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
 
                 <Separator />
 
-                <div className='flex justify-between text-xl font-black'>
-                    <span>{t('payment.totalAmount')}</span>
-                    <span>{formatVnd(totalPrice)}</span>
+                <div className='flex justify-between font-bold text-base'>
+                    <span>Total</span>
+                    <span className='text-primary'>{formatVnd(totalPrice)}</span>
                 </div>
             </CardContent>
         </Card>

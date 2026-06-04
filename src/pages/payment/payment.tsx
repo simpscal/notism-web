@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { PaymentBankingQr, PaymentCodForm, PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
+import { PaymentCodForm, PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
 
-import { orderApi, paymentApi } from '@/apis';
+import { orderApi, paymentApi, userApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
@@ -19,7 +19,13 @@ import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
-import { PaymentNotificationPayload, PaymentNotificationType, usePaymentSignalR } from '@/features/payment';
+import {
+    PaymentQr,
+    PaymentStatusEnum,
+    PaymentNotificationPayload,
+    PaymentNotificationType,
+    usePaymentSignalR,
+} from '@/features/payment';
 import {
     loadCart,
     selectCartItems,
@@ -27,6 +33,7 @@ import {
     selectSelectedCartItems,
     selectSelectedCartTotalPrice,
 } from '@/store/cart';
+import { updateUser } from '@/store/user/user.slice';
 
 type PaymentSuccessMethod = 'cod' | 'banking';
 
@@ -135,12 +142,14 @@ function Payment() {
     const selectedItems = useAppSelector(selectSelectedCartItems);
     const totalPrice = useAppSelector(selectSelectedCartTotalPrice);
     const isInitialized = useAppSelector(selectCartIsInitialized);
-    const userLocation = useAppSelector(state => state.user.user?.location);
+    const user = useAppSelector(state => state.user.user);
+    const userLocation = user?.location;
 
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
     const [bankingCheckout, setBankingCheckout] = useState(false);
     const [paymentConfirmed, setPaymentConfirmed] = useState(false);
     const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
+    const [checkoutId, setCheckoutId] = useState<string | null>(null);
     const [successState, setSuccessState] = useState<SuccessState | null>(null);
 
     const { data: bankAccount } = useQuery({
@@ -151,7 +160,8 @@ function Payment() {
 
     const { mutate: createBankingCheckout, isPending: isCreatingCheckout } = useMutation({
         mutationFn: (data: { cartItemIds: string[]; totalAmount: number }) => paymentApi.createBankingCheckout(data),
-        onSuccess: () => {
+        onSuccess: result => {
+            setCheckoutId(result.checkoutId);
             setBankingCheckout(true);
         },
     });
@@ -190,17 +200,33 @@ function Payment() {
         setPaymentMethod(value as PaymentMethodEnum);
     }, []);
 
-    const handleCodPlaceOrder = useCallback(() => {
-        if (selectedItems.length === 0) {
-            toast.error(t('payment.selectItem'));
-            navigate(`/${ROUTES.CART}`);
-            return;
-        }
-        createOrder({
-            paymentMethod: paymentMethod,
-            cartItemIds: selectedItems.map(item => item.id),
-        });
-    }, [selectedItems, paymentMethod, navigate, createOrder, t]);
+    const handleCodPlaceOrder = useCallback(
+        (address: string) => {
+            if (selectedItems.length === 0) {
+                toast.error(t('payment.selectItem'));
+                navigate(`/${ROUTES.CART}`);
+                return;
+            }
+            if (address && address !== userLocation) {
+                userApi
+                    .updateProfile({
+                        firstName: user?.firstName ?? '',
+                        lastName: user?.lastName ?? '',
+                        avatarUrl: user?.avatarUrl ?? null,
+                        location: address,
+                    })
+                    .then(profile => {
+                        dispatch(updateUser({ location: profile.location ?? undefined }));
+                    })
+                    .catch(() => {});
+            }
+            createOrder({
+                paymentMethod: paymentMethod,
+                cartItemIds: selectedItems.map(item => item.id),
+            });
+        },
+        [selectedItems, paymentMethod, navigate, createOrder, t, userLocation, dispatch]
+    );
 
     const handleBankingInitiate = useCallback(() => {
         createBankingCheckout({
@@ -286,11 +312,22 @@ function Payment() {
                     <div className='grid gap-8 lg:grid-cols-[1fr_360px]'>
                         {/* Banking QR + status card */}
                         <div className='space-y-6'>
-                            <PaymentBankingQr
-                                totalPrice={totalPrice}
-                                bankName={bankAccount?.bankCode}
-                                accountNumber={bankAccount?.accountNumber}
-                                waiting={!paymentConfirmed}
+                            <PaymentQr
+                                paymentMethod={PaymentMethodEnum.Banking}
+                                paymentStatus={paymentConfirmed ? PaymentStatusEnum.Paid : PaymentStatusEnum.Unpaid}
+                                paymentQr={
+                                    bankAccount
+                                        ? {
+                                              bankCode: bankAccount.bankCode,
+                                              accountNumber: bankAccount.accountNumber,
+                                              accountHolderName: bankAccount.accountHolderName,
+                                              amount: totalPrice,
+                                              orderReference: checkoutId ? checkoutId.replace(/-/g, '') : '',
+                                          }
+                                        : null
+                                }
+                                slugId={checkoutId ?? ''}
+                                paidAt={null}
                             />
                             <Card>
                                 <CardHeader>
@@ -364,11 +401,17 @@ function Payment() {
                         ) : (
                             <Card>
                                 <CardHeader className='pb-3'>
-                                    <CardTitle className='text-base'>Bank transfer</CardTitle>
+                                    <CardTitle className='flex items-center gap-2 text-base'>
+                                        {t('payment.banking')}
+                                    </CardTitle>
+                                    <CardDescription>{t('payment.onlineBanking')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <p className='text-sm text-muted-foreground'>
-                                        Scan a QR code and transfer the exact amount directly to our bank account.
+                                        {t('payment.bankingDescription', {
+                                            defaultValue:
+                                                'Click below to generate your QR code. Scan it and transfer the exact amount to complete your order.',
+                                        })}
                                     </p>
                                 </CardContent>
                                 <CardFooter>
@@ -384,7 +427,7 @@ function Payment() {
                                                 {t('payment.processing')}
                                             </>
                                         ) : (
-                                            `${t('payment.placeOrder')}`
+                                            `Get QR — ${formatVnd(totalPrice)}`
                                         )}
                                     </Button>
                                 </CardFooter>

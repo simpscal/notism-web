@@ -12,7 +12,7 @@ interface PaymentCodFormProps {
     savedAddress: string | null | undefined;
     totalPrice: number;
     disabled?: boolean;
-    onPlaceOrder: () => void;
+    onPlaceOrder: (address: string) => void;
 }
 
 function PaymentCodForm({ savedAddress, totalPrice, disabled, onPlaceOrder }: PaymentCodFormProps) {
@@ -23,7 +23,8 @@ function PaymentCodForm({ savedAddress, totalPrice, disabled, onPlaceOrder }: Pa
     const hasSavedAddress = Boolean(savedAddress);
 
     const handlePlaceOrder = () => {
-        onPlaceOrder();
+        const deliveryAddress = hasSavedAddress && !isEditing ? savedAddress! : address;
+        onPlaceOrder(deliveryAddress);
     };
 
     return (

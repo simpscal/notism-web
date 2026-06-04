@@ -73,7 +73,7 @@ describe('Payment — Banking Checkout Transition', () => {
         await userEvent.click(bankingRadio);
 
         // Click Place Order
-        const placeOrderBtn = screen.getByRole('button', { name: new RegExp(t('payment.placeOrder'), 'i') });
+        const placeOrderBtn = screen.getByRole('button', { name: /get qr/i });
         await userEvent.click(placeOrderBtn);
 
         // Banking checkout view should appear
@@ -91,7 +91,7 @@ describe('Payment — Banking Checkout Transition', () => {
         const bankingRadio = screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') });
         await userEvent.click(bankingRadio);
 
-        const placeOrderBtn = screen.getByRole('button', { name: new RegExp(t('payment.placeOrder'), 'i') });
+        const placeOrderBtn = screen.getByRole('button', { name: /get qr/i });
         await userEvent.click(placeOrderBtn);
 
         await waitFor(() => {
@@ -112,16 +112,16 @@ describe('Payment — Banking Checkout Transition', () => {
         const bankingRadio = screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') });
         await userEvent.click(bankingRadio);
 
-        const placeOrderBtn = screen.getByRole('button', { name: new RegExp(t('payment.placeOrder'), 'i') });
+        const placeOrderBtn = screen.getByRole('button', { name: /get qr/i });
         await userEvent.click(placeOrderBtn);
 
         await waitFor(() => {
             expect(screen.getByText(t('payment.awaitingTransfer'))).toBeInTheDocument();
         });
 
-        // Place Order button in checkout view must be disabled
-        const checkoutPlaceOrderBtn = screen.getByRole('button', { name: new RegExp(t('payment.placeOrder'), 'i') });
-        expect(checkoutPlaceOrderBtn).toBeDisabled();
+        // View Order button in checkout view must be disabled until payment is confirmed
+        const checkoutViewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
+        expect(checkoutViewOrderBtn).toBeDisabled();
     });
 
     it('Back to Cart button on checkout view navigates to cart', async () => {
@@ -130,7 +130,7 @@ describe('Payment — Banking Checkout Transition', () => {
         const bankingRadio = screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') });
         await userEvent.click(bankingRadio);
 
-        const placeOrderBtn = screen.getByRole('button', { name: new RegExp(t('payment.placeOrder'), 'i') });
+        const placeOrderBtn = screen.getByRole('button', { name: /get qr/i });
         await userEvent.click(placeOrderBtn);
 
         await waitFor(() => {
