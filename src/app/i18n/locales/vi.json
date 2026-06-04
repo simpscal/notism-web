@@ -263,11 +263,13 @@
         "payment": "Thanh toán:",
         "orderCount_one": "{{count}} đơn hàng",
         "orderCount_other": "{{count}} đơn hàng",
+        "includesSurcharges": "Bao gồm phụ phí tùy chỉnh",
         "empty": {
             "title": "Chưa có đơn hàng nào",
             "description": "Bắt đầu mua sắm để xem các đơn hàng của bạn tại đây.",
             "browseMenu": "Duyệt menu"
-        }
+        },
+        "orderTotal": "Tổng đơn hàng"
     },
     "order": {
         "title": "Chi tiết đơn hàng",
