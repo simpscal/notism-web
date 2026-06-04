@@ -154,22 +154,17 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
             <div className='flex items-center justify-between'>
                 <div className='space-y-1'>
                     <p className='text-base font-semibold'>{t('admin.customisationManager.title')}</p>
-                    <p className='text-xs text-muted-foreground'>
-                        {t('admin.customisationManager.subtitle', {
-                            defaultValue: 'Manage options customers can choose from.',
-                        })}
-                    </p>
                 </div>
                 <Button variant='outline' size='sm' onClick={() => setAddGroupOpen(true)}>
                     <Plus className='h-4 w-4' />
-                    Add group
+                    {t('admin.customisationManager.addGroupButton')}
                 </Button>
             </div>
 
             {/* Empty state */}
             {localGroups.length === 0 && (
                 <div className='rounded-lg border border-dashed px-6 py-10 text-center text-sm text-muted-foreground'>
-                    No customisation groups yet. Add one to get started.
+                    {t('admin.customisationManager.empty')}
                 </div>
             )}
 
@@ -183,7 +178,9 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                 <div className='flex items-center gap-3'>
                                     <span className='text-sm font-semibold text-foreground'>{group.label}</span>
                                     <Badge variant={group.required ? 'default' : 'secondary'} className='text-xs'>
-                                        {group.required ? 'Required' : 'Optional'}
+                                        {group.required
+                                            ? t('admin.customisationManager.required')
+                                            : t('admin.customisationManager.optional')}
                                     </Badge>
                                 </div>
                                 <div className='flex items-center gap-2'>
@@ -194,7 +191,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                         onClick={() => handleOpenAddOption(group.id)}
                                     >
                                         <Plus className='h-3 w-3' />
-                                        Add option
+                                        {t('admin.customisationManager.addOption')}
                                     </Button>
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
@@ -209,16 +206,19 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                         </AlertDialogTrigger>
                                         <AlertDialogContent>
                                             <AlertDialogHeader>
-                                                <AlertDialogTitle>Remove group?</AlertDialogTitle>
+                                                <AlertDialogTitle>
+                                                    {t('admin.customisationManager.deleteGroupTitle')}
+                                                </AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    This will permanently remove <strong>{group.label}</strong> and all
-                                                    its options.
+                                                    {t('admin.customisationManager.deleteGroupDescription', {
+                                                        label: group.label,
+                                                    })}
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                                                 <AlertDialogAction onClick={() => handleDeleteGroup(group.id)}>
-                                                    Remove
+                                                    {t('admin.customisationManager.remove')}
                                                 </AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
@@ -229,9 +229,13 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className='w-[50%]'>Option label</TableHead>
-                                        <TableHead>Surcharge</TableHead>
-                                        <TableHead className='w-[80px] text-right'>Remove</TableHead>
+                                        <TableHead className='w-[50%]'>
+                                            {t('admin.customisationManager.optionLabel')}
+                                        </TableHead>
+                                        <TableHead>{t('admin.customisationManager.surcharge')}</TableHead>
+                                        <TableHead className='w-[80px] text-right'>
+                                            {t('admin.customisationManager.removeColumn')}
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -261,18 +265,22 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>Remove option?</AlertDialogTitle>
+                                                            <AlertDialogTitle>
+                                                                {t('admin.customisationManager.deleteOptionTitle')}
+                                                            </AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                This will permanently remove{' '}
-                                                                <strong>{opt.label}</strong>.
+                                                                {t(
+                                                                    'admin.customisationManager.deleteOptionDescription',
+                                                                    { label: opt.label }
+                                                                )}
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                                                             <AlertDialogAction
                                                                 onClick={() => handleDeleteOption(group.id, opt.value)}
                                                             >
-                                                                Remove
+                                                                {t('admin.customisationManager.remove')}
                                                             </AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>
@@ -291,26 +299,28 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
             <Dialog open={addGroupOpen} onOpenChange={setAddGroupOpen}>
                 <DialogContent className='sm:max-w-[420px]'>
                     <DialogHeader>
-                        <DialogTitle>Add customisation group</DialogTitle>
+                        <DialogTitle>{t('admin.customisationManager.addGroup')}</DialogTitle>
                     </DialogHeader>
                     <div className='space-y-5 py-2'>
                         <div className='space-y-1.5'>
-                            <Label htmlFor='group-label'>Group label</Label>
+                            <Label htmlFor='group-label'>{t('admin.customisationManager.groupLabel')}</Label>
                             <Input
                                 id='group-label'
-                                placeholder='e.g. Portion size, Spice level'
+                                placeholder={t('admin.customisationManager.groupLabelPlaceholder')}
                                 value={groupLabel}
                                 onChange={e => setGroupLabel(e.target.value)}
                             />
                             <p className='text-xs text-muted-foreground'>
-                                This label is shown to customers on the food details page.
+                                {t('admin.customisationManager.groupLabelHelper')}
                             </p>
                         </div>
                         <div className='flex items-center justify-between rounded-lg border px-4 py-3'>
                             <div>
-                                <p className='text-sm font-medium'>Required selection</p>
+                                <p className='text-sm font-medium'>
+                                    {t('admin.customisationManager.requiredSelection')}
+                                </p>
                                 <p className='text-xs text-muted-foreground'>
-                                    Customers must choose an option before adding to cart.
+                                    {t('admin.customisationManager.requiredSelectionHelper')}
                                 </p>
                             </div>
                             <Switch id='group-required' checked={groupRequired} onCheckedChange={setGroupRequired} />
@@ -318,10 +328,10 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                     </div>
                     <DialogFooter>
                         <Button variant='outline' onClick={() => setAddGroupOpen(false)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button disabled={!groupLabel.trim() || addGroupMutation.isPending} onClick={handleSaveGroup}>
-                            Save group
+                            {t('admin.customisationManager.saveGroup')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -331,40 +341,41 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
             <Dialog open={addOptionOpen} onOpenChange={setAddOptionOpen}>
                 <DialogContent className='sm:max-w-[420px]'>
                     <DialogHeader>
-                        <DialogTitle>Add option to {targetGroupLabel}</DialogTitle>
+                        <DialogTitle>
+                            {t('admin.customisationManager.addOptionTo', { label: targetGroupLabel })}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className='space-y-5 py-2'>
                         <div className='space-y-1.5'>
-                            <Label htmlFor='option-label'>Option label</Label>
+                            <Label htmlFor='option-label'>{t('admin.customisationManager.optionLabel')}</Label>
                             <Input
                                 id='option-label'
-                                placeholder='e.g. Extra large (340 g)'
+                                placeholder={t('admin.customisationManager.optionLabelPlaceholder')}
                                 value={optLabel}
                                 onChange={e => setOptLabel(e.target.value)}
                             />
                         </div>
                         <div className='space-y-1.5'>
-                            <Label htmlFor='option-surcharge'>Surcharge (₫)</Label>
+                            <Label htmlFor='option-surcharge'>{t('admin.customisationManager.surcharge')} (₫)</Label>
                             <Input
                                 id='option-surcharge'
                                 type='number'
-                                placeholder='Leave blank for no surcharge'
+                                placeholder={t('admin.customisationManager.surchargePlaceholder')}
                                 value={optSurcharge}
                                 onChange={e => setOptSurcharge(e.target.value)}
                                 min={0}
                             />
                             <p className='text-xs text-muted-foreground'>
-                                Enter the additional amount customers pay for this option. Leave blank if there is no
-                                surcharge.
+                                {t('admin.customisationManager.surchargeHelper')}
                             </p>
                         </div>
                     </div>
                     <DialogFooter>
                         <Button variant='outline' onClick={() => setAddOptionOpen(false)}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button disabled={!optLabel.trim() || addOptionMutation.isPending} onClick={handleSaveOption}>
-                            Save option
+                            {t('admin.customisationManager.saveOption')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
