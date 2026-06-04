@@ -24,10 +24,16 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
                 <div className='space-y-3'>
                     {items.map(item => {
                         const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
-                        const itemTotal = effectivePrice * item.quantity;
+                        const surcharge = item.totalSurcharge ?? 0;
+                        const itemTotal = (effectivePrice + surcharge) * item.quantity;
+
+                        const customisationLabel = (item.customisations ?? [])
+                            .map(c => c.optionLabel)
+                            .filter(label => label != null && label !== '')
+                            .join(', ');
 
                         return (
-                            <div key={item.id} className='flex items-center gap-3 text-sm'>
+                            <div key={item.id} className='flex items-start gap-3 text-sm'>
                                 <div className='relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted'>
                                     <FoodImage
                                         src={item.imageUrl}
@@ -35,9 +41,18 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
                                         className='h-full w-full object-cover'
                                     />
                                 </div>
-                                <span className='min-w-0 flex-1 truncate text-muted-foreground'>
-                                    {item.name} ×{item.quantity}
-                                </span>
+                                <div className='min-w-0 flex-1'>
+                                    <p className='text-sm font-medium text-foreground'>{item.name}</p>
+                                    {customisationLabel !== '' && (
+                                        <p className='text-xs text-muted-foreground'>
+                                            {customisationLabel}
+                                            {surcharge > 0 && (
+                                                <span className='ml-1 text-primary'>+{formatVnd(surcharge)}</span>
+                                            )}
+                                        </p>
+                                    )}
+                                    <p className='text-xs text-muted-foreground'>× {item.quantity}</p>
+                                </div>
                                 <span className='shrink-0 font-medium'>{formatVnd(itemTotal)}</span>
                             </div>
                         );

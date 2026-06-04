@@ -55,6 +55,8 @@ const MOCK_CART_ITEM = {
     stockQuantity: 10,
     quantityUnit: 'portion',
     isSelected: true,
+    customisations: [],
+    totalSurcharge: 0,
 };
 
 beforeAll(() => server.listen());
