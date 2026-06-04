@@ -1,4 +1,3 @@
-export { default as PaymentBankingQr } from './payment-banking-qr';
 export { default as PaymentCodForm } from './payment-cod-form';
 export { default as PaymentEmpty } from './payment-empty';
 export { default as PaymentMethod } from './payment-method';

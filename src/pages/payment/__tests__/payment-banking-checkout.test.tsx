@@ -78,7 +78,7 @@ describe('Payment — Banking Checkout Transition', () => {
 
         // After selecting banking, checkout is auto-initiated → QR card appears
         await waitFor(() => {
-            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
     });
 

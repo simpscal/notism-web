@@ -1,19 +1,48 @@
 import { CreditCard, ShieldCheck } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
 import { formatVnd } from '@/app/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 
+const VIETQR_BASE_URL = 'https://img.vietqr.io/image';
+
+function buildQrUrl(
+    bankCode: string,
+    accountNumber: string,
+    accountHolderName: string,
+    amount: number,
+    orderReference: string
+): string {
+    const params = new URLSearchParams({
+        amount: String(amount),
+        addInfo: orderReference,
+        accountName: accountHolderName,
+    });
+    return `${VIETQR_BASE_URL}/${bankCode}-${accountNumber}-compact2.jpg?${params.toString()}`;
+}
+
 interface PaymentBankingQrProps {
-    totalPrice: number;
-    bankName?: string;
-    accountNumber?: string;
+    bankCode: string;
+    accountNumber: string;
+    accountHolderName: string;
+    amount: number;
+    orderReference: string;
     waiting?: boolean;
 }
 
-function PaymentBankingQr({ totalPrice, bankName, accountNumber, waiting }: PaymentBankingQrProps) {
+function PaymentBankingQr({
+    bankCode,
+    accountNumber,
+    accountHolderName,
+    amount,
+    orderReference,
+    waiting,
+}: PaymentBankingQrProps) {
+    const [imgError, setImgError] = useState(false);
+    const qrUrl = buildQrUrl(bankCode, accountNumber, accountHolderName, amount, orderReference);
+
     return (
         <Card>
             <CardHeader className='pb-3'>
@@ -25,19 +54,18 @@ function PaymentBankingQr({ totalPrice, bankName, accountNumber, waiting }: Paym
             <CardContent className='space-y-5'>
                 <div className='flex flex-col items-center gap-3'>
                     <div className='relative'>
-                        <div
-                            className='h-44 w-44 rounded-lg border-2 border-primary/40'
-                            style={{
-                                backgroundImage: 'repeating-conic-gradient(#0001 0% 25%, transparent 0% 50%)',
-                                backgroundSize: '12px 12px',
-                                backgroundColor: 'hsl(var(--muted))',
-                            }}
-                        />
-                        <div className='absolute inset-0 flex items-center justify-center'>
-                            <span className='rounded-md bg-background/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground shadow-sm'>
-                                QR placeholder
-                            </span>
-                        </div>
+                        {imgError ? (
+                            <div className='flex h-44 w-44 items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30'>
+                                <span className='text-xs text-muted-foreground'>QR unavailable</span>
+                            </div>
+                        ) : (
+                            <img
+                                src={qrUrl}
+                                alt='VietQR payment code'
+                                className='h-44 w-44 rounded-lg border-2 border-primary/40 object-cover'
+                                onError={() => setImgError(true)}
+                            />
+                        )}
                         {waiting && (
                             <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-background/80 backdrop-blur-[2px]'>
                                 <Spinner size='md' />
@@ -46,33 +74,28 @@ function PaymentBankingQr({ totalPrice, bankName, accountNumber, waiting }: Paym
                     </div>
                     <p className='text-xs text-muted-foreground'>Scan to pay</p>
                 </div>
+
                 <div className='space-y-2 rounded-lg border bg-muted/30 px-4 py-3 text-sm'>
                     <div className='flex justify-between'>
                         <span className='text-muted-foreground'>Bank</span>
-                        <span className='font-medium text-foreground'>{bankName ?? 'Vietcombank'}</span>
+                        <span className='font-medium text-foreground'>{bankCode}</span>
                     </div>
                     <Separator />
                     <div className='flex justify-between'>
                         <span className='text-muted-foreground'>Account</span>
-                        <span className='font-mono font-medium text-foreground'>{accountNumber ?? '—'}</span>
+                        <span className='font-mono font-medium text-foreground'>{accountNumber}</span>
                     </div>
                     <Separator />
                     <div className='flex justify-between'>
                         <span className='text-muted-foreground'>Amount</span>
-                        <span className='font-semibold text-primary'>{formatVnd(totalPrice)}</span>
+                        <span className='font-semibold text-primary'>{formatVnd(amount)}</span>
                     </div>
                 </div>
-                {waiting ? (
-                    <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
-                        <Spinner size='xs' />
-                        Waiting for transfer confirmation…
-                    </div>
-                ) : (
-                    <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
-                        <ShieldCheck className='h-3.5 w-3.5 shrink-0' />
-                        After your transfer the payment will be confirmed automatically.
-                    </div>
-                )}
+
+                <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
+                    <ShieldCheck className='h-3.5 w-3.5 shrink-0' />
+                    After your transfer the payment will be confirmed automatically.
+                </div>
             </CardContent>
         </Card>
     );

@@ -143,7 +143,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         // QR card should appear after auto-initiated checkout completes
         await waitFor(() => {
-            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
     });
 
@@ -168,7 +168,7 @@ describe('Payment — bankingCheckout flow', () => {
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
 
         expect(capturedCallback).not.toBeNull();
@@ -212,7 +212,7 @@ describe('Payment — bankingCheckout flow', () => {
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
 
         expect(capturedCallback).not.toBeNull();
@@ -229,7 +229,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         // QR view should still be visible (no success screen)
         await waitFor(() => {
-            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
 
         expect(screen.queryByText('Payment confirmed')).not.toBeInTheDocument();

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { PaymentCodForm, PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
+import PaymentBankingQr from './components/payment-banking-qr';
 
 import { orderApi, paymentApi, userApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
@@ -19,13 +20,7 @@ import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
-import {
-    PaymentQr,
-    PaymentStatusEnum,
-    PaymentNotificationPayload,
-    PaymentNotificationType,
-    usePaymentSignalR,
-} from '@/features/payment';
+import { PaymentNotificationPayload, PaymentNotificationType, usePaymentSignalR } from '@/features/payment';
 import {
     loadCart,
     selectCartItems,
@@ -322,29 +317,19 @@ function Payment() {
                                 disabled={isCreatingOrder}
                                 onPlaceOrder={handleCodPlaceOrder}
                             />
-                        ) : isCreatingCheckout ? (
+                        ) : isCreatingCheckout || !bankAccount ? (
                             <Card>
                                 <CardContent className='flex items-center justify-center py-12'>
                                     <Spinner size='lg' />
                                 </CardContent>
                             </Card>
                         ) : (
-                            <PaymentQr
-                                paymentMethod={PaymentMethodEnum.Banking}
-                                paymentStatus={PaymentStatusEnum.Unpaid}
-                                paymentQr={
-                                    bankAccount
-                                        ? {
-                                              bankCode: bankAccount.bankCode,
-                                              accountNumber: bankAccount.accountNumber,
-                                              accountHolderName: bankAccount.accountHolderName,
-                                              amount: totalPrice,
-                                              orderReference: checkoutId ? checkoutId.replace(/-/g, '') : '',
-                                          }
-                                        : null
-                                }
-                                slugId={checkoutId ?? ''}
-                                paidAt={null}
+                            <PaymentBankingQr
+                                bankCode={bankAccount.bankCode}
+                                accountNumber={bankAccount.accountNumber}
+                                accountHolderName={bankAccount.accountHolderName}
+                                amount={totalPrice}
+                                orderReference={checkoutId ? checkoutId.replace(/-/g, '') : ''}
                             />
                         )}
                     </div>
