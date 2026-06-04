@@ -274,7 +274,8 @@
             "amount": "Số tiền",
             "autoConfirm": "Sau khi chuyển khoản, thanh toán của bạn sẽ được xác nhận tự động.",
             "qrUnavailable": "Mã QR không khả dụng"
-        }
+        },
+        "banking": "Ngân hàng"
     },
     "orders": {
         "title": "Đơn hàng của tôi",

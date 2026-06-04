@@ -274,7 +274,8 @@
             "amount": "Amount",
             "autoConfirm": "After your transfer the payment will be confirmed automatically.",
             "qrUnavailable": "QR unavailable"
-        }
+        },
+        "banking": "Banking"
     },
     "orders": {
         "title": "My Orders",

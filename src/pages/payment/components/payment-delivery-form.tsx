@@ -9,7 +9,7 @@ import { Input } from '@/components/input';
 import { Label } from '@/components/label';
 import { Textarea } from '@/components/textarea';
 
-interface PaymentCodFormProps {
+interface PaymentDeliveryFormProps {
     savedAddress: string | null | undefined;
     totalPrice: number;
     disabled?: boolean;
@@ -17,13 +17,13 @@ interface PaymentCodFormProps {
     onPlaceOrder: (address: string, notes: string) => void;
 }
 
-function PaymentCodForm({
+function PaymentDeliveryForm({
     savedAddress,
     totalPrice,
     disabled,
     showPlaceOrderButton = true,
     onPlaceOrder,
-}: PaymentCodFormProps) {
+}: PaymentDeliveryFormProps) {
     const { t } = useTranslation();
     const [address, setAddress] = useState(savedAddress ?? '');
     const [notes, setNotes] = useState('');
@@ -110,4 +110,4 @@ function PaymentCodForm({
     );
 }
 
-export default memo(PaymentCodForm);
+export default memo(PaymentDeliveryForm);
