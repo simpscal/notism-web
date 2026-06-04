@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
-import { FoodImage } from '@/features/food/components';
 
 interface PaymentOrderSummaryProps {
     items: CartItemViewModel[];
@@ -16,29 +15,37 @@ interface PaymentOrderSummaryProps {
 function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
     const { t } = useTranslation();
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{t('payment.orderSummary')}</CardTitle>
+        <Card className='lg:sticky lg:top-24'>
+            <CardHeader className='pb-2'>
+                <CardTitle className='text-base'>{t('payment.summary.title')}</CardTitle>
             </CardHeader>
-            <CardContent className='space-y-4'>
-                <div className='space-y-3'>
+            <CardContent className='space-y-3'>
+                <div className='divide-y'>
                     {items.map(item => {
                         const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
-                        const itemTotal = effectivePrice * item.quantity;
+                        const surcharge = item.totalSurcharge ?? 0;
+                        const itemTotal = (effectivePrice + surcharge) * item.quantity;
+
+                        const customisationLabel = (item.customisations ?? [])
+                            .map(c => c.optionLabel)
+                            .filter(label => label != null && label !== '')
+                            .join(', ');
 
                         return (
-                            <div key={item.id} className='flex items-center gap-3 text-sm'>
-                                <div className='relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted'>
-                                    <FoodImage
-                                        src={item.imageUrl}
-                                        alt={item.name}
-                                        className='h-full w-full object-cover'
-                                    />
+                            <div key={item.id} className='flex items-start justify-between py-2.5'>
+                                <div>
+                                    <p className='text-sm font-medium text-foreground'>{item.name}</p>
+                                    {customisationLabel !== '' && (
+                                        <p className='text-xs text-muted-foreground'>
+                                            {customisationLabel}
+                                            {surcharge > 0 && (
+                                                <span className='ml-1 text-primary'>+{formatVnd(surcharge)}</span>
+                                            )}
+                                        </p>
+                                    )}
+                                    <p className='text-xs text-muted-foreground'>× {item.quantity}</p>
                                 </div>
-                                <span className='min-w-0 flex-1 truncate text-muted-foreground'>
-                                    {item.name} ×{item.quantity}
-                                </span>
-                                <span className='shrink-0 font-medium'>{formatVnd(itemTotal)}</span>
+                                <span className='text-sm font-semibold'>{formatVnd(itemTotal)}</span>
                             </div>
                         );
                     })}
@@ -46,9 +53,9 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
 
                 <Separator />
 
-                <div className='flex justify-between text-xl font-black'>
-                    <span>{t('payment.totalAmount')}</span>
-                    <span>{formatVnd(totalPrice)}</span>
+                <div className='flex justify-between font-bold text-base'>
+                    <span>{t('payment.summary.total')}</span>
+                    <span className='text-primary'>{formatVnd(totalPrice)}</span>
                 </div>
             </CardContent>
         </Card>

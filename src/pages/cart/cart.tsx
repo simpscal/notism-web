@@ -149,7 +149,7 @@ function Cart() {
                                 <h2 className='text-xl font-bold'>{t('cart.orderSummary')}</h2>
                             </CardHeader>
                             <CardContent className='space-y-4'>
-                                <div className='space-y-2'>
+                                <div className='divide-y'>
                                     {selectedItemsList.length > 0 ? (
                                         selectedItemsList.map(item => {
                                             const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
@@ -158,7 +158,7 @@ function Cart() {
                                             return (
                                                 <div
                                                     key={item.id}
-                                                    className='flex items-center justify-between gap-3 text-sm'
+                                                    className='flex items-center justify-between gap-3 py-2 text-sm'
                                                 >
                                                     <div className='flex items-center gap-2 min-w-0'>
                                                         <div className='relative h-9 w-9 shrink-0 overflow-hidden rounded-md bg-muted'>

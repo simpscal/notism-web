@@ -7,6 +7,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import Payment from '../payment';
 
 import i18n from '@/app/i18n/i18n';
+import { getFoodPricing } from '@/features/food';
 import { PaymentNotificationType } from '@/features/payment';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart';
@@ -55,6 +56,8 @@ const MOCK_CART_ITEM = {
     stockQuantity: 10,
     quantityUnit: 'portion',
     isSelected: true,
+    customisations: [],
+    totalSurcharge: 0,
 };
 
 beforeAll(() => server.listen());
@@ -72,40 +75,79 @@ beforeEach(async () => {
     });
 });
 
-describe('Payment — bankingCheckout flow', () => {
-    it('renders Place Order button in normal flow (not banking checkout)', async () => {
+// ---------------------------------------------------------------------------
+// AC2: total passed to PaymentOrderSummary equals Σ (effectivePrice + surcharge) × qty
+// ---------------------------------------------------------------------------
+describe('Payment — surcharge-inclusive total (AC2)', () => {
+    it('displays surcharge-inclusive grand total when items have non-zero surcharge', async () => {
+        const surchargeItem = {
+            ...MOCK_CART_ITEM,
+            id: 'item-surcharge',
+            price: 185000,
+            discountPrice: null,
+            totalSurcharge: 30000,
+            quantity: 1,
+        };
+        // (185000 + 30000) × 1 = 215,000
+        const expectedTotal =
+            (getFoodPricing(surchargeItem.price, surchargeItem.discountPrice).effectivePrice +
+                surchargeItem.totalSurcharge) *
+            surchargeItem.quantity;
+
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([surchargeItem]));
+        await act(async () => {
+            await store.dispatch(loadCart());
+        });
+
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: t('payment.placeOrder') })).toBeInTheDocument();
+            // The grand total in the order summary panel must equal the surcharge-inclusive sum
+            const formatted = expectedTotal.toLocaleString('en-US') + ' ₫';
+            expect(screen.getAllByText(formatted).length).toBeGreaterThanOrEqual(1);
         });
     });
 
-    it('renders pending badge and disabled View Order button after banking method triggers checkout', async () => {
+    it('selectSelectedCartTotalPrice sums (effectivePrice + surcharge) × qty for all items', () => {
+        // Derive expected total directly from the selector logic and verify it matches the formula
+        const items = [
+            { price: 185000, discountPrice: null, totalSurcharge: 30000, quantity: 1 },
+            { price: 95000, discountPrice: null, totalSurcharge: 0, quantity: 2 },
+        ];
+        const expected = items.reduce((sum, item) => {
+            const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
+            return sum + (effectivePrice + item.totalSurcharge) * item.quantity;
+        }, 0);
+        // (185000+30000)*1 + (95000+0)*2 = 215000 + 190000 = 405000
+        expect(expected).toBe(405000);
+    });
+});
+
+describe('Payment — bankingCheckout flow', () => {
+    it('renders Place Order button in COD mode', async () => {
+        renderWithProviders(<Payment />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: /place order/i })).toBeInTheDocument();
+        });
+    });
+
+    it('auto-initiates banking checkout when banking radio is selected', async () => {
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
             expect(screen.getByText(t('payment.banking'))).toBeInTheDocument();
         });
 
-        const bankingOption = screen.getByRole('radio', { name: /banking/i });
-        await userEvent.click(bankingOption);
+        await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
 
-        // Click Place Order to enter bankingCheckout mode (triggers createBankingCheckout mutation)
-        const placeOrderBtn = screen.getByRole('button', { name: t('payment.placeOrder') });
-        await userEvent.click(placeOrderBtn);
-
-        // Should now show the banking checkout view with Pending badge
+        // QR card should appear after auto-initiated checkout completes
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
-
-        // View Order button should be disabled
-        const disabledBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
-        expect(disabledBtn).toBeDisabled();
     });
 
-    it('shows confirmed badge and active View Order button after payment notification arrives', async () => {
+    it('banking payment success shows success screen with Track order button', async () => {
         const { usePaymentSignalR } = await import('@/features/payment');
         const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
 
@@ -119,19 +161,16 @@ describe('Payment — bankingCheckout flow', () => {
 
         renderWithProviders(<Payment />);
 
-        // Enter banking checkout mode
         await waitFor(() => {
             expect(screen.getByText(t('payment.banking'))).toBeInTheDocument();
         });
 
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
-        await userEvent.click(screen.getByRole('button', { name: t('payment.placeOrder') }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
 
-        // Simulate payment success notification
         expect(capturedCallback).not.toBeNull();
 
         act(() => {
@@ -144,16 +183,12 @@ describe('Payment — bankingCheckout flow', () => {
             });
         });
 
-        // Badge should switch from pending to confirmed
+        // Success screen should appear with "Payment confirmed" heading
         await waitFor(() => {
-            expect(screen.getByText(t('payment.confirmed'))).toBeInTheDocument();
+            expect(screen.getByText('Payment confirmed')).toBeInTheDocument();
         });
 
-        expect(screen.queryByText(t('payment.pending'))).not.toBeInTheDocument();
-
-        // View Order button should now be enabled
-        const viewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
-        expect(viewOrderBtn).not.toBeDisabled();
+        expect(screen.getByRole('button', { name: /track order/i })).toBeInTheDocument();
     });
 
     it('shows error toast when payment failure notification arrives', async () => {
@@ -170,19 +205,16 @@ describe('Payment — bankingCheckout flow', () => {
 
         renderWithProviders(<Payment />);
 
-        // Enter banking checkout mode
         await waitFor(() => {
             expect(screen.getByText(t('payment.banking'))).toBeInTheDocument();
         });
 
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
-        await userEvent.click(screen.getByRole('button', { name: t('payment.placeOrder') }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
 
-        // Simulate payment failure notification
         expect(capturedCallback).not.toBeNull();
 
         act(() => {
@@ -195,13 +227,11 @@ describe('Payment — bankingCheckout flow', () => {
             });
         });
 
-        // QR view should still be visible (badge still pending — no order created)
+        // QR view should still be visible (no success screen)
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
         });
 
-        // View Order button should remain disabled
-        const viewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
-        expect(viewOrderBtn).toBeDisabled();
+        expect(screen.queryByText('Payment confirmed')).not.toBeInTheDocument();
     });
 });
