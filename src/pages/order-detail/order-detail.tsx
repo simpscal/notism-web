@@ -151,6 +151,8 @@ function OrderDetail() {
                                                 item.discountPrice
                                             );
 
+                                            const surchargeInclusiveUnitPrice = effectivePrice + (item.surcharge ?? 0);
+
                                             return (
                                                 <div key={item.id} className='flex gap-4'>
                                                     <div className='relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-muted'>
@@ -162,6 +164,11 @@ function OrderDetail() {
                                                     </div>
                                                     <div className='flex-1'>
                                                         <div className='font-medium'>{item.foodName}</div>
+                                                        {item.customisationLabel && (
+                                                            <div className='text-sm text-muted-foreground'>
+                                                                {item.customisationLabel}
+                                                            </div>
+                                                        )}
                                                         <div className='text-sm text-muted-foreground'>
                                                             {t('orderDetail.quantity')} {item.quantity}
                                                         </div>
@@ -172,7 +179,7 @@ function OrderDetail() {
                                                                 </span>
                                                             )}
                                                             <span className='font-bold'>
-                                                                {formatVnd(effectivePrice)}
+                                                                {formatVnd(surchargeInclusiveUnitPrice)}
                                                             </span>
                                                             <span className='text-xs text-muted-foreground'>
                                                                 {t('orderDetail.each')}

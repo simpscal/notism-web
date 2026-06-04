@@ -263,11 +263,13 @@
         "payment": "Payment:",
         "orderCount_one": "{{count}} order",
         "orderCount_other": "{{count}} orders",
+        "includesSurcharges": "Includes customisation surcharges",
         "empty": {
             "title": "No orders yet",
             "description": "Start shopping to see your orders here.",
             "browseMenu": "Browse Menu"
-        }
+        },
+        "orderTotal": "Order total"
     },
     "order": {
         "title": "Order Details",
