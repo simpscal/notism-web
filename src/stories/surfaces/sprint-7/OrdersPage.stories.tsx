@@ -34,7 +34,7 @@ interface Order {
     placedAt: string;
     status: 'delivered' | 'preparing' | 'cancelled';
     items: OrderLineItem[];
-    deliveryNote: string | null;
+    deliveryNotes: string | null;
 }
 
 function lineTotal(item: OrderLineItem): number {
@@ -55,7 +55,7 @@ const ORDERS: Order[] = [
         ref: 'ORD-20260531-2241',
         placedAt: '31 May 2026, 19:42',
         status: 'delivered',
-        deliveryNote: 'Please leave at the door — do not ring the bell.',
+        deliveryNotes: 'Please leave at the door — do not ring the bell.',
         items: [
             // surcharge applies
             {
@@ -88,7 +88,7 @@ const ORDERS: Order[] = [
         ref: 'ORD-20260528-9104',
         placedAt: '28 May 2026, 12:15',
         status: 'delivered',
-        deliveryNote: null,
+        deliveryNotes: null,
         items: [
             // no surcharge on any item
             {
@@ -112,7 +112,7 @@ const ORDERS: Order[] = [
         ref: 'ORD-20260601-7843',
         placedAt: '1 Jun 2026, 08:30',
         status: 'preparing',
-        deliveryNote: 'Call me when you arrive — apartment is on the 4th floor.',
+        deliveryNotes: 'Call me when you arrive — apartment is on the 4th floor.',
         items: [
             // surcharge only
             {
@@ -136,7 +136,7 @@ const ORDERS: Order[] = [
         ref: 'ORD-20260520-3356',
         placedAt: '20 May 2026, 20:05',
         status: 'cancelled',
-        deliveryNote: null,
+        deliveryNotes: null,
         items: [
             {
                 foodName: 'Banh Mi Thit',
@@ -220,10 +220,10 @@ function OrderRowCard({ order }: { order: Order }) {
                     {hasSurcharges ? ' · includes customisation surcharges' : ''}
                 </p>
 
-                {order.deliveryNote && (
+                {order.deliveryNotes && (
                     <div className='flex items-start gap-1.5 text-sm text-muted-foreground'>
                         <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0' />
-                        <span>{order.deliveryNote}</span>
+                        <span>{order.deliveryNotes}</span>
                     </div>
                 )}
 

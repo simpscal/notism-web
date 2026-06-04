@@ -177,7 +177,7 @@ function generateMockOrders(): AdminOrderResponseModel[] {
                 createdAt: createdAt.toISOString(),
                 updatedAt: updatedAt.toISOString(),
                 totalItems: 1,
-                deliveryNote: orderId % 3 === 0 ? 'Please leave at the door.' : null,
+                deliveryNotes: orderId % 3 === 0 ? 'Please leave at the door.' : null,
             });
             orderId++;
         }
@@ -198,7 +198,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '2',
@@ -212,7 +212,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '3',
@@ -226,7 +226,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '4',
@@ -240,7 +240,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '5',
@@ -254,7 +254,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         totalItems: 3,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '6',
@@ -268,7 +268,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '7',
@@ -282,7 +282,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '8',
@@ -296,7 +296,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '9',
@@ -310,7 +310,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '10',
@@ -324,7 +324,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '11',
@@ -338,7 +338,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 45 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '12',
@@ -352,7 +352,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 32 * 60 * 60 * 1000).toISOString(),
         totalItems: 3,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '13',
@@ -366,7 +366,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '14',
@@ -380,7 +380,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
         totalItems: 3,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '15',
@@ -394,7 +394,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '16',
@@ -408,7 +408,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 50 * 60 * 1000).toISOString(),
         totalItems: 3,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '17',
@@ -422,7 +422,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '18',
@@ -436,7 +436,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '19',
@@ -450,7 +450,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 28 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
     {
         id: '20',
@@ -464,7 +464,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         createdAt: new Date(Date.now() - 42 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 40 * 60 * 60 * 1000).toISOString(),
         totalItems: 2,
-        deliveryNote: null,
+        deliveryNotes: null,
     },
 ];
 
@@ -507,7 +507,7 @@ export const adminOrdersHandlers = [
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             totalItems: 0,
-            deliveryNote: null,
+            deliveryNotes: null,
         };
         return HttpResponse.json(mockOrder);
     }),

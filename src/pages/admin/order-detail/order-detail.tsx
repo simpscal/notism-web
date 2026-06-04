@@ -135,10 +135,10 @@ function AdminOrderDetail() {
                                         </span>
                                         <span className='font-medium capitalize'>{order.paymentMethod}</span>
                                     </div>
-                                    {order.deliveryNote && (
+                                    {order.deliveryNotes && (
                                         <div className='flex items-start gap-1.5 text-sm'>
                                             <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground' />
-                                            <span className='text-muted-foreground'>{order.deliveryNote}</span>
+                                            <span className='text-muted-foreground'>{order.deliveryNotes}</span>
                                         </div>
                                     )}
                                     <div className='flex justify-between text-lg font-semibold'>

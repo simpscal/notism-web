@@ -128,10 +128,10 @@ function Orders() {
                                         {hasSurcharges ? ` · ${t('orders.includesSurcharges')}` : ''}
                                     </p>
 
-                                    {order.deliveryNote && (
+                                    {order.deliveryNotes && (
                                         <div className='flex items-start gap-1.5 text-sm text-muted-foreground'>
                                             <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0' />
-                                            <span>{order.deliveryNote}</span>
+                                            <span>{order.deliveryNotes}</span>
                                         </div>
                                     )}
 
