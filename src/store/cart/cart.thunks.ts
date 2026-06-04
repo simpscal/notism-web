@@ -25,10 +25,13 @@ export const addItem = createAsyncThunk(
         const isAuthenticated = !!state.user.user?.id;
 
         if (isAuthenticated) {
+            const customisations = item.customisations
+                .filter(c => c.optionId)
+                .map(c => ({ groupId: c.groupId!, optionId: c.optionId! }));
             const response = await cartApi.addItem({
                 foodId: item.id,
                 quantity,
-                ...(item.customisationOptionId ? { customisationOptionId: item.customisationOptionId } : {}),
+                ...(customisations.length > 0 ? { customisations } : {}),
             });
             return { item: { ...response, quantity, isSelected: true }, isAuthenticated: true as const };
         } else {
@@ -77,32 +80,11 @@ export const clearItems = createAsyncThunk('cart/clearCart', async (_, { getStat
     return { isAuthenticated };
 });
 
-export const updateItemCustomisation = createAsyncThunk(
-    'cart/updateItemCustomisation',
-    async ({
-        id,
-        customisationOptionId,
-        customisationGroupId,
-        customisationGroupLabel,
-        customisationLabel,
-        surcharge,
-    }: {
-        id: string;
-        customisationOptionId: string;
-        customisationGroupId: string | null;
-        customisationGroupLabel: string | null;
-        customisationLabel: string;
-        surcharge: number | null;
-    }) => {
-        await cartApi.updateItemCustomisation(id, { customisationOptionId });
-        return {
-            id,
-            customisationOptionId,
-            customisationGroupId,
-            customisationGroupLabel,
-            customisationLabel,
-            surcharge,
-        };
+export const replaceItemCustomisations = createAsyncThunk(
+    'cart/replaceItemCustomisations',
+    async ({ id, customisations }: { id: string; customisations: { groupId: string; optionId: string }[] }) => {
+        const updatedItem = await cartApi.replaceItemCustomisations(id, { customisations });
+        return { id, updatedItem };
     }
 );
 

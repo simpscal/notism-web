@@ -18,7 +18,7 @@ interface CartItemProps {
     onQuantityChange: (id: string, delta: number) => void;
     onRemove: (id: string, name: string) => void;
     onSelectionChange: (id: string, selected: boolean) => void;
-    onCustomisationChange?: (id: string, optionId: string) => void;
+    onCustomisationsChange?: (id: string, customisations: { groupId: string; optionId: string }[]) => void;
 }
 
 function CartItemComponent({
@@ -26,16 +26,16 @@ function CartItemComponent({
     onQuantityChange,
     onRemove,
     onSelectionChange,
-    onCustomisationChange,
+    onCustomisationsChange,
 }: CartItemProps) {
     const { t } = useTranslation();
     const isSelected = item.isSelected;
     const { effectivePrice, hasSavings } = getFoodPricing(item.price, item.discountPrice);
-    const effectiveUnitPrice = effectivePrice + (item.surcharge ?? 0);
+    const effectiveUnitPrice = effectivePrice + item.totalSurcharge;
     const itemTotal = effectiveUnitPrice * item.quantity;
     const originalTotal = item.price * item.quantity;
     const discountAmount = hasSavings ? originalTotal - effectivePrice * item.quantity : 0;
-    const hasSurcharge = (item.surcharge ?? 0) > 0;
+    const hasSurcharge = item.totalSurcharge > 0;
 
     const handleCardClick = () => {
         onSelectionChange(item.id, !isSelected);
@@ -45,8 +45,33 @@ function CartItemComponent({
         onSelectionChange(item.id, checked);
     };
 
-    const handleButtonClick = (e: React.MouseEvent) => {
+    const handleStopPropagation = (e: React.MouseEvent | React.SyntheticEvent) => {
         e.stopPropagation();
+    };
+
+    const handleRemove = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onRemove(item.id, item.name);
+    };
+
+    const handleCustomisationChange = (groupId: string | null, optionId: string) => {
+        const updated = item.customisations.map(existing =>
+            existing.groupId === groupId ? { ...existing, optionId } : existing
+        );
+        onCustomisationsChange?.(
+            item.id,
+            updated.filter(x => x.optionId).map(x => ({ groupId: x.groupId!, optionId: x.optionId! }))
+        );
+    };
+
+    const handleDecrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onQuantityChange(item.id, -1);
+    };
+
+    const handleIncrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onQuantityChange(item.id, 1);
     };
 
     return (
@@ -62,17 +87,14 @@ function CartItemComponent({
                 variant='ghost'
                 size='icon-sm'
                 className='absolute top-3 right-3 text-muted-foreground hover:text-destructive'
-                onClick={e => {
-                    handleButtonClick(e);
-                    onRemove(item.id, item.name);
-                }}
+                onClick={handleRemove}
             >
                 <Trash2 className='h-4 w-4' />
             </Button>
 
             <div className='flex items-start gap-4 pr-8'>
                 {/* Checkbox */}
-                <div className='pt-0.5' onClick={handleButtonClick} onMouseDown={e => e.stopPropagation()}>
+                <div className='pt-0.5' onClick={handleStopPropagation} onMouseDown={handleStopPropagation}>
                     <Checkbox checked={isSelected} onCheckedChange={handleCheckboxChange} />
                 </div>
 
@@ -100,35 +122,37 @@ function CartItemComponent({
                         </Badge>
                     </div>
 
-                    {/* Customisation select */}
-                    {item.customisationOptions && item.customisationOptions.length > 0 && (
+                    {/* Customisation selects */}
+                    {item.customisations && item.customisations.length > 0 && (
                         <div
-                            className='flex items-center gap-2'
-                            onClick={handleButtonClick}
-                            onMouseDown={e => e.stopPropagation()}
+                            className='flex flex-col gap-1.5'
+                            onClick={handleStopPropagation}
+                            onMouseDown={handleStopPropagation}
                         >
-                            {item.customisationGroupLabel && (
-                                <span className='text-xs text-muted-foreground'>{item.customisationGroupLabel}:</span>
-                            )}
-                            <Select
-                                value={item.customisationOptionId ?? ''}
-                                onValueChange={val => onCustomisationChange?.(item.id, val)}
-                            >
-                                <SelectTrigger className='h-7 w-auto min-w-[160px] text-xs'>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {item.customisationOptions.map(opt => (
-                                        <SelectItem key={opt.id} value={opt.id} className='text-xs'>
-                                            {opt.label}
-                                            {(opt.surcharge ?? 0) > 0 && ` (+${formatVnd(opt.surcharge!)})`}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            {item.customisations.map(c => (
+                                <div key={c.groupId ?? c.groupLabel} className='flex items-center gap-2'>
+                                    <span className='text-xs text-muted-foreground'>{c.groupLabel}:</span>
+                                    <Select
+                                        value={c.optionId ?? ''}
+                                        onValueChange={val => handleCustomisationChange(c.groupId, val)}
+                                    >
+                                        <SelectTrigger className='h-7 w-auto min-w-[160px] text-xs'>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {c.availableOptions.map(opt => (
+                                                <SelectItem key={opt.id} value={opt.id} className='text-xs'>
+                                                    {opt.label}
+                                                    {(opt.surcharge ?? 0) > 0 && ` (+${formatVnd(opt.surcharge!)})`}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            ))}
                             {hasSurcharge && (
                                 <Badge variant='secondary' className='text-xs'>
-                                    +{formatVnd(item.surcharge!)}
+                                    +{formatVnd(item.totalSurcharge)}
                                 </Badge>
                             )}
                         </div>
@@ -138,27 +162,17 @@ function CartItemComponent({
                     <div className='flex flex-wrap items-center justify-between gap-3 pt-1'>
                         <div
                             className='flex items-center rounded-lg border'
-                            onClick={handleButtonClick}
-                            onMouseDown={e => e.stopPropagation()}
+                            onClick={handleStopPropagation}
+                            onMouseDown={handleStopPropagation}
                         >
-                            <Button
-                                variant='ghost'
-                                size='icon-sm'
-                                onClick={e => {
-                                    handleButtonClick(e);
-                                    onQuantityChange(item.id, -1);
-                                }}
-                            >
+                            <Button variant='ghost' size='icon-sm' onClick={handleDecrement}>
                                 <Minus className='h-3.5 w-3.5' />
                             </Button>
                             <span className='w-8 text-center text-sm font-semibold'>{item.quantity}</span>
                             <Button
                                 variant='ghost'
                                 size='icon-sm'
-                                onClick={e => {
-                                    handleButtonClick(e);
-                                    onQuantityChange(item.id, 1);
-                                }}
+                                onClick={handleIncrement}
                                 disabled={item.quantity >= item.stockQuantity}
                             >
                                 <Plus className='h-3.5 w-3.5' />

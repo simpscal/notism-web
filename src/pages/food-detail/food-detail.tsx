@@ -18,7 +18,7 @@ import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import Banner from '@/components/banner';
 import { Button } from '@/components/button';
-import { CartItemViewModel, useCart } from '@/features/cart';
+import { CartItemCustomisationViewModel, CartItemViewModel, useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 
 function FoodDetail() {
@@ -85,10 +85,23 @@ function FoodDetail() {
     const handleAddToCart = useCallback(async () => {
         if (!food) return;
 
-        const firstRequiredGroup = (food.customisations ?? []).find(g => g.required && selections[g.id]);
-        const selectedOption = firstRequiredGroup
-            ? firstRequiredGroup.options.find(o => o.value === selections[firstRequiredGroup.id])
-            : null;
+        const customisationsForCart: CartItemCustomisationViewModel[] = (food.customisations ?? [])
+            .filter(g => selections[g.id])
+            .map(g => {
+                const opt = g.options.find(o => o.value === selections[g.id]);
+                return {
+                    groupId: g.id,
+                    groupLabel: g.label,
+                    optionId: opt?.value ?? null,
+                    optionLabel: opt?.label ?? '',
+                    surcharge: opt?.surcharge ?? null,
+                    availableOptions: g.options.map(o => ({
+                        id: o.value,
+                        label: o.label,
+                        surcharge: o.surcharge ?? null,
+                    })),
+                };
+            });
 
         const cartItem: Omit<CartItemViewModel, 'quantity'> = {
             id: food.id,
@@ -100,24 +113,15 @@ function FoodDetail() {
             category: food.category,
             stockQuantity: food.stockQuantity,
             quantityUnit: food.quantityUnit,
-            customisationGroupId: firstRequiredGroup?.id ?? null,
-            customisationGroupLabel: firstRequiredGroup?.label ?? null,
-            customisationOptionId: selectedOption?.value ?? null,
-            customisationLabel: selectedOption?.label ?? null,
-            surcharge: selectedOption?.surcharge ?? null,
-            customisationOptions:
-                firstRequiredGroup?.options.map(o => ({
-                    id: o.value,
-                    label: o.label,
-                    surcharge: o.surcharge ?? null,
-                })) ?? [],
+            customisations: customisationsForCart,
+            totalSurcharge: customisationsForCart.reduce((sum, c) => sum + (c.surcharge ?? 0), 0),
         };
 
         await addToCart(cartItem, quantity);
         setCartAdded({ quantity, displayedPrice });
         setSelections({});
         setQuantity(1);
-    }, [addToCart, food, quantity, displayedPrice]);
+    }, [addToCart, food, quantity, displayedPrice, selections]);
 
     if (isError) {
         return <FoodDetailError />;

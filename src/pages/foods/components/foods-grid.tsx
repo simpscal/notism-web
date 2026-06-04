@@ -83,12 +83,8 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
                 category: food.category,
                 stockQuantity: food.stockQuantity,
                 quantityUnit: food.quantityUnit,
-                customisationGroupId: null,
-                customisationGroupLabel: null,
-                customisationOptionId: null,
-                customisationLabel: null,
-                surcharge: null,
-                customisationOptions: [],
+                customisations: [],
+                totalSurcharge: 0,
             };
 
             await addToCart(cartItem, 1);
