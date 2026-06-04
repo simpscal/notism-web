@@ -21,7 +21,7 @@
 
 - **Hooks**: Must include `useMemo` for heavy calculated variables
 - **useEffect**: Must be placed under all hooks
-- **Event handlers**: Must use `useCallback`
+- **Event handlers**: Must use `useCallback`. Every event emission must have a dedicated named handler — do not write logic inline in JSX attributes.
 - **Utilities**: Helper functions should be placed above early returns
 
 #### Example
@@ -663,6 +663,74 @@ function ProfileCard({ user }) {
 }
 ```
 
+### Event Handler Conventions
+
+Every event emission must have a dedicated named handler function. Do not write logic directly inside JSX event attributes (`onClick`, `onChange`, `onValueChange`, etc.).
+
+#### ✅ Good: Dedicated named handlers
+
+```typescript
+function CartItem({ item, onRemove, onQuantityChange, onCustomisationChange }) {
+    const handleRemove = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onRemove(item.id, item.name);
+    };
+
+    const handleDecrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onQuantityChange(item.id, -1);
+    };
+
+    const handleIncrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onQuantityChange(item.id, 1);
+    };
+
+    const handleCustomisationChange = (groupId: string, optionId: string) => {
+        onCustomisationChange(item.id, groupId, optionId);
+    };
+
+    return (
+        <div>
+            <Button onClick={handleRemove}>Remove</Button>
+            <Button onClick={handleDecrement}>-</Button>
+            <Button onClick={handleIncrement}>+</Button>
+            <Select onValueChange={val => handleCustomisationChange(group.id, val)} />
+        </div>
+    );
+}
+```
+
+#### ❌ Bad: Logic written inline in JSX
+
+```typescript
+function CartItem({ item, onRemove, onQuantityChange }) {
+    return (
+        <div>
+            {/* ❌ Multi-step logic inline */}
+            <Button onClick={e => { e.stopPropagation(); onRemove(item.id, item.name); }}>
+                Remove
+            </Button>
+
+            {/* ❌ Logic and argument construction inline */}
+            <Button onClick={e => { e.stopPropagation(); onQuantityChange(item.id, -1); }}>
+                -
+            </Button>
+
+            {/* ❌ Complex derivation inline */}
+            <Select
+                onValueChange={val => {
+                    const updated = item.selections.map(s => s.id === group.id ? { ...s, val } : s);
+                    onCustomisationChange(item.id, updated);
+                }}
+            />
+        </div>
+    );
+}
+```
+
+**Rule:** If the inline expression is more than a simple, single prop pass-through (e.g. `onClick={onClose}`), extract it to a named function above the return statement.
+
 ### Component Responsibilities Checklist
 
 #### ✅ Good Component Responsibilities
@@ -686,6 +754,7 @@ function ProfileCard({ user }) {
 - [ ] Tight coupling between unrelated components
 - [ ] Forgetting to wrap components with `memo`
 - [ ] Customizing color, border, shadow, or background styles on design system components
+- [ ] Writing event handler logic inline in JSX — every event emission must have a dedicated named handler
 
 ---
 
