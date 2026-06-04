@@ -78,7 +78,7 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
                     <p className='line-clamp-2 text-xs leading-relaxed text-muted-foreground'>{food.description}</p>
                 </div>
 
-                <div className='flex w-full items-center justify-between gap-2'>
+                <div className='flex w-full justify-center justify-between gap-2'>
                     <div className='flex flex-col'>
                         {hasSavings && (
                             <span className='text-xs line-through text-muted-foreground'>{formatVnd(food.price)}</span>
