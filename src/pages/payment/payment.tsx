@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
+import { PaymentBankingQr, PaymentCodForm, PaymentEmpty, PaymentMethod, PaymentOrderSummary } from './components';
 
 import { orderApi, paymentApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
@@ -16,14 +16,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { CartItemViewModel } from '@/features/cart/models';
+import { getFoodPricing } from '@/features/food';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
-import {
-    PaymentQr,
-    PaymentStatusEnum,
-    PaymentNotificationPayload,
-    PaymentNotificationType,
-    usePaymentSignalR,
-} from '@/features/payment';
+import { PaymentNotificationPayload, PaymentNotificationType, usePaymentSignalR } from '@/features/payment';
 import {
     loadCart,
     selectCartItems,
@@ -31,6 +27,105 @@ import {
     selectSelectedCartItems,
     selectSelectedCartTotalPrice,
 } from '@/store/cart';
+
+type PaymentSuccessMethod = 'cod' | 'banking';
+
+interface SuccessState {
+    method: PaymentSuccessMethod;
+    slugId: string;
+    totalPrice: number;
+}
+
+function PaymentSuccessScreen({
+    success,
+    items,
+    onTrackOrder,
+    onBrowseMenu,
+}: {
+    success: SuccessState;
+    items: CartItemViewModel[];
+    onTrackOrder: () => void;
+    onBrowseMenu: () => void;
+}) {
+    const orderRef = success.slugId;
+    const isCod = success.method === 'cod';
+    const totalPrice = success.totalPrice;
+
+    return (
+        <div>
+            <div className='mb-8 flex flex-col items-center rounded-2xl bg-primary/5 px-6 py-10 text-center'>
+                <CheckCircle2 className='mb-4 h-14 w-14 text-primary' />
+                <h2 className='mb-1 text-2xl font-bold text-foreground'>
+                    {isCod ? 'Order placed!' : 'Payment confirmed'}
+                </h2>
+                <p className='mb-3 text-sm text-muted-foreground'>
+                    {isCod ? (
+                        <>
+                            Your order is confirmed. Please prepare{' '}
+                            <span className='font-semibold text-foreground'>{formatVnd(totalPrice)}</span> in cash for
+                            the delivery rider.
+                        </>
+                    ) : (
+                        <>
+                            Your transfer of{' '}
+                            <span className='font-semibold text-foreground'>{formatVnd(totalPrice)}</span> has been
+                            received and confirmed automatically.
+                        </>
+                    )}
+                </p>
+                <Badge variant='outline' className='font-mono text-sm'>
+                    {orderRef}
+                </Badge>
+            </div>
+            <div className='mx-auto max-w-sm space-y-4'>
+                <Card>
+                    <CardContent className='space-y-3 pt-6'>
+                        <div className='text-center'>
+                            <p className='mb-1 text-xs uppercase tracking-widest text-muted-foreground'>
+                                {isCod ? 'Amount due on delivery' : 'Amount received'}
+                            </p>
+                            <p className='text-4xl font-bold text-primary tabular-nums'>{formatVnd(totalPrice)}</p>
+                        </div>
+                        <Separator />
+                        <div className='space-y-1.5 text-sm'>
+                            {items.map(item => {
+                                const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
+                                const surcharge = item.totalSurcharge ?? 0;
+                                const itemTotal = (effectivePrice + surcharge) * item.quantity;
+                                const customLabel = (item.customisations ?? [])
+                                    .map(c => c.optionLabel)
+                                    .filter(l => l)
+                                    .join(', ');
+                                return (
+                                    <div key={item.id} className='flex justify-between text-muted-foreground'>
+                                        <span>
+                                            {item.name}
+                                            {customLabel ? ` (${customLabel})` : ''} × {item.quantity}
+                                        </span>
+                                        <span>{formatVnd(itemTotal)}</span>
+                                    </div>
+                                );
+                            })}
+                            <Separator />
+                            <div className='flex justify-between font-semibold text-foreground'>
+                                <span>Total</span>
+                                <span>{formatVnd(totalPrice)}</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <div className='flex gap-3'>
+                    <Button variant='outline' className='flex-1' onClick={onTrackOrder}>
+                        Track order
+                    </Button>
+                    <Button className='flex-1' onClick={onBrowseMenu}>
+                        Browse menu
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function Payment() {
     const { t } = useTranslation();
@@ -40,11 +135,13 @@ function Payment() {
     const selectedItems = useAppSelector(selectSelectedCartItems);
     const totalPrice = useAppSelector(selectSelectedCartTotalPrice);
     const isInitialized = useAppSelector(selectCartIsInitialized);
+    const userLocation = useAppSelector(state => state.user.user?.location);
+
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
     const [bankingCheckout, setBankingCheckout] = useState(false);
     const [paymentConfirmed, setPaymentConfirmed] = useState(false);
     const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
-    const [checkoutId, setCheckoutId] = useState<string | null>(null);
+    const [successState, setSuccessState] = useState<SuccessState | null>(null);
 
     const { data: bankAccount } = useQuery({
         queryKey: ['bank-account'],
@@ -54,8 +151,7 @@ function Payment() {
 
     const { mutate: createBankingCheckout, isPending: isCreatingCheckout } = useMutation({
         mutationFn: (data: { cartItemIds: string[]; totalAmount: number }) => paymentApi.createBankingCheckout(data),
-        onSuccess: result => {
-            setCheckoutId(result.checkoutId);
+        onSuccess: () => {
             setBankingCheckout(true);
         },
     });
@@ -63,10 +159,9 @@ function Payment() {
     const { mutate: createOrder, isPending: isCreatingOrder } = useMutation({
         mutationFn: (data: { paymentMethod: string; cartItemIds: string[] }) => orderApi.create(data),
         onSuccess: async order => {
-            await dispatch(loadCart()).unwrap();
-
             toast.success(t('payment.orderPlaced'));
-            navigate(`/${ROUTES.ORDERS.DETAIL(order.slugId)}`);
+            setSuccessState({ method: 'cod', slugId: order.slugId, totalPrice });
+            await dispatch(loadCart()).unwrap();
         },
     });
 
@@ -95,31 +190,31 @@ function Payment() {
         setPaymentMethod(value as PaymentMethodEnum);
     }, []);
 
-    const handlePlaceOrder = useCallback(() => {
-        if (paymentMethod === PaymentMethodEnum.Banking) {
-            createBankingCheckout({
-                cartItemIds: selectedItems.map(i => i.id),
-                totalAmount: totalPrice,
-            });
-            return;
-        }
-
+    const handleCodPlaceOrder = useCallback(() => {
         if (selectedItems.length === 0) {
             toast.error(t('payment.selectItem'));
             navigate(`/${ROUTES.CART}`);
             return;
         }
-
-        const cartItemIds = selectedItems.map(item => item.id);
-
         createOrder({
             paymentMethod: paymentMethod,
-            cartItemIds,
+            cartItemIds: selectedItems.map(item => item.id),
         });
-    }, [selectedItems, totalPrice, paymentMethod, navigate, createOrder, createBankingCheckout]);
+    }, [selectedItems, paymentMethod, navigate, createOrder, t]);
+
+    const handleBankingInitiate = useCallback(() => {
+        createBankingCheckout({
+            cartItemIds: selectedItems.map(i => i.id),
+            totalAmount: totalPrice,
+        });
+    }, [selectedItems, totalPrice, createBankingCheckout]);
 
     const handleBackToCart = useCallback(() => {
         navigate(`/${ROUTES.CART}`);
+    }, [navigate]);
+
+    const handleBrowseMenu = useCallback(() => {
+        navigate(`/${ROUTES.FOODS.LIST}`);
     }, [navigate]);
 
     if (!isInitialized) {
@@ -165,30 +260,37 @@ function Payment() {
         );
     }
 
+    // Success screen (COD order placed or banking payment confirmed)
+    if (successState) {
+        return (
+            <div className='bg-background'>
+                {pageHeader}
+                <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
+                    <PaymentSuccessScreen
+                        success={successState}
+                        items={selectedItems}
+                        onTrackOrder={handleViewOrder}
+                        onBrowseMenu={handleBrowseMenu}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    // Banking checkout in-progress view
     if (bankingCheckout) {
         return (
             <div className='bg-background'>
                 {pageHeader}
                 <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
-                    <div className='grid gap-8 lg:grid-cols-3'>
-                        {/* Banking checkout info */}
-                        <div className='lg:col-span-2 space-y-6'>
-                            <PaymentQr
-                                paymentMethod={PaymentMethodEnum.Banking}
-                                paymentStatus={PaymentStatusEnum.Unpaid}
-                                paymentQr={
-                                    bankAccount
-                                        ? {
-                                              bankCode: bankAccount.bankCode,
-                                              accountNumber: bankAccount.accountNumber,
-                                              accountHolderName: bankAccount.accountHolderName,
-                                              amount: totalPrice,
-                                              orderReference: checkoutId ? checkoutId.replace(/-/g, '') : '',
-                                          }
-                                        : null
-                                }
-                                slugId=''
-                                paidAt={null}
+                    <div className='grid gap-8 lg:grid-cols-[1fr_360px]'>
+                        {/* Banking QR + status card */}
+                        <div className='space-y-6'>
+                            <PaymentBankingQr
+                                totalPrice={totalPrice}
+                                bankName={bankAccount?.bankCode}
+                                accountNumber={bankAccount?.accountNumber}
+                                waiting={!paymentConfirmed}
                             />
                             <Card>
                                 <CardHeader>
@@ -212,29 +314,6 @@ function Payment() {
                                         )}
                                     </div>
                                 </CardContent>
-                            </Card>
-                        </div>
-
-                        {/* Action card */}
-                        <div className='lg:col-span-1'>
-                            <Card className='sticky top-4'>
-                                <CardHeader>
-                                    <CardTitle>{t('payment.completeOrder')}</CardTitle>
-                                    <CardDescription>{t('payment.awaitingTransferDescription')}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className='space-y-2'>
-                                        <div className='flex justify-between text-sm'>
-                                            <span className='text-muted-foreground'>{t('payment.paymentMethod')}</span>
-                                            <span className='font-medium'>{t('payment.banking')}</span>
-                                        </div>
-                                        <Separator />
-                                        <div className='flex justify-between text-lg font-semibold'>
-                                            <span>{t('payment.totalAmount')}</span>
-                                            <span>{formatVnd(totalPrice)}</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
                                 <CardFooter className='flex flex-col gap-2'>
                                     <Button
                                         variant='default'
@@ -245,11 +324,19 @@ function Payment() {
                                     >
                                         {t('payment.viewOrder')}
                                     </Button>
+                                    <Button variant='outline' size='lg' className='w-full' disabled>
+                                        {t('payment.placeOrder')}
+                                    </Button>
                                     <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
                                         {t('payment.backToCart')}
                                     </Button>
                                 </CardFooter>
                             </Card>
+                        </div>
+
+                        {/* Order summary — right column */}
+                        <div>
+                            <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
                         </div>
                     </div>
                 </div>
@@ -257,63 +344,57 @@ function Payment() {
         );
     }
 
+    // Default payment selection view
     return (
         <div className='bg-background'>
             {pageHeader}
             <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
-                <div className='grid gap-8 lg:grid-cols-3'>
-                    {/* Payment Method Selection */}
-                    <div className='lg:col-span-2 space-y-6'>
+                <div className='grid gap-8 lg:grid-cols-[1fr_360px]'>
+                    {/* Left column: payment method selector + COD form or Banking initiate */}
+                    <div className='space-y-6'>
                         <PaymentMethod value={paymentMethod} onValueChange={handlePaymentMethodChange} />
-                        <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
+
+                        {paymentMethod === PaymentMethodEnum.CashOnDelivery ? (
+                            <PaymentCodForm
+                                savedAddress={userLocation}
+                                totalPrice={totalPrice}
+                                disabled={isCreatingOrder}
+                                onPlaceOrder={handleCodPlaceOrder}
+                            />
+                        ) : (
+                            <Card>
+                                <CardHeader className='pb-3'>
+                                    <CardTitle className='text-base'>Bank transfer</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className='text-sm text-muted-foreground'>
+                                        Scan a QR code and transfer the exact amount directly to our bank account.
+                                    </p>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button
+                                        className='w-full gap-2'
+                                        size='lg'
+                                        onClick={handleBankingInitiate}
+                                        disabled={isCreatingCheckout}
+                                    >
+                                        {isCreatingCheckout ? (
+                                            <>
+                                                <Spinner size='sm' />
+                                                {t('payment.processing')}
+                                            </>
+                                        ) : (
+                                            `${t('payment.placeOrder')}`
+                                        )}
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className='lg:col-span-1'>
-                        <Card className='sticky top-4'>
-                            <CardHeader>
-                                <CardTitle>{t('payment.completeOrder')}</CardTitle>
-                                <CardDescription>{t('payment.reviewOrder')}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className='space-y-2'>
-                                    <div className='flex justify-between text-sm'>
-                                        <span className='text-muted-foreground'>{t('payment.paymentMethod')}</span>
-                                        <span className='font-medium'>
-                                            {paymentMethod === PaymentMethodEnum.CashOnDelivery
-                                                ? t('payment.cashOnDelivery')
-                                                : t('payment.banking')}
-                                        </span>
-                                    </div>
-                                    <Separator />
-                                    <div className='flex justify-between text-lg font-semibold'>
-                                        <span>{t('payment.totalAmount')}</span>
-                                        <span>{formatVnd(totalPrice)}</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                            <CardFooter className='flex flex-col gap-2'>
-                                <Button
-                                    variant='default'
-                                    size='lg'
-                                    className='w-full'
-                                    onClick={handlePlaceOrder}
-                                    disabled={isCreatingOrder || isCreatingCheckout}
-                                >
-                                    {isCreatingOrder || isCreatingCheckout ? (
-                                        <>
-                                            <Spinner size='sm' className='' />
-                                            {t('payment.processing')}
-                                        </>
-                                    ) : (
-                                        t('payment.placeOrder')
-                                    )}
-                                </Button>
-                                <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
-                                    {t('payment.backToCart')}
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                    {/* Right column: sticky order summary */}
+                    <div>
+                        <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
                     </div>
                 </div>
             </div>

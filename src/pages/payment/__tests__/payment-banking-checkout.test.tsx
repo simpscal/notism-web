@@ -9,6 +9,15 @@ import Payment from '../payment';
 import i18n from '@/app/i18n/i18n';
 import { renderWithProviders } from '@/test/utils';
 
+// Mock SignalR to prevent real WebSocket connections in tests
+vi.mock('@/features/payment', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/features/payment')>();
+    return {
+        ...actual,
+        usePaymentSignalR: vi.fn(),
+    };
+});
+
 // ---------------------------------------------------------------------------
 // Mock Redux selectors so we don't depend on the live store/localStorage
 // ---------------------------------------------------------------------------
@@ -35,14 +44,18 @@ const mockCartItem = {
     stockQuantity: 10,
     quantityUnit: 'serving',
     isSelected: true,
+    customisations: [],
+    totalSurcharge: 0,
 };
 
 // ---------------------------------------------------------------------------
-// MSW: intercept create-order endpoint (not called for banking flow)
+// MSW: intercept create-order and banking checkout endpoints
 // ---------------------------------------------------------------------------
 const CREATE_ORDER_URL = '*/orders';
+const BANKING_CHECKOUT_URL = '*/payments/banking/checkout';
 const server = setupServer(
-    http.post(CREATE_ORDER_URL, () => HttpResponse.json({ slugId: 'ORD-001' }, { status: 201 }))
+    http.post(CREATE_ORDER_URL, () => HttpResponse.json({ slugId: 'ORD-001' }, { status: 201 })),
+    http.post(BANKING_CHECKOUT_URL, () => HttpResponse.json({ checkoutId: '550e8400-e29b-41d4-a716-446655440000' }))
 );
 
 beforeAll(() => server.listen());
@@ -142,8 +155,8 @@ describe('Payment — Banking Checkout Transition', () => {
 
         renderWithProviders(<Payment />);
 
-        // CashOnDelivery is the default — do not change the radio
-        const placeOrderBtn = screen.getByRole('button', { name: new RegExp(t('payment.placeOrder'), 'i') });
+        // CashOnDelivery is the default — click the Place Order button in COD form
+        const placeOrderBtn = screen.getByRole('button', { name: /place order/i });
         await userEvent.click(placeOrderBtn);
 
         await waitFor(() => {

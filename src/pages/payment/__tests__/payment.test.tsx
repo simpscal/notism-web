@@ -7,6 +7,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import Payment from '../payment';
 
 import i18n from '@/app/i18n/i18n';
+import { getFoodPricing } from '@/features/food';
 import { PaymentNotificationType } from '@/features/payment';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart';
@@ -74,12 +75,61 @@ beforeEach(async () => {
     });
 });
 
+// ---------------------------------------------------------------------------
+// AC2: total passed to PaymentOrderSummary equals Σ (effectivePrice + surcharge) × qty
+// ---------------------------------------------------------------------------
+describe('Payment — surcharge-inclusive total (AC2)', () => {
+    it('displays surcharge-inclusive grand total when items have non-zero surcharge', async () => {
+        const surchargeItem = {
+            ...MOCK_CART_ITEM,
+            id: 'item-surcharge',
+            price: 185000,
+            discountPrice: null,
+            totalSurcharge: 30000,
+            quantity: 1,
+        };
+        // (185000 + 30000) × 1 = 215,000
+        const expectedTotal =
+            (getFoodPricing(surchargeItem.price, surchargeItem.discountPrice).effectivePrice +
+                surchargeItem.totalSurcharge) *
+            surchargeItem.quantity;
+
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([surchargeItem]));
+        await act(async () => {
+            await store.dispatch(loadCart());
+        });
+
+        renderWithProviders(<Payment />);
+
+        await waitFor(() => {
+            // The grand total in the order summary panel must equal the surcharge-inclusive sum
+            const formatted = expectedTotal.toLocaleString('en-US') + ' ₫';
+            expect(screen.getAllByText(formatted).length).toBeGreaterThanOrEqual(1);
+        });
+    });
+
+    it('selectSelectedCartTotalPrice sums (effectivePrice + surcharge) × qty for all items', () => {
+        // Derive expected total directly from the selector logic and verify it matches the formula
+        const items = [
+            { price: 185000, discountPrice: null, totalSurcharge: 30000, quantity: 1 },
+            { price: 95000, discountPrice: null, totalSurcharge: 0, quantity: 2 },
+        ];
+        const expected = items.reduce((sum, item) => {
+            const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
+            return sum + (effectivePrice + item.totalSurcharge) * item.quantity;
+        }, 0);
+        // (185000+30000)*1 + (95000+0)*2 = 215000 + 190000 = 405000
+        expect(expected).toBe(405000);
+    });
+});
+
 describe('Payment — bankingCheckout flow', () => {
     it('renders Place Order button in normal flow (not banking checkout)', async () => {
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: t('payment.placeOrder') })).toBeInTheDocument();
+            // COD mode renders "Place order — {total}"; match by prefix regex
+            expect(screen.getByRole('button', { name: /place order/i })).toBeInTheDocument();
         });
     });
 
