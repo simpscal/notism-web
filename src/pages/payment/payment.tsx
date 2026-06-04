@@ -12,7 +12,7 @@ import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
+import { Card, CardContent } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
@@ -147,7 +147,6 @@ function Payment() {
 
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
     const [bankingCheckout, setBankingCheckout] = useState(false);
-    const [paymentConfirmed, setPaymentConfirmed] = useState(false);
     const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
     const [checkoutId, setCheckoutId] = useState<string | null>(null);
     const [successState, setSuccessState] = useState<SuccessState | null>(null);
@@ -170,6 +169,7 @@ function Payment() {
         mutationFn: (data: { paymentMethod: string; cartItemIds: string[] }) => orderApi.create(data),
         onSuccess: async order => {
             toast.success(t('payment.orderPlaced'));
+            setConfirmedSlugId(order.slugId);
             setSuccessState({ method: 'cod', slugId: order.slugId, totalPrice });
             await dispatch(loadCart()).unwrap();
         },
@@ -178,14 +178,14 @@ function Payment() {
     const handlePaymentNotification = useCallback(
         (payload: PaymentNotificationPayload) => {
             if (payload.type === PaymentNotificationType.Success) {
-                setPaymentConfirmed(true);
                 setConfirmedSlugId(payload.slugId);
+                setSuccessState({ method: 'banking', slugId: payload.slugId, totalPrice });
                 toast.success(t('payment.paymentConfirmed'));
             } else if (payload.type === PaymentNotificationType.Failure) {
                 toast.error(t('payment.paymentFailed'));
             }
         },
-        [t]
+        [t, totalPrice]
     );
 
     usePaymentSignalR({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
@@ -196,9 +196,18 @@ function Payment() {
         navigate(`/${ROUTES.ORDERS.DETAIL(confirmedSlugId)}`);
     }, [confirmedSlugId, dispatch, navigate]);
 
-    const handlePaymentMethodChange = useCallback((value: string) => {
-        setPaymentMethod(value as PaymentMethodEnum);
-    }, []);
+    const handlePaymentMethodChange = useCallback(
+        (value: string) => {
+            setPaymentMethod(value as PaymentMethodEnum);
+            if (value === PaymentMethodEnum.Banking && !bankingCheckout) {
+                createBankingCheckout({
+                    cartItemIds: selectedItems.map(i => i.id),
+                    totalAmount: totalPrice,
+                });
+            }
+        },
+        [bankingCheckout, selectedItems, totalPrice, createBankingCheckout]
+    );
 
     const handleCodPlaceOrder = useCallback(
         (address: string) => {
@@ -227,13 +236,6 @@ function Payment() {
         },
         [selectedItems, paymentMethod, navigate, createOrder, t, userLocation, dispatch]
     );
-
-    const handleBankingInitiate = useCallback(() => {
-        createBankingCheckout({
-            cartItemIds: selectedItems.map(i => i.id),
-            totalAmount: totalPrice,
-        });
-    }, [selectedItems, totalPrice, createBankingCheckout]);
 
     const handleBackToCart = useCallback(() => {
         navigate(`/${ROUTES.CART}`);
@@ -303,85 +305,7 @@ function Payment() {
         );
     }
 
-    // Banking checkout in-progress view
-    if (bankingCheckout) {
-        return (
-            <div className='bg-background'>
-                {pageHeader}
-                <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
-                    <div className='grid gap-8 lg:grid-cols-[1fr_360px]'>
-                        {/* Banking QR + status card */}
-                        <div className='space-y-6'>
-                            <PaymentQr
-                                paymentMethod={PaymentMethodEnum.Banking}
-                                paymentStatus={paymentConfirmed ? PaymentStatusEnum.Paid : PaymentStatusEnum.Unpaid}
-                                paymentQr={
-                                    bankAccount
-                                        ? {
-                                              bankCode: bankAccount.bankCode,
-                                              accountNumber: bankAccount.accountNumber,
-                                              accountHolderName: bankAccount.accountHolderName,
-                                              amount: totalPrice,
-                                              orderReference: checkoutId ? checkoutId.replace(/-/g, '') : '',
-                                          }
-                                        : null
-                                }
-                                slugId={checkoutId ?? ''}
-                                paidAt={null}
-                            />
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>{t('payment.awaitingTransfer')}</CardTitle>
-                                    <CardDescription>{t('payment.awaitingTransferDescription')}</CardDescription>
-                                </CardHeader>
-                                <CardContent className='space-y-4'>
-                                    <div className='flex justify-between text-sm'>
-                                        <span className='text-muted-foreground'>{t('payment.paymentMethod')}</span>
-                                        <span className='font-medium'>{t('payment.banking')}</span>
-                                    </div>
-                                    <div className='flex justify-between text-sm'>
-                                        <span className='text-muted-foreground'>{t('orders.status')}</span>
-                                        {paymentConfirmed ? (
-                                            <Badge variant='success'>
-                                                <CheckCircle2 className='mr-1 h-3 w-3' />
-                                                {t('payment.confirmed')}
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant='secondary'>{t('payment.pending')}</Badge>
-                                        )}
-                                    </div>
-                                </CardContent>
-                                <CardFooter className='flex flex-col gap-2'>
-                                    <Button
-                                        variant='default'
-                                        size='lg'
-                                        className='w-full'
-                                        disabled={!paymentConfirmed}
-                                        onClick={paymentConfirmed ? handleViewOrder : undefined}
-                                    >
-                                        {t('payment.viewOrder')}
-                                    </Button>
-                                    <Button variant='outline' size='lg' className='w-full' disabled>
-                                        {t('payment.placeOrder')}
-                                    </Button>
-                                    <Button variant='outline' size='lg' className='w-full' onClick={handleBackToCart}>
-                                        {t('payment.backToCart')}
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        </div>
-
-                        {/* Order summary — right column */}
-                        <div>
-                            <PaymentOrderSummary items={selectedItems} totalPrice={totalPrice} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Default payment selection view
+    // Default payment selection view (handles COD and banking in one layout)
     return (
         <div className='bg-background'>
             {pageHeader}
@@ -398,40 +322,30 @@ function Payment() {
                                 disabled={isCreatingOrder}
                                 onPlaceOrder={handleCodPlaceOrder}
                             />
-                        ) : (
+                        ) : isCreatingCheckout ? (
                             <Card>
-                                <CardHeader className='pb-3'>
-                                    <CardTitle className='flex items-center gap-2 text-base'>
-                                        {t('payment.banking')}
-                                    </CardTitle>
-                                    <CardDescription>{t('payment.onlineBanking')}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className='text-sm text-muted-foreground'>
-                                        {t('payment.bankingDescription', {
-                                            defaultValue:
-                                                'Click below to generate your QR code. Scan it and transfer the exact amount to complete your order.',
-                                        })}
-                                    </p>
+                                <CardContent className='flex items-center justify-center py-12'>
+                                    <Spinner size='lg' />
                                 </CardContent>
-                                <CardFooter>
-                                    <Button
-                                        className='w-full gap-2'
-                                        size='lg'
-                                        onClick={handleBankingInitiate}
-                                        disabled={isCreatingCheckout}
-                                    >
-                                        {isCreatingCheckout ? (
-                                            <>
-                                                <Spinner size='sm' />
-                                                {t('payment.processing')}
-                                            </>
-                                        ) : (
-                                            `Get QR — ${formatVnd(totalPrice)}`
-                                        )}
-                                    </Button>
-                                </CardFooter>
                             </Card>
+                        ) : (
+                            <PaymentQr
+                                paymentMethod={PaymentMethodEnum.Banking}
+                                paymentStatus={PaymentStatusEnum.Unpaid}
+                                paymentQr={
+                                    bankAccount
+                                        ? {
+                                              bankCode: bankAccount.bankCode,
+                                              accountNumber: bankAccount.accountNumber,
+                                              accountHolderName: bankAccount.accountHolderName,
+                                              amount: totalPrice,
+                                              orderReference: checkoutId ? checkoutId.replace(/-/g, '') : '',
+                                          }
+                                        : null
+                                }
+                                slugId={checkoutId ?? ''}
+                                paidAt={null}
+                            />
                         )}
                     </div>
 

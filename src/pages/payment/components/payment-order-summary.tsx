@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
-import { FoodImage } from '@/features/food/components';
 
 interface PaymentOrderSummaryProps {
     items: CartItemViewModel[];
@@ -18,8 +17,8 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
             <CardHeader className='pb-2'>
                 <CardTitle className='text-base'>Order summary</CardTitle>
             </CardHeader>
-            <CardContent className='space-y-4'>
-                <div className='space-y-3'>
+            <CardContent className='space-y-3'>
+                <div className='divide-y'>
                     {items.map(item => {
                         const { effectivePrice } = getFoodPricing(item.price, item.discountPrice);
                         const surcharge = item.totalSurcharge ?? 0;
@@ -31,15 +30,8 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
                             .join(', ');
 
                         return (
-                            <div key={item.id} className='flex items-start gap-3 text-sm'>
-                                <div className='relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted'>
-                                    <FoodImage
-                                        src={item.imageUrl}
-                                        alt={item.name}
-                                        className='h-full w-full object-cover'
-                                    />
-                                </div>
-                                <div className='min-w-0 flex-1'>
+                            <div key={item.id} className='flex items-start justify-between py-2.5'>
+                                <div>
                                     <p className='text-sm font-medium text-foreground'>{item.name}</p>
                                     {customisationLabel !== '' && (
                                         <p className='text-xs text-muted-foreground'>
@@ -51,7 +43,7 @@ function PaymentOrderSummary({ items, totalPrice }: PaymentOrderSummaryProps) {
                                     )}
                                     <p className='text-xs text-muted-foreground'>× {item.quantity}</p>
                                 </div>
-                                <span className='shrink-0 font-medium'>{formatVnd(itemTotal)}</span>
+                                <span className='text-sm font-semibold'>{formatVnd(itemTotal)}</span>
                             </div>
                         );
                     })}

@@ -124,40 +124,30 @@ describe('Payment — surcharge-inclusive total (AC2)', () => {
 });
 
 describe('Payment — bankingCheckout flow', () => {
-    it('renders Place Order button in normal flow (not banking checkout)', async () => {
+    it('renders Place Order button in COD mode', async () => {
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
-            // COD mode renders "Place order — {total}"; match by prefix regex
             expect(screen.getByRole('button', { name: /place order/i })).toBeInTheDocument();
         });
     });
 
-    it('renders pending badge and disabled View Order button after banking method triggers checkout', async () => {
+    it('auto-initiates banking checkout when banking radio is selected', async () => {
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
             expect(screen.getByText(t('payment.banking'))).toBeInTheDocument();
         });
 
-        const bankingOption = screen.getByRole('radio', { name: /banking/i });
-        await userEvent.click(bankingOption);
+        await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
 
-        // Click Place Order to enter bankingCheckout mode (triggers createBankingCheckout mutation)
-        const placeOrderBtn = screen.getByRole('button', { name: /get qr/i });
-        await userEvent.click(placeOrderBtn);
-
-        // Should now show the banking checkout view with Pending badge
+        // QR card should appear after auto-initiated checkout completes
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
         });
-
-        // View Order button should be disabled
-        const disabledBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
-        expect(disabledBtn).toBeDisabled();
     });
 
-    it('shows confirmed badge and active View Order button after payment notification arrives', async () => {
+    it('banking payment success shows success screen with Track order button', async () => {
         const { usePaymentSignalR } = await import('@/features/payment');
         const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
 
@@ -171,19 +161,16 @@ describe('Payment — bankingCheckout flow', () => {
 
         renderWithProviders(<Payment />);
 
-        // Enter banking checkout mode
         await waitFor(() => {
             expect(screen.getByText(t('payment.banking'))).toBeInTheDocument();
         });
 
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
-        await userEvent.click(screen.getByRole('button', { name: /get qr/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
         });
 
-        // Simulate payment success notification
         expect(capturedCallback).not.toBeNull();
 
         act(() => {
@@ -196,16 +183,12 @@ describe('Payment — bankingCheckout flow', () => {
             });
         });
 
-        // Badge should switch from pending to confirmed (may appear in multiple elements)
+        // Success screen should appear with "Payment confirmed" heading
         await waitFor(() => {
-            expect(screen.getAllByText(t('payment.confirmed')).length).toBeGreaterThanOrEqual(1);
+            expect(screen.getByText('Payment confirmed')).toBeInTheDocument();
         });
 
-        expect(screen.queryByText(t('payment.pending'))).not.toBeInTheDocument();
-
-        // View Order button should now be enabled
-        const viewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
-        expect(viewOrderBtn).not.toBeDisabled();
+        expect(screen.getByRole('button', { name: /track order/i })).toBeInTheDocument();
     });
 
     it('shows error toast when payment failure notification arrives', async () => {
@@ -222,19 +205,16 @@ describe('Payment — bankingCheckout flow', () => {
 
         renderWithProviders(<Payment />);
 
-        // Enter banking checkout mode
         await waitFor(() => {
             expect(screen.getByText(t('payment.banking'))).toBeInTheDocument();
         });
 
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
-        await userEvent.click(screen.getByRole('button', { name: /get qr/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
         });
 
-        // Simulate payment failure notification
         expect(capturedCallback).not.toBeNull();
 
         act(() => {
@@ -247,13 +227,11 @@ describe('Payment — bankingCheckout flow', () => {
             });
         });
 
-        // QR view should still be visible (badge still pending — no order created)
+        // QR view should still be visible (no success screen)
         await waitFor(() => {
-            expect(screen.getByText(t('payment.pending'))).toBeInTheDocument();
+            expect(screen.getByText(t('payment.qr.completePayment'))).toBeInTheDocument();
         });
 
-        // View Order button should remain disabled
-        const viewOrderBtn = screen.getByRole('button', { name: t('payment.viewOrder') });
-        expect(viewOrderBtn).toBeDisabled();
+        expect(screen.queryByText('Payment confirmed')).not.toBeInTheDocument();
     });
 });
