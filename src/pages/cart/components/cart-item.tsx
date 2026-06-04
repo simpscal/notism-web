@@ -35,7 +35,6 @@ function CartItemComponent({
     const itemTotal = effectiveUnitPrice * item.quantity;
     const originalTotal = item.price * item.quantity;
     const discountAmount = hasSavings ? originalTotal - effectivePrice * item.quantity : 0;
-    const hasSurcharge = item.totalSurcharge > 0;
 
     const handleCardClick = () => {
         onSelectionChange(item.id, !isSelected);
@@ -148,13 +147,13 @@ function CartItemComponent({
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    {(c.surcharge ?? 0) > 0 && (
+                                        <Badge variant='secondary' className='text-xs'>
+                                            +{formatVnd(c.surcharge!)}
+                                        </Badge>
+                                    )}
                                 </div>
                             ))}
-                            {hasSurcharge && (
-                                <Badge variant='secondary' className='text-xs'>
-                                    +{formatVnd(item.totalSurcharge)}
-                                </Badge>
-                            )}
                         </div>
                     )}
 
