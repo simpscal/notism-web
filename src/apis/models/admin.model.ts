@@ -13,7 +13,7 @@ export interface AdminOrderDetailResponseModel {
     paidAt: string | null;
     createdAt: string;
     updatedAt: string;
-    deliveryNote: string | null;
+    deliveryNotes: string | null;
     items: OrderItemResponseModel[];
     deliveryStatusTiming: DeliveryStatusTimingResponseModel;
 }
@@ -30,7 +30,7 @@ export interface AdminOrderResponseModel {
     createdAt: string;
     updatedAt: string;
     totalItems: number;
-    deliveryNote: string | null;
+    deliveryNotes: string | null;
 }
 
 export interface UpdateOrderDeliveryStatusRequestModel {

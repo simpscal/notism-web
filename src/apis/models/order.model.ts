@@ -51,7 +51,7 @@ export interface OrderResponseModel {
     paymentQr: OrderPaymentQrResponseModel | null;
     createdAt: string;
     updatedAt: string;
-    deliveryNote: string | null;
+    deliveryNotes: string | null;
     items: OrderItemResponseModel[];
     deliveryStatusTiming: DeliveryStatusTimingResponseModel;
 }
