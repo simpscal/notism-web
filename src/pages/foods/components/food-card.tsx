@@ -66,8 +66,8 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
             </div>
 
             {/* Content */}
-            <CardFooter className='flex flex-1 flex-col items-start gap-3 p-3 sm:p-4'>
-                <div className='flex-1 w-full'>
+            <CardFooter className='flex flex-1 flex-col gap-3 p-3 sm:p-4'>
+                <div className='flex-1 w-full text-left'>
                     <h3
                         className='mb-1 cursor-pointer truncate text-sm font-semibold leading-tight hover:text-primary sm:text-base'
                         onClick={handleViewDetails}
