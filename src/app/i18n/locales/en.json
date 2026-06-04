@@ -212,7 +212,6 @@
         "paymentFailed": "Payment failed. Please try again.",
         "noItemsSelected": "No items selected for checkout",
         "cashOnDelivery": "Cash on Delivery",
-        "banking": "Banking",
         "comingSoon": "Coming soon",
         "payWithCash": "Pay with cash when your order is delivered",
         "onlineBanking": "Online banking transfer",
@@ -240,6 +239,41 @@
             "totalAmount": "Total Amount",
             "includeReference": "Include reference",
             "inTransferDescription": "in your transfer description"
+        },
+        "delivery": {
+            "title": "Delivery details",
+            "addressLabel": "Delivery address",
+            "addressPlaceholder": "Enter your delivery address",
+            "notesLabel": "Delivery notes",
+            "notesOptional": "(optional)",
+            "notesPlaceholder": "E.g. ring the doorbell, leave at reception…",
+            "deliveringTo": "Delivering to",
+            "edit": "Edit",
+            "cashReminder": "Please prepare the exact amount of {{amount}} in cash for the delivery rider.",
+            "placeOrderWithTotal": "Place order — {{amount}}"
+        },
+        "summary": {
+            "title": "Order summary",
+            "total": "Total"
+        },
+        "success": {
+            "codTitle": "Order placed!",
+            "bankingTitle": "Payment confirmed",
+            "codMessage": "Your order is confirmed. Please prepare {{amount}} in cash for the delivery rider.",
+            "bankingMessage": "Your transfer of {{amount}} has been received and confirmed automatically.",
+            "amountDueOnDelivery": "Amount due on delivery",
+            "amountReceived": "Amount received",
+            "trackOrder": "Track order",
+            "browseMenu": "Browse menu"
+        },
+        "bankTransfer": {
+            "title": "Bank transfer",
+            "scanToPay": "Scan to pay",
+            "bank": "Bank",
+            "account": "Account",
+            "amount": "Amount",
+            "autoConfirm": "After your transfer the payment will be confirmed automatically.",
+            "qrUnavailable": "QR unavailable"
         }
     },
     "orders": {

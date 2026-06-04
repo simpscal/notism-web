@@ -1,5 +1,6 @@
 import { Banknote, MapPin, Pencil } from 'lucide-react';
 import { memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
@@ -12,10 +13,18 @@ interface PaymentCodFormProps {
     savedAddress: string | null | undefined;
     totalPrice: number;
     disabled?: boolean;
-    onPlaceOrder: (address: string) => void;
+    showPlaceOrderButton?: boolean;
+    onPlaceOrder: (address: string, notes: string) => void;
 }
 
-function PaymentCodForm({ savedAddress, totalPrice, disabled, onPlaceOrder }: PaymentCodFormProps) {
+function PaymentCodForm({
+    savedAddress,
+    totalPrice,
+    disabled,
+    showPlaceOrderButton = true,
+    onPlaceOrder,
+}: PaymentCodFormProps) {
+    const { t } = useTranslation();
     const [address, setAddress] = useState(savedAddress ?? '');
     const [notes, setNotes] = useState('');
     const [isEditing, setIsEditing] = useState(!savedAddress);
@@ -24,7 +33,7 @@ function PaymentCodForm({ savedAddress, totalPrice, disabled, onPlaceOrder }: Pa
 
     const handlePlaceOrder = () => {
         const deliveryAddress = hasSavedAddress && !isEditing ? savedAddress! : address;
-        onPlaceOrder(deliveryAddress);
+        onPlaceOrder(deliveryAddress, notes);
     };
 
     return (
@@ -32,7 +41,7 @@ function PaymentCodForm({ savedAddress, totalPrice, disabled, onPlaceOrder }: Pa
             <CardHeader className='pb-3'>
                 <CardTitle className='flex items-center gap-2 text-base'>
                     <MapPin className='h-4 w-4' />
-                    Delivery details
+                    {t('payment.delivery.title')}
                 </CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
@@ -40,7 +49,7 @@ function PaymentCodForm({ savedAddress, totalPrice, disabled, onPlaceOrder }: Pa
                     <div className='flex items-start justify-between gap-3 rounded-lg border bg-muted/30 px-4 py-3'>
                         <div className='space-y-0.5'>
                             <p className='text-xs font-medium uppercase tracking-widest text-muted-foreground'>
-                                Delivering to
+                                {t('payment.delivery.deliveringTo')}
                             </p>
                             <p className='text-sm font-medium text-foreground'>{savedAddress}</p>
                         </div>
@@ -50,48 +59,53 @@ function PaymentCodForm({ savedAddress, totalPrice, disabled, onPlaceOrder }: Pa
                             onClick={() => setIsEditing(true)}
                         >
                             <Pencil className='h-3 w-3' />
-                            Edit
+                            {t('payment.delivery.edit')}
                         </button>
                     </div>
                 ) : (
                     <>
                         <div className='space-y-1.5'>
-                            <Label htmlFor='delivery-address'>Delivery address</Label>
+                            <Label htmlFor='delivery-address'>{t('payment.delivery.addressLabel')}</Label>
                             <Input
                                 id='delivery-address'
                                 value={address}
                                 onChange={e => setAddress(e.target.value)}
                                 disabled={disabled}
-                                placeholder='Enter your delivery address'
+                                placeholder={t('payment.delivery.addressPlaceholder')}
                             />
                         </div>
                         <div className='space-y-1.5'>
                             <Label htmlFor='delivery-notes'>
-                                Delivery notes <span className='text-xs text-muted-foreground'>(optional)</span>
+                                {t('payment.delivery.notesLabel')}{' '}
+                                <span className='text-xs text-muted-foreground'>
+                                    {t('payment.delivery.notesOptional')}
+                                </span>
                             </Label>
                             <Textarea
                                 id='delivery-notes'
                                 value={notes}
                                 onChange={e => setNotes(e.target.value)}
                                 disabled={disabled}
-                                placeholder='E.g. ring the doorbell, leave at reception…'
+                                placeholder={t('payment.delivery.notesPlaceholder')}
                                 rows={3}
                             />
                         </div>
                     </>
                 )}
-                <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
-                    <Banknote className='h-3.5 w-3.5 shrink-0' />
-                    Please prepare the exact amount of{' '}
-                    <span className='font-semibold text-foreground'>{formatVnd(totalPrice)}</span> in cash for the
-                    delivery rider.
-                </div>
+                {showPlaceOrderButton && (
+                    <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
+                        <Banknote className='h-3.5 w-3.5 shrink-0' />
+                        {t('payment.delivery.cashReminder', { amount: formatVnd(totalPrice) })}
+                    </div>
+                )}
             </CardContent>
-            <CardFooter>
-                <Button className='w-full gap-2' size='lg' disabled={disabled} onClick={handlePlaceOrder}>
-                    Place order — {formatVnd(totalPrice)}
-                </Button>
-            </CardFooter>
+            {showPlaceOrderButton && (
+                <CardFooter>
+                    <Button className='w-full gap-2' size='lg' disabled={disabled} onClick={handlePlaceOrder}>
+                        {t('payment.delivery.placeOrderWithTotal', { amount: formatVnd(totalPrice) })}
+                    </Button>
+                </CardFooter>
+            )}
         </Card>
     );
 }

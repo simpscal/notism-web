@@ -212,7 +212,6 @@
         "paymentFailed": "Thanh toán thất bại. Vui lòng thử lại.",
         "noItemsSelected": "Không có mục nào được chọn để thanh toán",
         "cashOnDelivery": "Thanh toán khi nhận hàng",
-        "banking": "Ngân hàng",
         "comingSoon": "Sắp ra mắt",
         "payWithCash": "Thanh toán bằng tiền mặt khi đơn hàng được giao",
         "onlineBanking": "Chuyển khoản ngân hàng trực tuyến",
@@ -240,6 +239,41 @@
             "totalAmount": "Tổng số tiền",
             "includeReference": "Ghi nội dung chuyển khoản",
             "inTransferDescription": "trong mô tả chuyển khoản"
+        },
+        "delivery": {
+            "title": "Thông tin giao hàng",
+            "addressLabel": "Địa chỉ giao hàng",
+            "addressPlaceholder": "Nhập địa chỉ giao hàng của bạn",
+            "notesLabel": "Ghi chú giao hàng",
+            "notesOptional": "(không bắt buộc)",
+            "notesPlaceholder": "Ví dụ: bấm chuông, để tại sảnh…",
+            "deliveringTo": "Giao đến",
+            "edit": "Chỉnh sửa",
+            "cashReminder": "Vui lòng chuẩn bị đúng số tiền {{amount}} để thanh toán cho người giao hàng.",
+            "placeOrderWithTotal": "Đặt hàng — {{amount}}"
+        },
+        "summary": {
+            "title": "Tóm tắt đơn hàng",
+            "total": "Tổng cộng"
+        },
+        "success": {
+            "codTitle": "Đặt hàng thành công!",
+            "bankingTitle": "Thanh toán đã xác nhận",
+            "codMessage": "Đơn hàng của bạn đã được xác nhận. Vui lòng chuẩn bị {{amount}} tiền mặt cho người giao hàng.",
+            "bankingMessage": "Giao dịch {{amount}} của bạn đã được nhận và xác nhận tự động.",
+            "amountDueOnDelivery": "Số tiền cần thanh toán khi nhận hàng",
+            "amountReceived": "Số tiền đã nhận",
+            "trackOrder": "Theo dõi đơn hàng",
+            "browseMenu": "Xem thực đơn"
+        },
+        "bankTransfer": {
+            "title": "Chuyển khoản ngân hàng",
+            "scanToPay": "Quét để thanh toán",
+            "bank": "Ngân hàng",
+            "account": "Số tài khoản",
+            "amount": "Số tiền",
+            "autoConfirm": "Sau khi chuyển khoản, thanh toán của bạn sẽ được xác nhận tự động.",
+            "qrUnavailable": "Mã QR không khả dụng"
         }
     },
     "orders": {
