@@ -1,307 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
 
 import { adminApi } from '@/apis';
 import type { CustomisationGroupModel, CustomisationOptionModel } from '@/apis/models';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/alert-dialog';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { FieldError } from '@/components/field';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import { Input } from '@/components/input';
 import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
-
-// ---------------------------------------------------------------------------
-// Schemas
-// ---------------------------------------------------------------------------
-
-const addGroupSchema = z.object({
-    label: z.string().min(1, 'Label is required').max(100, 'Max 100 characters'),
-    isRequired: z.boolean(),
-});
-
-const addOptionSchema = z.object({
-    label: z.string().min(1, 'Label is required').max(100, 'Max 100 characters'),
-    surcharge: z.string().optional(),
-});
-
-type AddGroupFormValues = z.infer<typeof addGroupSchema>;
-type AddOptionFormValues = z.infer<typeof addOptionSchema>;
-
-// ---------------------------------------------------------------------------
-// AddGroupForm
-// ---------------------------------------------------------------------------
-
-interface AddGroupFormProps {
-    onSubmit: (values: AddGroupFormValues) => void;
-    onCancel: () => void;
-    isPending: boolean;
-}
-
-function AddGroupForm({ onSubmit, onCancel, isPending }: AddGroupFormProps) {
-    const { t } = useTranslation();
-
-    const form = useForm<AddGroupFormValues>({
-        resolver: zodResolver(addGroupSchema),
-        defaultValues: { label: '', isRequired: false },
-    });
-
-    return (
-        <Card>
-            <CardContent className='pt-4'>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-                    <div>
-                        <Input
-                            placeholder={t('admin.customisationManager.groupLabel')}
-                            {...form.register('label')}
-                            aria-invalid={!!form.formState.errors.label}
-                        />
-                        {form.formState.errors.label && <FieldError>{form.formState.errors.label.message}</FieldError>}
-                    </div>
-                    <div className='flex items-center gap-2'>
-                        <Controller
-                            control={form.control}
-                            name='isRequired'
-                            render={({ field }) => (
-                                <Switch
-                                    id='add-group-required'
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                />
-                            )}
-                        />
-                        <Label htmlFor='add-group-required'>{t('admin.customisationManager.required')}</Label>
-                    </div>
-                    <div className='flex gap-2'>
-                        <Button type='submit' size='sm' disabled={isPending}>
-                            {isPending ? t('common.saving') : t('admin.customisationManager.saveGroup')}
-                        </Button>
-                        <Button type='button' size='sm' variant='outline' onClick={onCancel}>
-                            {t('common.cancel')}
-                        </Button>
-                    </div>
-                </form>
-            </CardContent>
-        </Card>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// AddOptionForm
-// ---------------------------------------------------------------------------
-
-interface AddOptionFormProps {
-    onSubmit: (values: AddOptionFormValues) => void;
-    isPending: boolean;
-}
-
-function AddOptionForm({ onSubmit, isPending }: AddOptionFormProps) {
-    const { t } = useTranslation();
-
-    const form = useForm<AddOptionFormValues>({
-        resolver: zodResolver(addOptionSchema),
-        defaultValues: { label: '', surcharge: '' },
-    });
-
-    const handleSubmit = form.handleSubmit(values => {
-        onSubmit(values);
-        form.reset();
-    });
-
-    return (
-        <form onSubmit={handleSubmit} className='flex items-start gap-2 pt-1'>
-            <div className='flex-1'>
-                <Input
-                    placeholder={t('admin.customisationManager.optionLabel')}
-                    {...form.register('label')}
-                    aria-invalid={!!form.formState.errors.label}
-                />
-                {form.formState.errors.label && <FieldError>{form.formState.errors.label.message}</FieldError>}
-            </div>
-            <div className='w-32'>
-                <Input
-                    type='number'
-                    min={0}
-                    step='0.01'
-                    placeholder={t('admin.customisationManager.surcharge')}
-                    {...form.register('surcharge')}
-                />
-            </div>
-            <Button
-                type='submit'
-                size='sm'
-                variant='outline'
-                disabled={isPending}
-                aria-label={t('admin.customisationManager.addOption')}
-            >
-                <Plus className='h-4 w-4' />
-                {t('admin.customisationManager.addOption')}
-            </Button>
-        </form>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// OptionRow
-// ---------------------------------------------------------------------------
-
-interface OptionRowProps {
-    groupId: string;
-    option: CustomisationOptionModel;
-    onDeleteOption: (groupId: string, optionId: string) => void;
-    isDeletePending: boolean;
-}
-
-function OptionRow({ groupId, option, onDeleteOption, isDeletePending }: OptionRowProps) {
-    const { t } = useTranslation();
-
-    const handleDeleteOption = useCallback(() => {
-        onDeleteOption(groupId, option.value);
-    }, [onDeleteOption, groupId, option.value]);
-
-    return (
-        <li className='flex items-center justify-between rounded-md border px-3 py-2 text-sm'>
-            <span>{option.label}</span>
-            <div className='flex items-center gap-2'>
-                {option.surcharge != null && option.surcharge > 0 && (
-                    <span className='text-muted-foreground'>+{option.surcharge}</span>
-                )}
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            variant='ghost'
-                            size='icon-xs'
-                            aria-label={t('admin.customisationManager.deleteOptionAriaLabel')}
-                            disabled={isDeletePending}
-                        >
-                            <Trash2 className='text-destructive' />
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>{t('admin.customisationManager.deleteOptionTitle')}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t('admin.customisationManager.deleteOptionDescription', {
-                                    label: option.label,
-                                })}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteOption}>{t('common.delete')}</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </div>
-        </li>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// GroupCard
-// ---------------------------------------------------------------------------
-
-interface GroupCardProps {
-    group: CustomisationGroupModel;
-    onDeleteGroup: (groupId: string) => void;
-    onAddOption: (groupId: string, values: AddOptionFormValues) => void;
-    onDeleteOption: (groupId: string, optionId: string) => void;
-    isDeleteGroupPending: boolean;
-    isAddOptionPending: boolean;
-    isDeleteOptionPending: boolean;
-}
-
-function GroupCard({
-    group,
-    onDeleteGroup,
-    onAddOption,
-    onDeleteOption,
-    isDeleteGroupPending,
-    isAddOptionPending,
-    isDeleteOptionPending,
-}: GroupCardProps) {
-    const { t } = useTranslation();
-
-    const handleDeleteGroup = useCallback(() => {
-        onDeleteGroup(group.id);
-    }, [onDeleteGroup, group.id]);
-
-    const handleAddOption = useCallback(
-        (values: AddOptionFormValues) => {
-            onAddOption(group.id, values);
-        },
-        [onAddOption, group.id]
-    );
-
-    return (
-        <Card>
-            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                <div className='flex items-center gap-2'>
-                    <CardTitle className='text-base'>{group.label}</CardTitle>
-                    {group.required && <Badge variant='secondary'>{t('admin.customisationManager.required')}</Badge>}
-                </div>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            variant='ghost'
-                            size='icon-sm'
-                            aria-label={t('admin.customisationManager.deleteGroupAriaLabel')}
-                            disabled={isDeleteGroupPending}
-                        >
-                            <Trash2 className='h-4 w-4 text-destructive' />
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>{t('admin.customisationManager.deleteGroupTitle')}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t('admin.customisationManager.deleteGroupDescription', {
-                                    label: group.label,
-                                })}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteGroup}>{t('common.delete')}</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </CardHeader>
-            <CardContent className='space-y-3'>
-                {group.options.length > 0 && (
-                    <ul className='space-y-2'>
-                        {group.options.map(option => (
-                            <OptionRow
-                                key={option.value}
-                                groupId={group.id}
-                                option={option}
-                                onDeleteOption={onDeleteOption}
-                                isDeletePending={isDeleteOptionPending}
-                            />
-                        ))}
-                    </ul>
-                )}
-                <AddOptionForm onSubmit={handleAddOption} isPending={isAddOptionPending} />
-            </CardContent>
-        </Card>
-    );
-}
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
 
 // ---------------------------------------------------------------------------
 // FoodCustomisationManager
@@ -315,17 +25,29 @@ interface FoodCustomisationManagerProps {
 function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationManagerProps) {
     const { t } = useTranslation();
     const [localGroups, setLocalGroups] = useState<CustomisationGroupModel[]>(customisations);
-    const [showAddGroup, setShowAddGroup] = useState(false);
+
+    // Add group dialog state
+    const [addGroupOpen, setAddGroupOpen] = useState(false);
+    const [groupLabel, setGroupLabel] = useState('');
+    const [groupRequired, setGroupRequired] = useState(false);
+
+    // Add option dialog state
+    const [addOptionOpen, setAddOptionOpen] = useState(false);
+    const [targetGroupId, setTargetGroupId] = useState<string | null>(null);
+    const [optLabel, setOptLabel] = useState('');
+    const [optSurcharge, setOptSurcharge] = useState('');
 
     useEffect(() => {
         setLocalGroups(customisations);
     }, [customisations]);
 
+    const targetGroupLabel = localGroups.find(g => g.id === targetGroupId)?.label ?? '';
+
     const addGroupMutation = useMutation({
-        mutationFn: (values: AddGroupFormValues) =>
+        mutationFn: () =>
             adminApi.addCustomisationGroup(foodId, {
-                label: values.label,
-                isRequired: values.isRequired,
+                label: groupLabel.trim(),
+                isRequired: groupRequired,
                 displayOrder: localGroups.length,
             }),
         onSuccess: created => {
@@ -333,7 +55,9 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                 ...prev,
                 { id: created.id, label: created.label, required: created.isRequired, options: [] },
             ]);
-            setShowAddGroup(false);
+            setAddGroupOpen(false);
+            setGroupLabel('');
+            setGroupRequired(false);
         },
     });
 
@@ -345,21 +69,27 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
     });
 
     const addOptionMutation = useMutation({
-        mutationFn: ({ groupId, values }: { groupId: string; values: AddOptionFormValues }) =>
-            adminApi.addCustomisationOption(foodId, groupId, {
-                label: values.label,
-                surcharge: values.surcharge !== '' ? Number(values.surcharge) : null,
-                displayOrder: localGroups.find(g => g.id === groupId)?.options.length ?? 0,
-            }),
-        onSuccess: (created, { groupId }) => {
+        mutationFn: () => {
+            if (!targetGroupId) return Promise.reject(new Error('No target group'));
+            return adminApi.addCustomisationOption(foodId, targetGroupId, {
+                label: optLabel.trim(),
+                surcharge: optSurcharge !== '' ? Number(optSurcharge) : null,
+                displayOrder: localGroups.find(g => g.id === targetGroupId)?.options.length ?? 0,
+            });
+        },
+        onSuccess: created => {
+            if (!targetGroupId) return;
             const newOption: CustomisationOptionModel = {
                 value: created.id,
                 label: created.label,
                 ...(created.surcharge != null && created.surcharge > 0 && { surcharge: created.surcharge }),
             };
             setLocalGroups(prev =>
-                prev.map(g => (g.id === groupId ? { ...g, options: [...g.options, newOption] } : g))
+                prev.map(g => (g.id === targetGroupId ? { ...g, options: [...g.options, newOption] } : g))
             );
+            setAddOptionOpen(false);
+            setOptLabel('');
+            setOptSurcharge('');
         },
     });
 
@@ -373,80 +103,223 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
         },
     });
 
-    const handleShowAddGroup = useCallback(() => {
-        setShowAddGroup(true);
+    const handleOpenAddOption = useCallback((groupId: string) => {
+        setTargetGroupId(groupId);
+        setOptLabel('');
+        setOptSurcharge('');
+        setAddOptionOpen(true);
     }, []);
 
-    const handleAddGroup = useCallback(
-        (values: AddGroupFormValues) => {
-            addGroupMutation.mutate(values);
-        },
-        [addGroupMutation.mutate]
-    );
-
-    const handleCancelAddGroup = useCallback(() => {
-        setShowAddGroup(false);
-    }, []);
+    const { mutate: deleteGroup } = deleteGroupMutation;
+    const { mutate: deleteOption } = deleteOptionMutation;
+    const { mutate: saveGroup } = addGroupMutation;
+    const { mutate: saveOption } = addOptionMutation;
 
     const handleDeleteGroup = useCallback(
         (groupId: string) => {
-            deleteGroupMutation.mutate(groupId);
+            deleteGroup(groupId);
         },
-        [deleteGroupMutation.mutate]
-    );
-
-    const handleAddOption = useCallback(
-        (groupId: string, values: AddOptionFormValues) => {
-            addOptionMutation.mutate({ groupId, values });
-        },
-        [addOptionMutation.mutate]
+        [deleteGroup]
     );
 
     const handleDeleteOption = useCallback(
         (groupId: string, optionId: string) => {
-            deleteOptionMutation.mutate({ groupId, optionId });
+            deleteOption({ groupId, optionId });
         },
-        [deleteOptionMutation.mutate]
+        [deleteOption]
     );
+
+    const handleSaveGroup = useCallback(() => {
+        saveGroup();
+    }, [saveGroup]);
+
+    const handleSaveOption = useCallback(() => {
+        saveOption();
+    }, [saveOption]);
 
     return (
         <div className='space-y-4'>
-            <h2 className='text-lg font-semibold'>{t('admin.customisationManager.title')}</h2>
-
-            {localGroups.length === 0 && !showAddGroup && (
-                <p className='text-sm text-muted-foreground'>{t('admin.customisationManager.empty')}</p>
-            )}
-
-            {localGroups.map(group => (
-                <GroupCard
-                    key={group.id}
-                    group={group}
-                    onDeleteGroup={handleDeleteGroup}
-                    onAddOption={handleAddOption}
-                    onDeleteOption={handleDeleteOption}
-                    isDeleteGroupPending={deleteGroupMutation.isPending}
-                    isAddOptionPending={addOptionMutation.isPending}
-                    isDeleteOptionPending={deleteOptionMutation.isPending}
-                />
-            ))}
-
-            {showAddGroup ? (
-                <AddGroupForm
-                    onSubmit={handleAddGroup}
-                    onCancel={handleCancelAddGroup}
-                    isPending={addGroupMutation.isPending}
-                />
-            ) : (
-                <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={handleShowAddGroup}
-                    aria-label={t('admin.customisationManager.addGroup')}
-                >
+            {/* Section header */}
+            <div className='flex items-center justify-between'>
+                <div className='space-y-1'>
+                    <p className='text-base font-semibold'>{t('admin.customisationManager.title')}</p>
+                    <p className='text-xs text-muted-foreground'>
+                        {t('admin.customisationManager.subtitle', {
+                            defaultValue: 'Manage options customers can choose from.',
+                        })}
+                    </p>
+                </div>
+                <Button variant='outline' size='sm' onClick={() => setAddGroupOpen(true)}>
                     <Plus className='h-4 w-4' />
-                    {t('admin.customisationManager.addGroup')}
+                    Add group
                 </Button>
+            </div>
+
+            {/* Empty state */}
+            {localGroups.length === 0 && (
+                <div className='rounded-lg border border-dashed px-6 py-10 text-center text-sm text-muted-foreground'>
+                    No customisation groups yet. Add one to get started.
+                </div>
             )}
+
+            {/* Groups */}
+            {localGroups.length > 0 && (
+                <div className='space-y-6'>
+                    {localGroups.map(group => (
+                        <div key={group.id} className='overflow-hidden rounded-lg border'>
+                            {/* Group header */}
+                            <div className='flex items-center justify-between bg-muted/40 px-4 py-3'>
+                                <div className='flex items-center gap-3'>
+                                    <span className='text-sm font-semibold text-foreground'>{group.label}</span>
+                                    <Badge variant={group.required ? 'default' : 'secondary'} className='text-xs'>
+                                        {group.required ? 'Required' : 'Optional'}
+                                    </Badge>
+                                </div>
+                                <div className='flex items-center gap-2'>
+                                    <Button
+                                        variant='ghost'
+                                        size='sm'
+                                        className='h-7 gap-1 text-xs'
+                                        onClick={() => handleOpenAddOption(group.id)}
+                                    >
+                                        <Plus className='h-3 w-3' />
+                                        Add option
+                                    </Button>
+                                    <Button
+                                        variant='ghost'
+                                        size='sm'
+                                        className='h-7 text-destructive hover:bg-destructive/10 hover:text-destructive'
+                                        onClick={() => handleDeleteGroup(group.id)}
+                                        disabled={deleteGroupMutation.isPending}
+                                    >
+                                        <Trash2 className='h-3.5 w-3.5' />
+                                    </Button>
+                                </div>
+                            </div>
+                            {/* Options table */}
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className='w-[50%]'>Option label</TableHead>
+                                        <TableHead>Surcharge</TableHead>
+                                        <TableHead className='w-[80px] text-right'>Remove</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {group.options.map(opt => (
+                                        <TableRow key={opt.value}>
+                                            <TableCell className='text-sm font-medium'>{opt.label}</TableCell>
+                                            <TableCell className='text-sm text-muted-foreground'>
+                                                {opt.surcharge ? (
+                                                    <span className='font-semibold text-primary'>
+                                                        +{opt.surcharge.toLocaleString('en-US')} ₫
+                                                    </span>
+                                                ) : (
+                                                    <span>—</span>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className='text-right'>
+                                                <Button
+                                                    variant='ghost'
+                                                    size='icon'
+                                                    className='h-7 w-7 text-muted-foreground hover:text-destructive'
+                                                    onClick={() => handleDeleteOption(group.id, opt.value)}
+                                                    disabled={deleteOptionMutation.isPending}
+                                                >
+                                                    <Trash2 className='h-3.5 w-3.5' />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* Add group dialog */}
+            <Dialog open={addGroupOpen} onOpenChange={setAddGroupOpen}>
+                <DialogContent className='sm:max-w-[420px]'>
+                    <DialogHeader>
+                        <DialogTitle>Add customisation group</DialogTitle>
+                    </DialogHeader>
+                    <div className='space-y-5 py-2'>
+                        <div className='space-y-1.5'>
+                            <Label htmlFor='group-label'>Group label</Label>
+                            <Input
+                                id='group-label'
+                                placeholder='e.g. Portion size, Spice level'
+                                value={groupLabel}
+                                onChange={e => setGroupLabel(e.target.value)}
+                            />
+                            <p className='text-xs text-muted-foreground'>
+                                This label is shown to customers on the food details page.
+                            </p>
+                        </div>
+                        <div className='flex items-center justify-between rounded-lg border px-4 py-3'>
+                            <div>
+                                <p className='text-sm font-medium'>Required selection</p>
+                                <p className='text-xs text-muted-foreground'>
+                                    Customers must choose an option before adding to cart.
+                                </p>
+                            </div>
+                            <Switch id='group-required' checked={groupRequired} onCheckedChange={setGroupRequired} />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant='outline' onClick={() => setAddGroupOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button disabled={!groupLabel.trim() || addGroupMutation.isPending} onClick={handleSaveGroup}>
+                            Save group
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Add option dialog */}
+            <Dialog open={addOptionOpen} onOpenChange={setAddOptionOpen}>
+                <DialogContent className='sm:max-w-[420px]'>
+                    <DialogHeader>
+                        <DialogTitle>Add option to {targetGroupLabel}</DialogTitle>
+                    </DialogHeader>
+                    <div className='space-y-5 py-2'>
+                        <div className='space-y-1.5'>
+                            <Label htmlFor='option-label'>Option label</Label>
+                            <Input
+                                id='option-label'
+                                placeholder='e.g. Extra large (340 g)'
+                                value={optLabel}
+                                onChange={e => setOptLabel(e.target.value)}
+                            />
+                        </div>
+                        <div className='space-y-1.5'>
+                            <Label htmlFor='option-surcharge'>Surcharge (₫)</Label>
+                            <Input
+                                id='option-surcharge'
+                                type='number'
+                                placeholder='Leave blank for no surcharge'
+                                value={optSurcharge}
+                                onChange={e => setOptSurcharge(e.target.value)}
+                                min={0}
+                            />
+                            <p className='text-xs text-muted-foreground'>
+                                Enter the additional amount customers pay for this option. Leave blank if there is no
+                                surcharge.
+                            </p>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant='outline' onClick={() => setAddOptionOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button disabled={!optLabel.trim() || addOptionMutation.isPending} onClick={handleSaveOption}>
+                            Save option
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
