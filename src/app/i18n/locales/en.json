@@ -221,6 +221,11 @@
         "paymentConfirmed": "Payment confirmed. You can now view your order.",
         "awaitingTransfer": "Awaiting Bank Transfer",
         "awaitingTransferDescription": "Complete your bank transfer to confirm the order",
+        "confirmedPanel": {
+            "title": "Payment confirmed",
+            "descriptionStart": "Your transfer of",
+            "descriptionEnd": "has been received and confirmed automatically."
+        },
         "empty": {
             "title": "Your cart is empty",
             "description": "Add items to your cart before proceeding to payment.",

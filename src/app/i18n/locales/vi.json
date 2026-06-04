@@ -221,6 +221,11 @@
         "paymentConfirmed": "Thanh toán đã được xác nhận. Bạn có thể xem đơn hàng ngay bây giờ.",
         "awaitingTransfer": "Chờ chuyển khoản",
         "awaitingTransferDescription": "Hoàn tất chuyển khoản để xác nhận đơn hàng",
+        "confirmedPanel": {
+            "title": "Thanh toán đã xác nhận",
+            "descriptionStart": "Giao dịch",
+            "descriptionEnd": "của bạn đã được nhận và xác nhận tự động."
+        },
         "empty": {
             "title": "Giỏ hàng của bạn trống",
             "description": "Thêm mục vào giỏ hàng của bạn trước khi tiếp tục thanh toán.",
