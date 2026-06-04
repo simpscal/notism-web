@@ -55,19 +55,36 @@ describe('FoodCustomisationManager', () => {
     it('renders surcharge for options that have one', () => {
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        expect(screen.getByText('+2')).toBeInTheDocument();
+        expect(screen.getByText('+2 ₫')).toBeInTheDocument();
     });
 
-    it('shows add group form when Add Group button is clicked', async () => {
+    it('renders dash for options with no surcharge', () => {
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+
+        expect(screen.getByText('—')).toBeInTheDocument();
+    });
+
+    it('opens add group dialog when Add group button is clicked', async () => {
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
 
-        const addGroupBtn = screen.getByRole('button', { name: /add customisation group/i });
+        const addGroupBtn = screen.getByRole('button', { name: /add group/i });
         await userEvent.click(addGroupBtn);
 
-        expect(screen.getByPlaceholderText(/group label/i)).toBeInTheDocument();
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        expect(screen.getByLabelText(/group label/i)).toBeInTheDocument();
     });
 
-    it('adds a customisation group when form is submitted', async () => {
+    it('Save group button is disabled when label is empty', async () => {
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
+
+        const addGroupBtn = screen.getByRole('button', { name: /add group/i });
+        await userEvent.click(addGroupBtn);
+
+        const saveBtn = screen.getByRole('button', { name: /^save group$/i });
+        expect(saveBtn).toBeDisabled();
+    });
+
+    it('adds a customisation group when dialog form is submitted', async () => {
         server.use(
             http.post(GROUPS_URL, () =>
                 HttpResponse.json({
@@ -82,45 +99,43 @@ describe('FoodCustomisationManager', () => {
 
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
 
-        const addGroupBtn = screen.getByRole('button', { name: /add customisation group/i });
+        const addGroupBtn = screen.getByRole('button', { name: /add group/i });
         await userEvent.click(addGroupBtn);
 
-        const labelInput = screen.getByPlaceholderText(/group label/i);
+        const labelInput = screen.getByLabelText(/group label/i);
         await userEvent.type(labelInput, 'Spice Level');
 
         const saveBtn = screen.getByRole('button', { name: /^save group$/i });
         await userEvent.click(saveBtn);
 
-        // After success the inline form is hidden and the add button reappears
+        // After success the dialog closes and the new group appears
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: /add customisation group/i })).toBeInTheDocument();
+            expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         });
-        expect(screen.queryByPlaceholderText(/group label/i)).not.toBeInTheDocument();
+        expect(screen.getByText('Spice Level')).toBeInTheDocument();
     });
 
-    it('shows inline error when group label is empty on submit', async () => {
-        server.use(http.post(GROUPS_URL, () => HttpResponse.json({ message: 'Label is required' }, { status: 400 })));
-
-        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={[]} />);
-
-        const addGroupBtn = screen.getByRole('button', { name: /add customisation group/i });
-        await userEvent.click(addGroupBtn);
-
-        const saveBtn = screen.getByRole('button', { name: /^save group$/i });
-        await userEvent.click(saveBtn);
-
-        await waitFor(() => {
-            expect(screen.getByText(/label is required/i)).toBeInTheDocument();
-        });
-    });
-
-    it('shows add option form for each group', () => {
+    it('opens add option dialog when Add option button is clicked on a group', async () => {
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        expect(screen.getByPlaceholderText(/option label/i)).toBeInTheDocument();
+        const addOptionBtn = screen.getByRole('button', { name: /add option/i });
+        await userEvent.click(addOptionBtn);
+
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        expect(screen.getByLabelText(/option label/i)).toBeInTheDocument();
     });
 
-    it('adds an option to a group when option form is submitted', async () => {
+    it('Save option button is disabled when option label is empty', async () => {
+        renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
+
+        const addOptionBtn = screen.getByRole('button', { name: /add option/i });
+        await userEvent.click(addOptionBtn);
+
+        const saveBtn = screen.getByRole('button', { name: /^save option$/i });
+        expect(saveBtn).toBeDisabled();
+    });
+
+    it('adds an option to a group when option dialog is submitted', async () => {
         server.use(
             http.post(OPTIONS_URL, () =>
                 HttpResponse.json({
@@ -135,18 +150,22 @@ describe('FoodCustomisationManager', () => {
 
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        const optionLabelInput = screen.getByPlaceholderText(/option label/i);
-        await userEvent.type(optionLabelInput, 'Medium');
-
-        const addOptionBtn = screen.getByRole('button', { name: /^add option$/i });
+        const addOptionBtn = screen.getByRole('button', { name: /add option/i });
         await userEvent.click(addOptionBtn);
 
+        const optionLabelInput = screen.getByLabelText(/option label/i);
+        await userEvent.type(optionLabelInput, 'Medium');
+
+        const saveBtn = screen.getByRole('button', { name: /^save option$/i });
+        await userEvent.click(saveBtn);
+
         await waitFor(() => {
-            expect(optionLabelInput).toHaveValue('');
+            expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         });
+        expect(screen.getByText('Medium')).toBeInTheDocument();
     });
 
-    it('triggers delete group mutation when confirmed in AlertDialog', async () => {
+    it('triggers delete group mutation after confirming the alert dialog', async () => {
         let deleteGroupCalled = false;
         server.use(
             http.delete(GROUP_URL, () => {
@@ -157,18 +176,21 @@ describe('FoodCustomisationManager', () => {
 
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        const deleteGroupBtn = screen.getByRole('button', { name: /delete group/i });
-        await userEvent.click(deleteGroupBtn);
+        const trashButtons = screen.getAllByRole('button').filter(btn => {
+            return btn.querySelector('svg.lucide-trash-2') !== null;
+        });
+        // First trash button opens the group delete confirmation dialog
+        await userEvent.click(trashButtons[0]);
 
-        const confirmBtn = await screen.findByRole('button', { name: /^delete$/i });
-        await userEvent.click(confirmBtn);
+        const confirmButton = await screen.findByRole('button', { name: 'Remove' });
+        await userEvent.click(confirmButton);
 
         await waitFor(() => {
             expect(deleteGroupCalled).toBe(true);
         });
     });
 
-    it('triggers delete option mutation when confirmed in AlertDialog', async () => {
+    it('triggers delete option mutation after confirming the alert dialog', async () => {
         let deleteOptionCalled = false;
         server.use(
             http.delete(OPTION_URL, () => {
@@ -179,11 +201,14 @@ describe('FoodCustomisationManager', () => {
 
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        const deleteOptionBtns = screen.getAllByRole('button', { name: /delete option/i });
-        await userEvent.click(deleteOptionBtns[0]);
+        const trashButtons = screen.getAllByRole('button').filter(btn => {
+            return btn.querySelector('svg.lucide-trash-2') !== null;
+        });
+        // Second trash button is the first option-level delete trigger
+        await userEvent.click(trashButtons[1]);
 
-        const confirmBtn = await screen.findByRole('button', { name: /^delete$/i });
-        await userEvent.click(confirmBtn);
+        const confirmButton = await screen.findByRole('button', { name: 'Remove' });
+        await userEvent.click(confirmButton);
 
         await waitFor(() => {
             expect(deleteOptionCalled).toBe(true);

@@ -7,7 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { FoodCustomisationManager, FoodDetailError, FoodDetailForm, FoodDetailImagesSection } from './components';
+import {
+    FoodCustomisationManager,
+    FoodDetailError,
+    FoodDetailForm,
+    FoodDetailImagesSection,
+    FoodDetailSkeleton,
+} from './components';
 import { foodFormSchema, getDefaultFormValues, type FoodFormValues } from './models';
 
 import { adminApi, storageApi } from '@/apis';
@@ -16,7 +22,6 @@ import { ROUTES } from '@/app/constants';
 import { PresignedUrlUploadEnum } from '@/app/enums';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import Spinner from '@/components/spinner';
 
 const IS_CREATE_MODE_ID = 'new';
 
@@ -216,8 +221,14 @@ function AdminFoodDetail() {
 
     if (!isCreateMode && isLoading) {
         return (
-            <div className='flex h-full w-full items-center justify-center'>
-                <Spinner size='lg' />
+            <div className='container mx-auto px-4 py-8'>
+                <Button variant='ghost' className='mb-8' asChild>
+                    <Link to={`/${ROUTES.ADMIN.FOODS}`}>
+                        <ArrowLeft className='h-4 w-4' />
+                        {t('admin.foodForm.backToFoods')}
+                    </Link>
+                </Button>
+                <FoodDetailSkeleton />
             </div>
         );
     }
