@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Clock } from 'lucide-react';
+import { Clock, StickyNote } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -127,6 +127,13 @@ function Orders() {
                                         {t('cart.itemCount', { count: itemCount })}
                                         {hasSurcharges ? ` · ${t('orders.includesSurcharges')}` : ''}
                                     </p>
+
+                                    {order.deliveryNote && (
+                                        <div className='flex items-start gap-1.5 text-sm text-muted-foreground'>
+                                            <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0' />
+                                            <span>{order.deliveryNote}</span>
+                                        </div>
+                                    )}
 
                                     <Separator />
 

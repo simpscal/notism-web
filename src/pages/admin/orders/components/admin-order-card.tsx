@@ -1,3 +1,4 @@
+import { StickyNote } from 'lucide-react';
 import { memo, useCallback } from 'react';
 
 import { AdminOrderResponseModel } from '@/apis/models';
@@ -34,6 +35,12 @@ function AdminOrderCard({ order, onOrderClick }: AdminOrderCardProps) {
                     <div className='text-xs text-muted-foreground'>
                         {order.totalItems} item{order.totalItems !== 1 ? 's' : ''}
                     </div>
+                    {order.deliveryNote && (
+                        <div className='flex items-start gap-1 text-xs text-muted-foreground'>
+                            <StickyNote className='mt-0.5 h-3 w-3 shrink-0' />
+                            <span className='line-clamp-2'>{order.deliveryNote}</span>
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>

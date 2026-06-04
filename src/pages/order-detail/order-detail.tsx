@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, StickyNote } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -205,6 +205,12 @@ function OrderDetail() {
                                             </span>
                                             <span className='font-medium capitalize'>{order.paymentMethod}</span>
                                         </div>
+                                        {order.deliveryNote && (
+                                            <div className='flex items-start gap-1.5 text-sm'>
+                                                <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground' />
+                                                <span className='text-muted-foreground'>{order.deliveryNote}</span>
+                                            </div>
+                                        )}
                                         <div className='flex justify-between text-xl font-black'>
                                             <span>{t('orderDetail.total')}</span>
                                             <span>{formatVnd(order.totalAmount)}</span>

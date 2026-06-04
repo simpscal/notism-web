@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Package } from 'lucide-react';
+import { Package, StickyNote } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
@@ -76,6 +76,8 @@ const ITEMS: OrderItem[] = [
     },
 ];
 
+const DELIVERY_NOTE = 'Please leave at the door — do not ring the bell.';
+
 // ---------------------------------------------------------------------------
 // Inline: OrderItemsCard — FOCUS of sprint 7
 // Total = sum of (basePrice + surcharge) × quantity (surcharge-inclusive)
@@ -141,6 +143,22 @@ function OrderItemsCard({ items }: { items: OrderItem[] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Delivery note card
+// ---------------------------------------------------------------------------
+
+function DeliveryNoteCard({ note }: { note: string | null }) {
+    if (!note) return null;
+    return (
+        <Card>
+            <CardContent className='flex items-start gap-2 pt-4'>
+                <StickyNote className='mt-0.5 h-4 w-4 shrink-0 text-muted-foreground' />
+                <p className='text-sm text-muted-foreground'>{note}</p>
+            </CardContent>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Page shell
 // ---------------------------------------------------------------------------
 
@@ -192,6 +210,7 @@ function DeliveredPage() {
                             </div>
 
                             <OrderItemsCard items={ITEMS} />
+                            <DeliveryNoteCard note={DELIVERY_NOTE} />
                         </div>
 
                         {/* Right column */}
@@ -246,6 +265,7 @@ function PreparingPage() {
                             </div>
 
                             <OrderItemsCard items={ITEMS} />
+                            <DeliveryNoteCard note={DELIVERY_NOTE} />
                         </div>
 
                         {/* Right column */}
