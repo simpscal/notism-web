@@ -5,6 +5,17 @@ import { useTranslation } from 'react-i18next';
 
 import { adminApi } from '@/apis';
 import type { CustomisationGroupModel, CustomisationOptionModel } from '@/apis/models';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/alert-dialog';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
@@ -185,15 +196,33 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                         <Plus className='h-3 w-3' />
                                         Add option
                                     </Button>
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        className='h-7 text-destructive hover:bg-destructive/10 hover:text-destructive'
-                                        onClick={() => handleDeleteGroup(group.id)}
-                                        disabled={deleteGroupMutation.isPending}
-                                    >
-                                        <Trash2 className='h-3.5 w-3.5' />
-                                    </Button>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant='ghost'
+                                                size='sm'
+                                                className='h-7 text-destructive hover:bg-destructive/10 hover:text-destructive'
+                                                disabled={deleteGroupMutation.isPending}
+                                            >
+                                                <Trash2 className='h-3.5 w-3.5' />
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Remove group?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This will permanently remove <strong>{group.label}</strong> and all
+                                                    its options.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDeleteGroup(group.id)}>
+                                                    Remove
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </div>
                             </div>
                             {/* Options table */}
@@ -219,15 +248,35 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                                 )}
                                             </TableCell>
                                             <TableCell className='text-right'>
-                                                <Button
-                                                    variant='ghost'
-                                                    size='icon'
-                                                    className='h-7 w-7 text-muted-foreground hover:text-destructive'
-                                                    onClick={() => handleDeleteOption(group.id, opt.value)}
-                                                    disabled={deleteOptionMutation.isPending}
-                                                >
-                                                    <Trash2 className='h-3.5 w-3.5' />
-                                                </Button>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button
+                                                            variant='ghost'
+                                                            size='icon'
+                                                            className='h-7 w-7 text-muted-foreground hover:text-destructive'
+                                                            disabled={deleteOptionMutation.isPending}
+                                                        >
+                                                            <Trash2 className='h-3.5 w-3.5' />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Remove option?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This will permanently remove{' '}
+                                                                <strong>{opt.label}</strong>.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleDeleteOption(group.id, opt.value)}
+                                                            >
+                                                                Remove
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </TableCell>
                                         </TableRow>
                                     ))}

@@ -165,7 +165,7 @@ describe('FoodCustomisationManager', () => {
         expect(screen.getByText('Medium')).toBeInTheDocument();
     });
 
-    it('triggers delete group mutation on direct button click', async () => {
+    it('triggers delete group mutation after confirming the alert dialog', async () => {
         let deleteGroupCalled = false;
         server.use(
             http.delete(GROUP_URL, () => {
@@ -176,20 +176,21 @@ describe('FoodCustomisationManager', () => {
 
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        // The delete group button is the Trash2 icon button in the group header (no aria-label text, use position)
-        // Find all trash buttons and click the first one which is the group-level delete
         const trashButtons = screen.getAllByRole('button').filter(btn => {
             return btn.querySelector('svg.lucide-trash-2') !== null;
         });
-        // First trash button is in the group header
+        // First trash button opens the group delete confirmation dialog
         await userEvent.click(trashButtons[0]);
+
+        const confirmButton = await screen.findByRole('button', { name: 'Remove' });
+        await userEvent.click(confirmButton);
 
         await waitFor(() => {
             expect(deleteGroupCalled).toBe(true);
         });
     });
 
-    it('triggers delete option mutation on direct button click', async () => {
+    it('triggers delete option mutation after confirming the alert dialog', async () => {
         let deleteOptionCalled = false;
         server.use(
             http.delete(OPTION_URL, () => {
@@ -200,13 +201,14 @@ describe('FoodCustomisationManager', () => {
 
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        // The option-level trash buttons are in the table rows
         const trashButtons = screen.getAllByRole('button').filter(btn => {
             return btn.querySelector('svg.lucide-trash-2') !== null;
         });
-        // The last trash buttons are option-level (after the group header delete)
-        // group header delete is trashButtons[0]; option deletes follow
+        // Second trash button is the first option-level delete trigger
         await userEvent.click(trashButtons[1]);
+
+        const confirmButton = await screen.findByRole('button', { name: 'Remove' });
+        await userEvent.click(confirmButton);
 
         await waitFor(() => {
             expect(deleteOptionCalled).toBe(true);
