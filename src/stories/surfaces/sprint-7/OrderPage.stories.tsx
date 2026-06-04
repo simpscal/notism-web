@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Package, StickyNote } from 'lucide-react';
+import { CheckCircle2, Package, StickyNote } from 'lucide-react';
 
+import { Badge } from '@/components/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import { Skeleton } from '@/components/skeleton';
@@ -352,6 +353,82 @@ function LoadingPage() {
 }
 
 // ---------------------------------------------------------------------------
+// Story: Payment Confirmed (Banking auto-confirmed)
+// ---------------------------------------------------------------------------
+
+function PaymentConfirmedPage() {
+    const total = orderTotal(ITEMS);
+    const orderRef = 'ORD-20260601-7843';
+
+    return (
+        <div className='bg-background' style={{ height: '100vh', overflowY: 'auto' }}>
+            <NavPlaceholder />
+
+            {/* Hero banner — placeholder; exists in current system, not changed by this sprint */}
+            <div className='flex h-[120px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                    hero banner placeholder
+                </span>
+            </div>
+
+            <div className='container mx-auto max-w-4xl px-4 py-6'>
+                <div className='space-y-6'>
+                    {/* Payment confirmed success panel */}
+                    <div
+                        role='status'
+                        aria-live='polite'
+                        className='flex flex-col items-center rounded-2xl bg-primary/5 px-6 py-10 text-center'
+                    >
+                        <CheckCircle2 className='mb-4 h-14 w-14 text-primary' aria-hidden='true' />
+                        <h2 className='mb-1 text-2xl font-bold text-foreground'>Payment confirmed</h2>
+                        <p className='mb-3 text-sm text-muted-foreground'>
+                            Your transfer of{' '}
+                            <span className='font-semibold text-foreground'>{total.toLocaleString('en-US')} ₫</span> has
+                            been received and confirmed automatically.
+                        </p>
+                        <Badge variant='outline' className='font-mono text-sm'>
+                            {orderRef}
+                        </Badge>
+                    </div>
+
+                    {/* Order header card — placeholder; exists in current system, not changed by this sprint */}
+                    <div className='flex h-[80px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                        <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                            order header card placeholder
+                        </span>
+                    </div>
+
+                    <div className='grid gap-6 lg:grid-cols-[2fr_1fr]'>
+                        {/* Left column */}
+                        <div className='space-y-6'>
+                            {/* Delivery status timeline — placeholder; exists in current system, not changed by this sprint */}
+                            <div className='flex h-[160px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                                    delivery status timeline placeholder
+                                </span>
+                            </div>
+
+                            <OrderItemsCard items={ITEMS} />
+                            <DeliveryNoteCard note={DELIVERY_NOTE} />
+                        </div>
+
+                        {/* Right column */}
+                        <div>
+                            {/* Sidebar order action card — placeholder; exists in current system, not changed by this sprint */}
+                            <div className='flex h-[200px] items-center justify-center rounded-xl border border-dashed bg-muted/20'>
+                                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/40'>
+                                    sidebar order action card placeholder
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Meta + Stories
 // ---------------------------------------------------------------------------
 
@@ -379,4 +456,9 @@ export const Preparing: Story = {
 export const Loading: Story = {
     name: 'Loading — Skeleton State',
     render: () => <LoadingPage />,
+};
+
+export const PaymentConfirmed: Story = {
+    name: 'Payment Confirmed — Banking Auto-Confirmed',
+    render: () => <PaymentConfirmedPage />,
 };
