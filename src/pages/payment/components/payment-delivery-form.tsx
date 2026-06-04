@@ -63,31 +63,35 @@ function PaymentDeliveryForm({
                         </button>
                     </div>
                 ) : (
-                    <div className='space-y-1.5'>
-                        <Label htmlFor='delivery-address'>{t('payment.delivery.addressLabel')}</Label>
-                        <Input
-                            id='delivery-address'
-                            value={address}
-                            onChange={e => setAddress(e.target.value)}
-                            disabled={disabled}
-                            placeholder={t('payment.delivery.addressPlaceholder')}
-                        />
-                    </div>
+                    <>
+                        <div className='space-y-1.5'>
+                            <Label htmlFor='delivery-address'>{t('payment.delivery.addressLabel')}</Label>
+                            <Input
+                                id='delivery-address'
+                                value={address}
+                                onChange={e => setAddress(e.target.value)}
+                                disabled={disabled}
+                                placeholder={t('payment.delivery.addressPlaceholder')}
+                            />
+                        </div>
+                        <div className='space-y-1.5'>
+                            <Label htmlFor='delivery-notes'>
+                                {t('payment.delivery.notesLabel')}{' '}
+                                <span className='text-xs text-muted-foreground'>
+                                    {t('payment.delivery.notesOptional')}
+                                </span>
+                            </Label>
+                            <Textarea
+                                id='delivery-notes'
+                                value={notes}
+                                onChange={e => setNotes(e.target.value)}
+                                disabled={disabled}
+                                placeholder={t('payment.delivery.notesPlaceholder')}
+                                rows={3}
+                            />
+                        </div>
+                    </>
                 )}
-                <div className='space-y-1.5'>
-                    <Label htmlFor='delivery-notes'>
-                        {t('payment.delivery.notesLabel')}{' '}
-                        <span className='text-xs text-muted-foreground'>{t('payment.delivery.notesOptional')}</span>
-                    </Label>
-                    <Textarea
-                        id='delivery-notes'
-                        value={notes}
-                        onChange={e => setNotes(e.target.value)}
-                        disabled={disabled}
-                        placeholder={t('payment.delivery.notesPlaceholder')}
-                        rows={3}
-                    />
-                </div>
                 {showPlaceOrderButton && (
                     <div className='flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2 text-xs text-muted-foreground'>
                         <Banknote className='h-3.5 w-3.5 shrink-0' />
