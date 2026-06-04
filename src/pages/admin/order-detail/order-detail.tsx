@@ -12,8 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
-import { PaymentStatusEnum } from '@/features/payment';
+import { OrderDeliveryStatusTimeline, OrderHeader, PaymentMethodEnum } from '@/features/order';
+import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
 
 function AdminOrderDetail() {
     const { t, i18n } = useTranslation();
@@ -84,6 +84,7 @@ function AdminOrderDetail() {
     }
 
     const isPaid = order.paymentStatus === PaymentStatusEnum.Paid;
+    const bankingPaymentConfirmed = order.paymentMethod === PaymentMethodEnum.Banking && isPaid;
 
     return (
         <div className='container mx-auto px-4 py-8'>
@@ -95,6 +96,10 @@ function AdminOrderDetail() {
             </Button>
 
             <div className='mx-auto max-w-4xl space-y-6'>
+                {bankingPaymentConfirmed && (
+                    <BankingPaymentConfirmedPanel totalAmount={order.totalAmount} slugId={order.slugId} />
+                )}
+
                 <OrderHeader
                     slugId={order.slugId}
                     totalAmount={order.totalAmount}
