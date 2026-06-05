@@ -25,7 +25,14 @@ export const addItem = createAsyncThunk(
         const isAuthenticated = !!state.user.user?.id;
 
         if (isAuthenticated) {
-            const response = await cartApi.addItem({ foodId: item.id, quantity });
+            const customisations = item.customisations
+                .filter(c => c.optionId)
+                .map(c => ({ groupId: c.groupId!, optionId: c.optionId! }));
+            const response = await cartApi.addItem({
+                foodId: item.id,
+                quantity,
+                ...(customisations.length > 0 ? { customisations } : {}),
+            });
             return { item: { ...response, quantity, isSelected: true }, isAuthenticated: true as const };
         } else {
             return {
@@ -72,6 +79,14 @@ export const clearItems = createAsyncThunk('cart/clearCart', async (_, { getStat
     }
     return { isAuthenticated };
 });
+
+export const replaceItemCustomisations = createAsyncThunk(
+    'cart/replaceItemCustomisations',
+    async ({ id, customisations }: { id: string; customisations: { groupId: string; optionId: string }[] }) => {
+        const updatedItem = await cartApi.replaceItemCustomisations(id, { customisations });
+        return { id, updatedItem };
+    }
+);
 
 export const syncCartItems = createAsyncThunk('cart/syncCartItems', async (_, { getState }) => {
     const state = getState() as RootState;

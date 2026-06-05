@@ -16,6 +16,19 @@ export interface GetFoodsResponseModel {
     items: FoodItemResponseModel[];
 }
 
+export interface CustomisationOptionModel {
+    value: string; // option id
+    label: string;
+    surcharge?: number; // omitted when null/0
+}
+
+export interface CustomisationGroupModel {
+    id: string;
+    label: string;
+    required: boolean;
+    options: CustomisationOptionModel[];
+}
+
 export interface GetFoodByIdResponseModel {
     id: string;
     name: string;
@@ -29,6 +42,7 @@ export interface GetFoodByIdResponseModel {
     quantityUnit: string;
     createdAt: string;
     updatedAt: string | null;
+    customisations: CustomisationGroupModel[];
 }
 
 export interface GetFoodsRequestModel {

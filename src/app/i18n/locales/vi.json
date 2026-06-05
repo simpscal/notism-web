@@ -212,7 +212,6 @@
         "paymentFailed": "Thanh toán thất bại. Vui lòng thử lại.",
         "noItemsSelected": "Không có mục nào được chọn để thanh toán",
         "cashOnDelivery": "Thanh toán khi nhận hàng",
-        "banking": "Ngân hàng",
         "comingSoon": "Sắp ra mắt",
         "payWithCash": "Thanh toán bằng tiền mặt khi đơn hàng được giao",
         "onlineBanking": "Chuyển khoản ngân hàng trực tuyến",
@@ -222,6 +221,11 @@
         "paymentConfirmed": "Thanh toán đã được xác nhận. Bạn có thể xem đơn hàng ngay bây giờ.",
         "awaitingTransfer": "Chờ chuyển khoản",
         "awaitingTransferDescription": "Hoàn tất chuyển khoản để xác nhận đơn hàng",
+        "confirmedPanel": {
+            "title": "Thanh toán đã xác nhận",
+            "descriptionStart": "Giao dịch",
+            "descriptionEnd": "của bạn đã được nhận và xác nhận tự động."
+        },
         "empty": {
             "title": "Giỏ hàng của bạn trống",
             "description": "Thêm mục vào giỏ hàng của bạn trước khi tiếp tục thanh toán.",
@@ -240,7 +244,45 @@
             "totalAmount": "Tổng số tiền",
             "includeReference": "Ghi nội dung chuyển khoản",
             "inTransferDescription": "trong mô tả chuyển khoản"
-        }
+        },
+        "delivery": {
+            "title": "Thông tin giao hàng",
+            "addressLabel": "Địa chỉ giao hàng",
+            "addressPlaceholder": "Nhập địa chỉ giao hàng của bạn",
+            "notesLabel": "Ghi chú giao hàng",
+            "notesOptional": "(không bắt buộc)",
+            "notesPlaceholder": "Ví dụ: bấm chuông, để tại sảnh…",
+            "deliveringTo": "Giao đến",
+            "edit": "Chỉnh sửa",
+            "cashReminder": "Vui lòng chuẩn bị đúng số tiền {{amount}} để thanh toán cho người giao hàng.",
+            "placeOrderWithTotal": "Đặt hàng — {{amount}}"
+        },
+        "summary": {
+            "title": "Tóm tắt đơn hàng",
+            "total": "Tổng cộng"
+        },
+        "success": {
+            "codTitle": "Đặt hàng thành công!",
+            "bankingTitle": "Thanh toán đã xác nhận",
+            "codMessage": "Đơn hàng của bạn đã được xác nhận. Vui lòng chuẩn bị {{amount}} tiền mặt cho người giao hàng.",
+            "bankingMessage": "Giao dịch {{amount}} của bạn đã được nhận và xác nhận tự động.",
+            "amountDueOnDelivery": "Số tiền cần thanh toán khi nhận hàng",
+            "amountReceived": "Số tiền đã nhận",
+            "trackOrder": "Theo dõi đơn hàng",
+            "browseMenu": "Xem thực đơn"
+        },
+        "bankTransfer": {
+            "title": "Chuyển khoản ngân hàng",
+            "scanToPay": "Quét để thanh toán",
+            "bank": "Ngân hàng",
+            "account": "Số tài khoản",
+            "amount": "Số tiền",
+            "autoConfirm": "Sau khi chuyển khoản, thanh toán của bạn sẽ được xác nhận tự động.",
+            "qrUnavailable": "Mã QR không khả dụng",
+            "loadErrorTitle": "Không thể tải thông tin thanh toán",
+            "loadErrorDescription": "Không thể lấy thông tin tài khoản ngân hàng. Vui lòng thử lại sau."
+        },
+        "banking": "Ngân hàng"
     },
     "orders": {
         "title": "Đơn hàng của tôi",
@@ -263,11 +305,13 @@
         "payment": "Thanh toán:",
         "orderCount_one": "{{count}} đơn hàng",
         "orderCount_other": "{{count}} đơn hàng",
+        "includesSurcharges": "Bao gồm phụ phí tùy chỉnh",
         "empty": {
             "title": "Chưa có đơn hàng nào",
             "description": "Bắt đầu mua sắm để xem các đơn hàng của bạn tại đây.",
             "browseMenu": "Duyệt menu"
-        }
+        },
+        "orderTotal": "Tổng đơn hàng"
     },
     "order": {
         "title": "Chi tiết đơn hàng",
@@ -565,6 +609,36 @@
             "deleted": "Người dùng đã được xóa thành công",
             "failedToLoad": "Không thể tải chi tiết người dùng",
             "tryAgainOrGoBack": "Vui lòng thử lại sau hoặc quay lại danh sách người dùng."
+        },
+        "customisationManager": {
+            "title": "Nhóm tuỳ chọn",
+            "empty": "Chưa có nhóm tuỳ chọn nào. Hãy bắt đầu thêm nhóm mới.",
+            "addGroup": "Thêm nhóm tuỳ chọn",
+            "addGroupButton": "Thêm nhóm",
+            "groupLabel": "Tên nhóm",
+            "groupLabelPlaceholder": "Vd: Kích cỡ phần, Độ cay",
+            "groupLabelHelper": "Tên này sẽ hiển thị với khách hàng trên trang chi tiết món ăn.",
+            "required": "Bắt buộc",
+            "optional": "Tuỳ chọn",
+            "requiredSelection": "Lựa chọn bắt buộc",
+            "requiredSelectionHelper": "Khách hàng phải chọn một tuỳ chọn trước khi thêm vào giỏ hàng.",
+            "saveGroup": "Lưu nhóm",
+            "optionLabel": "Tên tuỳ chọn",
+            "optionLabelPlaceholder": "Vd: Cỡ lớn (340 g)",
+            "surcharge": "Phụ phí",
+            "surchargePlaceholder": "Để trống nếu không có phụ phí",
+            "surchargeHelper": "Nhập số tiền phụ thu khách hàng phải trả. Để trống nếu không có phụ phí.",
+            "addOption": "Thêm tuỳ chọn",
+            "addOptionTo": "Thêm tuỳ chọn vào {{label}}",
+            "saveOption": "Lưu tuỳ chọn",
+            "removeColumn": "Xoá",
+            "remove": "Xoá",
+            "deleteGroupAriaLabel": "Xoá nhóm",
+            "deleteGroupTitle": "Xoá nhóm?",
+            "deleteGroupDescription": "Thao tác này sẽ xoá vĩnh viễn \"{{label}}\" và tất cả các tuỳ chọn của nó.",
+            "deleteOptionAriaLabel": "Xoá tuỳ chọn",
+            "deleteOptionTitle": "Xoá tuỳ chọn?",
+            "deleteOptionDescription": "Thao tác này sẽ xoá vĩnh viễn \"{{label}}\"."
         }
     },
     "foods": {
@@ -608,6 +682,12 @@
         "outOfStock": "Hết hàng",
         "addedToCart": "{{qty}}x {{name}} đã được thêm vào giỏ hàng!",
         "total": "Tổng cộng: {{amount}}",
+        "customiseYourOrder": "Tuỳ chỉnh đơn hàng của bạn",
+        "required": "Bắt buộc",
+        "selectAllRequired": "Vui lòng chọn tất cả các tuỳ chọn bắt buộc để tiếp tục.",
+        "addedBanner": "{{name}} × {{qty}} đã được thêm vào giỏ hàng",
+        "addedBannerTotal": "— tổng {{amount}}",
+        "viewCart": "Xem giỏ hàng",
         "empty": {
             "title": "Không tìm thấy thực phẩm",
             "description": "Mục thực phẩm bạn đang tìm không tồn tại hoặc đã bị xóa.",

@@ -44,7 +44,7 @@ function SettingsProfileSection() {
             email: user.email || '',
             avatarUrl: user.avatarUrl || null,
             phone: '',
-            location: '',
+            location: user.location || '',
         },
     });
 
@@ -80,6 +80,7 @@ function SettingsProfileSection() {
                 firstName: values.firstName,
                 lastName: values.lastName,
                 avatarUrl,
+                location: values.location || null,
             });
         };
 
@@ -91,6 +92,7 @@ function SettingsProfileSection() {
                     lastName: formValues.lastName,
                     email: formValues.email,
                     avatarUrl: formValues.avatarUrl || null,
+                    location: formValues.location || undefined,
                 })
             );
             form.reset(values);
@@ -129,7 +131,7 @@ function SettingsProfileSection() {
             email: user.email || '',
             avatarUrl: user.avatarUrl || null,
             phone: '',
-            location: '',
+            location: user.location || '',
         });
         setSelectedFile(null);
         setAvatarRemoved(false);

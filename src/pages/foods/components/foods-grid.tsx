@@ -83,6 +83,8 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
                 category: food.category,
                 stockQuantity: food.stockQuantity,
                 quantityUnit: food.quantityUnit,
+                customisations: [],
+                totalSurcharge: 0,
             };
 
             await addToCart(cartItem, 1);
@@ -95,7 +97,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
 
     if (isLoading) {
         return (
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-6 xl:gap-6'>
                 {Array.from({ length: PAGE_SIZE }).map((_, index) => (
                     <FoodCardSkeleton key={index} />
                 ))}
@@ -109,7 +111,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
 
     return (
         <>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:gap-6 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 xl:gap-6'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-6 xl:gap-6'>
                 {foods.map(food => (
                     <FoodCard key={food.id} food={food} onAddToCart={handleAddToCart} />
                 ))}

@@ -5,23 +5,26 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { OrderActionCard, OrderDetailError } from './components';
+import { OrderActionCard, OrderDetailError, OrderItemsCard } from './components';
 
 import { orderApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
-import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { getFoodPricing, FoodImage } from '@/features/food';
 import {
     OrderCheckoutProgress,
     OrderCheckoutTrustBar,
     OrderDeliveryStatusTimeline,
     OrderHeader,
+    PaymentMethodEnum,
 } from '@/features/order';
-import { PaymentNotificationPayload, PaymentNotificationType, PaymentQr, usePaymentSignalR } from '@/features/payment';
+import {
+    BankingPaymentConfirmedPanel,
+    PaymentNotificationPayload,
+    PaymentNotificationType,
+    PaymentStatusEnum,
+    usePaymentSignalR,
+} from '@/features/payment';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
@@ -88,6 +91,9 @@ function OrderDetail() {
         return <OrderDetailError />;
     }
 
+    const bankingPaymentConfirmed =
+        order.paymentMethod === PaymentMethodEnum.Banking && order.paymentStatus === PaymentStatusEnum.Paid;
+
     return (
         <div className='bg-background'>
             <div className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-8 sm:py-10'>
@@ -111,6 +117,10 @@ function OrderDetail() {
 
             <div className='container mx-auto max-w-5xl px-4 py-6 sm:py-8'>
                 <div className='space-y-6'>
+                    {bankingPaymentConfirmed && (
+                        <BankingPaymentConfirmedPanel totalAmount={order.totalAmount} slugId={order.slugId} />
+                    )}
+
                     <OrderHeader
                         slugId={order.slugId}
                         totalAmount={order.totalAmount}
@@ -130,81 +140,12 @@ function OrderDetail() {
                                 }}
                             />
 
-                            <PaymentQr
+                            <OrderItemsCard
+                                items={order.items}
                                 paymentMethod={order.paymentMethod}
-                                paymentStatus={order.paymentStatus}
-                                paymentQr={order.paymentQr}
-                                slugId={order.slugId}
-                                paidAt={order.paidAt}
+                                totalAmount={order.totalAmount}
+                                deliveryNotes={order.deliveryNotes}
                             />
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>{t('orderDetail.orderItems')}</CardTitle>
-                                </CardHeader>
-                                <CardContent className='space-y-4'>
-                                    <div className='space-y-4'>
-                                        {order.items.map(item => {
-                                            const unitPrice = item.unitPrice ?? 0;
-                                            const { effectivePrice, hasSavings } = getFoodPricing(
-                                                unitPrice,
-                                                item.discountPrice
-                                            );
-
-                                            return (
-                                                <div key={item.id} className='flex gap-4'>
-                                                    <div className='relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-muted'>
-                                                        <FoodImage
-                                                            src={item.imageUrl}
-                                                            alt={item.foodName}
-                                                            className='h-full w-full object-cover'
-                                                        />
-                                                    </div>
-                                                    <div className='flex-1'>
-                                                        <div className='font-medium'>{item.foodName}</div>
-                                                        <div className='text-sm text-muted-foreground'>
-                                                            {t('orderDetail.quantity')} {item.quantity}
-                                                        </div>
-                                                        <div className='mt-1 flex items-center gap-2'>
-                                                            {hasSavings && item.unitPrice != null && (
-                                                                <span className='text-xs text-muted-foreground line-through'>
-                                                                    {formatVnd(item.unitPrice)}
-                                                                </span>
-                                                            )}
-                                                            <span className='font-bold'>
-                                                                {formatVnd(effectivePrice)}
-                                                            </span>
-                                                            <span className='text-xs text-muted-foreground'>
-                                                                {t('orderDetail.each')}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div className='text-right'>
-                                                        <div className='font-bold'>
-                                                            {formatVnd(item.totalPrice ?? 0)}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <Separator />
-
-                                    <div className='space-y-2'>
-                                        <div className='flex justify-between text-sm'>
-                                            <span className='text-muted-foreground'>
-                                                {t('orderDetail.paymentMethod')}
-                                            </span>
-                                            <span className='font-medium capitalize'>{order.paymentMethod}</span>
-                                        </div>
-                                        <div className='flex justify-between text-xl font-black'>
-                                            <span>{t('orderDetail.total')}</span>
-                                            <span>{formatVnd(order.totalAmount)}</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
                         </div>
 
                         <div className='lg:col-span-1'>

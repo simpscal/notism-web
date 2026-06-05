@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, Clock } from 'lucide-react';
+import { Clock, StickyNote } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -11,11 +11,10 @@ import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { FoodImage } from '@/features/food';
 import { DELIVERY_STATUS, DeliveryStatusEnum, type DeliveryStatusConfig } from '@/features/order';
 
 const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
@@ -52,7 +51,7 @@ function Orders() {
             <div className='pointer-events-none absolute inset-0 overflow-hidden' aria-hidden='true'>
                 <div className='absolute -top-20 -right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl' />
             </div>
-            <div className='relative container mx-auto max-w-7xl'>
+            <div className='relative container mx-auto max-w-3xl'>
                 <div className='flex items-center gap-3'>
                     <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>{t('orders.title')}</h1>
                     {orders.length > 0 && (
@@ -70,7 +69,7 @@ function Orders() {
         return (
             <div className='bg-background'>
                 {pageHeader}
-                <div className='container mx-auto max-w-7xl px-4 py-8'>
+                <div className='container mx-auto max-w-3xl px-4 py-8'>
                     <ErrorState title={t('orders.failedToLoad')} description={t('orders.tryAgain')} iconSize='sm' />
                 </div>
             </div>
@@ -84,8 +83,8 @@ function Orders() {
     return (
         <div className='bg-background'>
             {pageHeader}
-            <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8'>
-                <div className='space-y-4 sm:space-y-6'>
+            <div className='container mx-auto max-w-3xl px-4 py-6 sm:py-8'>
+                <div className='space-y-4'>
                     {orders.map(order => {
                         const locale = i18n.language === 'en' ? 'en-US' : 'vi-VN';
                         const orderDate = new Date(order.createdAt).toLocaleDateString(locale, {
@@ -98,96 +97,58 @@ function Orders() {
 
                         const statusInfo = getDeliveryStatusInfo(order.deliveryStatus);
                         const StatusIcon = statusInfo.icon;
+                        const itemCount = order.items.reduce((n, i) => n + i.quantity, 0);
+                        const hasSurcharges = order.items.some(i => (i.surcharge ?? 0) > 0);
 
                         return (
                             <Card
                                 key={order.id}
-                                className='overflow-hidden border border-border transition-all hover:border-primary/40 hover:shadow-md'
+                                className='border border-border transition-all hover:border-primary/40 hover:shadow-md'
                             >
-                                <CardHeader className='pb-4'>
-                                    <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-                                        <div className='flex-1'>
-                                            <CardTitle className='mb-2 text-lg sm:text-xl'>
-                                                {t('orders.orderNumber', { id: order.slugId })}
+                                <CardHeader className='pb-0'>
+                                    <div className='flex items-start justify-between gap-4'>
+                                        <div className='space-y-1'>
+                                            <CardTitle className='font-mono text-sm text-muted-foreground'>
+                                                {order.slugId}
                                             </CardTitle>
-                                            <div className='mb-2 sm:mb-0'>
-                                                <Badge
-                                                    variant='outline'
-                                                    className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
-                                                >
-                                                    <StatusIcon className='h-3 w-3' />
-                                                    {t(statusInfo.label)}
-                                                </Badge>
-                                            </div>
-                                            <CardDescription className='mt-2 flex items-center gap-2'>
-                                                <Clock className='h-3.5 w-3.5' />
-                                                {orderDate}
-                                            </CardDescription>
+                                            <p className='text-xs text-muted-foreground'>{orderDate}</p>
                                         </div>
-                                        <div className='flex items-baseline gap-2 sm:flex-col sm:items-end sm:gap-1'>
-                                            <div className='text-xl sm:text-2xl font-bold'>
-                                                {formatVnd(order.totalAmount)}
-                                            </div>
-                                            <div className='text-xs text-muted-foreground'>
-                                                {t('cart.itemCount', { count: order.items.length })}
-                                            </div>
-                                        </div>
+                                        <Badge
+                                            variant='outline'
+                                            className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
+                                        >
+                                            <StatusIcon className='h-3 w-3' />
+                                            {t(statusInfo.label)}
+                                        </Badge>
                                     </div>
                                 </CardHeader>
-                                <CardContent className='pt-0'>
-                                    <div className='space-y-4'>
-                                        {/* Order Items with Images */}
-                                        <div className='space-y-3'>
-                                            {order.items.slice(0, 3).map(item => (
-                                                <div key={item.id} className='flex items-center gap-3'>
-                                                    <div className='relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border bg-muted'>
-                                                        <FoodImage
-                                                            src={item.imageUrl}
-                                                            alt={item.foodName}
-                                                            className='h-full w-full object-cover'
-                                                        />
-                                                    </div>
-                                                    <div className='flex-1 min-w-0'>
-                                                        <div className='font-medium text-sm truncate'>
-                                                            {item.foodName}
-                                                        </div>
-                                                        <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                                                            <span>
-                                                                {t('orders.qty')} {item.quantity}
-                                                            </span>
-                                                            <span>•</span>
-                                                            <span className='font-medium text-foreground'>
-                                                                {formatVnd(item.totalPrice)}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {order.items.length > 3 && (
-                                                <div className='flex items-center gap-3'>
-                                                    <div className='text-sm font-medium text-muted-foreground'>
-                                                        {t('orders.moreItems', { count: order.items.length - 3 })}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                <CardContent className='space-y-3'>
+                                    <p className='text-sm text-muted-foreground'>
+                                        {t('cart.itemCount', { count: itemCount })}
+                                        {hasSurcharges ? ` · ${t('orders.includesSurcharges')}` : ''}
+                                    </p>
 
-                                        <Separator />
-
-                                        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-                                            <div className='flex items-center gap-2 text-sm'>
-                                                <span className='text-muted-foreground'>{t('orders.payment')}</span>
-                                                <Badge variant='outline' className='font-medium capitalize'>
-                                                    {order.paymentMethod}
-                                                </Badge>
-                                            </div>
-                                            <Button variant='default' size='sm' className='w-full sm:w-auto' asChild>
-                                                <Link to={`/${ROUTES.ORDERS.DETAIL(order.slugId)}`}>
-                                                    {t('orders.viewDetails')}
-                                                    <ArrowRight className='ml-2 h-4 w-4' />
-                                                </Link>
-                                            </Button>
+                                    {order.deliveryNotes && (
+                                        <div className='flex items-start gap-1.5 text-sm text-muted-foreground'>
+                                            <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0' />
+                                            <span>{order.deliveryNotes}</span>
                                         </div>
+                                    )}
+
+                                    <Separator />
+
+                                    <div className='flex items-center justify-between'>
+                                        <div>
+                                            <p className='text-xs text-muted-foreground'>{t('orders.orderTotal')}</p>
+                                            <p className='text-base font-bold text-foreground'>
+                                                {formatVnd(order.totalAmount)}
+                                            </p>
+                                        </div>
+                                        <Button variant='outline' size='sm' asChild>
+                                            <Link to={`/${ROUTES.ORDERS.DETAIL(order.slugId)}`}>
+                                                {t('orders.viewDetails')}
+                                            </Link>
+                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>

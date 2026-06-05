@@ -8,6 +8,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Checkbox } from '@/components/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 import { FoodImage } from '@/features/food/components';
@@ -17,15 +18,23 @@ interface CartItemProps {
     onQuantityChange: (id: string, delta: number) => void;
     onRemove: (id: string, name: string) => void;
     onSelectionChange: (id: string, selected: boolean) => void;
+    onCustomisationsChange?: (id: string, customisations: { groupId: string; optionId: string }[]) => void;
 }
 
-function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange }: CartItemProps) {
+function CartItemComponent({
+    item,
+    onQuantityChange,
+    onRemove,
+    onSelectionChange,
+    onCustomisationsChange,
+}: CartItemProps) {
     const { t } = useTranslation();
     const isSelected = item.isSelected;
     const { effectivePrice, hasSavings } = getFoodPricing(item.price, item.discountPrice);
-    const itemTotal = effectivePrice * item.quantity;
+    const effectiveUnitPrice = effectivePrice + item.totalSurcharge;
+    const itemTotal = effectiveUnitPrice * item.quantity;
     const originalTotal = item.price * item.quantity;
-    const discountAmount = hasSavings ? originalTotal - itemTotal : 0;
+    const discountAmount = hasSavings ? originalTotal - effectivePrice * item.quantity : 0;
 
     const handleCardClick = () => {
         onSelectionChange(item.id, !isSelected);
@@ -35,8 +44,33 @@ function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange
         onSelectionChange(item.id, checked);
     };
 
-    const handleButtonClick = (e: React.MouseEvent) => {
+    const handleStopPropagation = (e: React.MouseEvent | React.SyntheticEvent) => {
         e.stopPropagation();
+    };
+
+    const handleRemove = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onRemove(item.id, item.name);
+    };
+
+    const handleCustomisationChange = (groupId: string | null, optionId: string) => {
+        const updated = item.customisations.map(existing =>
+            existing.groupId === groupId ? { ...existing, optionId } : existing
+        );
+        onCustomisationsChange?.(
+            item.id,
+            updated.filter(x => x.optionId).map(x => ({ groupId: x.groupId!, optionId: x.optionId! }))
+        );
+    };
+
+    const handleDecrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onQuantityChange(item.id, -1);
+    };
+
+    const handleIncrement = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onQuantityChange(item.id, 1);
     };
 
     return (
@@ -52,17 +86,14 @@ function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange
                 variant='ghost'
                 size='icon-sm'
                 className='absolute top-3 right-3 text-muted-foreground hover:text-destructive'
-                onClick={e => {
-                    handleButtonClick(e);
-                    onRemove(item.id, item.name);
-                }}
+                onClick={handleRemove}
             >
                 <Trash2 className='h-4 w-4' />
             </Button>
 
             <div className='flex items-start gap-4 pr-8'>
                 {/* Checkbox */}
-                <div className='pt-0.5' onClick={handleButtonClick} onMouseDown={e => e.stopPropagation()}>
+                <div className='pt-0.5' onClick={handleStopPropagation} onMouseDown={handleStopPropagation}>
                     <Checkbox checked={isSelected} onCheckedChange={handleCheckboxChange} />
                 </div>
 
@@ -90,31 +121,57 @@ function CartItemComponent({ item, onQuantityChange, onRemove, onSelectionChange
                         </Badge>
                     </div>
 
+                    {/* Customisation selects */}
+                    {item.customisations && item.customisations.length > 0 && (
+                        <div
+                            className='flex flex-col gap-1.5'
+                            onClick={handleStopPropagation}
+                            onMouseDown={handleStopPropagation}
+                        >
+                            {item.customisations.map(c => (
+                                <div key={c.groupId ?? c.groupLabel} className='flex items-center gap-2'>
+                                    <span className='text-xs text-muted-foreground'>{c.groupLabel}:</span>
+                                    <Select
+                                        value={c.optionId ?? ''}
+                                        onValueChange={val => handleCustomisationChange(c.groupId, val)}
+                                    >
+                                        <SelectTrigger className='h-7 w-auto min-w-[160px] text-xs'>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {c.availableOptions.map(opt => (
+                                                <SelectItem key={opt.id} value={opt.id} className='text-xs'>
+                                                    {opt.label}
+                                                    {(opt.surcharge ?? 0) > 0 && ` (+${formatVnd(opt.surcharge!)})`}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {(c.surcharge ?? 0) > 0 && (
+                                        <Badge variant='secondary' className='text-xs'>
+                                            +{formatVnd(c.surcharge!)}
+                                        </Badge>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     {/* Quantity + Price row */}
                     <div className='flex flex-wrap items-center justify-between gap-3 pt-1'>
                         <div
                             className='flex items-center rounded-lg border'
-                            onClick={handleButtonClick}
-                            onMouseDown={e => e.stopPropagation()}
+                            onClick={handleStopPropagation}
+                            onMouseDown={handleStopPropagation}
                         >
-                            <Button
-                                variant='ghost'
-                                size='icon-sm'
-                                onClick={e => {
-                                    handleButtonClick(e);
-                                    onQuantityChange(item.id, -1);
-                                }}
-                            >
+                            <Button variant='ghost' size='icon-sm' onClick={handleDecrement}>
                                 <Minus className='h-3.5 w-3.5' />
                             </Button>
                             <span className='w-8 text-center text-sm font-semibold'>{item.quantity}</span>
                             <Button
                                 variant='ghost'
                                 size='icon-sm'
-                                onClick={e => {
-                                    handleButtonClick(e);
-                                    onQuantityChange(item.id, 1);
-                                }}
+                                onClick={handleIncrement}
                                 disabled={item.quantity >= item.stockQuantity}
                             >
                                 <Plus className='h-3.5 w-3.5' />

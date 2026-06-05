@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, StickyNote } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -12,8 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { OrderDeliveryStatusTimeline, OrderHeader } from '@/features/order';
-import { PaymentStatusEnum } from '@/features/payment';
+import { OrderDeliveryStatusTimeline, OrderHeader, PaymentMethodEnum } from '@/features/order';
+import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
 
 function AdminOrderDetail() {
     const { t, i18n } = useTranslation();
@@ -84,6 +84,7 @@ function AdminOrderDetail() {
     }
 
     const isPaid = order.paymentStatus === PaymentStatusEnum.Paid;
+    const bankingPaymentConfirmed = order.paymentMethod === PaymentMethodEnum.Banking && isPaid;
 
     return (
         <div className='container mx-auto px-4 py-8'>
@@ -95,6 +96,10 @@ function AdminOrderDetail() {
             </Button>
 
             <div className='mx-auto max-w-4xl space-y-6'>
+                {bankingPaymentConfirmed && (
+                    <BankingPaymentConfirmedPanel totalAmount={order.totalAmount} slugId={order.slugId} />
+                )}
+
                 <OrderHeader
                     slugId={order.slugId}
                     totalAmount={order.totalAmount}
@@ -135,6 +140,12 @@ function AdminOrderDetail() {
                                         </span>
                                         <span className='font-medium capitalize'>{order.paymentMethod}</span>
                                     </div>
+                                    {order.deliveryNotes && (
+                                        <div className='flex items-start gap-1.5 text-sm'>
+                                            <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground' />
+                                            <span className='text-muted-foreground'>{order.deliveryNotes}</span>
+                                        </div>
+                                    )}
                                     <div className='flex justify-between text-lg font-semibold'>
                                         <span>{t('orderDetail.total')}</span>
                                         <span>{formatVnd(order.totalAmount)}</span>

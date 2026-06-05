@@ -4,6 +4,7 @@ import {
     BulkAddCartItemsRequestModel,
     CartItemResponseModel,
     GetCartResponseModel,
+    ReplaceCartItemCustomisationsRequestModel,
     UpdateCartItemQuantityRequestModel,
 } from './models';
 
@@ -32,5 +33,9 @@ export const cartApi = {
 
     bulkAddItems: (data: BulkAddCartItemsRequestModel) => {
         return apiClient.post<GetCartResponseModel>(API_ENDPOINTS.CART.ITEMS_BULK, data);
+    },
+
+    replaceItemCustomisations: (itemId: string, data: ReplaceCartItemCustomisationsRequestModel) => {
+        return apiClient.put<CartItemResponseModel>(API_ENDPOINTS.CART.ITEM_CUSTOMISATIONS(itemId), data);
     },
 };

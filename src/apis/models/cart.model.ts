@@ -1,3 +1,18 @@
+export interface CartItemCustomisationOptionModel {
+    id: string;
+    label: string;
+    surcharge: number | null;
+}
+
+export interface CartItemCustomisationModel {
+    groupId: string | null;
+    groupLabel: string;
+    optionId: string | null;
+    optionLabel: string;
+    surcharge: number | null;
+    availableOptions: CartItemCustomisationOptionModel[];
+}
+
 export interface CartItemResponseModel {
     id: string;
     name: string;
@@ -9,6 +24,8 @@ export interface CartItemResponseModel {
     quantity: number;
     stockQuantity: number;
     quantityUnit: string;
+    customisations: CartItemCustomisationModel[];
+    totalSurcharge: number;
 }
 
 export interface GetCartResponseModel {
@@ -18,6 +35,11 @@ export interface GetCartResponseModel {
 export interface AddCartItemRequestModel {
     foodId: string;
     quantity: number;
+    customisations?: { groupId: string; optionId: string }[];
+}
+
+export interface ReplaceCartItemCustomisationsRequestModel {
+    customisations: { groupId: string; optionId: string }[];
 }
 
 export interface UpdateCartItemQuantityRequestModel {

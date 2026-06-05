@@ -67,8 +67,9 @@ export const foodHandlers = [
         }
 
         const imageUrls =
-            (food as GetFoodByIdResponseModel).imageUrls && Array.isArray((food as GetFoodByIdResponseModel).imageUrls)
-                ? (food as GetFoodByIdResponseModel).imageUrls
+            (food as unknown as GetFoodByIdResponseModel).imageUrls &&
+            Array.isArray((food as unknown as GetFoodByIdResponseModel).imageUrls)
+                ? (food as unknown as GetFoodByIdResponseModel).imageUrls
                 : food.imageUrl
                   ? [
                         food.imageUrl,
@@ -84,6 +85,7 @@ export const foodHandlers = [
             imageUrls,
             createdAt: food.createdAt || new Date().toISOString(),
             updatedAt: food.updatedAt || null,
+            customisations: [],
         };
 
         return HttpResponse.json(foodDetail);

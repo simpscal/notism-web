@@ -6,41 +6,41 @@ function FoodDetailSkeleton() {
     return (
         <div className='bg-background'>
             <div className='container mx-auto px-4 py-8'>
-                <Skeleton className='mb-8 h-10 w-32' />
+                {/* Back link skeleton */}
+                <Skeleton className='mb-8 h-8 w-32' />
+
                 <div className='grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16'>
                     {/* Image skeleton */}
-                    <div className='relative'>
-                        <Skeleton className='aspect-[4/5] w-full rounded-3xl' />
-                    </div>
+                    <Skeleton className='aspect-[4/5] w-full rounded-3xl' />
 
                     {/* Details skeleton */}
                     <div className='flex flex-col space-y-6'>
-                        <Skeleton className='h-6 w-24' />
+                        {/* Category chip */}
+                        <Skeleton className='h-4 w-24' />
+
+                        {/* Title */}
                         <Skeleton className='h-12 w-3/4' />
-                        <div className='flex items-center gap-2'>
-                            <div className='flex gap-0.5'>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <Skeleton key={i} className='h-5 w-5' />
-                                ))}
-                            </div>
-                            <Skeleton className='h-4 w-24' />
-                        </div>
+
+                        {/* Description lines */}
                         <div className='space-y-2'>
                             <Skeleton className='h-4 w-full' />
                             <Skeleton className='h-4 w-full' />
                             <Skeleton className='h-4 w-3/4' />
                         </div>
-                        <div className='flex flex-wrap gap-4'>
-                            <Skeleton className='h-10 w-32' />
-                            <Skeleton className='h-10 w-32' />
+
+                        {/* Meta pills */}
+                        <div className='flex flex-wrap gap-3'>
+                            <Skeleton className='h-8 w-28 rounded-full' />
+                            <Skeleton className='h-8 w-28 rounded-full' />
                         </div>
-                        <div>
-                            <Skeleton className='mb-2 h-6 w-24' />
-                            <Skeleton className='h-12 w-40' />
-                        </div>
-                        <div className='mt-auto flex flex-col gap-4 sm:flex-row sm:items-center'>
-                            <Skeleton className='h-14 w-32' />
-                            <Skeleton className='h-14 flex-1' />
+
+                        {/* Price */}
+                        <Skeleton className='h-14 w-48' />
+
+                        {/* CTA row */}
+                        <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
+                            <Skeleton className='h-10 w-32 rounded-full' />
+                            <Skeleton className='h-10 flex-1 rounded-full' />
                         </div>
                     </div>
                 </div>

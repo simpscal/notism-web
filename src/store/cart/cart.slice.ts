@@ -2,7 +2,15 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { resetStore } from '../root.actions';
 
-import { addItem, clearItems, loadCart, removeItem, updateItemQuantity, syncCartItems } from './cart.thunks';
+import {
+    addItem,
+    clearItems,
+    loadCart,
+    removeItem,
+    replaceItemCustomisations,
+    updateItemQuantity,
+    syncCartItems,
+} from './cart.thunks';
 
 import { CartItemViewModel } from '@/features/cart/models';
 
@@ -104,6 +112,15 @@ const cartSlice = createSlice({
             state.items = [];
             if (!action.payload.isAuthenticated) {
                 clearCartStorage();
+            }
+        });
+
+        builder.addCase(replaceItemCustomisations.fulfilled, (state, action) => {
+            const { id, updatedItem } = action.payload;
+            const item = state.items.find(item => item.id === id);
+            if (item) {
+                item.customisations = updatedItem.customisations;
+                item.totalSurcharge = updatedItem.totalSurcharge;
             }
         });
 
