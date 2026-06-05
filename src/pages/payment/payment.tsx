@@ -12,6 +12,7 @@ import { orderApi, paymentApi, userApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
+import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { CartItemViewModel } from '@/features/cart/models';
@@ -44,7 +45,7 @@ function Payment() {
     const [successState, setSuccessState] = useState<PaymentSuccessState | null>(null);
     const [successItems, setSuccessItems] = useState<CartItemViewModel[]>([]);
 
-    const { data: bankAccount } = useQuery({
+    const { data: bankAccount, isError: isBankAccountError } = useQuery({
         queryKey: ['bank-account'],
         queryFn: () => paymentApi.getBankAccount(),
         enabled: bankingCheckout,
@@ -220,7 +221,17 @@ function Payment() {
                         />
 
                         {paymentMethod === PaymentMethodEnum.Banking &&
-                            (isCreatingCheckout || !bankAccount ? (
+                            (isBankAccountError ? (
+                                <Card>
+                                    <CardContent>
+                                        <ErrorState
+                                            title={t('payment.bankTransfer.loadErrorTitle')}
+                                            description={t('payment.bankTransfer.loadErrorDescription')}
+                                            iconSize='sm'
+                                        />
+                                    </CardContent>
+                                </Card>
+                            ) : isCreatingCheckout || !bankAccount ? (
                                 <Card>
                                     <CardContent className='flex items-center justify-center py-12'>
                                         <Spinner size='lg' />

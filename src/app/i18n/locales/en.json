@@ -278,7 +278,9 @@
             "account": "Account",
             "amount": "Amount",
             "autoConfirm": "After your transfer the payment will be confirmed automatically.",
-            "qrUnavailable": "QR unavailable"
+            "qrUnavailable": "QR unavailable",
+            "loadErrorTitle": "Unable to load payment details",
+            "loadErrorDescription": "Bank account details could not be retrieved. Please try again later."
         },
         "banking": "Banking"
     },
