@@ -82,6 +82,24 @@ describe('Payment — Banking Checkout Transition', () => {
         });
     });
 
+    it('shows error state when bank account fetch returns 403 Forbidden', async () => {
+        server.use(http.get(BANK_ACCOUNT_URL, () => HttpResponse.json({ message: 'Forbidden' }, { status: 403 })));
+
+        renderWithProviders(<Payment />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') })).toBeInTheDocument();
+        });
+
+        await userEvent.click(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') }));
+
+        await waitFor(() => {
+            expect(screen.getByText(t('payment.bankTransfer.loadErrorTitle'))).toBeInTheDocument();
+        });
+
+        expect(screen.queryByText('Bank transfer')).not.toBeInTheDocument();
+    });
+
     it('COD payment calls createOrder immediately without transitioning to banking checkout', async () => {
         let orderCreated = false;
         server.use(
