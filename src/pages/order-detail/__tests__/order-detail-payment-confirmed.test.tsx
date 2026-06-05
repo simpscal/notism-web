@@ -98,7 +98,7 @@ describe('OrderDetail — payment confirmed panel', () => {
         const confirmedPanel = panels.find(el => el.getAttribute('aria-live') === 'polite');
         expect(confirmedPanel).toBeInTheDocument();
 
-        expect(screen.getByText(t('orderDetail.paymentConfirmed.title'))).toBeInTheDocument();
+        expect(screen.getByText(t('payment.confirmedPanel.title'))).toBeInTheDocument();
         // The slug ID badge should appear inside the confirmed panel
         expect(within(confirmedPanel!).getByText('ORD-20260601-7843')).toBeInTheDocument();
     });
