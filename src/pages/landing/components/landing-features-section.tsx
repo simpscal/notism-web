@@ -31,7 +31,7 @@ function LandingFeaturesSection() {
     ] as const;
 
     return (
-        <section className='bg-background px-4 py-12 sm:py-16'>
+        <section id='features' className='bg-background px-4 py-12 sm:py-16'>
             <div className='mx-auto max-w-7xl'>
                 <div className='text-center'>
                     <h3 className='text-2xl font-bold tracking-tight'>{t('landing.features.title')}</h3>
