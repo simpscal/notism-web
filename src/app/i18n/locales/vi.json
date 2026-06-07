@@ -322,7 +322,11 @@
             "description": "Bắt đầu mua sắm để xem các đơn hàng của bạn tại đây.",
             "browseMenu": "Duyệt menu"
         },
-        "orderTotal": "Tổng đơn hàng"
+        "orderTotal": "Tổng đơn hàng",
+        "loadingMore": "Đang tải thêm đơn hàng…",
+        "endOfList": "Bạn đã xem hết các đơn hàng",
+        "loadMoreFailed": "Không thể tải thêm đơn hàng",
+        "retry": "Thử lại"
     },
     "order": {
         "title": "Chi tiết đơn hàng",
