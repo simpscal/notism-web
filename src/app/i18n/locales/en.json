@@ -322,7 +322,11 @@
             "description": "Start shopping to see your orders here.",
             "browseMenu": "Browse Menu"
         },
-        "orderTotal": "Order total"
+        "orderTotal": "Order total",
+        "loadingMore": "Loading more orders…",
+        "endOfList": "You've reached the end of your orders",
+        "loadMoreFailed": "Couldn't load more orders",
+        "retry": "Retry"
     },
     "order": {
         "title": "Order Details",

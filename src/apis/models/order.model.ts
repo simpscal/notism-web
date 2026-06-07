@@ -56,6 +56,13 @@ export interface OrderResponseModel {
     deliveryStatusTiming: DeliveryStatusTimingResponseModel;
 }
 
+export interface GetOrdersRequestModel {
+    skip?: number;
+    take?: number;
+    paymentStatus?: string;
+}
+
 export interface GetOrdersResponseModel {
-    orders: OrderResponseModel[];
+    totalCount: number;
+    items: OrderResponseModel[];
 }
