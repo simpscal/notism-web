@@ -267,7 +267,7 @@ function PageShell({ children, selectedCategory = null, totalCount = 0, hasFilte
             {/* Main content */}
             <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8 lg:py-10'>
                 {/* Filter + sort control bar */}
-                <div className='sticky top-16 z-40 -mx-4 mb-5 border-b bg-background/95 px-4 pb-3 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:mb-6'>
+                <div className='top-16 z-40 -mx-4 mb-5 border-b bg-background/95 px-4 pb-3 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:mb-6'>
                     {/* Row 1: category toggle row (scrolls horizontally on narrow screens) + sort select */}
                     <div className='flex items-center gap-3'>
                         <div className='min-w-0 flex-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
