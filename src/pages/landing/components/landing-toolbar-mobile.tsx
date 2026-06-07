@@ -16,10 +16,13 @@ function LandingToolbarMobile({ isAuthenticated }: LandingToolbarMobileProps) {
     const [sheetOpen, setSheetOpen] = useState(false);
 
     const NAV_LINKS = [
-        { label: t('landing.toolbar.menu'), href: `/${ROUTES.FOODS.LIST}` },
-        { label: t('landing.toolbar.howItWorks'), href: '#features' },
-        { label: t('landing.toolbar.faq'), href: '#faq' },
+        { label: t('landing.toolbar.menu'), to: `/${ROUTES.FOODS.LIST}`, hash: false },
+        { label: t('landing.toolbar.howItWorks'), to: '#features', hash: true },
+        { label: t('landing.toolbar.faq'), to: '#faq', hash: true },
     ] as const;
+
+    const navClassName =
+        'flex items-center gap-3 rounded-full px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground';
 
     return (
         <>
@@ -29,16 +32,27 @@ function LandingToolbarMobile({ isAuthenticated }: LandingToolbarMobileProps) {
                         <SheetTitle className='text-primary font-semibold tracking-tight text-lg'>Notism</SheetTitle>
                     </SheetHeader>
                     <nav className='flex flex-col gap-1 px-2 mt-2'>
-                        {NAV_LINKS.map(link => (
-                            <a
-                                key={link.label}
-                                href={link.href}
-                                onClick={() => setSheetOpen(false)}
-                                className='flex items-center gap-3 rounded-full px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground'
-                            >
-                                {link.label}
-                            </a>
-                        ))}
+                        {NAV_LINKS.map(link =>
+                            link.hash ? (
+                                <a
+                                    key={link.label}
+                                    href={link.to}
+                                    onClick={() => setSheetOpen(false)}
+                                    className={navClassName}
+                                >
+                                    {link.label}
+                                </a>
+                            ) : (
+                                <Link
+                                    key={link.label}
+                                    to={link.to}
+                                    onClick={() => setSheetOpen(false)}
+                                    className={navClassName}
+                                >
+                                    {link.label}
+                                </Link>
+                            )
+                        )}
                     </nav>
                     <div className='mt-4 border-t px-4 pt-4 space-y-2'>
                         {isAuthenticated ? (

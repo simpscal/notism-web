@@ -14,10 +14,13 @@ function LandingToolbarDesktop({ isAuthenticated }: LandingToolbarDesktopProps) 
     const { t } = useTranslation();
 
     const NAV_LINKS = [
-        { label: t('landing.toolbar.menu'), href: `/${ROUTES.FOODS.LIST}` },
-        { label: t('landing.toolbar.howItWorks'), href: '#features' },
-        { label: t('landing.toolbar.faq'), href: '#faq' },
+        { label: t('landing.toolbar.menu'), to: `/${ROUTES.FOODS.LIST}`, hash: false },
+        { label: t('landing.toolbar.howItWorks'), to: '#features', hash: true },
+        { label: t('landing.toolbar.faq'), to: '#faq', hash: true },
     ] as const;
+
+    const navClassName =
+        'rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground';
 
     return (
         <header className='sticky top-0 z-50 hidden h-16 w-full border-b bg-background/90 backdrop-blur lg:flex'>
@@ -34,15 +37,17 @@ function LandingToolbarDesktop({ isAuthenticated }: LandingToolbarDesktopProps) 
 
                 {/* Center — nav */}
                 <nav className='flex items-center gap-1'>
-                    {NAV_LINKS.map(link => (
-                        <a
-                            key={link.label}
-                            href={link.href}
-                            className='rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground'
-                        >
-                            {link.label}
-                        </a>
-                    ))}
+                    {NAV_LINKS.map(link =>
+                        link.hash ? (
+                            <a key={link.label} href={link.to} className={navClassName}>
+                                {link.label}
+                            </a>
+                        ) : (
+                            <Link key={link.label} to={link.to} className={navClassName}>
+                                {link.label}
+                            </Link>
+                        )
+                    )}
                 </nav>
 
                 {/* Right — CTA */}
