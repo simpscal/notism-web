@@ -2,7 +2,8 @@ import { memo } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { AdminLayoutToolbar } from './components';
+import AdminToolbarDesktop from './components/admin-toolbar-desktop';
+import AdminToolbarMobile from './components/admin-toolbar-mobile';
 
 import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
@@ -23,8 +24,9 @@ function AdminLayout() {
 
     return (
         <div className='flex h-screen flex-col bg-background'>
-            <AdminLayoutToolbar user={user} onLogout={handleLogout} />
-            <main className='flex-1 overflow-y-auto'>
+            <AdminToolbarDesktop user={user} onLogout={handleLogout} />
+            <AdminToolbarMobile user={user} onLogout={handleLogout} />
+            <main className='flex-1 overflow-y-auto pb-16 lg:pb-0'>
                 <Outlet />
             </main>
         </div>

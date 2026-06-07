@@ -7,7 +7,7 @@ function LandingFaqSection() {
     const { t } = useTranslation();
 
     return (
-        <section className='px-4 py-12 sm:py-16'>
+        <section id='faq' className='px-4 py-12 sm:py-16'>
             <div className='mx-auto max-w-3xl space-y-6'>
                 <div className='space-y-3 text-center'>
                     <h3 className='text-2xl font-bold tracking-tight'>{t('landing.faq.title')}</h3>

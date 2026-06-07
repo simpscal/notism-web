@@ -2,7 +2,8 @@ import { memo } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { ClientLayoutToolbar } from './components';
+import ClientToolbarDesktop from './components/client-toolbar-desktop';
+import ClientToolbarMobile from './components/client-toolbar-mobile';
 
 import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
@@ -23,8 +24,11 @@ function ClientLayout() {
 
     return (
         <div className='flex h-screen flex-col bg-background'>
-            <ClientLayoutToolbar user={user} onLogout={handleLogout} />
-            <main className='flex-1 overflow-y-auto'>
+            <>
+                <ClientToolbarDesktop user={user} onLogout={handleLogout} />
+                <ClientToolbarMobile user={user} onLogout={handleLogout} />
+            </>
+            <main className='flex-1 overflow-y-auto pb-16 lg:pb-0'>
                 <Outlet />
             </main>
         </div>

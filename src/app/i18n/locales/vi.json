@@ -153,6 +153,14 @@
             "logIn": "Đăng nhập",
             "signUp": "Đăng ký"
         },
+        "toolbar": {
+            "menu": "Thực đơn",
+            "howItWorks": "Cách hoạt động",
+            "faq": "Câu hỏi thường gặp",
+            "signUp": "Đăng ký",
+            "logIn": "Đăng nhập",
+            "browseMenu": "Duyệt thực đơn"
+        },
         "footer": {
             "allRightsReserved": "Bảo lưu mọi quyền."
         },
@@ -164,8 +172,11 @@
         }
     },
     "nav": {
+        "home": "Trang chủ",
         "foods": "Thực phẩm",
         "orders": "Đơn hàng",
+        "cart": "Giỏ hàng",
+        "theme": "Giao diện",
         "appearance": "Giao diện",
         "adminPortal": "Cổng quản trị",
         "setting": "Cài đặt",
