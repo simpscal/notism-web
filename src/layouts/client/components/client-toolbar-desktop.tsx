@@ -1,4 +1,4 @@
-import { Globe, Home, LogIn, LogOut, Moon, Settings, ShoppingCart, Sun, UtensilsCrossed, User } from 'lucide-react';
+import { Globe, Home, LogIn, LogOut, Moon, Settings, ShoppingCart, Sun, User } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink } from 'react-router-dom';
@@ -49,7 +49,6 @@ function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
     const desktopNavItems = useMemo(
         () => [
             { label: t('nav.home'), path: `/${ROUTES.FOODS.LIST}`, icon: Home },
-            { label: t('nav.foods'), path: `/${ROUTES.FOODS.LIST}`, icon: UtensilsCrossed },
             ...(user ? [{ label: t('nav.orders'), path: `/${ROUTES.ORDERS.LIST}`, icon: ShoppingCart }] : []),
         ],
         [t, user]
