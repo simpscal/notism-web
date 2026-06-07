@@ -164,8 +164,11 @@
         }
     },
     "nav": {
+        "home": "Trang chủ",
         "foods": "Thực phẩm",
         "orders": "Đơn hàng",
+        "cart": "Giỏ hàng",
+        "theme": "Giao diện",
         "appearance": "Giao diện",
         "adminPortal": "Cổng quản trị",
         "setting": "Cài đặt",
