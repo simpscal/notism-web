@@ -153,6 +153,14 @@
             "logIn": "Đăng nhập",
             "signUp": "Đăng ký"
         },
+        "toolbar": {
+            "menu": "Thực đơn",
+            "howItWorks": "Cách hoạt động",
+            "faq": "Câu hỏi thường gặp",
+            "signUp": "Đăng ký",
+            "logIn": "Đăng nhập",
+            "browseMenu": "Duyệt thực đơn"
+        },
         "footer": {
             "allRightsReserved": "Bảo lưu mọi quyền."
         },

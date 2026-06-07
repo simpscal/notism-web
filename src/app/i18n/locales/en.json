@@ -153,6 +153,14 @@
             "logIn": "Log in",
             "signUp": "Sign up"
         },
+        "toolbar": {
+            "menu": "Menu",
+            "howItWorks": "How it works",
+            "faq": "FAQ",
+            "signUp": "Sign up",
+            "logIn": "Log in",
+            "browseMenu": "Browse menu"
+        },
         "footer": {
             "allRightsReserved": "All rights reserved."
         },
