@@ -1,12 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Clock, StickyNote } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
 
-import { OrdersEmpty } from './components';
+import { OrdersEmpty, OrdersLoadMore } from './components';
 
 import { orderApi } from '@/apis';
+import { PAGE_SIZE } from '@/app/constants';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
@@ -31,12 +33,31 @@ const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
 
 function Orders() {
     const { t, i18n } = useTranslation();
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ['orders', 'list'] as const,
-        queryFn: () => orderApi.getOrders(),
-    });
+    const { ref: loadMoreRef, inView } = useInView();
 
-    const orders = useMemo(() => data?.orders || [], [data]);
+    const { data, isLoading, isError, isFetchingNextPage, isFetchNextPageError, hasNextPage, fetchNextPage } =
+        useInfiniteQuery({
+            queryKey: ['orders', 'infinite'] as const,
+            queryFn: ({ pageParam = 0 }) => orderApi.getOrders({ skip: pageParam, take: PAGE_SIZE }),
+            getNextPageParam: (lastPage, allPages) => {
+                const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
+                return loadedCount < lastPage.totalCount ? loadedCount : undefined;
+            },
+            initialPageParam: 0,
+        });
+
+    const orders = useMemo(() => data?.pages.flatMap(page => page.items) ?? [], [data?.pages]);
+    const totalCount = data?.pages[0]?.totalCount ?? 0;
+
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, isFetchingNextPage, isFetchNextPageError, fetchNextPage]);
+
+    const handleRetry = useCallback(() => {
+        fetchNextPage();
+    }, [fetchNextPage]);
 
     if (isLoading) {
         return (
@@ -54,9 +75,9 @@ function Orders() {
             <div className='relative container mx-auto max-w-3xl'>
                 <div className='flex items-center gap-3'>
                     <h1 className='text-3xl font-black tracking-tight sm:text-4xl'>{t('orders.title')}</h1>
-                    {orders.length > 0 && (
+                    {totalCount > 0 && (
                         <span className='rounded-full bg-primary/10 px-3 py-0.5 text-sm font-semibold text-primary'>
-                            {t('orders.orderCount_one', { count: orders.length })}
+                            {t('orders.orderCount_one', { count: totalCount })}
                         </span>
                     )}
                 </div>
@@ -65,7 +86,10 @@ function Orders() {
         </div>
     );
 
-    if (isError) {
+    // Full-page error only when the very first batch fails (nothing rendered yet).
+    // A failed subsequent batch keeps already-loaded orders visible and surfaces
+    // an inline retry via the load-more sentinel below.
+    if (isError && orders.length === 0) {
         return (
             <div className='bg-background'>
                 {pageHeader}
@@ -76,7 +100,7 @@ function Orders() {
         );
     }
 
-    if (orders.length === 0) {
+    if (totalCount === 0) {
         return <OrdersEmpty />;
     }
 
@@ -154,6 +178,15 @@ function Orders() {
                             </Card>
                         );
                     })}
+                </div>
+
+                <div ref={loadMoreRef}>
+                    <OrdersLoadMore
+                        isFetchingNextPage={isFetchingNextPage}
+                        isError={isFetchNextPageError}
+                        hasNextPage={hasNextPage}
+                        onRetry={handleRetry}
+                    />
                 </div>
             </div>
         </div>
