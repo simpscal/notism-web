@@ -164,8 +164,11 @@
         }
     },
     "nav": {
+        "home": "Home",
         "foods": "Foods",
         "orders": "Orders",
+        "cart": "Cart",
+        "theme": "Theme",
         "appearance": "Appearance",
         "adminPortal": "Admin Portal",
         "setting": "Setting",
