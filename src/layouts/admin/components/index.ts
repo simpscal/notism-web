@@ -1,1 +1,2 @@
-export { default as AdminLayoutToolbar } from './admin-layout-toolbar';
+export { default as AdminToolbarDesktop } from './admin-toolbar-desktop';
+export { default as AdminToolbarMobile } from './admin-toolbar-mobile';
