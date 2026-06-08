@@ -105,68 +105,70 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
             deliveryStatus: string;
             sourceColumnId: string;
         }) => adminApi.updateOrderDeliveryStatus(orderId, { deliveryStatus }),
-        onSuccess: (updatedOrder, variables) => {
-            const { sourceColumnId, deliveryStatus: targetColumnId } = variables;
+        onMutate: async ({ orderId, deliveryStatus: targetColumnId, sourceColumnId }) => {
+            await queryClient.cancelQueries({ queryKey: ['admin', 'orders', 'kanban'] });
 
-            // Remove the order from the source column
+            const sourceKey = ['admin', 'orders', 'kanban', sourceColumnId, { paymentStatus }] as const;
+            const targetKey = ['admin', 'orders', 'kanban', targetColumnId, { paymentStatus }] as const;
+
+            const previousSource =
+                queryClient.getQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(sourceKey);
+            const previousTarget =
+                queryClient.getQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(targetKey);
+
+            const order = previousSource?.pages.flatMap(p => p.items).find(o => o.id === orderId);
+            if (!order) return { previousSource, previousTarget };
+
+            const movedOrder: AdminOrderResponseModel = { ...order, deliveryStatus: targetColumnId };
+
             queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(
-                ['admin', 'orders', 'kanban', sourceColumnId, { paymentStatus }] as const,
-                oldData => {
-                    if (!oldData) return oldData;
-
-                    const updatedPages = oldData.pages.map(page => ({
-                        ...page,
-                        items: page.items.filter(item => item.id !== updatedOrder.id),
-                        totalCount: page.totalCount - 1,
-                    }));
-
-                    return {
-                        ...oldData,
-                        pages: updatedPages,
-                    };
-                }
+                sourceKey,
+                old =>
+                    old && {
+                        ...old,
+                        pages: old.pages.map(p => ({
+                            ...p,
+                            items: p.items.filter(o => o.id !== orderId),
+                            totalCount: p.totalCount - 1,
+                        })),
+                    }
             );
 
-            // Add the order to the destination column
-            queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(
-                ['admin', 'orders', 'kanban', targetColumnId, { paymentStatus }] as const,
-                oldData => {
-                    if (!oldData) {
-                        return {
-                            pages: [
-                                {
-                                    items: [updatedOrder],
-                                    totalCount: 1,
-                                },
-                            ],
-                            pageParams: [0],
-                        };
-                    }
-
-                    // Add the order to the first page
-                    const updatedPages = [...oldData.pages];
-                    if (updatedPages.length > 0) {
-                        updatedPages[0] = {
-                            ...updatedPages[0],
-                            items: [updatedOrder, ...updatedPages[0].items],
-                            totalCount: updatedPages[0].totalCount + 1,
-                        };
-                    } else {
-                        updatedPages.push({
-                            items: [updatedOrder],
-                            totalCount: 1,
-                        });
-                    }
-
-                    return {
-                        ...oldData,
-                        pages: updatedPages,
-                    };
-                }
+            queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(targetKey, old =>
+                old
+                    ? {
+                          ...old,
+                          pages: [
+                              {
+                                  ...old.pages[0],
+                                  items: [movedOrder, ...old.pages[0].items],
+                                  totalCount: old.pages[0].totalCount + 1,
+                              },
+                              ...old.pages.slice(1),
+                          ],
+                      }
+                    : { pages: [{ items: [movedOrder], totalCount: 1 }], pageParams: [0] }
             );
 
-            toast.success(t('admin.orders.statusUpdated'));
+            return { previousSource, previousTarget };
         },
+        onError: (_err, { sourceColumnId, deliveryStatus: targetColumnId }, context) => {
+            if (context?.previousSource)
+                queryClient.setQueryData(
+                    ['admin', 'orders', 'kanban', sourceColumnId, { paymentStatus }],
+                    context.previousSource
+                );
+            if (context?.previousTarget)
+                queryClient.setQueryData(
+                    ['admin', 'orders', 'kanban', targetColumnId, { paymentStatus }],
+                    context.previousTarget
+                );
+        },
+        onSettled: (_data, _err, { sourceColumnId, deliveryStatus: targetColumnId }) => {
+            queryClient.invalidateQueries({ queryKey: ['admin', 'orders', 'kanban', sourceColumnId] });
+            queryClient.invalidateQueries({ queryKey: ['admin', 'orders', 'kanban', targetColumnId] });
+        },
+        onSuccess: () => toast.success(t('admin.orders.statusUpdated')),
     });
 
     const { mutate: updateStatus, isPending: isUpdating } = updateDeliveryStatusMutation;
