@@ -396,6 +396,10 @@
             "appearance": "Appearance",
             "payment": "Payment"
         },
+        "nav": {
+            "title": "Settings",
+            "sectionsLabel": "Sections"
+        },
         "profile": {
             "title": "Profile Settings",
             "sectionTitle": "Profile Information",
