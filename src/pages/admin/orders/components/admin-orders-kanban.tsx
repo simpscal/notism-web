@@ -108,6 +108,24 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
         onSuccess: (updatedOrder, variables) => {
             const { sourceColumnId, deliveryStatus: targetColumnId } = variables;
 
+            // Find the original order in the source column cache to preserve all fields
+            // (e.g. paymentStatus) that the API response may not return correctly.
+            const sourceData = queryClient.getQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>([
+                'admin',
+                'orders',
+                'kanban',
+                sourceColumnId,
+                { paymentStatus },
+            ] as const);
+            const originalOrder = sourceData?.pages
+                .flatMap(page => page.items)
+                .find(item => item.id === updatedOrder.id);
+
+            // Merge: keep all original fields, only apply deliveryStatus from the API response
+            const mergedOrder: AdminOrderResponseModel = originalOrder
+                ? { ...originalOrder, deliveryStatus: updatedOrder.deliveryStatus }
+                : updatedOrder;
+
             // Remove the order from the source column
             queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(
                 ['admin', 'orders', 'kanban', sourceColumnId, { paymentStatus }] as const,
@@ -116,7 +134,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
 
                     const updatedPages = oldData.pages.map(page => ({
                         ...page,
-                        items: page.items.filter(item => item.id !== updatedOrder.id),
+                        items: page.items.filter(item => item.id !== mergedOrder.id),
                         totalCount: page.totalCount - 1,
                     }));
 
@@ -135,7 +153,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
                         return {
                             pages: [
                                 {
-                                    items: [updatedOrder],
+                                    items: [mergedOrder],
                                     totalCount: 1,
                                 },
                             ],
@@ -148,12 +166,12 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
                     if (updatedPages.length > 0) {
                         updatedPages[0] = {
                             ...updatedPages[0],
-                            items: [updatedOrder, ...updatedPages[0].items],
+                            items: [mergedOrder, ...updatedPages[0].items],
                             totalCount: updatedPages[0].totalCount + 1,
                         };
                     } else {
                         updatedPages.push({
-                            items: [updatedOrder],
+                            items: [mergedOrder],
                             totalCount: 1,
                         });
                     }
