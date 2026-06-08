@@ -163,7 +163,6 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
                     ['admin', 'orders', 'kanban', targetColumnId, { paymentStatus }],
                     context.previousTarget
                 );
-            toast.error(t('admin.orders.statusUpdateFailed'));
         },
         onSettled: (_data, _err, { sourceColumnId, deliveryStatus: targetColumnId }) => {
             queryClient.invalidateQueries({ queryKey: ['admin', 'orders', 'kanban', sourceColumnId] });

@@ -471,7 +471,6 @@
             "updateStatus": "Update Status",
             "updateSuccess": "Order status updated successfully",
             "statusUpdated": "Order status updated successfully",
-            "statusUpdateFailed": "Failed to update order status",
             "failedToLoad": "Failed to load orders",
             "view": "View"
         },

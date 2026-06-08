@@ -471,7 +471,6 @@
             "updateStatus": "Cập nhật trạng thái",
             "updateSuccess": "Trạng thái đơn hàng đã được cập nhật thành công",
             "statusUpdated": "Trạng thái đơn hàng đã được cập nhật thành công",
-            "statusUpdateFailed": "Không thể cập nhật trạng thái đơn hàng",
             "failedToLoad": "Không thể tải đơn hàng",
             "view": "Xem"
         },
