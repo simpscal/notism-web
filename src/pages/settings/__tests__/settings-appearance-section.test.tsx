@@ -76,21 +76,61 @@ describe('SettingsAppearanceSection', () => {
         expect(within(applied).getByText(/^light$/i)).toBeInTheDocument();
     });
 
-    it('applies the new theme immediately on selection and moves the selection marker', async () => {
+    it('moves the selection marker but does not apply or persist the theme until saved', async () => {
         renderWithTheme(<SettingsAppearanceSection />, 'system');
 
         await userEvent.click(screen.getByRole('radio', { name: /dark/i }));
 
         expect(screen.getByRole('radio', { name: /dark/i })).toBeChecked();
-        expect(document.documentElement.classList.contains('dark')).toBe(true);
-        expect(localStorage.getItem('vite-ui-theme')).toBe('dark');
+        expect(document.documentElement.classList.contains('dark')).toBe(false);
+        expect(localStorage.getItem('vite-ui-theme')).toBeNull();
     });
 
-    it('fires a success toast when Save changes is clicked', async () => {
+    it('keeps the currently-applied helper on the saved theme until changes are saved', async () => {
+        renderWithTheme(<SettingsAppearanceSection />, 'light');
+
+        await userEvent.click(screen.getByRole('radio', { name: /dark/i }));
+
+        const applied = screen.getByText(/currently applied/i);
+        expect(within(applied).getByText(/^light$/i)).toBeInTheDocument();
+    });
+
+    it('disables Save changes until a different theme is selected', async () => {
         renderWithTheme(<SettingsAppearanceSection />, 'system');
 
+        expect(screen.getByRole('button', { name: /save changes/i })).toBeDisabled();
+
+        await userEvent.click(screen.getByRole('radio', { name: /dark/i }));
+
+        expect(screen.getByRole('button', { name: /save changes/i })).toBeEnabled();
+    });
+
+    it('re-disables Save changes when the original theme is reselected', async () => {
+        renderWithTheme(<SettingsAppearanceSection />, 'system');
+
+        await userEvent.click(screen.getByRole('radio', { name: /dark/i }));
+        await userEvent.click(screen.getByRole('radio', { name: /system/i }));
+
+        expect(screen.getByRole('button', { name: /save changes/i })).toBeDisabled();
+    });
+
+    it('applies, persists, and toasts when Save changes is clicked', async () => {
+        renderWithTheme(<SettingsAppearanceSection />, 'system');
+
+        await userEvent.click(screen.getByRole('radio', { name: /dark/i }));
         await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
 
+        expect(document.documentElement.classList.contains('dark')).toBe(true);
+        expect(localStorage.getItem('vite-ui-theme')).toBe('dark');
         expect(successToast).toHaveBeenCalledWith('Appearance preferences saved!');
+    });
+
+    it('disables Save changes again after a successful save', async () => {
+        renderWithTheme(<SettingsAppearanceSection />, 'system');
+
+        await userEvent.click(screen.getByRole('radio', { name: /dark/i }));
+        await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+        expect(screen.getByRole('button', { name: /save changes/i })).toBeDisabled();
     });
 });
