@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -86,6 +86,21 @@ function SettingsAppearanceSection() {
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
 
+    // Selection is staged locally; it is only applied and persisted on Save changes.
+    const [selectedTheme, setSelectedTheme] = useState<ThemeValue>(theme);
+
+    // Keep the staged selection in sync when the applied theme changes (e.g. after saving).
+    useEffect(() => {
+        setSelectedTheme(theme);
+    }, [theme]);
+
+    const hasUnsavedChanges = selectedTheme !== theme;
+
+    const handleSave = () => {
+        setTheme(selectedTheme);
+        toast.success(t('settings.appearance.saveSuccess'));
+    };
+
     const themeOptions: {
         value: ThemeValue;
         label: string;
@@ -129,13 +144,13 @@ function SettingsAppearanceSection() {
                         </span>
                     </p>
                     <RadioGroup
-                        value={theme}
-                        onValueChange={value => setTheme(value as ThemeValue)}
+                        value={selectedTheme}
+                        onValueChange={value => setSelectedTheme(value as ThemeValue)}
                         className='grid grid-cols-1 gap-3 sm:grid-cols-3'
                     >
                         {themeOptions.map(option => {
                             const Preview = option.Preview;
-                            const isSelected = theme === option.value;
+                            const isSelected = selectedTheme === option.value;
 
                             return (
                                 <Label
@@ -180,7 +195,7 @@ function SettingsAppearanceSection() {
             </div>
 
             <div className='flex items-center justify-end gap-2 border-t bg-muted/20 px-6 py-4'>
-                <Button type='button' onClick={() => toast.success(t('settings.appearance.saveSuccess'))}>
+                <Button type='button' disabled={!hasUnsavedChanges} onClick={handleSave}>
                     {t('settings.appearance.saveChanges')}
                 </Button>
             </div>
