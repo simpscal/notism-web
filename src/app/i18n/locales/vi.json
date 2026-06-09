@@ -434,6 +434,9 @@
         },
         "payment": {
             "title": "Cài đặt thanh toán",
+            "paneTitle": "Thanh toán",
+            "subtitle": "Cấu hình thông tin ngân hàng để kích hoạt thanh toán QR cho đơn hàng.",
+            "retry": "Thử lại",
             "bankAccount": "Tài khoản ngân hàng",
             "bankAccountDescription": "Cấu hình thông tin ngân hàng để kích hoạt thanh toán QR cho đơn hàng.",
             "noAccount": "Chưa cấu hình tài khoản ngân hàng. Thêm thông tin của bạn để kích hoạt thanh toán QR.",

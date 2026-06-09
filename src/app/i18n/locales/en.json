@@ -434,6 +434,9 @@
         },
         "payment": {
             "title": "Payment Settings",
+            "paneTitle": "Payment",
+            "subtitle": "Configure your bank details to enable QR code payments for orders.",
+            "retry": "Retry",
             "bankAccount": "Bank Account",
             "bankAccountDescription": "Configure your bank details to enable QR code payments for orders.",
             "noAccount": "No bank account configured yet. Add your details to enable QR payments.",
