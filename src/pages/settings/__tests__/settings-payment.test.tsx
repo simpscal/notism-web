@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import SettingsPayment from '../settings-payment';
 
@@ -10,14 +10,25 @@ import { renderWithProviders } from '@/test/utils';
 
 const BANK_ACCOUNT_URL = '*/payments/bank-account';
 
+const toastSuccessMock = vi.fn();
+
+vi.mock('sonner', () => ({
+    toast: {
+        success: (...args: unknown[]) => toastSuccessMock(...args),
+    },
+}));
+
 const server = setupServer();
 
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+    server.resetHandlers();
+    toastSuccessMock.mockClear();
+});
 afterAll(() => server.close());
 
 describe('SettingsPayment', () => {
-    it('renders loading spinner initially', () => {
+    it('renders loading skeletons initially', () => {
         server.use(
             http.get(BANK_ACCOUNT_URL, async () => {
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -25,19 +36,40 @@ describe('SettingsPayment', () => {
             })
         );
 
-        renderWithProviders(<SettingsPayment />);
+        const { container } = renderWithProviders(<SettingsPayment />);
 
-        expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+        expect(container.querySelectorAll('[data-slot="skeleton"]').length).toBeGreaterThan(0);
     });
 
-    it('renders error state when fetch fails', async () => {
-        server.use(http.get(BANK_ACCOUNT_URL, () => HttpResponse.error()));
+    it('renders error state with a working retry button when fetch fails', async () => {
+        let attempt = 0;
+
+        server.use(
+            http.get(BANK_ACCOUNT_URL, () => {
+                attempt += 1;
+
+                if (attempt === 1) {
+                    return HttpResponse.error();
+                }
+
+                return HttpResponse.json(null);
+            })
+        );
 
         renderWithProviders(<SettingsPayment />);
 
         await waitFor(() => {
             expect(screen.getByText('Failed to load bank account')).toBeInTheDocument();
         });
+
+        const retryButton = screen.getByRole('button', { name: /retry/i });
+        await userEvent.click(retryButton);
+
+        await waitFor(() => {
+            expect(screen.getByLabelText('Bank Name')).toBeInTheDocument();
+        });
+
+        expect(screen.queryByText('Failed to load bank account')).not.toBeInTheDocument();
     });
 
     it('renders empty form when API returns null', async () => {
@@ -46,10 +78,7 @@ describe('SettingsPayment', () => {
         renderWithProviders(<SettingsPayment />);
 
         await waitFor(() => {
-            expect(screen.getByText('Bank Account')).toBeInTheDocument();
-            expect(
-                screen.getByText('No bank account configured yet. Add your details to enable QR payments.')
-            ).toBeInTheDocument();
+            expect(screen.getByLabelText('Bank Name')).toBeInTheDocument();
         });
 
         expect(screen.getByLabelText('Bank Name')).toHaveValue('');
@@ -78,13 +107,13 @@ describe('SettingsPayment', () => {
         expect(screen.getByDisplayValue('Nguyen Van A')).toBeInTheDocument();
     });
 
-    it('shows validation errors when required fields are empty on submit', async () => {
+    it('shows validation errors when required fields are emptied', async () => {
         server.use(http.get(BANK_ACCOUNT_URL, () => HttpResponse.json(null)));
 
         renderWithProviders(<SettingsPayment />);
 
         await waitFor(() => {
-            expect(screen.getByText('Bank Account')).toBeInTheDocument();
+            expect(screen.getByLabelText('Bank Name')).toBeInTheDocument();
         });
 
         const bankNameInput = screen.getByLabelText('Bank Name');
@@ -102,7 +131,7 @@ describe('SettingsPayment', () => {
         });
     });
 
-    it('submits form and shows success message on save', async () => {
+    it('submits form and shows success confirmation on save', async () => {
         server.use(
             http.get(BANK_ACCOUNT_URL, () => HttpResponse.json(null)),
             http.put(BANK_ACCOUNT_URL, () => HttpResponse.json(null, { status: 200 }))
@@ -122,7 +151,7 @@ describe('SettingsPayment', () => {
         await userEvent.click(saveButton);
 
         await waitFor(() => {
-            expect(saveButton).toBeInTheDocument();
+            expect(toastSuccessMock).toHaveBeenCalledWith('Bank account saved successfully!');
         });
     });
 });
