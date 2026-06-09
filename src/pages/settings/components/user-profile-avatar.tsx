@@ -26,7 +26,6 @@ function UserProfileAvatar({
     const { t } = useTranslation();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(null);
-    const [isDragging, setIsDragging] = useState(false);
 
     const currentAvatarUrl = localAvatarUrl || avatarUrl;
 
@@ -66,29 +65,6 @@ function UserProfileAvatar({
         processFile(file);
     };
 
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(true);
-    };
-
-    const handleDragLeave = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(false);
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(false);
-
-        const file = e.dataTransfer.files?.[0];
-        if (file) {
-            processFile(file);
-        }
-    };
-
     const handleRemoveAvatar = (e: React.MouseEvent) => {
         e.stopPropagation();
         setLocalAvatarUrl(null);
@@ -99,93 +75,41 @@ function UserProfileAvatar({
     };
 
     return (
-        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-6'>
-            <div
-                className='relative group cursor-pointer'
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={handleAvatarClick}
-            >
-                <div
-                    className={`relative transition-all duration-300 group-hover:scale-105 ${
-                        isDragging ? 'scale-105 ring-4 ring-primary ring-offset-2' : ''
-                    }`}
-                >
-                    <Avatar className='h-32 w-32 border-4 border-background shadow-lg ring-2 ring-border'>
-                        <AvatarImage
-                            src={currentAvatarUrl || undefined}
-                            alt={`${firstName} ${lastName}`}
-                            className='object-cover'
-                        />
-                        <AvatarFallback className='text-2xl font-semibold bg-gradient-to-br from-primary/20 to-primary/40 text-primary'>
-                            {getInitials()}
-                        </AvatarFallback>
-                    </Avatar>
-
-                    {/* Overlay on hover */}
-                    <div className='absolute inset-0 rounded-full bg-black/50 flex items-center justify-center transition-opacity duration-300 opacity-0 group-hover:opacity-100'>
-                        <div className='flex flex-col items-center gap-1 text-white'>
-                            <Camera className='h-6 w-6' />
-                            <span className='text-xs font-medium'>{t('settings.profile.changePhoto')}</span>
-                        </div>
-                    </div>
-
-                    {/* Loading overlay */}
-                    {isLoading && (
-                        <div className='absolute inset-0 rounded-full bg-black/50 flex items-center justify-center'>
-                            <div className='h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent' />
-                        </div>
-                    )}
-
-                    {/* Remove button */}
-                    {currentAvatarUrl && !isLoading && (
-                        <Button
-                            onClick={handleRemoveAvatar}
-                            size='icon'
-                            variant='destructive'
-                            className='absolute -bottom-2 -right-2 h-8 w-8 rounded-full shadow-lg ring-2 ring-background hover:scale-110 transition-transform'
-                            aria-label='Remove avatar'
-                        >
-                            <Trash2 className='h-4 w-4' />
-                        </Button>
-                    )}
-                </div>
-
-                {/* Drag and drop indicator */}
-                {isDragging && (
-                    <div className='absolute inset-0 rounded-full border-4 border-dashed border-primary bg-primary/10 flex items-center justify-center z-10'>
-                        <div className='flex flex-col items-center gap-2 text-primary'>
-                            <Upload className='h-8 w-8' />
-                            <span className='text-sm font-medium'>{t('settings.profile.dropImage')}</span>
-                        </div>
-                    </div>
-                )}
+        <div className='flex flex-col items-start gap-5 sm:flex-row sm:items-center'>
+            <div className='relative'>
+                <Avatar className='h-20 w-20 border border-border shadow-sm'>
+                    <AvatarImage
+                        src={currentAvatarUrl || undefined}
+                        alt={`${firstName} ${lastName}`}
+                        className='object-cover'
+                    />
+                    <AvatarFallback className='bg-primary/10 text-lg font-semibold text-primary'>
+                        {getInitials()}
+                    </AvatarFallback>
+                </Avatar>
+                <span className='absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow'>
+                    <Camera className='h-3 w-3' />
+                </span>
             </div>
 
-            <div className='flex-1 space-y-3'>
+            <div className='flex-1 space-y-2.5'>
                 <div>
-                    <h3 className='text-sm font-medium mb-1'>{t('settings.profile.profilePicture')}</h3>
-                    <p className='text-sm text-muted-foreground mb-4'>{t('settings.profile.uploadHint')}</p>
+                    <h3 className='text-sm font-medium'>{t('settings.profile.profilePhoto')}</h3>
+                    <p className='mt-0.5 text-xs text-muted-foreground'>{t('settings.profile.photoHelper')}</p>
                 </div>
                 <div className='flex flex-wrap gap-2'>
-                    <Button
-                        type='button'
-                        variant='outline'
-                        onClick={handleAvatarClick}
-                        disabled={isLoading}
-                        className='gap-2'
-                    >
+                    <Button type='button' variant='outline' size='sm' onClick={handleAvatarClick} disabled={isLoading}>
                         <Upload className='h-4 w-4' />
-                        {currentAvatarUrl ? t('settings.profile.changePhoto') : t('settings.profile.uploadPhoto')}
+                        {currentAvatarUrl ? t('settings.profile.change') : t('settings.profile.upload')}
                     </Button>
                     {currentAvatarUrl && (
                         <Button
                             type='button'
                             variant='outline'
+                            size='sm'
                             onClick={handleRemoveAvatar}
                             disabled={isLoading}
-                            className='gap-2 text-destructive hover:text-destructive'
+                            className='text-destructive hover:text-destructive'
                         >
                             <Trash2 className='h-4 w-4' />
                             {t('settings.profile.remove')}
