@@ -1,60 +1,117 @@
 import { CreditCard, Palette, User } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
 import { UserRoleEnum } from '@/app/enums';
-import { buttonVariants } from '@/components/button';
+import { Card } from '@/components/card';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarInset,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarProvider,
+    SidebarTrigger,
+} from '@/components/sidebar';
 import { useAppSelector } from '@/core/hooks';
 
-type SettingsTab = 'profile' | 'appearance' | 'payment';
+type SettingsSectionId = 'profile' | 'appearance' | 'payment';
+
+interface SettingsSection {
+    id: SettingsSectionId;
+    to: string;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    adminOnly?: boolean;
+}
 
 function Settings() {
     const { t } = useTranslation();
+    const location = useLocation();
     const user = useAppSelector(state => state.user.user);
     const isAdmin = useMemo(() => user?.role === UserRoleEnum.Admin, [user?.role]);
 
-    const SETTINGS_TABS: { value: SettingsTab; label: string; icon: React.ComponentType<{ className?: string }> }[] =
-        useMemo(() => {
-            const tabs: { value: SettingsTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-                { value: 'profile', label: t('settings.tabs.profile'), icon: User },
-                { value: 'appearance', label: t('settings.tabs.appearance'), icon: Palette },
-            ];
-            if (isAdmin) {
-                tabs.push({ value: 'payment', label: t('settings.tabs.payment'), icon: CreditCard });
-            }
-            return tabs;
-        }, [t, isAdmin]);
+    const sections: SettingsSection[] = useMemo(() => {
+        const all: SettingsSection[] = [
+            { id: 'profile', to: `/${ROUTES.SETTINGS.PROFILE}`, label: t('settings.tabs.profile'), icon: User },
+            {
+                id: 'appearance',
+                to: `/${ROUTES.SETTINGS.APPEARANCE}`,
+                label: t('settings.tabs.appearance'),
+                icon: Palette,
+            },
+            {
+                id: 'payment',
+                to: `/${ROUTES.SETTINGS.PAYMENT}`,
+                label: t('settings.tabs.payment'),
+                icon: CreditCard,
+                adminOnly: true,
+            },
+        ];
+        return all.filter(section => !section.adminOnly || isAdmin);
+    }, [t, isAdmin]);
+
+    const activeSection = useMemo(
+        () => sections.find(section => location.pathname.startsWith(section.to)),
+        [sections, location.pathname]
+    );
 
     return (
-        <div className='container mx-auto max-w-7xl py-8 px-4'>
-            <div className='mb-6'>
-                <div className='flex flex-wrap gap-2'>
-                    {SETTINGS_TABS.map(tab => {
-                        const Icon = tab.icon;
+        <div className='container mx-auto max-w-5xl py-8 px-4'>
+            <Card className='overflow-hidden p-0'>
+                <SidebarProvider
+                    defaultOpen
+                    className='min-h-0 items-stretch'
+                    style={{ '--sidebar-width': '15rem' } as React.CSSProperties}
+                >
+                    <Sidebar collapsible='offcanvas' variant='sidebar' className='border-r'>
+                        <SidebarHeader className='px-3 pt-3'>
+                            <span className='px-1 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/70'>
+                                {t('settings.nav.title')}
+                            </span>
+                        </SidebarHeader>
+                        <SidebarContent>
+                            <SidebarGroup>
+                                <SidebarGroupLabel>{t('settings.nav.sectionsLabel')}</SidebarGroupLabel>
+                                <SidebarMenu>
+                                    {sections.map(section => {
+                                        const Icon = section.icon;
+                                        const isActive = activeSection?.id === section.id;
 
-                        return (
-                            <NavLink
-                                key={tab.value}
-                                to={`/${ROUTES.SETTINGS.BASE}/${tab.value}`}
-                                end={false}
-                                className={({ isActive }) =>
-                                    buttonVariants({
-                                        variant: isActive ? 'default' : 'outline',
-                                        size: 'sm',
-                                    })
-                                }
-                            >
-                                <Icon className='h-4 w-4' />
-                                {tab.label}
-                            </NavLink>
-                        );
-                    })}
-                </div>
-            </div>
+                                        return (
+                                            <SidebarMenuItem key={section.id}>
+                                                <SidebarMenuButton asChild isActive={isActive} tooltip={section.label}>
+                                                    <NavLink
+                                                        to={section.to}
+                                                        aria-current={isActive ? 'page' : undefined}
+                                                    >
+                                                        <Icon />
+                                                        <span>{section.label}</span>
+                                                    </NavLink>
+                                                </SidebarMenuButton>
+                                            </SidebarMenuItem>
+                                        );
+                                    })}
+                                </SidebarMenu>
+                            </SidebarGroup>
+                        </SidebarContent>
+                    </Sidebar>
 
-            <Outlet />
+                    <SidebarInset className='min-w-0 bg-background'>
+                        <div className='flex items-center gap-2 border-b px-4 py-3 md:hidden'>
+                            <SidebarTrigger aria-label='Open settings sections' />
+                            <span className='text-sm font-medium'>{activeSection?.label}</span>
+                        </div>
+                        <Outlet />
+                    </SidebarInset>
+                </SidebarProvider>
+            </Card>
         </div>
     );
 }

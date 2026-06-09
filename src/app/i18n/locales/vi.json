@@ -396,6 +396,10 @@
             "appearance": "Giao diện",
             "payment": "Thanh toán"
         },
+        "nav": {
+            "title": "Cài đặt",
+            "sectionsLabel": "Mục"
+        },
         "profile": {
             "title": "Cài đặt hồ sơ",
             "sectionTitle": "Thông tin hồ sơ",
