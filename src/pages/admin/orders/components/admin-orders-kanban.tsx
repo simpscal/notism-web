@@ -215,8 +215,6 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
         [onOrderClick]
     );
 
-    const getItemId = useCallback((order: AdminOrderResponseModel) => order.id, []);
-
     if (isInitialLoading) {
         return (
             <div className='flex h-full w-full items-center justify-center'>
@@ -225,7 +223,9 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
         );
     }
 
-    return <Kanban columns={columns} onItemMove={handleItemMove} renderItem={renderItem} getItemId={getItemId} />;
+    return (
+        <Kanban columns={columns} onItemMove={handleItemMove} renderItem={renderItem} getItemId={order => order.id} />
+    );
 }
 
 export default memo(AdminOrdersKanban);

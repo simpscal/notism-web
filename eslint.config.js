@@ -3,7 +3,6 @@ import tanstackQuery from '@tanstack/eslint-plugin-query';
 import prettierConfig from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import prettier from 'eslint-plugin-prettier';
-import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
@@ -18,32 +17,39 @@ export default tseslint.config(
             ecmaVersion: 2020,
             globals: globals.browser,
         },
-        settings: {
-            react: {
-                version: 'detect',
-            },
-        },
         plugins: {
             'react-hooks': reactHooks,
             'react-refresh': reactRefresh,
             '@tanstack/query': tanstackQuery,
-            react,
             import: importPlugin,
             prettier,
         },
         rules: {
             ...reactHooks.configs.recommended.rules,
 
-            // Disallow inline arrow/bind functions in JSX event attributes.
-            // Every event emission must reference a bare prop/handler pass-through
-            // or a named handler declared above the return.
-            'react/jsx-no-bind': [
+            // No event logic inline in the template: a JSX event attribute (onClick,
+            // onChange, onSubmit, onValueChange, …) may only reference a handler — a bare
+            // prop pass-through (onClick={onClose}), a named handler (onClick={handleSave}),
+            // or a curried factory (onClick={handleSelect(id)}). An inline arrow/function/
+            // .bind that carries logic is not allowed. Non-event props (className, render)
+            // and references are untouched.
+            'no-restricted-syntax': [
                 'error',
                 {
-                    ignoreRefs: true,
-                    allowArrowFunctions: false,
-                    allowFunctions: false,
-                    allowBind: false,
+                    selector: 'JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > ArrowFunctionExpression',
+                    message:
+                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                },
+                {
+                    selector: 'JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > FunctionExpression',
+                    message:
+                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                },
+                {
+                    selector:
+                        "JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > CallExpression[callee.property.name='bind']",
+                    message:
+                        'No inline .bind in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
                 },
             ],
             ...reactRefresh.configs.recommended.rules,
@@ -122,7 +128,7 @@ export default tseslint.config(
         // rule does not apply to them.
         files: ['**/*.stories.{ts,tsx}', '**/*.test.{ts,tsx}', 'test/**/*.{ts,tsx}'],
         rules: {
-            'react/jsx-no-bind': 'off',
+            'no-restricted-syntax': 'off',
         },
     }
 );

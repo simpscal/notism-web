@@ -21,7 +21,7 @@
 
 - **Hooks**: Must include `useMemo` for heavy calculated variables
 - **useEffect**: Must be placed under all hooks
-- **Event handlers**: Must use `useCallback`. Every JSX event attribute must reference either a bare pass-through (e.g. `onClick={onClose}` or `onClick={handleSave}`) or a named handler declared above the return (typically `const handleX = useCallback(...)`). No inline arrow or `.bind` that contains logic — including a single state-setter call such as `onClick={() => setOpen(true)}` or `onChange={e => setName(e.target.value)}` — may appear in a JSX event attribute. A curried named factory (`onClick={handleSelect(item.id)}`) is the approved pattern when a handler needs a value from a map iteration. This is enforced by the `react/jsx-no-bind` ESLint rule.
+- **Event handlers**: Must use `useCallback`. Every JSX event attribute must reference either a bare pass-through (e.g. `onClick={onClose}` or `onClick={handleSave}`) or a named handler declared above the return (typically `const handleX = useCallback(...)`). No inline arrow or `.bind` that contains logic — including a single state-setter call such as `onClick={() => setOpen(true)}` or `onChange={e => setName(e.target.value)}` — may appear in a JSX event attribute. A curried named factory (`onClick={handleSelect(item.id)}`) is the approved pattern when a handler needs a value from a map iteration. This is enforced by the `no-restricted-syntax` ESLint rule.
 - **Utilities**: Helper functions should be placed above early returns
 
 #### Example
@@ -676,7 +676,7 @@ function ProfileCard({ user }) {
 
 ### Event Handler Conventions
 
-Every JSX event attribute must reference either a bare pass-through (e.g. `onClick={onClose}` or `onClick={handleSave}`) or a named handler declared above the return (typically `const handleX = useCallback(...)`). No inline arrow or `.bind` that contains logic — including a single state-setter call such as `onClick={() => setOpen(true)}` or `onChange={e => setName(e.target.value)}` — may appear in a JSX event attribute. A curried named factory (`onClick={handleSelect(item.id)}`) is the approved pattern when a handler needs a value from a map iteration. This is enforced by the `react/jsx-no-bind` ESLint rule.
+Every JSX event attribute must reference either a bare pass-through (e.g. `onClick={onClose}` or `onClick={handleSave}`) or a named handler declared above the return (typically `const handleX = useCallback(...)`). No inline arrow or `.bind` that contains logic — including a single state-setter call such as `onClick={() => setOpen(true)}` or `onChange={e => setName(e.target.value)}` — may appear in a JSX event attribute. A curried named factory (`onClick={handleSelect(item.id)}`) is the approved pattern when a handler needs a value from a map iteration. This is enforced by the `no-restricted-syntax` ESLint rule.
 
 #### ✅ Good: Dedicated named handlers
 
@@ -756,7 +756,7 @@ function CartItem({ item, onRemove, onQuantityChange }) {
 
 **Rule:** A JSX event attribute may only be a bare reference — a pass-through prop (e.g. `onClick={onClose}`) or a handler declared above the return (e.g. `onClick={handleSave}`). Any inline arrow or `.bind` that contains logic — including a single state-setter call such as `onClick={() => setOpen(true)}` — must be extracted to a named handler. When a handler needs a value from a map iteration, use the curried named factory pattern (`onClick={handleSelect(item.id)}`).
 
-> **Enforcement:** This rule is mechanically enforced by the `react/jsx-no-bind` ESLint rule configured in `eslint.config.js`. Storybook stories (`*.stories.tsx`) and test files are exempt — they are fixtures, not shipped UI.
+> **Enforcement:** This rule is mechanically enforced by the `no-restricted-syntax` ESLint rule configured in `eslint.config.js`. Storybook stories (`*.stories.tsx`) and test files are exempt — they are fixtures, not shipped UI.
 
 ### Component Responsibilities Checklist
 
@@ -781,7 +781,7 @@ function CartItem({ item, onRemove, onQuantityChange }) {
 - [ ] Tight coupling between unrelated components
 - [ ] Forgetting to wrap components with `memo`
 - [ ] Customizing color, border, shadow, or background styles on design system components
-- [ ] Putting an inline arrow or `.bind` with logic in a JSX event attribute — including a single state-setter such as `onClick={() => setOpen(true)}`; every event attribute must be a bare reference or a named handler (enforced by `react/jsx-no-bind`)
+- [ ] Putting an inline arrow or `.bind` with logic in a JSX event attribute — including a single state-setter such as `onClick={() => setOpen(true)}`; every event attribute must be a bare reference or a named handler (enforced by `no-restricted-syntax`)
 
 ---
 

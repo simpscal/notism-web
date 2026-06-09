@@ -38,21 +38,21 @@ function ClientToolbarMobile({ user, onLogout }: ClientToolbarMobileProps) {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }, [theme, setTheme]);
 
-    const getNavLinkClassName = useCallback(
-        ({ isActive }: { isActive: boolean }) =>
-            cn(
-                'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
-                isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-            ),
-        []
-    );
-
     return (
         <>
             {/* Fixed bottom bar */}
             <div className='fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t bg-background px-2 lg:hidden'>
                 {/* Home */}
-                <NavLink to={`/${ROUTES.FOODS.LIST}`} aria-label='Home' className={getNavLinkClassName}>
+                <NavLink
+                    to={`/${ROUTES.FOODS.LIST}`}
+                    aria-label='Home'
+                    className={({ isActive }) =>
+                        cn(
+                            'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
+                            isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                        )
+                    }
+                >
                     <Home className='h-6 w-6' />
                     <span className='text-[10px] font-medium'>{t('nav.home')}</span>
                 </NavLink>

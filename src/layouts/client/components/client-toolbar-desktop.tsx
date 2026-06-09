@@ -46,17 +46,6 @@ function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
 
     const langLabel = i18n.language === 'en' ? 'EN' : 'VI';
 
-    const getNavLinkClassName = useCallback(
-        ({ isActive }: { isActive: boolean }) =>
-            cn(
-                'rounded-full px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-            ),
-        []
-    );
-
     const desktopNavItems = useMemo(
         () => [
             { label: t('nav.home'), path: `/${ROUTES.FOODS.LIST}`, icon: Home },
@@ -85,7 +74,14 @@ function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
                             key={item.path + item.label}
                             to={item.path}
                             end={false}
-                            className={getNavLinkClassName}
+                            className={({ isActive }) =>
+                                cn(
+                                    'rounded-full px-3 py-2 text-sm font-medium transition-colors',
+                                    isActive
+                                        ? 'bg-primary/10 text-primary'
+                                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                                )
+                            }
                         >
                             {item.label}
                         </NavLink>
