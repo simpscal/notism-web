@@ -396,10 +396,15 @@
             "appearance": "Appearance",
             "payment": "Payment"
         },
+        "nav": {
+            "title": "Settings",
+            "sectionsLabel": "Sections"
+        },
         "profile": {
             "title": "Profile Settings",
+            "paneTitle": "Profile",
             "sectionTitle": "Profile Information",
-            "subtitle": "Manage your account information and preferences",
+            "subtitle": "Manage your account information and preferences.",
             "firstName": "First Name",
             "lastName": "Last Name",
             "email": "Email",
@@ -412,6 +417,11 @@
             "updateSuccess": "Profile updated successfully!",
             "updateFailed": "Failed to update profile",
             "profilePicture": "Profile Picture",
+            "profilePhoto": "Profile photo",
+            "photoHelper": "JPG, PNG or GIF. Max size 5MB.",
+            "phonePlaceholder": "+84 90 123 4567",
+            "upload": "Upload",
+            "change": "Change",
             "uploadHint": "Upload a photo to personalize your profile. JPG, PNG or GIF. Max size of 5MB.",
             "uploadPhoto": "Upload Photo",
             "changePhoto": "Change Photo",
@@ -424,6 +434,9 @@
         },
         "payment": {
             "title": "Payment Settings",
+            "paneTitle": "Payment",
+            "subtitle": "Configure your bank details to enable QR code payments for orders.",
+            "retry": "Retry",
             "bankAccount": "Bank Account",
             "bankAccountDescription": "Configure your bank details to enable QR code payments for orders.",
             "noAccount": "No bank account configured yet. Add your details to enable QR payments.",
@@ -446,12 +459,18 @@
         "appearance": {
             "title": "Appearance",
             "sectionTitle": "Theme",
-            "subtitle": "Customize the appearance of the application",
+            "subtitle": "Customize how the application looks on this device.",
             "themePreference": "Theme Preference",
             "themeDescription": "Choose your preferred theme for the application",
+            "currentlyApplied": "Currently applied:",
             "light": "Light",
             "dark": "Dark",
-            "system": "System"
+            "system": "System",
+            "lightDescription": "Bright, high-contrast",
+            "darkDescription": "Dimmed, easy on the eyes",
+            "systemDescription": "Match your OS theme",
+            "saveChanges": "Save changes",
+            "saveSuccess": "Appearance preferences saved!"
         }
     },
     "admin": {

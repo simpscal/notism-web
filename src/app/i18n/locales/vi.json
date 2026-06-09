@@ -396,10 +396,15 @@
             "appearance": "Giao diện",
             "payment": "Thanh toán"
         },
+        "nav": {
+            "title": "Cài đặt",
+            "sectionsLabel": "Mục"
+        },
         "profile": {
             "title": "Cài đặt hồ sơ",
+            "paneTitle": "Hồ sơ",
             "sectionTitle": "Thông tin hồ sơ",
-            "subtitle": "Quản lý thông tin tài khoản và tùy chọn của bạn",
+            "subtitle": "Quản lý thông tin tài khoản và tùy chọn của bạn.",
             "firstName": "Tên",
             "lastName": "Họ",
             "email": "Email",
@@ -412,6 +417,11 @@
             "updateSuccess": "Hồ sơ đã được cập nhật thành công!",
             "updateFailed": "Không thể cập nhật hồ sơ",
             "profilePicture": "Ảnh hồ sơ",
+            "profilePhoto": "Ảnh đại diện",
+            "photoHelper": "JPG, PNG hoặc GIF. Kích thước tối đa 5MB.",
+            "phonePlaceholder": "+84 90 123 4567",
+            "upload": "Tải lên",
+            "change": "Thay đổi",
             "uploadHint": "Tải lên một ảnh để cá nhân hóa hồ sơ của bạn. JPG, PNG hoặc GIF. Kích thước tối đa 5MB.",
             "uploadPhoto": "Tải lên ảnh",
             "changePhoto": "Thay đổi ảnh",
@@ -424,6 +434,9 @@
         },
         "payment": {
             "title": "Cài đặt thanh toán",
+            "paneTitle": "Thanh toán",
+            "subtitle": "Cấu hình thông tin ngân hàng để kích hoạt thanh toán QR cho đơn hàng.",
+            "retry": "Thử lại",
             "bankAccount": "Tài khoản ngân hàng",
             "bankAccountDescription": "Cấu hình thông tin ngân hàng để kích hoạt thanh toán QR cho đơn hàng.",
             "noAccount": "Chưa cấu hình tài khoản ngân hàng. Thêm thông tin của bạn để kích hoạt thanh toán QR.",
@@ -446,12 +459,18 @@
         "appearance": {
             "title": "Giao diện",
             "sectionTitle": "Chủ đề",
-            "subtitle": "Tùy chỉnh giao diện của ứng dụng",
+            "subtitle": "Tùy chỉnh giao diện của ứng dụng trên thiết bị này.",
             "themePreference": "Tùy chọn chủ đề",
             "themeDescription": "Chọn chủ đề ưa thích của bạn cho ứng dụng",
+            "currentlyApplied": "Đang áp dụng:",
             "light": "Sáng",
             "dark": "Tối",
-            "system": "Hệ thống"
+            "system": "Hệ thống",
+            "lightDescription": "Sáng, độ tương phản cao",
+            "darkDescription": "Dịu nhẹ, dễ chịu cho mắt",
+            "systemDescription": "Theo chủ đề hệ điều hành",
+            "saveChanges": "Lưu thay đổi",
+            "saveSuccess": "Đã lưu tùy chọn giao diện!"
         }
     },
     "admin": {
