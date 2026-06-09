@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import i18next from 'i18next';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm, type ControllerRenderProps } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -109,6 +109,33 @@ function AdminUserDetail() {
         }
     }, [user, deleteUser]);
 
+    const handleCloseDeleteDialog = useCallback(() => {
+        setDeleteDialogOpen(false);
+    }, []);
+
+    const renderRoleField = useCallback(
+        ({ field }: { field: ControllerRenderProps<UserDetailFormValues, 'role'> }) => (
+            <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={isViewingSelf}
+                aria-invalid={!!form.formState.errors.role}
+            >
+                <SelectTrigger className='w-full' disabled={isViewingSelf}>
+                    <SelectValue placeholder={t('admin.user.selectRole')} />
+                </SelectTrigger>
+                <SelectContent>
+                    {USER_ROLE_OPTIONS.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        ),
+        [isViewingSelf, form.formState.errors.role, t]
+    );
+
     if (isLoading) {
         return (
             <div className='flex h-full w-full items-center justify-center'>
@@ -192,29 +219,7 @@ function AdminUserDetail() {
                                         </div>
                                         <Field>
                                             <FieldLabel>{t('admin.user.role')}</FieldLabel>
-                                            <Controller
-                                                control={form.control}
-                                                name='role'
-                                                render={({ field }) => (
-                                                    <Select
-                                                        value={field.value}
-                                                        onValueChange={field.onChange}
-                                                        disabled={isViewingSelf}
-                                                        aria-invalid={!!form.formState.errors.role}
-                                                    >
-                                                        <SelectTrigger className='w-full' disabled={isViewingSelf}>
-                                                            <SelectValue placeholder={t('admin.user.selectRole')} />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {USER_ROLE_OPTIONS.map(opt => (
-                                                                <SelectItem key={opt.value} value={opt.value}>
-                                                                    {opt.label}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                )}
-                                            />
+                                            <Controller control={form.control} name='role' render={renderRoleField} />
                                             {form.formState.errors.role && (
                                                 <FieldError>{form.formState.errors.role.message}</FieldError>
                                             )}
@@ -260,7 +265,7 @@ function AdminUserDetail() {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
+                        <Button variant='outline' onClick={handleCloseDeleteDialog}>
                             {t('common.cancel')}
                         </Button>
                         <Button

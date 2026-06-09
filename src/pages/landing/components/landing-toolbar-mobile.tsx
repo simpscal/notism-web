@@ -1,5 +1,5 @@
 import { Menu, UtensilsCrossed, X } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -24,6 +24,10 @@ function LandingToolbarMobile({ isAuthenticated }: LandingToolbarMobileProps) {
     const navClassName =
         'flex items-center gap-3 rounded-full px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground';
 
+    const handleSheetClose = useCallback(() => {
+        setSheetOpen(false);
+    }, []);
+
     return (
         <>
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -34,21 +38,11 @@ function LandingToolbarMobile({ isAuthenticated }: LandingToolbarMobileProps) {
                     <nav className='flex flex-col gap-1 px-2 mt-2'>
                         {NAV_LINKS.map(link =>
                             link.hash ? (
-                                <a
-                                    key={link.label}
-                                    href={link.to}
-                                    onClick={() => setSheetOpen(false)}
-                                    className={navClassName}
-                                >
+                                <a key={link.label} href={link.to} onClick={handleSheetClose} className={navClassName}>
                                     {link.label}
                                 </a>
                             ) : (
-                                <Link
-                                    key={link.label}
-                                    to={link.to}
-                                    onClick={() => setSheetOpen(false)}
-                                    className={navClassName}
-                                >
+                                <Link key={link.label} to={link.to} onClick={handleSheetClose} className={navClassName}>
                                     {link.label}
                                 </Link>
                             )
@@ -57,7 +51,7 @@ function LandingToolbarMobile({ isAuthenticated }: LandingToolbarMobileProps) {
                     <div className='mt-4 border-t px-4 pt-4 space-y-2'>
                         {isAuthenticated ? (
                             <Button className='w-full rounded-full gap-2' asChild>
-                                <Link to={`/${ROUTES.FOODS.LIST}`} onClick={() => setSheetOpen(false)}>
+                                <Link to={`/${ROUTES.FOODS.LIST}`} onClick={handleSheetClose}>
                                     <UtensilsCrossed className='h-4 w-4' />
                                     {t('landing.toolbar.browseMenu')}
                                 </Link>
@@ -65,12 +59,12 @@ function LandingToolbarMobile({ isAuthenticated }: LandingToolbarMobileProps) {
                         ) : (
                             <>
                                 <Button variant='outline' className='w-full rounded-full' asChild>
-                                    <Link to={`/${ROUTES.AUTH.SIGNUP}`} onClick={() => setSheetOpen(false)}>
+                                    <Link to={`/${ROUTES.AUTH.SIGNUP}`} onClick={handleSheetClose}>
                                         {t('landing.toolbar.signUp')}
                                     </Link>
                                 </Button>
                                 <Button className='w-full rounded-full' asChild>
-                                    <Link to={`/${ROUTES.AUTH.LOGIN}`} onClick={() => setSheetOpen(false)}>
+                                    <Link to={`/${ROUTES.AUTH.LOGIN}`} onClick={handleSheetClose}>
                                         {t('landing.toolbar.logIn')}
                                     </Link>
                                 </Button>

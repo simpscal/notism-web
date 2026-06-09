@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -50,14 +50,14 @@ function Signup() {
         },
     });
 
-    const oauthRedirectMutation = useMutation({
+    const { mutate: redirectToOAuth, isPending: isOAuthRedirectPending } = useMutation({
         mutationFn: oauthApi.getOAuthRedirect,
         onSuccess: data => {
             window.location.href = data.redirectUrl;
         },
     });
 
-    const isLoading = signupMutation.isPending || oauthRedirectMutation.isPending;
+    const isLoading = signupMutation.isPending || isOAuthRedirectPending;
 
     const form = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
@@ -83,9 +83,16 @@ function Signup() {
         });
     };
 
-    const handleOAuthSignup = (provider: OAuthProviderType) => {
-        oauthRedirectMutation.mutate(provider);
-    };
+    const handleOAuthSignup = useCallback(
+        (provider: OAuthProviderType) => {
+            redirectToOAuth(provider);
+        },
+        [redirectToOAuth]
+    );
+
+    const handleGoogleSignupClick = useCallback(() => {
+        handleOAuthSignup('google');
+    }, [handleOAuthSignup]);
 
     return (
         <div className='space-y-4 sm:space-y-6'>
@@ -177,7 +184,7 @@ function Signup() {
                     type='button'
                     variant='outline'
                     disabled={isLoading}
-                    onClick={() => handleOAuthSignup('google')}
+                    onClick={handleGoogleSignupClick}
                     className='w-full gap-2'
                 >
                     <GoogleLogo className='h-4 w-4' />

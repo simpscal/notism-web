@@ -1,5 +1,5 @@
-import { memo, type ReactNode, useMemo } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { memo, type ReactNode, useCallback, useMemo } from 'react';
+import { Controller, type ControllerRenderProps, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { QUANTITY_UNIT_OPTIONS, type FoodFormValues } from '../models';
@@ -28,6 +28,54 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
     const categoryOptions = useMemo(
         () => storeCategories.map(c => ({ value: c.id, label: c.name })),
         [storeCategories]
+    );
+
+    const handleAvailableChange = useCallback(
+        (checked: boolean) => {
+            form.setValue('isAvailable', !!checked, { shouldDirty: true });
+        },
+        [form]
+    );
+
+    const renderCategoryField = useCallback(
+        ({ field }: { field: ControllerRenderProps<FoodFormValues, 'category'> }) => (
+            <Select
+                key={`category-${field.value}`}
+                value={field.value}
+                onValueChange={field.onChange}
+                aria-invalid={!!errors.category}
+            >
+                <SelectTrigger className='w-full'>
+                    <SelectValue placeholder={t('admin.food.selectCategory')} />
+                </SelectTrigger>
+                <SelectContent>
+                    {categoryOptions.map(opt => (
+                        <SelectItem key={opt.label} value={opt.label}>
+                            {opt.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        ),
+        [categoryOptions, errors.category, t]
+    );
+
+    const renderQuantityUnitField = useCallback(
+        ({ field }: { field: ControllerRenderProps<FoodFormValues, 'quantityUnit'> }) => (
+            <Select value={field.value} onValueChange={field.onChange} aria-invalid={!!errors.quantityUnit}>
+                <SelectTrigger className='w-full'>
+                    <SelectValue placeholder={t('admin.food.selectUnit')} />
+                </SelectTrigger>
+                <SelectContent>
+                    {QUANTITY_UNIT_OPTIONS.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        ),
+        [errors.quantityUnit, t]
     );
 
     return (
@@ -86,57 +134,12 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                     <div className='grid gap-6 sm:grid-cols-2'>
                         <Field>
                             <FieldLabel>{t('admin.food.category')}</FieldLabel>
-                            <Controller
-                                control={form.control}
-                                name='category'
-                                render={({ field }) => {
-                                    return (
-                                        <Select
-                                            key={`category-${field.value}`}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                            aria-invalid={!!errors.category}
-                                        >
-                                            <SelectTrigger className='w-full'>
-                                                <SelectValue placeholder={t('admin.food.selectCategory')} />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {categoryOptions.map(opt => (
-                                                    <SelectItem key={opt.label} value={opt.label}>
-                                                        {opt.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    );
-                                }}
-                            />
+                            <Controller control={form.control} name='category' render={renderCategoryField} />
                             {errors.category && <FieldError>{errors.category.message}</FieldError>}
                         </Field>
                         <Field>
                             <FieldLabel>{t('admin.food.quantityUnit')}</FieldLabel>
-                            <Controller
-                                control={form.control}
-                                name='quantityUnit'
-                                render={({ field }) => (
-                                    <Select
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                        aria-invalid={!!errors.quantityUnit}
-                                    >
-                                        <SelectTrigger className='w-full'>
-                                            <SelectValue placeholder={t('admin.food.selectUnit')} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {QUANTITY_UNIT_OPTIONS.map(opt => (
-                                                <SelectItem key={opt.value} value={opt.value}>
-                                                    {opt.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
+                            <Controller control={form.control} name='quantityUnit' render={renderQuantityUnitField} />
                             {errors.quantityUnit && <FieldError>{errors.quantityUnit.message}</FieldError>}
                         </Field>
                     </div>
@@ -144,12 +147,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                         <Field>
                             <FieldLabel>{t('admin.food.available')}</FieldLabel>
                             <div className='w-fit'>
-                                <Switch
-                                    checked={form.watch('isAvailable')}
-                                    onCheckedChange={checked =>
-                                        form.setValue('isAvailable', !!checked, { shouldDirty: true })
-                                    }
-                                />
+                                <Switch checked={form.watch('isAvailable')} onCheckedChange={handleAvailableChange} />
                             </div>
                         </Field>
                         <Field>

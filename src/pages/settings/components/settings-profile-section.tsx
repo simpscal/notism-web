@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Phone, MapPin } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -52,17 +52,20 @@ function SettingsProfileSection() {
         formState: { errors, isDirty },
     } = form;
 
-    const handleAvatarChange = (file: File, base64: string) => {
-        setSelectedFile(file);
-        setAvatarRemoved(false);
-        form.setValue('avatarUrl', base64);
-    };
+    const handleAvatarChange = useCallback(
+        (file: File, base64: string) => {
+            setSelectedFile(file);
+            setAvatarRemoved(false);
+            form.setValue('avatarUrl', base64);
+        },
+        [form]
+    );
 
-    const handleAvatarRemove = () => {
+    const handleAvatarRemove = useCallback(() => {
         setSelectedFile(null);
         setAvatarRemoved(true);
         form.setValue('avatarUrl', null);
-    };
+    }, [form]);
 
     const uploadAvatarToStorage = async (file: File): Promise<string | null> => {
         const presignedData = await storageApi.getPresignedUrl(file.name, file.type, PresignedUrlUploadEnum.Avatar);
@@ -124,7 +127,7 @@ function SettingsProfileSection() {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         form.reset({
             firstName: user.firstName || '',
             lastName: user.lastName || '',
@@ -135,7 +138,7 @@ function SettingsProfileSection() {
         });
         setSelectedFile(null);
         setAvatarRemoved(false);
-    };
+    }, [form, user]);
 
     const isPristine = !isDirty && !selectedFile && !avatarRemoved;
 

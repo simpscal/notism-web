@@ -82,6 +82,10 @@ function Cart() {
         [replaceCartItemCustomisations, t]
     );
 
+    const handleSummaryImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+        (e.target as HTMLImageElement).style.display = 'none';
+    }, []);
+
     const handleProceedToPayment = useCallback(() => {
         if (selectedItemsList.length === 0) {
             toast.error(t('cart.selectAtLeastOne'));
@@ -166,10 +170,7 @@ function Cart() {
                                                                 src={item.imageUrl}
                                                                 alt={item.name}
                                                                 className='h-full w-full object-cover'
-                                                                onError={e => {
-                                                                    (e.target as HTMLImageElement).style.display =
-                                                                        'none';
-                                                                }}
+                                                                onError={handleSummaryImageError}
                                                             />
                                                         </div>
                                                         <span className='truncate text-muted-foreground'>

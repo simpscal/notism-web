@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -15,12 +15,12 @@ function AdminLayout() {
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.user.user);
 
-    const handleLogout = async () => {
+    const handleLogout = useCallback(async () => {
         await authApi.logout();
         dispatch(resetStore());
         toast.success('Logged out successfully');
         navigate(`/${ROUTES.AUTH.LOGIN}`);
-    };
+    }, [dispatch, navigate]);
 
     return (
         <div className='flex h-screen flex-col bg-background'>

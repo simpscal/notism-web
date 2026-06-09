@@ -1,5 +1,5 @@
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
@@ -36,42 +36,57 @@ function CartItemComponent({
     const originalTotal = item.price * item.quantity;
     const discountAmount = hasSavings ? originalTotal - effectivePrice * item.quantity : 0;
 
-    const handleCardClick = () => {
+    const handleCardClick = useCallback(() => {
         onSelectionChange(item.id, !isSelected);
-    };
+    }, [onSelectionChange, item.id, isSelected]);
 
-    const handleCheckboxChange = (checked: boolean) => {
-        onSelectionChange(item.id, checked);
-    };
+    const handleCheckboxChange = useCallback(
+        (checked: boolean) => {
+            onSelectionChange(item.id, checked);
+        },
+        [onSelectionChange, item.id]
+    );
 
-    const handleStopPropagation = (e: React.MouseEvent | React.SyntheticEvent) => {
+    const handleStopPropagation = useCallback((e: React.MouseEvent | React.SyntheticEvent) => {
         e.stopPropagation();
-    };
+    }, []);
 
-    const handleRemove = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onRemove(item.id, item.name);
-    };
+    const handleRemove = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onRemove(item.id, item.name);
+        },
+        [onRemove, item.id, item.name]
+    );
 
-    const handleCustomisationChange = (groupId: string | null, optionId: string) => {
-        const updated = item.customisations.map(existing =>
-            existing.groupId === groupId ? { ...existing, optionId } : existing
-        );
-        onCustomisationsChange?.(
-            item.id,
-            updated.filter(x => x.optionId).map(x => ({ groupId: x.groupId!, optionId: x.optionId! }))
-        );
-    };
+    const handleCustomisationChange = useCallback(
+        (groupId: string | null) => (optionId: string) => {
+            const updated = item.customisations.map(existing =>
+                existing.groupId === groupId ? { ...existing, optionId } : existing
+            );
+            onCustomisationsChange?.(
+                item.id,
+                updated.filter(x => x.optionId).map(x => ({ groupId: x.groupId!, optionId: x.optionId! }))
+            );
+        },
+        [onCustomisationsChange, item.id, item.customisations]
+    );
 
-    const handleDecrement = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onQuantityChange(item.id, -1);
-    };
+    const handleDecrement = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onQuantityChange(item.id, -1);
+        },
+        [onQuantityChange, item.id]
+    );
 
-    const handleIncrement = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onQuantityChange(item.id, 1);
-    };
+    const handleIncrement = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onQuantityChange(item.id, 1);
+        },
+        [onQuantityChange, item.id]
+    );
 
     return (
         <Card
@@ -133,7 +148,7 @@ function CartItemComponent({
                                     <span className='text-xs text-muted-foreground'>{c.groupLabel}:</span>
                                     <Select
                                         value={c.optionId ?? ''}
-                                        onValueChange={val => handleCustomisationChange(c.groupId, val)}
+                                        onValueChange={handleCustomisationChange(c.groupId)}
                                     >
                                         <SelectTrigger className='h-7 w-auto min-w-[160px] text-xs'>
                                             <SelectValue />

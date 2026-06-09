@@ -1,5 +1,5 @@
 import { CheckCircle2 } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PaymentStatusEnum } from '../enums';
@@ -34,6 +34,10 @@ interface PaymentQrProps {
 function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: PaymentQrProps) {
     const { t } = useTranslation();
     const [imgError, setImgError] = useState(false);
+
+    const handleImageError = useCallback(() => {
+        setImgError(true);
+    }, []);
 
     if (paymentMethod.toLowerCase() !== PaymentMethodEnum.Banking) {
         return null;
@@ -92,7 +96,7 @@ function PaymentQr({ paymentMethod, paymentStatus, paymentQr, slugId, paidAt }: 
                             src={qrUrl}
                             alt={`VietQR payment code for order ${displaySlugId}`}
                             className='w-48 h-48 max-w-full mx-auto border-border rounded-lg'
-                            onError={() => setImgError(true)}
+                            onError={handleImageError}
                         />
                     )}
                 </div>

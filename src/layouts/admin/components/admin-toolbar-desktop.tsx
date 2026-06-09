@@ -37,6 +37,17 @@ function AdminToolbarDesktop({ user, onLogout }: AdminToolbarDesktopProps) {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }, [theme, setTheme]);
 
+    const getNavLinkClassName = useCallback(
+        ({ isActive }: { isActive: boolean }) =>
+            cn(
+                'rounded-full px-3 py-2 text-sm font-medium transition-colors',
+                isActive
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+            ),
+        []
+    );
+
     const navItems = [
         { label: t('nav.orders'), path: `/${ROUTES.ADMIN.ORDERS}` },
         { label: t('nav.foods'), path: `/${ROUTES.ADMIN.FOODS}` },
@@ -66,19 +77,7 @@ function AdminToolbarDesktop({ user, onLogout }: AdminToolbarDesktopProps) {
                 {/* Center — nav links */}
                 <nav className='flex items-center gap-1'>
                     {navItems.map(item => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            end={false}
-                            className={({ isActive }) =>
-                                cn(
-                                    'rounded-full px-3 py-2 text-sm font-medium transition-colors',
-                                    isActive
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                                )
-                            }
-                        >
+                        <NavLink key={item.path} to={item.path} end={false} className={getNavLinkClassName}>
                             {item.label}
                         </NavLink>
                     ))}

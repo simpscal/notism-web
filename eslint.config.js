@@ -3,6 +3,7 @@ import tanstackQuery from '@tanstack/eslint-plugin-query';
 import prettierConfig from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import prettier from 'eslint-plugin-prettier';
+import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
@@ -17,15 +18,34 @@ export default tseslint.config(
             ecmaVersion: 2020,
             globals: globals.browser,
         },
+        settings: {
+            react: {
+                version: 'detect',
+            },
+        },
         plugins: {
             'react-hooks': reactHooks,
             'react-refresh': reactRefresh,
             '@tanstack/query': tanstackQuery,
+            react,
             import: importPlugin,
             prettier,
         },
         rules: {
             ...reactHooks.configs.recommended.rules,
+
+            // Disallow inline arrow/bind functions in JSX event attributes.
+            // Every event emission must reference a bare prop/handler pass-through
+            // or a named handler declared above the return.
+            'react/jsx-no-bind': [
+                'error',
+                {
+                    ignoreRefs: true,
+                    allowArrowFunctions: false,
+                    allowFunctions: false,
+                    allowBind: false,
+                },
+            ],
             ...reactRefresh.configs.recommended.rules,
             ...tanstackQuery.configs.recommended.rules,
 
@@ -94,6 +114,15 @@ export default tseslint.config(
                     endOfLine: 'lf',
                 },
             ],
+        },
+    },
+    {
+        // Storybook stories and test files are fixtures, not shipped UI — their
+        // inline mock callbacks are not real event emissions, so the named-handler
+        // rule does not apply to them.
+        files: ['**/*.stories.{ts,tsx}', '**/*.test.{ts,tsx}', 'test/**/*.{ts,tsx}'],
+        rules: {
+            'react/jsx-no-bind': 'off',
         },
     }
 );

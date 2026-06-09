@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CustomisationGroupModel } from '@/apis/models/food.model';
@@ -16,6 +16,13 @@ interface FoodCustomisationSectionProps {
 
 function FoodCustomisationSection({ customisations, selections, onChange }: FoodCustomisationSectionProps) {
     const { t } = useTranslation();
+
+    const handleValueChange = useCallback(
+        (id: string) => (value: string) => {
+            onChange(id, value);
+        },
+        [onChange]
+    );
 
     return (
         <div className='space-y-6'>
@@ -39,7 +46,7 @@ function FoodCustomisationSection({ customisations, selections, onChange }: Food
                     </div>
                     <RadioGroup
                         value={selections[cust.id] ?? ''}
-                        onValueChange={val => onChange(cust.id, val)}
+                        onValueChange={handleValueChange(cust.id)}
                         className='grid gap-2'
                     >
                         {cust.options.map(opt => (

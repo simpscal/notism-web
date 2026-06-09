@@ -1,5 +1,5 @@
 import { Clock } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -46,13 +46,17 @@ function OrderActionCard({
     const statusInfo = getDeliveryStatusInfo(deliveryStatus);
     const StatusIcon = statusInfo.icon;
 
-    const handleCancelClick = () => {
+    const handleCancelClick = useCallback(() => {
         setShowCancelDialog(true);
-    };
+    }, []);
 
-    const handleConfirmCancel = () => {
+    const handleKeepOrderClick = useCallback(() => {
+        setShowCancelDialog(false);
+    }, []);
+
+    const handleConfirmCancel = useCallback(() => {
         onConfirmCancel?.();
-    };
+    }, [onConfirmCancel]);
 
     return (
         <Card className='sticky top-4'>
@@ -111,7 +115,7 @@ function OrderActionCard({
                                     <DialogFooter>
                                         <Button
                                             variant='outline'
-                                            onClick={() => setShowCancelDialog(false)}
+                                            onClick={handleKeepOrderClick}
                                             disabled={isCancelling}
                                         >
                                             {t('orderDetail.keepOrder')}

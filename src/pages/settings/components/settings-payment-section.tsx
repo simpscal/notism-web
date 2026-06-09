@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
-import { memo, useEffect } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -92,13 +92,24 @@ function SettingsPaymentSection() {
         },
     });
 
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         reset({
             bankCode: data?.bankCode ?? '',
             accountNumber: data?.accountNumber ?? '',
             accountHolderName: data?.accountHolderName ?? '',
         });
-    };
+    }, [reset, data]);
+
+    const handleRetry = useCallback(() => {
+        refetch();
+    }, [refetch]);
+
+    const handleFormSubmit = useCallback(
+        (values: BankAccountFormValues) => {
+            saveBankAccount(values);
+        },
+        [saveBankAccount]
+    );
 
     if (isLoading) {
         return <PaymentLoadingState />;
@@ -112,7 +123,7 @@ function SettingsPaymentSection() {
                     description={t('settings.payment.loadErrorDescription')}
                     iconSize='sm'
                     action={
-                        <Button variant='outline' onClick={() => refetch()}>
+                        <Button variant='outline' onClick={handleRetry}>
                             <RefreshCw className='h-4 w-4' />
                             {t('settings.payment.retry')}
                         </Button>
@@ -123,7 +134,7 @@ function SettingsPaymentSection() {
     }
 
     return (
-        <form onSubmit={form.handleSubmit(values => saveBankAccount(values))} className='flex flex-col'>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)} className='flex flex-col'>
             <div className='space-y-6 px-6 py-6'>
                 {/* Pane heading */}
                 <div className='space-y-1'>

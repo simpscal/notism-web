@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -54,14 +54,14 @@ function Login() {
         },
     });
 
-    const oauthRedirectMutation = useMutation({
+    const { mutate: redirectToOAuth, isPending: isOAuthRedirectPending } = useMutation({
         mutationFn: oauthApi.getOAuthRedirect,
         onSuccess: data => {
             window.location.href = data.redirectUrl;
         },
     });
 
-    const isLoading = loginMutation.isPending || oauthRedirectMutation.isPending;
+    const isLoading = loginMutation.isPending || isOAuthRedirectPending;
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -83,11 +83,18 @@ function Login() {
         });
     };
 
-    const handleOAuthLogin = (provider: OAuthProviderType) => {
-        const returnUrl = searchParams.get('returnUrl');
-        dispatch(setOauthReturnUrl(returnUrl ?? null));
-        oauthRedirectMutation.mutate(provider);
-    };
+    const handleOAuthLogin = useCallback(
+        (provider: OAuthProviderType) => {
+            const returnUrl = searchParams.get('returnUrl');
+            dispatch(setOauthReturnUrl(returnUrl ?? null));
+            redirectToOAuth(provider);
+        },
+        [searchParams, dispatch, redirectToOAuth]
+    );
+
+    const handleGoogleLoginClick = useCallback(() => {
+        handleOAuthLogin('google');
+    }, [handleOAuthLogin]);
 
     return (
         <div className='space-y-4 sm:space-y-6'>
@@ -166,7 +173,7 @@ function Login() {
                     type='button'
                     variant='outline'
                     disabled={isLoading}
-                    onClick={() => handleOAuthLogin('google')}
+                    onClick={handleGoogleLoginClick}
                     className='w-full gap-2'
                 >
                     <GoogleLogo className='h-4 w-4' />

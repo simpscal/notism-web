@@ -106,6 +106,10 @@ function AdminCategoryDetail() {
         setDeleteDialogOpen(true);
     }, []);
 
+    const handleCloseDeleteDialog = useCallback(() => {
+        setDeleteDialogOpen(false);
+    }, []);
+
     const handleConfirmDelete = useCallback(() => {
         if (id && !isAddMode) {
             deleteCategoryMutation.mutate(id);
@@ -221,7 +225,7 @@ function AdminCategoryDetail() {
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
+                            <Button variant='outline' onClick={handleCloseDeleteDialog}>
                                 {t('common.cancel')}
                             </Button>
                             <Button

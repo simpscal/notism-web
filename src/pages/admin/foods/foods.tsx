@@ -101,23 +101,34 @@ function AdminFoods() {
         },
     });
 
+    const handleSearchInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(event.target.value);
+    }, []);
+
     const handleViewClick = useCallback(
-        (foodId: string) => {
+        (foodId: string) => () => {
             navigate(`/${ROUTES.ADMIN.FOOD_DETAIL(foodId)}`);
         },
         [navigate]
     );
 
-    const handleDeleteClick = useCallback((foodId: string, foodName: string) => {
-        setSelectedFood({ id: foodId, name: foodName });
-        setDeleteDialogOpen(true);
-    }, []);
+    const handleDeleteClick = useCallback(
+        (foodId: string, foodName: string) => () => {
+            setSelectedFood({ id: foodId, name: foodName });
+            setDeleteDialogOpen(true);
+        },
+        []
+    );
 
     const handleConfirmDelete = useCallback(() => {
         if (selectedFood) {
             deleteFoodMutation.mutate(selectedFood.id);
         }
     }, [selectedFood]);
+
+    const handleCloseDeleteDialog = useCallback(() => {
+        setDeleteDialogOpen(false);
+    }, []);
 
     if (isLoading) {
         return (
@@ -153,7 +164,7 @@ function AdminFoods() {
                             type='text'
                             placeholder={t('admin.foods.searchPlaceholder')}
                             value={searchInput}
-                            onChange={e => setSearchInput(e.target.value)}
+                            onChange={handleSearchInputChange}
                         />
                         <InputGroupAddon>
                             <Search />
@@ -243,13 +254,13 @@ function AdminFoods() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align='end'>
-                                                    <DropdownMenuItem onClick={() => handleViewClick(food.id)}>
+                                                    <DropdownMenuItem onClick={handleViewClick(food.id)}>
                                                         <Eye className=' h-4 w-4' />
                                                         {t('common.view')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant='destructive'
-                                                        onClick={() => handleDeleteClick(food.id, food.name)}
+                                                        onClick={handleDeleteClick(food.id, food.name)}
                                                     >
                                                         <Trash2 className=' h-4 w-4' />
                                                         {t('common.delete')}
@@ -288,7 +299,7 @@ function AdminFoods() {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
+                        <Button variant='outline' onClick={handleCloseDeleteDialog}>
                             {t('common.cancel')}
                         </Button>
                         <Button

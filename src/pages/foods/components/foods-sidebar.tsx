@@ -1,5 +1,5 @@
 import { LayoutGrid, SlidersHorizontal } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FoodSortOption } from '../enums';
@@ -24,6 +24,24 @@ function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, 
         { value: 'name-asc', label: t('foods.sidebar.nameAZ') },
     ];
 
+    const handleAllCategoriesClick = useCallback(() => {
+        onCategoryChange(null);
+    }, [onCategoryChange]);
+
+    const handleCategoryClick = useCallback(
+        (category: string) => () => {
+            onCategoryChange(category);
+        },
+        [onCategoryChange]
+    );
+
+    const handleSortClick = useCallback(
+        (sort: FoodSortOption) => () => {
+            onSortChange(sort);
+        },
+        [onSortChange]
+    );
+
     return (
         <div className='space-y-6'>
             {/* Categories */}
@@ -39,7 +57,7 @@ function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, 
                         variant={selectedCategory === null ? 'default' : 'ghost'}
                         size='sm'
                         className='w-full justify-start'
-                        onClick={() => onCategoryChange(null)}
+                        onClick={handleAllCategoriesClick}
                     >
                         {t('foods.sidebar.allItems')}
                     </Button>
@@ -49,7 +67,7 @@ function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, 
                             variant={selectedCategory === category.label ? 'default' : 'ghost'}
                             size='sm'
                             className='w-full justify-start'
-                            onClick={() => onCategoryChange(category.label)}
+                            onClick={handleCategoryClick(category.label)}
                         >
                             {category.label}
                         </Button>
@@ -74,7 +92,7 @@ function FoodsSidebar({ categories, selectedCategory, sortBy, onCategoryChange, 
                             variant={sortBy === option.value ? 'default' : 'ghost'}
                             size='sm'
                             className='w-full justify-start'
-                            onClick={() => onSortChange(option.value)}
+                            onClick={handleSortClick(option.value)}
                         >
                             {option.label}
                         </Button>

@@ -1,5 +1,5 @@
 import { ShoppingCart } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,15 +23,21 @@ function FoodCard({ food, onAddToCart }: FoodCardProps) {
     const { effectivePrice, hasSavings } = getFoodPricing(food.price, food.discountPrice);
     const discountPercentage = hasSavings ? Math.round(((food.price - effectivePrice) / food.price) * 100) : 0;
 
-    const handleAddToCartClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onAddToCart?.(food);
-    };
+    const handleAddToCartClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onAddToCart?.(food);
+        },
+        [onAddToCart, food]
+    );
 
-    const handleViewDetails = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        navigate(`/${ROUTES.FOODS.DETAIL(food.id)}`);
-    };
+    const handleViewDetails = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            navigate(`/${ROUTES.FOODS.DETAIL(food.id)}`);
+        },
+        [navigate, food.id]
+    );
 
     return (
         <Card className='group relative flex flex-col overflow-hidden border pt-0 transition-all hover:border-primary/40 hover:shadow-lg'>

@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
@@ -11,6 +11,13 @@ interface FoodsHeroSectionProps {
 
 function FoodsHeroSection({ searchInput, onSearchChange }: FoodsHeroSectionProps) {
     const { t } = useTranslation();
+
+    const handleSearchChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            onSearchChange(e.target.value);
+        },
+        [onSearchChange]
+    );
 
     return (
         <section className='relative overflow-hidden border-b bg-gradient-to-br from-primary/20 via-primary/5 to-background px-4 py-12 sm:py-16 lg:py-20'>
@@ -39,7 +46,7 @@ function FoodsHeroSection({ searchInput, onSearchChange }: FoodsHeroSectionProps
                         type='text'
                         placeholder={t('foods.hero.searchPlaceholder')}
                         value={searchInput}
-                        onChange={e => onSearchChange(e.target.value)}
+                        onChange={handleSearchChange}
                         className='h-full w-full rounded-[inherit] border-0 bg-background pr-4 text-sm sm:text-base'
                     />
                     <InputGroupAddon className='pl-3.5 sm:[&>svg]:h-5 sm:[&>svg]:w-5'>
