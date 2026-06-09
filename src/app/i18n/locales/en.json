@@ -456,12 +456,18 @@
         "appearance": {
             "title": "Appearance",
             "sectionTitle": "Theme",
-            "subtitle": "Customize the appearance of the application",
+            "subtitle": "Customize how the application looks on this device.",
             "themePreference": "Theme Preference",
             "themeDescription": "Choose your preferred theme for the application",
+            "currentlyApplied": "Currently applied:",
             "light": "Light",
             "dark": "Dark",
-            "system": "System"
+            "system": "System",
+            "lightDescription": "Bright, high-contrast",
+            "darkDescription": "Dimmed, easy on the eyes",
+            "systemDescription": "Match your OS theme",
+            "saveChanges": "Save changes",
+            "saveSuccess": "Appearance preferences saved!"
         }
     },
     "admin": {

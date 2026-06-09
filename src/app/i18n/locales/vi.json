@@ -456,12 +456,18 @@
         "appearance": {
             "title": "Giao diện",
             "sectionTitle": "Chủ đề",
-            "subtitle": "Tùy chỉnh giao diện của ứng dụng",
+            "subtitle": "Tùy chỉnh giao diện của ứng dụng trên thiết bị này.",
             "themePreference": "Tùy chọn chủ đề",
             "themeDescription": "Chọn chủ đề ưa thích của bạn cho ứng dụng",
+            "currentlyApplied": "Đang áp dụng:",
             "light": "Sáng",
             "dark": "Tối",
-            "system": "Hệ thống"
+            "system": "Hệ thống",
+            "lightDescription": "Sáng, độ tương phản cao",
+            "darkDescription": "Dịu nhẹ, dễ chịu cho mắt",
+            "systemDescription": "Theo chủ đề hệ điều hành",
+            "saveChanges": "Lưu thay đổi",
+            "saveSuccess": "Đã lưu tùy chọn giao diện!"
         }
     },
     "admin": {
