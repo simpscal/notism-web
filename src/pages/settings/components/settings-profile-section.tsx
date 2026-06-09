@@ -11,9 +11,9 @@ import UserProfileAvatar from './user-profile-avatar';
 import { storageApi, userApi } from '@/apis';
 import { PresignedUrlUploadEnum } from '@/app/enums';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import { Field, FieldError, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
+import { Separator } from '@/components/separator';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { updateUser } from '@/store/user/user.slice';
 
@@ -137,124 +137,117 @@ function SettingsProfileSection() {
         setAvatarRemoved(false);
     };
 
+    const isPristine = !isDirty && !selectedFile && !avatarRemoved;
+
     return (
-        <div className='space-y-6'>
-            <div>
-                <h2 className='text-2xl font-semibold tracking-tight'>{t('settings.profile.title')}</h2>
-                <p className='text-muted-foreground mt-1'>{t('settings.profile.subtitle')}</p>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)} className='flex flex-col'>
+            <div className='space-y-6 px-6 py-6'>
+                {/* Pane heading */}
+                <div className='space-y-1'>
+                    <h2 className='text-lg font-semibold tracking-tight'>{t('settings.profile.paneTitle')}</h2>
+                    <p className='text-sm text-muted-foreground'>{t('settings.profile.subtitle')}</p>
+                </div>
+
+                {/* Avatar group */}
+                <UserProfileAvatar
+                    avatarUrl={avatarRemoved ? null : form.watch('avatarUrl') || user.avatarUrl || null}
+                    firstName={form.watch('firstName') || user.firstName || ''}
+                    lastName={form.watch('lastName') || user.lastName || ''}
+                    isLoading={isLoading}
+                    onAvatarChange={handleAvatarChange}
+                    onAvatarRemove={handleAvatarRemove}
+                />
+
+                <Separator />
+
+                {/* Name group */}
+                <div className='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+                    <Field data-invalid={!!errors.firstName}>
+                        <FieldLabel htmlFor='firstName'>{t('settings.profile.firstName')}</FieldLabel>
+                        <Input
+                            id='firstName'
+                            placeholder={t('settings.profile.enterFirstName')}
+                            disabled={isLoading}
+                            aria-invalid={!!errors.firstName}
+                            {...form.register('firstName')}
+                        />
+                        {errors.firstName && <FieldError>{errors.firstName.message}</FieldError>}
+                    </Field>
+
+                    <Field data-invalid={!!errors.lastName}>
+                        <FieldLabel htmlFor='lastName'>{t('settings.profile.lastName')}</FieldLabel>
+                        <Input
+                            id='lastName'
+                            placeholder={t('settings.profile.enterLastName')}
+                            disabled={isLoading}
+                            aria-invalid={!!errors.lastName}
+                            {...form.register('lastName')}
+                        />
+                        {errors.lastName && <FieldError>{errors.lastName.message}</FieldError>}
+                    </Field>
+                </div>
+
+                <Field>
+                    <FieldLabel htmlFor='email' className='flex items-center gap-2'>
+                        <Mail className='h-4 w-4' />
+                        {t('settings.profile.email')}
+                    </FieldLabel>
+                    <Input
+                        id='email'
+                        type='email'
+                        value={form.watch('email')}
+                        disabled
+                        className='cursor-not-allowed bg-muted'
+                    />
+                </Field>
+
+                <Separator />
+
+                {/* Contact group — optional fields */}
+                <div className='grid grid-cols-1 gap-5 sm:grid-cols-2'>
+                    <Field data-invalid={!!errors.phone}>
+                        <FieldLabel htmlFor='phone' className='flex items-center gap-2'>
+                            <Phone className='h-4 w-4' />
+                            {t('settings.profile.phoneNumber')}
+                        </FieldLabel>
+                        <Input
+                            id='phone'
+                            type='tel'
+                            placeholder={t('settings.profile.phonePlaceholder')}
+                            disabled={isLoading}
+                            aria-invalid={!!errors.phone}
+                            {...form.register('phone')}
+                        />
+                        {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
+                    </Field>
+
+                    <Field data-invalid={!!errors.location}>
+                        <FieldLabel htmlFor='location' className='flex items-center gap-2'>
+                            <MapPin className='h-4 w-4' />
+                            {t('settings.profile.location')}
+                        </FieldLabel>
+                        <Input
+                            id='location'
+                            placeholder={t('settings.profile.locationPlaceholder')}
+                            disabled={isLoading}
+                            aria-invalid={!!errors.location}
+                            {...form.register('location')}
+                        />
+                        {errors.location && <FieldError>{errors.location.message}</FieldError>}
+                    </Field>
+                </div>
             </div>
 
-            <form onSubmit={form.handleSubmit(handleFormSubmit)} className='space-y-6'>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{t('settings.profile.sectionTitle')}</CardTitle>
-                        <CardDescription>{t('settings.profile.subtitle')}</CardDescription>
-                    </CardHeader>
-                    <CardContent className='space-y-6'>
-                        {/* Profile Picture */}
-                        <div>
-                            <h3 className='text-sm font-medium mb-2'>{t('settings.profile.profilePicture')}</h3>
-                            <UserProfileAvatar
-                                avatarUrl={avatarRemoved ? null : form.watch('avatarUrl') || user.avatarUrl || null}
-                                firstName={form.watch('firstName') || user.firstName || ''}
-                                lastName={form.watch('lastName') || user.lastName || ''}
-                                isLoading={isLoading}
-                                onAvatarChange={handleAvatarChange}
-                                onAvatarRemove={handleAvatarRemove}
-                            />
-                        </div>
-
-                        {/* Basic Information */}
-                        <div className='space-y-6 pt-4 border-t'>
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                                <Field data-invalid={!!errors.firstName}>
-                                    <FieldLabel htmlFor='firstName'>{t('settings.profile.firstName')}</FieldLabel>
-                                    <Input
-                                        id='firstName'
-                                        placeholder={t('settings.profile.enterFirstName')}
-                                        disabled={isLoading}
-                                        {...form.register('firstName')}
-                                    />
-                                    {errors.firstName && <FieldError>{errors.firstName.message}</FieldError>}
-                                </Field>
-
-                                <Field data-invalid={!!errors.lastName}>
-                                    <FieldLabel htmlFor='lastName'>{t('settings.profile.lastName')}</FieldLabel>
-                                    <Input
-                                        id='lastName'
-                                        placeholder={t('settings.profile.enterLastName')}
-                                        disabled={isLoading}
-                                        {...form.register('lastName')}
-                                    />
-                                    {errors.lastName && <FieldError>{errors.lastName.message}</FieldError>}
-                                </Field>
-                            </div>
-
-                            <Field>
-                                <FieldLabel htmlFor='email' className='flex items-center gap-2'>
-                                    <Mail className='h-4 w-4' />
-                                    {t('settings.profile.email')}
-                                </FieldLabel>
-                                <Input
-                                    id='email'
-                                    type='email'
-                                    value={form.watch('email')}
-                                    disabled
-                                    className='bg-muted cursor-not-allowed'
-                                />
-                            </Field>
-                        </div>
-
-                        {/* Contact Information */}
-                        <div className='space-y-6 pt-4 border-t'>
-                            <Field data-invalid={!!errors.phone}>
-                                <FieldLabel htmlFor='phone' className='flex items-center gap-2'>
-                                    <Phone className='h-4 w-4' />
-                                    {t('settings.profile.phoneNumber')}
-                                </FieldLabel>
-                                <Input
-                                    id='phone'
-                                    type='tel'
-                                    placeholder='+1 (555) 123-4567'
-                                    disabled={isLoading}
-                                    {...form.register('phone')}
-                                />
-                                {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
-                            </Field>
-
-                            <Field data-invalid={!!errors.location}>
-                                <FieldLabel htmlFor='location' className='flex items-center gap-2'>
-                                    <MapPin className='h-4 w-4' />
-                                    {t('settings.profile.location')}
-                                </FieldLabel>
-                                <Input
-                                    id='location'
-                                    placeholder={t('settings.profile.locationPlaceholder')}
-                                    disabled={isLoading}
-                                    {...form.register('location')}
-                                />
-                                {errors.location && <FieldError>{errors.location.message}</FieldError>}
-                            </Field>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Action Buttons */}
-                <div className='flex justify-end gap-3 pt-4 border-t'>
-                    <Button
-                        type='button'
-                        variant='outline'
-                        onClick={handleCancel}
-                        disabled={isLoading || (!isDirty && !selectedFile && !avatarRemoved)}
-                    >
-                        {t('settings.profile.cancel')}
-                    </Button>
-                    <Button type='submit' disabled={isLoading || (!isDirty && !selectedFile && !avatarRemoved)}>
-                        {isLoading ? t('settings.profile.saving') : t('settings.profile.saveChanges')}
-                    </Button>
-                </div>
-            </form>
-        </div>
+            {/* Pane footer */}
+            <div className='flex items-center justify-end gap-2 border-t bg-muted/20 px-6 py-4'>
+                <Button type='button' variant='outline' onClick={handleCancel} disabled={isLoading || isPristine}>
+                    {t('settings.profile.cancel')}
+                </Button>
+                <Button type='submit' disabled={isLoading || isPristine}>
+                    {isLoading ? t('settings.profile.saving') : t('settings.profile.saveChanges')}
+                </Button>
+            </div>
+        </form>
     );
 }
 
