@@ -474,6 +474,23 @@
         }
     },
     "admin": {
+        "dashboard": {
+            "title": "Bảng điều khiển",
+            "subtitle": "Tổng quan vận hành cho {{date}}",
+            "orderStatus": {
+                "heading": "Đơn hàng theo trạng thái",
+                "statuses": {
+                    "new": "Mới",
+                    "inProgress": "Đang xử lý",
+                    "completed": "Hoàn thành"
+                },
+                "viewOrders": "Xem đơn hàng →",
+                "cardAriaLabel": "{{label}} đơn hàng: {{count}}. Xem danh sách đã lọc.",
+                "errorTitle": "Không thể tải số liệu trạng thái đơn hàng",
+                "errorDescription": "Chúng tôi không thể tải tổng quan trạng thái đơn hàng. Vui lòng thử lại.",
+                "retry": "Thử lại"
+            }
+        },
         "orders": {
             "title": "Đơn hàng",
             "management": "Quản lý đơn hàng",

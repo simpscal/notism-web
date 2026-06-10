@@ -41,6 +41,7 @@ export const API_ENDPOINTS = {
         BANKING_CHECKOUT: 'payments/banking/checkout',
     },
     ADMIN: {
+        DASHBOARD_ORDER_STATUS_SUMMARY: 'admin/dashboard/order-status-summary',
         ORDERS: 'admin/orders',
         ORDERS_TABLE: 'admin/orders/table',
         ORDERS_KANBAN: 'admin/orders/kanban',

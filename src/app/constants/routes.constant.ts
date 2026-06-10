@@ -26,6 +26,7 @@ export const ROUTES = {
     },
     ADMIN: {
         BASE: 'admin',
+        DASHBOARD: 'admin/dashboard',
         ORDERS: 'admin/orders',
         ORDER_DETAIL: (slugId: string) => `admin/orders/${slugId}`,
         USERS: 'admin/users',

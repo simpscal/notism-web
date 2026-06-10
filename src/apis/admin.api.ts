@@ -12,6 +12,7 @@ import {
     toAdminOrdersForKanban,
     toAdminOrders,
     toAdminUsers,
+    toDashboardOrderStatusSummary,
 } from './mappers';
 import {
     AdminOrderDetailResponseModel,
@@ -34,6 +35,7 @@ import {
     GetAdminOrdersResponseModel,
     GetAdminUsersRequestModel,
     GetAdminUsersResponseModel,
+    GetDashboardOrderStatusSummaryResponseModel,
     UpdateAdminFoodRequestModel,
     UpdateAdminUserRoleRequestModel,
     UpdateCategoryRequestModel,
@@ -70,6 +72,13 @@ export const adminApi = {
             `${API_ENDPOINTS.ADMIN.ORDERS_KANBAN}?${searchParams.toString()}`
         );
         return toAdminOrdersForKanban(response);
+    },
+
+    getDashboardOrderStatusSummary: async () => {
+        const response = await apiClient.get<GetDashboardOrderStatusSummaryResponseModel>(
+            API_ENDPOINTS.ADMIN.DASHBOARD_ORDER_STATUS_SUMMARY
+        );
+        return toDashboardOrderStatusSummary(response);
     },
 
     getOrderById: async (slugId: string) => {

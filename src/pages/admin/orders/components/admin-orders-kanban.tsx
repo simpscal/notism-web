@@ -15,9 +15,11 @@ import { DELIVERY_STATUS } from '@/features/order';
 interface AdminOrdersKanbanProps {
     onOrderClick: (slugId: string) => void;
     paymentStatus?: string;
+    /** Delivery-status keys to visually emphasise (dashboard drill-through). */
+    highlightedStatuses?: string[];
 }
 
-function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanProps) {
+function AdminOrdersKanban({ onOrderClick, paymentStatus, highlightedStatuses }: AdminOrdersKanbanProps) {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
 
@@ -188,6 +190,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
                 totalCount,
                 hasMore,
                 isLoadingMore,
+                isHighlighted: highlightedStatuses?.includes(status.key) ?? false,
                 onLoadMore: () => {
                     if (hasMore && !isLoadingMore) {
                         query.fetchNextPage();
@@ -195,7 +198,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
                 },
             };
         });
-    }, [queries]);
+    }, [queries, highlightedStatuses]);
 
     const handleItemMove = useCallback(
         (itemId: string, sourceColumnId: string, targetColumnId: string) => {

@@ -102,6 +102,12 @@ export interface GetAdminOrdersForKanbanResponseModel {
     totalCount: number;
 }
 
+export interface GetDashboardOrderStatusSummaryResponseModel {
+    new: number;
+    inProgress: number;
+    completed: number;
+}
+
 export interface AdminFoodItemResponseModel {
     id: string;
     name: string;

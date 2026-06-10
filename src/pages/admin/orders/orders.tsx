@@ -1,7 +1,7 @@
 import { Grid3x3, LayoutGrid } from 'lucide-react';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import AdminOrdersKanban from './components/admin-orders-kanban';
 import AdminOrdersTable from './components/admin-orders-table';
@@ -9,15 +9,30 @@ import AdminOrdersTable from './components/admin-orders-table';
 import { ROUTES } from '@/app/constants';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
+import { DeliveryStatusEnum } from '@/features/order';
 import { PaymentStatusEnum } from '@/features/payment';
 
 type ViewMode = 'kanban' | 'grid';
 
 const PAYMENT_STATUS_ALL = 'all';
 
+/** Maps a dashboard status bucket key to the delivery statuses it covers in the kanban. */
+const STATUS_BUCKET_TO_DELIVERY_STATUSES: Record<string, DeliveryStatusEnum[]> = {
+    new: [DeliveryStatusEnum.Placed],
+    inProgress: [DeliveryStatusEnum.Preparing, DeliveryStatusEnum.OnTheWay],
+    completed: [DeliveryStatusEnum.Delivered],
+};
+
 function AdminOrders() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const statusBucket = searchParams.get('status');
+    const highlightedStatuses = useMemo(
+        () => (statusBucket ? (STATUS_BUCKET_TO_DELIVERY_STATUSES[statusBucket] ?? []) : []),
+        [statusBucket]
+    );
+    // When drilled into from the dashboard the kanban groups by delivery status, so default to it.
     const [viewMode, setViewMode] = useState<ViewMode>('kanban');
     const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>(PAYMENT_STATUS_ALL);
 
@@ -77,7 +92,11 @@ function AdminOrders() {
 
             {viewMode === 'kanban' ? (
                 <div className='flex-1 overflow-auto min-h-0'>
-                    <AdminOrdersKanban onOrderClick={handleOrderClick} paymentStatus={paymentStatusParam} />
+                    <AdminOrdersKanban
+                        onOrderClick={handleOrderClick}
+                        paymentStatus={paymentStatusParam}
+                        highlightedStatuses={highlightedStatuses}
+                    />
                 </div>
             ) : (
                 <div className='container mx-auto px-4 pb-6 min-h-0 flex-1'>
