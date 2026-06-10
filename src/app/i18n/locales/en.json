@@ -501,6 +501,28 @@
                 "errorTitle": "Couldn't load today's metrics",
                 "errorDescription": "Something went wrong fetching revenue and order totals. Please try again.",
                 "retry": "Retry"
+            },
+            "revenue": {
+                "heading": "Revenue over time",
+                "description": "Total revenue per period — {{range}}.",
+                "rangeLabel": {
+                    "year": "per year",
+                    "month": "per month",
+                    "day": "per day"
+                },
+                "granularity": {
+                    "year": "Year",
+                    "month": "Month",
+                    "day": "Day"
+                },
+                "granularityAriaLabel": "Revenue granularity",
+                "granularityOptionAriaLabel": "Total revenue by {{label}}",
+                "chartAriaLabel": "Revenue per {{granularity}}. Total {{total}}.",
+                "barAriaLabel": "{{label}}: {{value}}",
+                "tooltipLabel": "{{label}}",
+                "errorTitle": "Couldn't load revenue over time",
+                "errorDescription": "We were unable to fetch the revenue breakdown. Please try again.",
+                "retry": "Retry"
             }
         },
         "orders": {

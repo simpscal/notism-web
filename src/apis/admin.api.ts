@@ -13,6 +13,7 @@ import {
     toAdminOrders,
     toAdminUsers,
     toDashboardOrderStatusSummary,
+    toDashboardRevenueSeries,
     toDashboardTodaySales,
 } from './mappers';
 import {
@@ -37,6 +38,8 @@ import {
     GetAdminUsersRequestModel,
     GetAdminUsersResponseModel,
     GetDashboardOrderStatusSummaryResponseModel,
+    GetDashboardRevenueSeriesRequestModel,
+    GetDashboardRevenueSeriesResponseModel,
     GetDashboardTodaySalesResponseModel,
     UpdateAdminFoodRequestModel,
     UpdateAdminUserRoleRequestModel,
@@ -88,6 +91,15 @@ export const adminApi = {
             API_ENDPOINTS.ADMIN.DASHBOARD_TODAY_SALES
         );
         return toDashboardTodaySales(response);
+    },
+
+    getDashboardRevenueSeries: async (params: GetDashboardRevenueSeriesRequestModel) => {
+        const searchParams = new URLSearchParams();
+        searchParams.append('granularity', params.granularity);
+        const response = await apiClient.get<GetDashboardRevenueSeriesResponseModel>(
+            `${API_ENDPOINTS.ADMIN.DASHBOARD_REVENUE_SERIES}?${searchParams.toString()}`
+        );
+        return toDashboardRevenueSeries(response);
     },
 
     getOrderById: async (slugId: string) => {
