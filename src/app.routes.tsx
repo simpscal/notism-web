@@ -84,6 +84,7 @@ function AppRoutes() {
 
             <Route element={<AdminRouteGuard />}>
                 <Route element={<AdminLayout />}>
+                    <Route path='admin' element={<Navigate replace to='dashboard' />} />
                     <Route path='admin/dashboard' element={<AdminDashboard />} />
                     <Route path='admin/orders' element={<AdminOrders />} />
                     <Route path='admin/orders/:id' element={<AdminOrderDetail />} />
