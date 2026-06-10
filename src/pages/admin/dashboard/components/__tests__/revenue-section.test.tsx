@@ -62,6 +62,38 @@ async function findBar(container: HTMLElement, label: string): Promise<SVGPathEl
 }
 
 describe('RevenueSection', () => {
+    it('sends the client-computed UTC boundary set, per-bucket labels, and granularity hint', async () => {
+        let received: { boundaries: string[]; labels: string[]; granularity: string | null } | undefined;
+        server.use(
+            http.get(REVENUE_SERIES_URL, ({ request }) => {
+                const params = new URL(request.url).searchParams;
+                received = {
+                    boundaries: params.getAll('boundaries'),
+                    labels: params.getAll('labels'),
+                    granularity: params.get('granularity'),
+                };
+                return HttpResponse.json(monthSeries);
+            })
+        );
+
+        renderSection();
+
+        await waitFor(() => {
+            expect(received).toBeDefined();
+        });
+
+        // Default monthly granularity: 12 buckets → 12 labels, 13 ascending UTC boundaries.
+        expect(received?.granularity).toBe('month');
+        expect(received?.labels).toHaveLength(12);
+        expect(received?.boundaries).toHaveLength(13);
+        received!.boundaries.forEach(boundary => expect(boundary.endsWith('Z')).toBe(true));
+        for (let i = 1; i < received!.boundaries.length; i += 1) {
+            expect(new Date(received!.boundaries[i]).getTime()).toBeGreaterThan(
+                new Date(received!.boundaries[i - 1]).getTime()
+            );
+        }
+    });
+
     it('renders the per-period revenue chart defaulting to monthly granularity', async () => {
         server.use(http.get(REVENUE_SERIES_URL, () => HttpResponse.json(monthSeries)));
 

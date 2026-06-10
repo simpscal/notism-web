@@ -33,6 +33,32 @@ function renderSection() {
 }
 
 describe('TodaySalesSection', () => {
+    it('sends the client-computed UTC today window as startUtc/endUtc query params', async () => {
+        let received: { startUtc: string | null; endUtc: string | null } | undefined;
+        server.use(
+            http.get(TODAY_SALES_URL, ({ request }) => {
+                const params = new URL(request.url).searchParams;
+                received = { startUtc: params.get('startUtc'), endUtc: params.get('endUtc') };
+                return HttpResponse.json(populatedSales);
+            })
+        );
+
+        renderSection();
+
+        await waitFor(() => {
+            expect(screen.getByText('4,185,000 ₫')).toBeInTheDocument();
+        });
+
+        // The client owns the local→UTC conversion and sends a half-open 24h window.
+        expect(received?.startUtc).toBeTruthy();
+        expect(received?.endUtc).toBeTruthy();
+        expect(received!.startUtc!.endsWith('Z')).toBe(true);
+        expect(received!.endUtc!.endsWith('Z')).toBe(true);
+        expect(new Date(received!.endUtc!).getTime() - new Date(received!.startUtc!).getTime()).toBe(
+            24 * 60 * 60 * 1000
+        );
+    });
+
     it('renders the revenue and order-count bar gauges with their exact values in the success state', async () => {
         server.use(http.get(TODAY_SALES_URL, () => HttpResponse.json(populatedSales)));
 

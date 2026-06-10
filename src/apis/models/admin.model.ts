@@ -108,6 +108,15 @@ export interface GetDashboardOrderStatusSummaryResponseModel {
     completed: number;
 }
 
+/**
+ * The client owns all timezone logic: it computes today's local window and
+ * converts it to a half-open UTC range `[startUtc, endUtc)`.
+ */
+export interface GetDashboardTodaySalesRequestModel {
+    startUtc: string;
+    endUtc: string;
+}
+
 export interface GetDashboardTodaySalesResponseModel {
     revenue: number;
     orderCount: number;
@@ -115,7 +124,15 @@ export interface GetDashboardTodaySalesResponseModel {
 
 export type DashboardRevenueGranularity = 'year' | 'month' | 'day';
 
+/**
+ * The client computes the local period boundaries for the active granularity,
+ * converts them to an ascending UTC boundary set (`n + 1` instants), derives a
+ * stable label per bucket (`n` labels), and sends both plus the granularity
+ * hint. The backend derives no window itself.
+ */
 export interface GetDashboardRevenueSeriesRequestModel {
+    boundaries: string[];
+    labels: string[];
     granularity: DashboardRevenueGranularity;
 }
 

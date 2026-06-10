@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts';
 
 import { adminApi } from '@/apis';
 import { formatVnd } from '@/app/utils/currency.utils';
+import { getTodayWindowUtc } from '@/app/utils/dashboard-time.utils';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/chart';
@@ -114,9 +115,13 @@ function MetricsError({ onRetry }: { onRetry: () => void }) {
 function TodaySalesSection() {
     const { t } = useTranslation();
 
+    // The client owns timezone conversion: compute today's local window once and
+    // send it to the now-timezone-agnostic backend as UTC instants.
+    const { startUtc, endUtc } = useMemo(() => getTodayWindowUtc(), []);
+
     const { data, isLoading, isError, refetch } = useQuery({
-        queryKey: ['admin', 'dashboard', 'today-sales'] as const,
-        queryFn: () => adminApi.getDashboardTodaySales(),
+        queryKey: ['admin', 'dashboard', 'today-sales', startUtc, endUtc] as const,
+        queryFn: () => adminApi.getDashboardTodaySales({ startUtc, endUtc }),
     });
 
     const handleRetry = useCallback(() => {

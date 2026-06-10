@@ -40,6 +40,7 @@ import {
     GetDashboardOrderStatusSummaryResponseModel,
     GetDashboardRevenueSeriesRequestModel,
     GetDashboardRevenueSeriesResponseModel,
+    GetDashboardTodaySalesRequestModel,
     GetDashboardTodaySalesResponseModel,
     UpdateAdminFoodRequestModel,
     UpdateAdminUserRoleRequestModel,
@@ -86,15 +87,20 @@ export const adminApi = {
         return toDashboardOrderStatusSummary(response);
     },
 
-    getDashboardTodaySales: async () => {
+    getDashboardTodaySales: async (params: GetDashboardTodaySalesRequestModel) => {
+        const searchParams = new URLSearchParams();
+        searchParams.append('startUtc', params.startUtc);
+        searchParams.append('endUtc', params.endUtc);
         const response = await apiClient.get<GetDashboardTodaySalesResponseModel>(
-            API_ENDPOINTS.ADMIN.DASHBOARD_TODAY_SALES
+            `${API_ENDPOINTS.ADMIN.DASHBOARD_TODAY_SALES}?${searchParams.toString()}`
         );
         return toDashboardTodaySales(response);
     },
 
     getDashboardRevenueSeries: async (params: GetDashboardRevenueSeriesRequestModel) => {
         const searchParams = new URLSearchParams();
+        params.boundaries.forEach(boundary => searchParams.append('boundaries', boundary));
+        params.labels.forEach(label => searchParams.append('labels', label));
         searchParams.append('granularity', params.granularity);
         const response = await apiClient.get<GetDashboardRevenueSeriesResponseModel>(
             `${API_ENDPOINTS.ADMIN.DASHBOARD_REVENUE_SERIES}?${searchParams.toString()}`
