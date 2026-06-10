@@ -485,8 +485,9 @@
                     "inProgress": "In Progress",
                     "completed": "Completed"
                 },
-                "viewOrders": "View orders →",
-                "cardAriaLabel": "{{label}} orders: {{count}}. View filtered list.",
+                "description": "Live order count per status. Select a bar to view that status's filtered orders.",
+                "chartAriaLabel": "Order count by status. Select a bar to open the filtered orders list.",
+                "barAriaLabel": "{{label}} orders: {{count}}. View orders filtered to {{label}}.",
                 "errorTitle": "Couldn't load order status counts",
                 "errorDescription": "We were unable to fetch the order status overview. Please try again.",
                 "retry": "Retry"
