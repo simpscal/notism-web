@@ -15,6 +15,7 @@ import type {
     GetAdminOrdersResponseModel,
     GetAdminUsersResponseModel,
     GetDashboardOrderStatusSummaryResponseModel,
+    GetDashboardRevenueSeriesResponseModel,
     GetDashboardTodaySalesResponseModel,
 } from '../models';
 
@@ -37,6 +38,8 @@ import type {
     AdminUserViewModel,
     AdminUsersViewModel,
     DashboardOrderStatusSummaryViewModel,
+    DashboardRevenueGranularityViewModel,
+    DashboardRevenueSeriesViewModel,
     DashboardTodaySalesViewModel,
 } from '@/features/admin/models';
 
@@ -85,6 +88,18 @@ export function toDashboardTodaySales(response: GetDashboardTodaySalesResponseMo
     return {
         revenue: response.revenue,
         orderCount: response.orderCount,
+    };
+}
+
+export function toDashboardRevenueSeries(
+    response: GetDashboardRevenueSeriesResponseModel
+): DashboardRevenueSeriesViewModel {
+    return {
+        granularity: response.granularity as DashboardRevenueGranularityViewModel,
+        points: response.points.map(point => ({
+            period: point.period,
+            revenue: point.revenue,
+        })),
     };
 }
 

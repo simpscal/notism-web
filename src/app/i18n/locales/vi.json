@@ -501,6 +501,28 @@
                 "errorTitle": "Không thể tải số liệu hôm nay",
                 "errorDescription": "Đã xảy ra lỗi khi tải doanh thu và tổng số đơn hàng. Vui lòng thử lại.",
                 "retry": "Thử lại"
+            },
+            "revenue": {
+                "heading": "Doanh thu theo thời gian",
+                "description": "Tổng doanh thu theo từng kỳ — {{range}}.",
+                "rangeLabel": {
+                    "year": "theo năm",
+                    "month": "theo tháng",
+                    "day": "theo ngày"
+                },
+                "granularity": {
+                    "year": "Năm",
+                    "month": "Tháng",
+                    "day": "Ngày"
+                },
+                "granularityAriaLabel": "Mức độ chi tiết doanh thu",
+                "granularityOptionAriaLabel": "Tổng doanh thu theo {{label}}",
+                "chartAriaLabel": "Doanh thu theo {{granularity}}. Tổng {{total}}.",
+                "barAriaLabel": "{{label}}: {{value}}",
+                "tooltipLabel": "{{label}}",
+                "errorTitle": "Không thể tải doanh thu theo thời gian",
+                "errorDescription": "Chúng tôi không thể tải phân tích doanh thu. Vui lòng thử lại.",
+                "retry": "Thử lại"
             }
         },
         "orders": {

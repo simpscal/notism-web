@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OrderStatusSection from './components/order-status-section';
+import RevenueSection from './components/revenue-section';
 import TodaySalesSection from './components/today-sales-section';
 
 import { Separator } from '@/components/separator';
@@ -32,6 +33,8 @@ function Dashboard() {
             <TodaySalesSection />
             <Separator className='mb-8' />
             <OrderStatusSection />
+            <Separator className='my-8' />
+            <RevenueSection />
         </div>
     );
 }

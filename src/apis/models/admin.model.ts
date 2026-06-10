@@ -113,6 +113,22 @@ export interface GetDashboardTodaySalesResponseModel {
     orderCount: number;
 }
 
+export type DashboardRevenueGranularity = 'year' | 'month' | 'day';
+
+export interface GetDashboardRevenueSeriesRequestModel {
+    granularity: DashboardRevenueGranularity;
+}
+
+export interface DashboardRevenueSeriesPointResponseModel {
+    period: string;
+    revenue: number;
+}
+
+export interface GetDashboardRevenueSeriesResponseModel {
+    granularity: string;
+    points: DashboardRevenueSeriesPointResponseModel[];
+}
+
 export interface AdminFoodItemResponseModel {
     id: string;
     name: string;
