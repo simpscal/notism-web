@@ -1,37 +1,51 @@
 import { apiClient } from './client';
 import {
+    toAdminCategory,
+    toAdminOrderDetail,
+    toAdminOrder,
+    toAdminUserDetail,
+    toAdminCustomisationGroup,
+    toAdminCustomisationOption,
+    toAdminCategories,
+    toAdminFoodDetail,
+    toAdminFoods,
+    toAdminOrdersForKanban,
+    toAdminOrders,
+    toAdminUsers,
+} from './mappers';
+import {
+    AdminOrderDetailResponseModel,
     AdminOrderResponseModel,
-    GetAdminUsersRequestModel,
-    GetAdminUsersResponseModel,
-    GetAdminOrdersRequestModel,
-    GetAdminOrdersResponseModel,
-    GetAdminOrdersForKanbanRequestModel,
-    GetAdminOrdersForKanbanResponseModel,
-    UpdateOrderDeliveryStatusRequestModel,
+    AdminUserDetailResponseModel,
+    AdminCategoryResponseModel,
+    CreateAdminFoodRequestModel,
+    CreateCategoryRequestModel,
+    CreateCustomisationGroupRequestModel,
+    CreateCustomisationOptionRequestModel,
+    CustomisationGroupResponseModel,
+    CustomisationOptionResponseModel,
+    GetAdminCategoriesResponseModel,
+    GetAdminFoodDetailResponseModel,
     GetAdminFoodsRequestModel,
     GetAdminFoodsResponseModel,
-    GetAdminFoodDetailResponseModel,
-    CreateAdminFoodRequestModel,
+    GetAdminOrdersForKanbanRequestModel,
+    GetAdminOrdersForKanbanResponseModel,
+    GetAdminOrdersRequestModel,
+    GetAdminOrdersResponseModel,
+    GetAdminUsersRequestModel,
+    GetAdminUsersResponseModel,
     UpdateAdminFoodRequestModel,
-    AdminOrderDetailResponseModel,
-    AdminUserDetailResponseModel,
     UpdateAdminUserRoleRequestModel,
-    GetAdminCategoriesResponseModel,
-    AdminCategoryResponseModel,
-    CreateCategoryRequestModel,
     UpdateCategoryRequestModel,
-    CreateCustomisationGroupRequestModel,
     UpdateCustomisationGroupRequestModel,
-    CustomisationGroupResponseModel,
-    CreateCustomisationOptionRequestModel,
     UpdateCustomisationOptionRequestModel,
-    CustomisationOptionResponseModel,
+    UpdateOrderDeliveryStatusRequestModel,
 } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const adminApi = {
-    getOrdersForTable: (params?: GetAdminOrdersRequestModel): Promise<GetAdminOrdersResponseModel> => {
+    getOrdersForTable: async (params?: GetAdminOrdersRequestModel) => {
         const searchParams = new URLSearchParams();
         if (params?.skip !== undefined) searchParams.append('skip', params.skip.toString());
         if (params?.take !== undefined) searchParams.append('take', params.take.toString());
@@ -40,29 +54,38 @@ export const adminApi = {
         if (params?.keyword) searchParams.append('keyword', params.keyword);
         if (params?.paymentStatus) searchParams.append('paymentStatus', params.paymentStatus);
         const queryString = searchParams.toString();
-        return apiClient.get(`${API_ENDPOINTS.ADMIN.ORDERS_TABLE}${queryString ? `?${queryString}` : ''}`);
+        const response = await apiClient.get<GetAdminOrdersResponseModel>(
+            `${API_ENDPOINTS.ADMIN.ORDERS_TABLE}${queryString ? `?${queryString}` : ''}`
+        );
+        return toAdminOrders(response);
     },
 
-    getOrdersForKanban: (
-        params: GetAdminOrdersForKanbanRequestModel
-    ): Promise<GetAdminOrdersForKanbanResponseModel> => {
+    getOrdersForKanban: async (params: GetAdminOrdersForKanbanRequestModel) => {
         const searchParams = new URLSearchParams();
         searchParams.append('status', params.status);
         if (params.skip !== undefined) searchParams.append('skip', params.skip.toString());
         if (params.take !== undefined) searchParams.append('take', params.take.toString());
         if (params.paymentStatus) searchParams.append('paymentStatus', params.paymentStatus);
-        return apiClient.get(`${API_ENDPOINTS.ADMIN.ORDERS_KANBAN}?${searchParams.toString()}`);
+        const response = await apiClient.get<GetAdminOrdersForKanbanResponseModel>(
+            `${API_ENDPOINTS.ADMIN.ORDERS_KANBAN}?${searchParams.toString()}`
+        );
+        return toAdminOrdersForKanban(response);
     },
 
-    getOrderById: (slugId: string): Promise<AdminOrderDetailResponseModel> =>
-        apiClient.get(API_ENDPOINTS.ADMIN.ORDER_DETAIL(slugId)),
+    getOrderById: async (slugId: string) => {
+        const response = await apiClient.get<AdminOrderDetailResponseModel>(API_ENDPOINTS.ADMIN.ORDER_DETAIL(slugId));
+        return toAdminOrderDetail(response);
+    },
 
-    updateOrderDeliveryStatus: (
-        orderId: string,
-        data: UpdateOrderDeliveryStatusRequestModel
-    ): Promise<AdminOrderResponseModel> => apiClient.patch(API_ENDPOINTS.ADMIN.ORDER_DELIVERY_STATUS(orderId), data),
+    updateOrderDeliveryStatus: async (orderId: string, data: UpdateOrderDeliveryStatusRequestModel) => {
+        const response = await apiClient.patch<AdminOrderResponseModel>(
+            API_ENDPOINTS.ADMIN.ORDER_DELIVERY_STATUS(orderId),
+            data
+        );
+        return toAdminOrder(response);
+    },
 
-    getUsers: (params?: GetAdminUsersRequestModel): Promise<GetAdminUsersResponseModel> => {
+    getUsers: async (params?: GetAdminUsersRequestModel) => {
         const searchParams = new URLSearchParams();
         if (params?.skip !== undefined) searchParams.append('skip', params.skip.toString());
         if (params?.take !== undefined) searchParams.append('take', params.take.toString());
@@ -70,18 +93,25 @@ export const adminApi = {
         if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
         if (params?.keyword) searchParams.append('keyword', params.keyword);
         const queryString = searchParams.toString();
-        return apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}${queryString ? `?${queryString}` : ''}`);
+        const response = await apiClient.get<GetAdminUsersResponseModel>(
+            `${API_ENDPOINTS.ADMIN.USERS}${queryString ? `?${queryString}` : ''}`
+        );
+        return toAdminUsers(response);
     },
 
-    getUserById: (id: string): Promise<AdminUserDetailResponseModel> =>
-        apiClient.get(API_ENDPOINTS.ADMIN.USER_DETAIL(id)),
+    getUserById: async (id: string) => {
+        const response = await apiClient.get<AdminUserDetailResponseModel>(API_ENDPOINTS.ADMIN.USER_DETAIL(id));
+        return toAdminUserDetail(response);
+    },
 
-    updateUser: (id: string, data: UpdateAdminUserRoleRequestModel): Promise<AdminUserDetailResponseModel> =>
-        apiClient.patch(API_ENDPOINTS.ADMIN.USER_DETAIL(id), data),
+    updateUser: async (id: string, data: UpdateAdminUserRoleRequestModel) => {
+        const response = await apiClient.patch<AdminUserDetailResponseModel>(API_ENDPOINTS.ADMIN.USER_DETAIL(id), data);
+        return toAdminUserDetail(response);
+    },
 
     deleteUser: (userId: string): Promise<void> => apiClient.delete(API_ENDPOINTS.ADMIN.USER_DELETE(userId)),
 
-    getFoods: (params?: GetAdminFoodsRequestModel): Promise<GetAdminFoodsResponseModel> => {
+    getFoods: async (params?: GetAdminFoodsRequestModel) => {
         const searchParams = new URLSearchParams();
         if (params?.skip !== undefined) searchParams.append('skip', params.skip.toString());
         if (params?.take !== undefined) searchParams.append('take', params.take.toString());
@@ -91,63 +121,96 @@ export const adminApi = {
         if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
         if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
         const queryString = searchParams.toString();
-        return apiClient.get(`${API_ENDPOINTS.ADMIN.FOODS}${queryString ? `?${queryString}` : ''}`);
+        const response = await apiClient.get<GetAdminFoodsResponseModel>(
+            `${API_ENDPOINTS.ADMIN.FOODS}${queryString ? `?${queryString}` : ''}`
+        );
+        return toAdminFoods(response);
     },
 
-    getFoodById: (id: string): Promise<GetAdminFoodDetailResponseModel> =>
-        apiClient.get(API_ENDPOINTS.ADMIN.FOOD_DETAIL(id)),
+    getFoodById: async (id: string) => {
+        const response = await apiClient.get<GetAdminFoodDetailResponseModel>(API_ENDPOINTS.ADMIN.FOOD_DETAIL(id));
+        return toAdminFoodDetail(response);
+    },
 
-    createFood: (data: CreateAdminFoodRequestModel): Promise<GetAdminFoodDetailResponseModel> =>
-        apiClient.post(API_ENDPOINTS.ADMIN.FOODS, data),
+    createFood: async (data: CreateAdminFoodRequestModel) => {
+        const response = await apiClient.post<GetAdminFoodDetailResponseModel>(API_ENDPOINTS.ADMIN.FOODS, data);
+        return toAdminFoodDetail(response);
+    },
 
     deleteFood: (id: string): Promise<void> => apiClient.delete(API_ENDPOINTS.ADMIN.FOOD_DELETE(id)),
 
-    updateFood: (id: string, data: UpdateAdminFoodRequestModel): Promise<GetAdminFoodDetailResponseModel> =>
-        apiClient.patch(API_ENDPOINTS.ADMIN.FOOD_UPDATE(id), data),
+    updateFood: async (id: string, data: UpdateAdminFoodRequestModel) => {
+        const response = await apiClient.patch<GetAdminFoodDetailResponseModel>(
+            API_ENDPOINTS.ADMIN.FOOD_UPDATE(id),
+            data
+        );
+        return toAdminFoodDetail(response);
+    },
 
-    getCategories: (): Promise<GetAdminCategoriesResponseModel> => apiClient.get(API_ENDPOINTS.ADMIN.CATEGORIES),
+    getCategories: async () => {
+        const response = await apiClient.get<GetAdminCategoriesResponseModel>(API_ENDPOINTS.ADMIN.CATEGORIES);
+        return toAdminCategories(response);
+    },
 
-    getCategoryById: (id: string): Promise<AdminCategoryResponseModel> =>
-        apiClient.get(API_ENDPOINTS.ADMIN.CATEGORY_DETAIL(id)),
+    getCategoryById: async (id: string) => {
+        const response = await apiClient.get<AdminCategoryResponseModel>(API_ENDPOINTS.ADMIN.CATEGORY_DETAIL(id));
+        return toAdminCategory(response);
+    },
 
-    createCategory: (data: CreateCategoryRequestModel): Promise<AdminCategoryResponseModel> =>
-        apiClient.post(API_ENDPOINTS.ADMIN.CATEGORIES, data),
+    createCategory: async (data: CreateCategoryRequestModel) => {
+        const response = await apiClient.post<AdminCategoryResponseModel>(API_ENDPOINTS.ADMIN.CATEGORIES, data);
+        return toAdminCategory(response);
+    },
 
-    updateCategory: (id: string, data: UpdateCategoryRequestModel): Promise<AdminCategoryResponseModel> =>
-        apiClient.patch(API_ENDPOINTS.ADMIN.CATEGORY_DETAIL(id), data),
+    updateCategory: async (id: string, data: UpdateCategoryRequestModel) => {
+        const response = await apiClient.patch<AdminCategoryResponseModel>(
+            API_ENDPOINTS.ADMIN.CATEGORY_DETAIL(id),
+            data
+        );
+        return toAdminCategory(response);
+    },
 
     deleteCategory: (id: string): Promise<void> => apiClient.delete(API_ENDPOINTS.ADMIN.CATEGORY_DETAIL(id)),
 
-    addCustomisationGroup: (
-        foodId: string,
-        data: CreateCustomisationGroupRequestModel
-    ): Promise<CustomisationGroupResponseModel> =>
-        apiClient.post(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUPS(foodId), data),
+    addCustomisationGroup: async (foodId: string, data: CreateCustomisationGroupRequestModel) => {
+        const response = await apiClient.post<CustomisationGroupResponseModel>(
+            API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUPS(foodId),
+            data
+        );
+        return toAdminCustomisationGroup(response);
+    },
 
-    updateCustomisationGroup: (
-        foodId: string,
-        groupId: string,
-        data: UpdateCustomisationGroupRequestModel
-    ): Promise<CustomisationGroupResponseModel> =>
-        apiClient.patch(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUP(foodId, groupId), data),
+    updateCustomisationGroup: async (foodId: string, groupId: string, data: UpdateCustomisationGroupRequestModel) => {
+        const response = await apiClient.patch<CustomisationGroupResponseModel>(
+            API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUP(foodId, groupId),
+            data
+        );
+        return toAdminCustomisationGroup(response);
+    },
 
     deleteCustomisationGroup: (foodId: string, groupId: string): Promise<void> =>
         apiClient.delete(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_GROUP(foodId, groupId)),
 
-    addCustomisationOption: (
-        foodId: string,
-        groupId: string,
-        data: CreateCustomisationOptionRequestModel
-    ): Promise<CustomisationOptionResponseModel> =>
-        apiClient.post(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTIONS(foodId, groupId), data),
+    addCustomisationOption: async (foodId: string, groupId: string, data: CreateCustomisationOptionRequestModel) => {
+        const response = await apiClient.post<CustomisationOptionResponseModel>(
+            API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTIONS(foodId, groupId),
+            data
+        );
+        return toAdminCustomisationOption(response);
+    },
 
-    updateCustomisationOption: (
+    updateCustomisationOption: async (
         foodId: string,
         groupId: string,
         optionId: string,
         data: UpdateCustomisationOptionRequestModel
-    ): Promise<CustomisationOptionResponseModel> =>
-        apiClient.patch(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTION(foodId, groupId, optionId), data),
+    ) => {
+        const response = await apiClient.patch<CustomisationOptionResponseModel>(
+            API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTION(foodId, groupId, optionId),
+            data
+        );
+        return toAdminCustomisationOption(response);
+    },
 
     deleteCustomisationOption: (foodId: string, groupId: string, optionId: string): Promise<void> =>
         apiClient.delete(API_ENDPOINTS.ADMIN.FOOD_CUSTOMISATION_OPTION(foodId, groupId, optionId)),

@@ -12,7 +12,7 @@ export const loadCart = createAsyncThunk('cart/load', async (_, { getState }) =>
 
     if (isAuthenticated) {
         const response = await cartApi.getCart();
-        return response.items.map(item => ({ ...item, isSelected: true }));
+        return response.items;
     } else {
         return getCartFromStorage();
     }

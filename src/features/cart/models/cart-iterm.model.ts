@@ -28,3 +28,7 @@ export interface CartItemViewModel {
     customisations: CartItemCustomisationViewModel[];
     totalSurcharge: number;
 }
+
+export interface CartViewModel {
+    items: CartItemViewModel[];
+}

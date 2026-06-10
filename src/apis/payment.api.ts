@@ -1,11 +1,13 @@
 import { apiClient } from './client';
+import { toBankAccount } from './mappers';
 import { BankAccountResponseModel, SaveBankAccountRequestModel } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const paymentApi = {
-    getBankAccount: () => {
-        return apiClient.get<BankAccountResponseModel | null>(API_ENDPOINTS.PAYMENT.BANK_ACCOUNT);
+    getBankAccount: async () => {
+        const response = await apiClient.get<BankAccountResponseModel | null>(API_ENDPOINTS.PAYMENT.BANK_ACCOUNT);
+        return toBankAccount(response);
     },
 
     saveBankAccount: (data: SaveBankAccountRequestModel) => {

@@ -17,11 +17,11 @@ import {
 import { foodFormSchema, getDefaultFormValues, type FoodFormValues } from './models';
 
 import { adminApi, storageApi } from '@/apis';
-import type { GetAdminFoodDetailImageModel } from '@/apis/models';
 import { ROUTES } from '@/app/constants';
 import { PresignedUrlUploadEnum } from '@/app/enums';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
+import type { AdminFoodDetailImageViewModel } from '@/features/admin';
 
 const IS_CREATE_MODE_ID = 'new';
 
@@ -35,7 +35,7 @@ function AdminFoodDetail() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [pendingImageFiles, setPendingImageFiles] = useState<File[]>([]);
     const [desiredImages, setDesiredImages] = useState<
-        Pick<GetAdminFoodDetailImageModel, 'fileKey' | 'imageUrl' | 'altText'>[]
+        Pick<AdminFoodDetailImageViewModel, 'fileKey' | 'imageUrl' | 'altText'>[]
     >([]);
 
     const { data: food, isLoading } = useQuery({

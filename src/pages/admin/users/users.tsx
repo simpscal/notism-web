@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { adminApi } from '@/apis';
-import { GetAdminUsersResponseModel } from '@/apis/models';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
@@ -27,6 +26,7 @@ import {
     useTableSort,
 } from '@/components/table';
 import { useAppSelector } from '@/core/hooks/use-redux.hook';
+import type { AdminUsersViewModel } from '@/features/admin';
 
 function AdminUsers() {
     const { t } = useTranslation();
@@ -70,7 +70,7 @@ function AdminUsers() {
         mutationFn: (userId: string) => adminApi.deleteUser(userId),
         onSuccess: (_, userId) => {
             // Remove the user from the cache
-            queryClient.setQueryData<GetAdminUsersResponseModel>(
+            queryClient.setQueryData<AdminUsersViewModel>(
                 ['admin', 'users', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }] as const,
                 oldData => {
                     if (!oldData) return oldData;

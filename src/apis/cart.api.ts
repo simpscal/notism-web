@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { toCartItem, toCart } from './mappers';
 import {
     AddCartItemRequestModel,
     BulkAddCartItemsRequestModel,
@@ -11,16 +12,19 @@ import {
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const cartApi = {
-    getCart: () => {
-        return apiClient.get<GetCartResponseModel>(API_ENDPOINTS.CART.BASE);
+    getCart: async () => {
+        const response = await apiClient.get<GetCartResponseModel>(API_ENDPOINTS.CART.BASE);
+        return toCart(response);
     },
 
-    addItem: (data: AddCartItemRequestModel) => {
-        return apiClient.post<CartItemResponseModel>(API_ENDPOINTS.CART.ITEMS, data);
+    addItem: async (data: AddCartItemRequestModel) => {
+        const response = await apiClient.post<CartItemResponseModel>(API_ENDPOINTS.CART.ITEMS, data);
+        return toCartItem(response);
     },
 
-    updateItemQuantity: (itemId: string, data: UpdateCartItemQuantityRequestModel) => {
-        return apiClient.patch<CartItemResponseModel>(API_ENDPOINTS.CART.ITEM(itemId), data);
+    updateItemQuantity: async (itemId: string, data: UpdateCartItemQuantityRequestModel) => {
+        const response = await apiClient.patch<CartItemResponseModel>(API_ENDPOINTS.CART.ITEM(itemId), data);
+        return toCartItem(response);
     },
 
     removeItem: (itemId: string) => {
@@ -31,11 +35,16 @@ export const cartApi = {
         return apiClient.delete(API_ENDPOINTS.CART.BASE);
     },
 
-    bulkAddItems: (data: BulkAddCartItemsRequestModel) => {
-        return apiClient.post<GetCartResponseModel>(API_ENDPOINTS.CART.ITEMS_BULK, data);
+    bulkAddItems: async (data: BulkAddCartItemsRequestModel) => {
+        const response = await apiClient.post<GetCartResponseModel>(API_ENDPOINTS.CART.ITEMS_BULK, data);
+        return toCart(response);
     },
 
-    replaceItemCustomisations: (itemId: string, data: ReplaceCartItemCustomisationsRequestModel) => {
-        return apiClient.put<CartItemResponseModel>(API_ENDPOINTS.CART.ITEM_CUSTOMISATIONS(itemId), data);
+    replaceItemCustomisations: async (itemId: string, data: ReplaceCartItemCustomisationsRequestModel) => {
+        const response = await apiClient.put<CartItemResponseModel>(
+            API_ENDPOINTS.CART.ITEM_CUSTOMISATIONS(itemId),
+            data
+        );
+        return toCartItem(response);
     },
 };

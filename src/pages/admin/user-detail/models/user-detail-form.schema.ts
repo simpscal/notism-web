@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import type { AdminUserDetailResponseModel } from '@/apis/models';
 import { UserRoleEnum } from '@/app/enums';
+import type { AdminUserDetailViewModel } from '@/features/admin';
 
 export const USER_ROLE_OPTIONS = [
     { value: UserRoleEnum.User, label: 'User' },
@@ -14,7 +14,7 @@ export const userDetailFormSchema = z.object({
 
 export type UserDetailFormValues = z.infer<typeof userDetailFormSchema>;
 
-export function getDefaultUserDetailFormValues(user: AdminUserDetailResponseModel | null): UserDetailFormValues {
+export function getDefaultUserDetailFormValues(user: AdminUserDetailViewModel | null): UserDetailFormValues {
     if (!user) {
         return { role: UserRoleEnum.User };
     }

@@ -6,7 +6,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { adminApi } from '@/apis';
-import { GetAdminFoodsResponseModel } from '@/apis/models';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
@@ -26,6 +25,7 @@ import {
     TablePagination,
     useTableSort,
 } from '@/components/table';
+import type { AdminFoodsViewModel } from '@/features/admin';
 
 const DESCRIPTION_MAX_LENGTH = 50;
 
@@ -75,7 +75,7 @@ function AdminFoods() {
     const deleteFoodMutation = useMutation({
         mutationFn: (foodId: string) => adminApi.deleteFood(foodId),
         onSuccess: (_, foodId) => {
-            queryClient.setQueryData<GetAdminFoodsResponseModel>(
+            queryClient.setQueryData<AdminFoodsViewModel>(
                 ['admin', 'foods', { page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }] as const,
                 oldData => {
                     if (!oldData) return oldData;
