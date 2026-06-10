@@ -489,6 +489,18 @@
                 "errorTitle": "Couldn't load order status counts",
                 "errorDescription": "We were unable to fetch the order status overview. Please try again.",
                 "retry": "Retry"
+            },
+            "todaySales": {
+                "heading": "Today's sales",
+                "revenueLabel": "Today's revenue",
+                "ordersLabel": "Today's orders",
+                "revenueSublabel": "Gross sales since midnight",
+                "revenueSublabelZero": "No sales yet today",
+                "ordersSublabel": "Orders placed since midnight",
+                "ordersSublabelZero": "No orders placed yet today",
+                "errorTitle": "Couldn't load today's metrics",
+                "errorDescription": "Something went wrong fetching revenue and order totals. Please try again.",
+                "retry": "Retry"
             }
         },
         "orders": {

@@ -26,6 +26,11 @@ export interface DashboardOrderStatusSummaryViewModel {
     completed: number;
 }
 
+export interface DashboardTodaySalesViewModel {
+    revenue: number;
+    orderCount: number;
+}
+
 export interface AdminOrderDetailViewModel {
     id: string;
     slugId: string;

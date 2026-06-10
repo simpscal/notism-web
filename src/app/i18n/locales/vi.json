@@ -489,6 +489,18 @@
                 "errorTitle": "Không thể tải số liệu trạng thái đơn hàng",
                 "errorDescription": "Chúng tôi không thể tải tổng quan trạng thái đơn hàng. Vui lòng thử lại.",
                 "retry": "Thử lại"
+            },
+            "todaySales": {
+                "heading": "Doanh số hôm nay",
+                "revenueLabel": "Doanh thu hôm nay",
+                "ordersLabel": "Đơn hàng hôm nay",
+                "revenueSublabel": "Tổng doanh thu từ nửa đêm",
+                "revenueSublabelZero": "Chưa có doanh thu hôm nay",
+                "ordersSublabel": "Đơn hàng đã đặt từ nửa đêm",
+                "ordersSublabelZero": "Chưa có đơn hàng nào hôm nay",
+                "errorTitle": "Không thể tải số liệu hôm nay",
+                "errorDescription": "Đã xảy ra lỗi khi tải doanh thu và tổng số đơn hàng. Vui lòng thử lại.",
+                "retry": "Thử lại"
             }
         },
         "orders": {
