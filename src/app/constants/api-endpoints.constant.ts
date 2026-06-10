@@ -42,6 +42,7 @@ export const API_ENDPOINTS = {
     },
     ADMIN: {
         DASHBOARD_ORDER_STATUS_SUMMARY: 'admin/dashboard/order-status-summary',
+        DASHBOARD_TODAY_SALES: 'admin/dashboard/today-sales',
         ORDERS: 'admin/orders',
         ORDERS_TABLE: 'admin/orders/table',
         ORDERS_KANBAN: 'admin/orders/kanban',

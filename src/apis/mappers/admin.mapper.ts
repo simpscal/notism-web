@@ -15,6 +15,7 @@ import type {
     GetAdminOrdersResponseModel,
     GetAdminUsersResponseModel,
     GetDashboardOrderStatusSummaryResponseModel,
+    GetDashboardTodaySalesResponseModel,
 } from '../models';
 
 import { toCustomisationGroup } from './food.mapper';
@@ -36,6 +37,7 @@ import type {
     AdminUserViewModel,
     AdminUsersViewModel,
     DashboardOrderStatusSummaryViewModel,
+    DashboardTodaySalesViewModel,
 } from '@/features/admin/models';
 
 export function toAdminOrder(response: AdminOrderResponseModel): AdminOrderViewModel {
@@ -76,6 +78,13 @@ export function toDashboardOrderStatusSummary(
         new: response.new,
         inProgress: response.inProgress,
         completed: response.completed,
+    };
+}
+
+export function toDashboardTodaySales(response: GetDashboardTodaySalesResponseModel): DashboardTodaySalesViewModel {
+    return {
+        revenue: response.revenue,
+        orderCount: response.orderCount,
     };
 }
 

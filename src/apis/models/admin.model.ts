@@ -108,6 +108,11 @@ export interface GetDashboardOrderStatusSummaryResponseModel {
     completed: number;
 }
 
+export interface GetDashboardTodaySalesResponseModel {
+    revenue: number;
+    orderCount: number;
+}
+
 export interface AdminFoodItemResponseModel {
     id: string;
     name: string;

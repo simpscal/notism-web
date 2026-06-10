@@ -3,6 +3,9 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OrderStatusSection from './components/order-status-section';
+import TodaySalesSection from './components/today-sales-section';
+
+import { Separator } from '@/components/separator';
 
 function formatTodayLabel(): string {
     return new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -24,8 +27,10 @@ function Dashboard() {
                 </div>
             </div>
 
-            {/* Sections container — story #220's "Today's sales" metrics section slots here, above the
-                status section (followed by a Separator). For this story we render only the status overview. */}
+            {/* Sections container — the "Today's sales" metrics section sits above the status section,
+                separated by a divider. Each section owns its own loading/error boundary independently. */}
+            <TodaySalesSection />
+            <Separator className='mb-8' />
             <OrderStatusSection />
         </div>
     );
