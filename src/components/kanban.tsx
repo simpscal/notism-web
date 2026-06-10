@@ -25,6 +25,8 @@ export interface KanbanColumn<TItem> {
     hasMore?: boolean;
     onLoadMore?: () => void;
     isLoadingMore?: boolean;
+    /** When true, the column is visually emphasised (e.g. drilled into from the dashboard). */
+    isHighlighted?: boolean;
 }
 
 export interface KanbanProps<TItem> {
@@ -84,6 +86,7 @@ function KanbanColumn<TItem>({
     sourceColumnId: string | null;
     overColumnId: string | null;
 }) {
+    const columnRef = useRef<HTMLDivElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const { ref: loadMoreRef, inView } = useInView();
 
@@ -100,8 +103,21 @@ function KanbanColumn<TItem>({
         }
     }, [inView, column.hasMore, column.isLoadingMore, column.onLoadMore]);
 
+    // Scroll a highlighted column into view when it becomes highlighted (dashboard drill-through).
+    useEffect(() => {
+        if (column.isHighlighted) {
+            columnRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+    }, [column.isHighlighted]);
+
     return (
-        <div className={cn('flex flex-col h-full bg-muted/30 flex-shrink-0')}>
+        <div
+            ref={columnRef}
+            className={cn(
+                'flex flex-col h-full bg-muted/30 flex-shrink-0',
+                column.isHighlighted && 'ring-2 ring-inset ring-primary/40 bg-primary/5'
+            )}
+        >
             {/* Column header */}
             <div className='sticky top-0 z-10 border-b border-border bg-background px-4 py-3'>
                 <div className='flex items-center justify-between'>

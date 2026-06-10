@@ -474,6 +474,23 @@
         }
     },
     "admin": {
+        "dashboard": {
+            "title": "Dashboard",
+            "subtitle": "Operational overview for {{date}}",
+            "orderStatus": {
+                "heading": "Orders by status",
+                "statuses": {
+                    "new": "New",
+                    "inProgress": "In Progress",
+                    "completed": "Completed"
+                },
+                "viewOrders": "View orders →",
+                "cardAriaLabel": "{{label}} orders: {{count}}. View filtered list.",
+                "errorTitle": "Couldn't load order status counts",
+                "errorDescription": "We were unable to fetch the order status overview. Please try again.",
+                "retry": "Retry"
+            }
+        },
         "orders": {
             "title": "Orders",
             "management": "Orders Management",

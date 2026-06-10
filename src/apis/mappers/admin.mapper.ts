@@ -14,6 +14,7 @@ import type {
     GetAdminOrdersForKanbanResponseModel,
     GetAdminOrdersResponseModel,
     GetAdminUsersResponseModel,
+    GetDashboardOrderStatusSummaryResponseModel,
 } from '../models';
 
 import { toCustomisationGroup } from './food.mapper';
@@ -34,6 +35,7 @@ import type {
     AdminUserDetailViewModel,
     AdminUserViewModel,
     AdminUsersViewModel,
+    DashboardOrderStatusSummaryViewModel,
 } from '@/features/admin/models';
 
 export function toAdminOrder(response: AdminOrderResponseModel): AdminOrderViewModel {
@@ -64,6 +66,16 @@ export function toAdminOrdersForKanban(response: GetAdminOrdersForKanbanResponse
     return {
         items: response.items.map(toAdminOrder),
         totalCount: response.totalCount,
+    };
+}
+
+export function toDashboardOrderStatusSummary(
+    response: GetDashboardOrderStatusSummaryResponseModel
+): DashboardOrderStatusSummaryViewModel {
+    return {
+        new: response.new,
+        inProgress: response.inProgress,
+        completed: response.completed,
     };
 }
 

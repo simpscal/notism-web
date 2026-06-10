@@ -20,6 +20,12 @@ export interface AdminOrdersViewModel {
     totalCount: number;
 }
 
+export interface DashboardOrderStatusSummaryViewModel {
+    new: number;
+    inProgress: number;
+    completed: number;
+}
+
 export interface AdminOrderDetailViewModel {
     id: string;
     slugId: string;
