@@ -4,22 +4,29 @@ import {
     ChefHat,
     ClipboardList,
     CircleDot,
-    DollarSign,
     FolderOpen,
     LayoutDashboard,
     Loader,
     Moon,
-    Receipt,
     RefreshCw,
     ShoppingBag,
     Users,
     type LucideIcon,
 } from 'lucide-react';
 import React from 'react';
+import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+import { Card, CardContent } from '@/components/card';
+import {
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
+    ChartTooltip,
+    ChartTooltipContent,
+    type ChartConfig,
+} from '@/components/chart';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import { Skeleton } from '@/components/skeleton';
@@ -44,8 +51,6 @@ interface OrderStatusSummary {
     label: string;
     icon: LucideIcon;
     count: number;
-    /** Token-driven accent for the card icon chip. */
-    accentClass: string;
 }
 
 interface TodaysMetrics {
@@ -57,10 +62,10 @@ interface TodaysMetrics {
 // Mock fixtures
 // ---------------------------------------------------------------------------
 
-const STATUS_META: Record<OrderStatusKey, { label: string; icon: LucideIcon; accentClass: string }> = {
-    new: { label: 'New', icon: CircleDot, accentClass: 'bg-secondary text-secondary-foreground' },
-    inProgress: { label: 'In Progress', icon: Loader, accentClass: 'bg-primary/10 text-primary' },
-    completed: { label: 'Completed', icon: ClipboardList, accentClass: 'bg-success/15 text-success' },
+const STATUS_META: Record<OrderStatusKey, { label: string; icon: LucideIcon }> = {
+    new: { label: 'New', icon: CircleDot },
+    inProgress: { label: 'In Progress', icon: Loader },
+    completed: { label: 'Completed', icon: ClipboardList },
 };
 
 function buildStatusSummaries(counts: Record<OrderStatusKey, number>): OrderStatusSummary[] {
@@ -189,79 +194,8 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Today's metrics (story 220)
+// Shared section error (chart region) — story 219 + 220 failure ACs
 // ---------------------------------------------------------------------------
-
-function MetricCard({
-    icon: Icon,
-    label,
-    value,
-    sublabel,
-}: {
-    icon: LucideIcon;
-    label: string;
-    value: string;
-    sublabel: string;
-}) {
-    return (
-        <Card>
-            <CardHeader className='flex-row items-center justify-between gap-2 space-y-0 pb-2'>
-                <CardTitle className='text-sm font-medium text-muted-foreground'>{label}</CardTitle>
-                <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary'>
-                    <Icon className='h-4 w-4' />
-                </span>
-            </CardHeader>
-            <CardContent>
-                <p className='text-3xl font-bold tracking-tight text-foreground'>{value}</p>
-                <p className='mt-1 text-xs text-muted-foreground'>{sublabel}</p>
-            </CardContent>
-        </Card>
-    );
-}
-
-function MetricsSection({ metrics }: { metrics: TodaysMetrics }) {
-    return (
-        <section className='mb-8'>
-            <SectionHeading>Today&apos;s sales</SectionHeading>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                <MetricCard
-                    icon={DollarSign}
-                    label="Today's revenue"
-                    value={formatVnd(metrics.revenue)}
-                    sublabel={metrics.revenue === 0 ? 'No sales yet today' : 'Gross sales since midnight'}
-                />
-                <MetricCard
-                    icon={Receipt}
-                    label="Today's orders"
-                    value={metrics.orderCount.toLocaleString('en-US')}
-                    sublabel={metrics.orderCount === 0 ? 'No orders placed yet today' : 'Orders placed since midnight'}
-                />
-            </div>
-        </section>
-    );
-}
-
-function MetricsSkeleton() {
-    return (
-        <section className='mb-8'>
-            <SectionHeading>Today&apos;s sales</SectionHeading>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                {[0, 1].map(i => (
-                    <Card key={i}>
-                        <CardHeader className='flex-row items-center justify-between gap-2 space-y-0 pb-2'>
-                            <Skeleton className='h-4 w-28' />
-                            <Skeleton className='h-8 w-8 rounded-full' />
-                        </CardHeader>
-                        <CardContent>
-                            <Skeleton className='h-9 w-40' />
-                            <Skeleton className='mt-2 h-3 w-32' />
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        </section>
-    );
-}
 
 function SectionError({ title, description, onRetry }: { title: string; description: string; onRetry?: () => void }) {
     return (
@@ -284,6 +218,123 @@ function SectionError({ title, description, onRetry }: { title: string; descript
     );
 }
 
+// ---------------------------------------------------------------------------
+// Today's sales (story 220)
+//
+// Two figures with DIFFERENT units (VND revenue vs an order count) must not
+// share one axis. Rendered as two independent single-value bar gauges, each
+// with its own scale and clearly labelled value.
+// ---------------------------------------------------------------------------
+
+const REVENUE_CHART_CONFIG = {
+    revenue: { label: "Today's revenue", color: 'var(--chart-1)' },
+} satisfies ChartConfig;
+
+const ORDERS_CHART_CONFIG = {
+    orders: { label: "Today's orders", color: 'var(--chart-2)' },
+} satisfies ChartConfig;
+
+function SalesGauge({
+    config,
+    name,
+    value,
+    displayValue,
+    color,
+    accessibleName,
+}: {
+    config: ChartConfig;
+    name: string;
+    value: number;
+    displayValue: string;
+    color: string;
+    accessibleName: string;
+}) {
+    const data = [{ name, value }];
+    return (
+        <Card>
+            <CardContent className='pt-6'>
+                <div className='flex items-baseline justify-between gap-2'>
+                    <span className='text-sm font-medium text-muted-foreground'>{name}</span>
+                    <span className='text-2xl font-bold tracking-tight text-foreground tabular-nums'>
+                        {displayValue}
+                    </span>
+                </div>
+                <ChartContainer
+                    config={config}
+                    role='img'
+                    aria-label={accessibleName}
+                    className='mt-3 aspect-auto h-16 w-full'
+                >
+                    <BarChart accessibilityLayer data={data} layout='vertical' margin={{ left: 0, right: 8 }}>
+                        <XAxis type='number' hide domain={[0, 'dataMax']} />
+                        <YAxis type='category' dataKey='name' hide />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                        <Bar dataKey='value' name={name} radius={6} barSize={28}>
+                            <Cell fill={color} />
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    );
+}
+
+function MetricsSection({ metrics }: { metrics: TodaysMetrics }) {
+    const revenueEmpty = metrics.revenue === 0;
+    const ordersEmpty = metrics.orderCount === 0;
+    return (
+        <section className='mb-8'>
+            <SectionHeading>Today&apos;s sales</SectionHeading>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                <SalesGauge
+                    config={REVENUE_CHART_CONFIG}
+                    name="Today's revenue"
+                    value={metrics.revenue}
+                    displayValue={formatVnd(metrics.revenue)}
+                    color='var(--chart-1)'
+                    accessibleName={
+                        revenueEmpty ? "Today's revenue: 0 ₫" : `Today's revenue: ${formatVnd(metrics.revenue)}`
+                    }
+                />
+                <SalesGauge
+                    config={ORDERS_CHART_CONFIG}
+                    name="Today's orders"
+                    value={metrics.orderCount}
+                    displayValue={metrics.orderCount.toLocaleString('en-US')}
+                    color='var(--chart-2)'
+                    accessibleName={
+                        ordersEmpty
+                            ? "Today's orders: 0"
+                            : `Today's orders: ${metrics.orderCount.toLocaleString('en-US')}`
+                    }
+                />
+            </div>
+        </section>
+    );
+}
+
+function MetricsSkeleton() {
+    return (
+        <section className='mb-8'>
+            <SectionHeading>Today&apos;s sales</SectionHeading>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                {[0, 1].map(i => (
+                    <Card key={i}>
+                        <CardContent className='pt-6'>
+                            <div className='flex items-baseline justify-between gap-2'>
+                                <Skeleton className='h-4 w-28' />
+                                <Skeleton className='h-7 w-32' />
+                            </div>
+                            {/* Chart region placeholder */}
+                            <Skeleton className='mt-3 h-16 w-full rounded-md' />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </section>
+    );
+}
+
 function MetricsError() {
     return (
         <section className='mb-8'>
@@ -297,50 +348,75 @@ function MetricsError() {
 }
 
 // ---------------------------------------------------------------------------
-// Order status overview (story 219)
+// Orders by status (story 219)
+//
+// Single bar chart comparing the order count per status. Each status — incl.
+// zero-count — remains a labelled bar. Bars are clickable (drill-down
+// affordance to the filtered orders list) with hover cursor + per-bar
+// aria-label, and a legend so a non-engineer sees the click target.
 // ---------------------------------------------------------------------------
 
-function StatusCard({ summary }: { summary: OrderStatusSummary }) {
-    const Icon = summary.icon;
-    return (
-        <button
-            type='button'
-            className='group block w-full rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
-            aria-label={`${summary.label} orders: ${summary.count}. View filtered list.`}
-        >
-            <Card className='transition-colors group-hover:border-primary/40 group-hover:bg-accent/30'>
-                <CardHeader className='flex-row items-center justify-between gap-2 space-y-0 pb-2'>
-                    <CardTitle className='text-sm font-medium text-muted-foreground'>{summary.label}</CardTitle>
-                    <span
-                        className={['flex h-8 w-8 items-center justify-center rounded-full', summary.accentClass].join(
-                            ' '
-                        )}
-                    >
-                        <Icon className='h-4 w-4' />
-                    </span>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-3xl font-bold tracking-tight text-foreground'>
-                        {summary.count.toLocaleString('en-US')}
-                    </p>
-                    <p className='mt-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100'>
-                        View orders →
-                    </p>
-                </CardContent>
-            </Card>
-        </button>
-    );
+const STATUS_CHART_CONFIG = {
+    new: { label: 'New', color: 'var(--chart-2)' },
+    inProgress: { label: 'In Progress', color: 'var(--chart-4)' },
+    completed: { label: 'Completed', color: 'var(--chart-1)' },
+} satisfies ChartConfig;
+
+interface StatusDatum {
+    key: OrderStatusKey;
+    label: string;
+    count: number;
+    fill: string;
 }
 
 function StatusSection({ statuses }: { statuses: OrderStatusSummary[] }) {
+    const data: StatusDatum[] = statuses.map(s => ({
+        key: s.key,
+        label: s.label,
+        count: s.count,
+        fill: `var(--color-${s.key})`,
+    }));
+
     return (
         <section>
             <SectionHeading>Orders by status</SectionHeading>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                {statuses.map(summary => (
-                    <StatusCard key={summary.key} summary={summary} />
-                ))}
-            </div>
+            <Card>
+                <CardContent className='pt-6'>
+                    <p className='mb-4 text-sm text-muted-foreground'>
+                        Live order count per status. Select a bar to view that status&apos;s filtered orders.
+                    </p>
+                    <ChartContainer
+                        config={STATUS_CHART_CONFIG}
+                        role='img'
+                        aria-label='Order count by status. Select a bar to open the filtered orders list.'
+                        className='aspect-auto h-[280px] w-full'
+                    >
+                        <BarChart accessibilityLayer data={data} margin={{ top: 24, right: 8, left: 0, bottom: 0 }}>
+                            <XAxis dataKey='label' tickLine={false} axisLine={false} tickMargin={8} />
+                            <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+                            <ChartTooltip cursor={false} content={<ChartTooltipContent nameKey='key' />} />
+                            <ChartLegend content={<ChartLegendContent nameKey='key' />} />
+                            <Bar dataKey='count' radius={[6, 6, 0, 0]} className='cursor-pointer'>
+                                <LabelList
+                                    dataKey='count'
+                                    position='top'
+                                    className='fill-foreground text-xs font-semibold tabular-nums'
+                                />
+                                {data.map(d => (
+                                    <Cell
+                                        key={d.key}
+                                        fill={d.fill}
+                                        role='button'
+                                        tabIndex={0}
+                                        aria-label={`${d.label} orders: ${d.count}. View orders filtered to ${d.label}.`}
+                                        className='cursor-pointer outline-none focus-visible:opacity-80 hover:opacity-80'
+                                    />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
         </section>
     );
 }
@@ -349,20 +425,17 @@ function StatusSkeleton() {
     return (
         <section>
             <SectionHeading>Orders by status</SectionHeading>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                {[0, 1, 2].map(i => (
-                    <Card key={i}>
-                        <CardHeader className='flex-row items-center justify-between gap-2 space-y-0 pb-2'>
-                            <Skeleton className='h-4 w-24' />
-                            <Skeleton className='h-8 w-8 rounded-full' />
-                        </CardHeader>
-                        <CardContent>
-                            <Skeleton className='h-9 w-16' />
-                            <Skeleton className='mt-2 h-3 w-20' />
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+            <Card>
+                <CardContent className='pt-6'>
+                    <Skeleton className='mb-4 h-4 w-72' />
+                    {/* Chart region placeholder */}
+                    <div className='flex h-[280px] items-end gap-6 px-2'>
+                        <Skeleton className='h-1/3 w-full rounded-md' />
+                        <Skeleton className='h-1/4 w-full rounded-md' />
+                        <Skeleton className='h-full w-full rounded-md' />
+                    </div>
+                </CardContent>
+            </Card>
         </section>
     );
 }
@@ -423,7 +496,7 @@ function ErrorStory() {
     );
 }
 
-/** Partial — metrics resolved, status counts failed independently. */
+/** Partial — metrics resolved, status chart failed independently. */
 function PartialStory() {
     return (
         <PageShell>
@@ -450,7 +523,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    name: 'Default — Status Counts & Today’s Metrics',
+    name: 'Default — Status Chart & Today’s Sales',
     render: () => <DefaultStory />,
 };
 
@@ -460,16 +533,16 @@ export const Empty: Story = {
 };
 
 export const Loading: Story = {
-    name: 'Loading — Skeleton Placeholders',
+    name: 'Loading — Chart Skeleton Placeholders',
     render: () => <LoadingStory />,
 };
 
 export const Error: Story = {
-    name: 'Error — Both Sections Failed (Retry)',
+    name: 'Error — Both Charts Failed (Retry)',
     render: () => <ErrorStory />,
 };
 
 export const Partial: Story = {
-    name: 'Partial — Metrics Loaded, Status Counts Failed',
+    name: 'Partial — Sales Loaded, Status Chart Failed',
     render: () => <PartialStory />,
 };
