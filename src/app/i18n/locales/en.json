@@ -173,6 +173,7 @@
     },
     "nav": {
         "home": "Home",
+        "dashboard": "Dashboard",
         "foods": "Foods",
         "orders": "Orders",
         "cart": "Cart",

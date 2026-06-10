@@ -38,6 +38,7 @@ function AdminToolbarDesktop({ user, onLogout }: AdminToolbarDesktopProps) {
     }, [theme, setTheme]);
 
     const navItems = [
+        { label: t('nav.dashboard'), path: `/${ROUTES.ADMIN.DASHBOARD}` },
         { label: t('nav.orders'), path: `/${ROUTES.ADMIN.ORDERS}` },
         { label: t('nav.foods'), path: `/${ROUTES.ADMIN.FOODS}` },
         { label: t('admin.categories.title'), path: `/${ROUTES.ADMIN.CATEGORIES}` },

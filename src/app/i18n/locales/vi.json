@@ -173,6 +173,7 @@
     },
     "nav": {
         "home": "Trang chủ",
+        "dashboard": "Bảng điều khiển",
         "foods": "Thực phẩm",
         "orders": "Đơn hàng",
         "cart": "Giỏ hàng",
