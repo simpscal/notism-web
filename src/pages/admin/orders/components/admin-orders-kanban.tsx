@@ -6,10 +6,10 @@ import { toast } from 'sonner';
 import AdminOrderCard from './admin-order-card';
 
 import { adminApi } from '@/apis';
-import { AdminOrderResponseModel, GetAdminOrdersForKanbanResponseModel } from '@/apis/models';
 import { PAGE_SIZE } from '@/app/constants';
 import Kanban, { KanbanColumn } from '@/components/kanban';
 import Spinner from '@/components/spinner';
+import type { AdminOrderViewModel, AdminOrdersViewModel } from '@/features/admin';
 import { DELIVERY_STATUS } from '@/features/order';
 
 interface AdminOrdersKanbanProps {
@@ -111,17 +111,15 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
             const sourceKey = ['admin', 'orders', 'kanban', sourceColumnId, { paymentStatus }] as const;
             const targetKey = ['admin', 'orders', 'kanban', targetColumnId, { paymentStatus }] as const;
 
-            const previousSource =
-                queryClient.getQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(sourceKey);
-            const previousTarget =
-                queryClient.getQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(targetKey);
+            const previousSource = queryClient.getQueryData<InfiniteData<AdminOrdersViewModel>>(sourceKey);
+            const previousTarget = queryClient.getQueryData<InfiniteData<AdminOrdersViewModel>>(targetKey);
 
             const order = previousSource?.pages.flatMap(p => p.items).find(o => o.id === orderId);
             if (!order) return { previousSource, previousTarget };
 
-            const movedOrder: AdminOrderResponseModel = { ...order, deliveryStatus: targetColumnId };
+            const movedOrder: AdminOrderViewModel = { ...order, deliveryStatus: targetColumnId };
 
-            queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(
+            queryClient.setQueryData<InfiniteData<AdminOrdersViewModel>>(
                 sourceKey,
                 old =>
                     old && {
@@ -134,7 +132,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
                     }
             );
 
-            queryClient.setQueryData<InfiniteData<GetAdminOrdersForKanbanResponseModel>>(targetKey, old =>
+            queryClient.setQueryData<InfiniteData<AdminOrdersViewModel>>(targetKey, old =>
                 old
                     ? {
                           ...old,
@@ -173,7 +171,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
 
     const { mutate: updateStatus, isPending: isUpdating } = updateDeliveryStatusMutation;
 
-    const columns = useMemo<KanbanColumn<AdminOrderResponseModel>[]>(() => {
+    const columns = useMemo<KanbanColumn<AdminOrderViewModel>[]>(() => {
         return DELIVERY_STATUS.map((status, index) => {
             const query = queries[index];
             const items = query.data?.pages.flatMap(page => page.items) ?? [];
@@ -209,7 +207,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus }: AdminOrdersKanbanPro
     );
 
     const renderItem = useCallback(
-        (order: AdminOrderResponseModel) => {
+        (order: AdminOrderViewModel) => {
             return <AdminOrderCard order={order} onOrderClick={onOrderClick} />;
         },
         [onOrderClick]

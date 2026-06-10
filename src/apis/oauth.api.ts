@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { toOAuthCallback, toOAuthRedirect } from './mappers';
 import {
     OAuthCallbackRequestModel,
     OAuthCallbackResponseModel,
@@ -9,11 +10,16 @@ import {
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const oauthApi = {
-    getOAuthRedirect: (provider: OAuthProviderType) => {
-        return apiClient.get<OAuthRedirectResponseModel>(API_ENDPOINTS.AUTH.OAUTH_REDIRECT(provider));
+    getOAuthRedirect: async (provider: OAuthProviderType) => {
+        const response = await apiClient.get<OAuthRedirectResponseModel>(API_ENDPOINTS.AUTH.OAUTH_REDIRECT(provider));
+        return toOAuthRedirect(response);
     },
 
-    handleOAuthCallback: (provider: OAuthProviderType, data: OAuthCallbackRequestModel) => {
-        return apiClient.post<OAuthCallbackResponseModel>(API_ENDPOINTS.AUTH.OAUTH_CALLBACK(provider), data);
+    handleOAuthCallback: async (provider: OAuthProviderType, data: OAuthCallbackRequestModel) => {
+        const response = await apiClient.post<OAuthCallbackResponseModel>(
+            API_ENDPOINTS.AUTH.OAUTH_CALLBACK(provider),
+            data
+        );
+        return toOAuthCallback(response);
     },
 };

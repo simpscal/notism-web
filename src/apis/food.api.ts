@@ -1,10 +1,11 @@
 import { apiClient } from './client';
+import { toCategory, toFood, toFoods } from './mappers';
 import { CategoryResponseModel, GetFoodByIdResponseModel, GetFoodsRequestModel, GetFoodsResponseModel } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const foodApi = {
-    getFoods: (params?: GetFoodsRequestModel) => {
+    getFoods: async (params?: GetFoodsRequestModel) => {
         const searchParams = new URLSearchParams();
         if (params?.skip !== undefined) searchParams.append('skip', params.skip.toString());
         if (params?.take !== undefined) searchParams.append('take', params.take.toString());
@@ -14,15 +15,19 @@ export const foodApi = {
         if (params?.sortBy) searchParams.append('sortBy', params.sortBy);
         if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
         const queryString = searchParams.toString();
-        return apiClient.get<GetFoodsResponseModel>(
+        const response = await apiClient.get<GetFoodsResponseModel>(
             `${API_ENDPOINTS.FOOD.LIST}${queryString ? `?${queryString}` : ''}`
         );
+        return toFoods(response);
     },
 
-    getFoodById: (id: string) => {
-        return apiClient.get<GetFoodByIdResponseModel>(API_ENDPOINTS.FOOD.DETAIL(id));
+    getFoodById: async (id: string) => {
+        const response = await apiClient.get<GetFoodByIdResponseModel>(API_ENDPOINTS.FOOD.DETAIL(id));
+        return toFood(response);
     },
 
-    getCategories: (): Promise<CategoryResponseModel[]> =>
-        apiClient.get(API_ENDPOINTS.FOOD.CATEGORIES).then(res => res.items),
+    getCategories: () =>
+        apiClient
+            .get<{ items: CategoryResponseModel[] }>(API_ENDPOINTS.FOOD.CATEGORIES)
+            .then(res => res.items.map(toCategory)),
 };

@@ -1,4 +1,5 @@
 import { apiClient } from './client';
+import { toAuth, toUserProfile } from './mappers';
 import {
     AuthResponseModel,
     LoginRequestModel,
@@ -11,20 +12,23 @@ import {
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const authApi = {
-    login: (credentials: LoginRequestModel) => {
-        return apiClient.post<AuthResponseModel>(API_ENDPOINTS.AUTH.LOGIN, credentials);
+    login: async (credentials: LoginRequestModel) => {
+        const response = await apiClient.post<AuthResponseModel>(API_ENDPOINTS.AUTH.LOGIN, credentials);
+        return toAuth(response);
     },
 
-    signup: (data: SignupRequestModel) => {
-        return apiClient.post<AuthResponseModel>(API_ENDPOINTS.AUTH.SIGNUP, data);
+    signup: async (data: SignupRequestModel) => {
+        const response = await apiClient.post<AuthResponseModel>(API_ENDPOINTS.AUTH.SIGNUP, data);
+        return toAuth(response);
     },
 
     logout: () => {
         return apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
     },
 
-    reload: () => {
-        return apiClient.get<UserProfileResponseModel>(API_ENDPOINTS.AUTH.RELOAD);
+    reload: async () => {
+        const response = await apiClient.get<UserProfileResponseModel>(API_ENDPOINTS.AUTH.RELOAD);
+        return toUserProfile(response);
     },
 
     requestResetPassword: (data: RequestResetPasswordRequestModel) => {

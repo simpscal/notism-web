@@ -1,15 +1,15 @@
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CustomisationGroupModel } from '@/apis/models/food.model';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Label } from '@/components/label';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Separator } from '@/components/separator';
+import type { CustomisationGroupViewModel } from '@/features/food';
 
 interface FoodCustomisationSectionProps {
-    customisations: CustomisationGroupModel[];
+    customisations: CustomisationGroupViewModel[];
     selections: Record<string, string>;
     onChange: (id: string, value: string) => void;
 }

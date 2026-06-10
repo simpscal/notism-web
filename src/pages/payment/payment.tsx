@@ -122,7 +122,9 @@ function Payment() {
                         location: address,
                     })
                     .then(profile => {
-                        dispatch(updateUser({ location: profile.location ?? undefined }));
+                        if (profile) {
+                            dispatch(updateUser({ location: profile.location ?? undefined }));
+                        }
                     })
                     .catch(() => {});
             }

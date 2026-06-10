@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { AdminCategoryResponseModel } from '@/apis/models';
+import type { AdminCategoryViewModel } from '@/features/admin';
 
 export const categoryDetailFormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
@@ -8,9 +8,7 @@ export const categoryDetailFormSchema = z.object({
 
 export type CategoryDetailFormValues = z.infer<typeof categoryDetailFormSchema>;
 
-export function getDefaultCategoryDetailFormValues(
-    category: AdminCategoryResponseModel | null
-): CategoryDetailFormValues {
+export function getDefaultCategoryDetailFormValues(category: AdminCategoryViewModel | null): CategoryDetailFormValues {
     if (!category) {
         return { name: '' };
     }

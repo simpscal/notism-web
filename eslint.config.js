@@ -94,6 +94,24 @@ export default tseslint.config(
                 },
             ],
 
+            // Boundary guard: response models live in src/apis/models and are internal
+            // to the apis layer. Outside src/apis/** every layer must consume feature
+            // viewmodels, never @/apis/models. The override below re-enables it for
+            // src/apis/**. This catches the path-alias form that import/no-restricted-paths
+            // (relative-resolution only) misses.
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            group: ['@/apis/models', '@/apis/models/*', '**/apis/models', '**/apis/models/*'],
+                            message:
+                                'Do not import response models from @/apis/models outside src/apis/**. Use viewmodels from @/features/<domain> instead.',
+                        },
+                    ],
+                },
+            ],
+
             // TypeScript rules
             '@typescript-eslint/no-inferrable-types': [
                 'error',
@@ -120,6 +138,16 @@ export default tseslint.config(
                     endOfLine: 'lf',
                 },
             ],
+        },
+    },
+    {
+        // The apis layer owns the response models — mappers and service files are
+        // allowed to import from @/apis/models. MSW mocks simulate the backend wire
+        // format and must produce response-model-shaped data, so they are exempt too.
+        // The boundary only forbids leakage into the app layers outside these.
+        files: ['src/apis/**/*.{ts,tsx}', 'mocks/**/*.{ts,tsx}'],
+        rules: {
+            'no-restricted-imports': 'off',
         },
     },
     {

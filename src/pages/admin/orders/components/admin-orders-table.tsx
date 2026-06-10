@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { adminApi } from '@/apis';
-import { GetAdminOrdersResponseModel } from '@/apis/models';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
@@ -26,6 +25,7 @@ import {
     TablePagination,
     useTableSort,
 } from '@/components/table';
+import type { AdminOrdersViewModel } from '@/features/admin';
 import { DELIVERY_STATUS } from '@/features/order';
 import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
 
@@ -89,7 +89,7 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
             adminApi.updateOrderDeliveryStatus(orderId, { deliveryStatus }),
         onSuccess: updatedOrder => {
             // Update table view cache
-            queryClient.setQueryData<GetAdminOrdersResponseModel>(
+            queryClient.setQueryData<AdminOrdersViewModel>(
                 ['admin', 'orders', 'table', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search, paymentStatus }],
                 oldData => {
                     if (!oldData) return oldData;
