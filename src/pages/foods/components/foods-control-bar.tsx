@@ -1,5 +1,5 @@
 import { ArrowUpDown, X } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FoodSortOption } from '../enums';
@@ -34,9 +34,23 @@ function FoodsControlBar({
     const { t } = useTranslation();
     const hasActiveFilters = selectedCategory !== null || keyword !== '';
 
-    const handleToggleChange = (value: string) => {
-        onCategoryChange(value === 'all' ? null : value);
-    };
+    const handleToggleChange = useCallback(
+        (value: string) => {
+            onCategoryChange(value === 'all' ? null : value);
+        },
+        [onCategoryChange]
+    );
+
+    const handleSortChange = useCallback(
+        (value: string) => {
+            onSortChange(value as FoodSortOption);
+        },
+        [onSortChange]
+    );
+
+    const handleClearCategory = useCallback(() => {
+        onCategoryChange(null);
+    }, [onCategoryChange]);
 
     return (
         <div className='-mx-4 mb-5 border-b bg-background/95 px-4 pb-3 pt-1 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:mb-6'>
@@ -70,7 +84,7 @@ function FoodsControlBar({
                 </div>
 
                 <div className='shrink-0'>
-                    <Select value={sortBy} onValueChange={v => onSortChange(v as FoodSortOption)}>
+                    <Select value={sortBy} onValueChange={handleSortChange}>
                         <SelectTrigger
                             size='sm'
                             aria-label={t('foods.sidebar.sortBy')}
@@ -125,7 +139,7 @@ function FoodsControlBar({
                             {selectedCategory}
                             <button
                                 type='button'
-                                onClick={() => onCategoryChange(null)}
+                                onClick={handleClearCategory}
                                 className='ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-foreground/10 hover:text-destructive'
                                 aria-label={`Remove ${selectedCategory} filter`}
                             >

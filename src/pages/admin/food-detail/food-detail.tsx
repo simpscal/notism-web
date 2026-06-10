@@ -201,6 +201,10 @@ function AdminFoodDetail() {
         setDeleteDialogOpen(true);
     }, []);
 
+    const handleCloseDeleteDialog = useCallback(() => {
+        setDeleteDialogOpen(false);
+    }, []);
+
     const handleConfirmDelete = useCallback(() => {
         deleteFoodMutation.mutate();
     }, []);
@@ -317,7 +321,7 @@ function AdminFoodDetail() {
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
+                            <Button variant='outline' onClick={handleCloseDeleteDialog}>
                                 {t('common.cancel')}
                             </Button>
                             <Button

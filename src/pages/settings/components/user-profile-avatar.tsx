@@ -1,5 +1,5 @@
 import { Camera, Trash2, Upload } from 'lucide-react';
-import { memo, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -35,44 +35,53 @@ function UserProfileAvatar({
         return `${first}${last}`.toUpperCase() || 'U';
     };
 
-    const handleAvatarClick = () => {
+    const handleAvatarClick = useCallback(() => {
         fileInputRef.current?.click();
-    };
+    }, []);
 
-    const processFile = (file: File) => {
-        if (!file.type.startsWith('image/')) {
-            toast.error(t('settings.profile.imageTypeError'));
-            return;
-        }
+    const processFile = useCallback(
+        (file: File) => {
+            if (!file.type.startsWith('image/')) {
+                toast.error(t('settings.profile.imageTypeError'));
+                return;
+            }
 
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error(t('settings.profile.imageSizeError'));
-            return;
-        }
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error(t('settings.profile.imageSizeError'));
+                return;
+            }
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64 = reader.result as string;
-            setLocalAvatarUrl(base64);
-            onAvatarChange(file, base64);
-        };
-        reader.readAsDataURL(file);
-    };
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result as string;
+                setLocalAvatarUrl(base64);
+                onAvatarChange(file, base64);
+            };
+            reader.readAsDataURL(file);
+        },
+        [t, onAvatarChange]
+    );
 
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-        processFile(file);
-    };
+    const handleAvatarChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            processFile(file);
+        },
+        [processFile]
+    );
 
-    const handleRemoveAvatar = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setLocalAvatarUrl(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-        onAvatarRemove();
-    };
+    const handleRemoveAvatar = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            setLocalAvatarUrl(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            onAvatarRemove();
+        },
+        [onAvatarRemove]
+    );
 
     return (
         <div className='flex flex-col items-start gap-5 sm:flex-row sm:items-center'>

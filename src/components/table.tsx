@@ -258,12 +258,12 @@ const SortableTableHead = memo(function SortableTableHead({
         );
     };
 
+    const handleHeadClick = useCallback(() => {
+        onSort(field);
+    }, [onSort, field]);
+
     return (
-        <TableHead
-            className={cn('cursor-pointer hover:bg-muted/50', className)}
-            onClick={() => onSort(field)}
-            {...props}
-        >
+        <TableHead className={cn('cursor-pointer hover:bg-muted/50', className)} onClick={handleHeadClick} {...props}>
             <div className='flex items-center'>
                 {children}
                 {getSortIcon()}

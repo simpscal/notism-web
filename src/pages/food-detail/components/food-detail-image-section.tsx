@@ -26,8 +26,8 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
         });
     }, [api]);
 
-    const scrollTo = useCallback(
-        (index: number) => {
+    const handleThumbnailClick = useCallback(
+        (index: number) => () => {
             api?.scrollTo(index);
         },
         [api]
@@ -76,7 +76,7 @@ function FoodDetailImageSection({ imageUrls, foodName, isAvailable }: FoodDetail
                         <button
                             key={index}
                             type='button'
-                            onClick={() => scrollTo(index)}
+                            onClick={handleThumbnailClick(index)}
                             className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition-all ${
                                 current === index
                                     ? 'border-primary scale-105 shadow-md shadow-primary/20'

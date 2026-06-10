@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 interface FoodImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'onLoad' | 'onError'> {
     src?: string | null;
@@ -69,14 +69,14 @@ function FoodImage({ src, alt, className = '', placeholderClassName = '', ...img
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
 
-    const handleImageLoad = () => {
+    const handleImageLoad = useCallback(() => {
         setImageLoaded(true);
-    };
+    }, []);
 
-    const handleImageError = () => {
+    const handleImageError = useCallback(() => {
         setImageError(true);
         setImageLoaded(false);
-    };
+    }, []);
 
     const hasValidImage = src && !imageError;
 

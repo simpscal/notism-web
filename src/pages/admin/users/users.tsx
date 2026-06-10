@@ -99,16 +99,27 @@ function AdminUsers() {
 
     const { mutate: deleteUser, isPending: isDeleting } = deleteUserMutation;
 
-    const handleDeleteClick = useCallback((userId: string, userEmail: string) => {
-        setSelectedUser({ id: userId, email: userEmail });
-        setDeleteDialogOpen(true);
+    const handleSearchInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(event.target.value);
     }, []);
+
+    const handleDeleteClick = useCallback(
+        (userId: string, userEmail: string) => () => {
+            setSelectedUser({ id: userId, email: userEmail });
+            setDeleteDialogOpen(true);
+        },
+        []
+    );
 
     const handleConfirmDelete = useCallback(() => {
         if (selectedUser) {
             deleteUser(selectedUser.id);
         }
     }, [selectedUser, deleteUser]);
+
+    const handleCloseDeleteDialog = useCallback(() => {
+        setDeleteDialogOpen(false);
+    }, []);
 
     if (isLoading) {
         return (
@@ -144,7 +155,7 @@ function AdminUsers() {
                         type='text'
                         placeholder={t('admin.users.searchPlaceholder')}
                         value={searchInput}
-                        onChange={e => setSearchInput(e.target.value)}
+                        onChange={handleSearchInputChange}
                     />
                     <InputGroupAddon>
                         <Search />
@@ -239,7 +250,7 @@ function AdminUsers() {
                                                     <DropdownMenuContent align='end'>
                                                         <DropdownMenuItem
                                                             variant='destructive'
-                                                            onClick={() => handleDeleteClick(user.id, user.email)}
+                                                            onClick={handleDeleteClick(user.id, user.email)}
                                                         >
                                                             <Trash2 className=' h-4 w-4' />
                                                             {t('common.delete')}
@@ -281,7 +292,7 @@ function AdminUsers() {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
+                        <Button variant='outline' onClick={handleCloseDeleteDialog}>
                             {t('common.cancel')}
                         </Button>
                         <Button variant='destructive' onClick={handleConfirmDelete} disabled={isDeleting}>

@@ -50,14 +50,14 @@ function FoodDetailImagesSection({
     );
 
     const handleRemoveExistingImage = useCallback(
-        (index: number) => {
+        (index: number) => () => {
             onExistingImagesChange(imageUrls.filter((_, i) => i !== index));
         },
         [imageUrls, onExistingImagesChange]
     );
 
     const handleRemovePendingImage = useCallback(
-        (index: number) => {
+        (index: number) => () => {
             onPendingImagesChange(pendingImageFiles.filter((_, i) => i !== index));
         },
         [pendingImageFiles, onPendingImagesChange]
@@ -89,7 +89,7 @@ function FoodDetailImagesSection({
                                     variant='destructive'
                                     size='icon-sm'
                                     className='absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100'
-                                    onClick={() => handleRemoveExistingImage(index)}
+                                    onClick={handleRemoveExistingImage(index)}
                                     aria-label={`Remove image ${index + 1}`}
                                 >
                                     <Trash2 className='h-4 w-4' />
@@ -111,7 +111,7 @@ function FoodDetailImagesSection({
                                     variant='destructive'
                                     size='icon-sm'
                                     className='absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100'
-                                    onClick={() => handleRemovePendingImage(index)}
+                                    onClick={handleRemovePendingImage(index)}
                                     disabled={isDisabled}
                                     aria-label={`Remove pending image ${index + 1}`}
                                 >

@@ -59,13 +59,18 @@ function OrderDetail() {
         enabled: !!id,
     });
 
-    const cancelOrderMutation = useMutation({
+    const { mutate: cancelOrder, isPending: isCancelling } = useMutation({
         mutationFn: (orderId: string) => orderApi.cancel(orderId),
         onSuccess: () => {
             toast.success(t('orderDetail.cancelledSuccess'));
             navigate(`/${ROUTES.ORDERS.LIST}`);
         },
     });
+
+    const handleConfirmCancel = useCallback(() => {
+        if (!order) return;
+        cancelOrder(order.id);
+    }, [order, cancelOrder]);
 
     const orderDate = useMemo(() => {
         if (!order) return '';
@@ -153,8 +158,8 @@ function OrderDetail() {
                                 slugId={order.slugId}
                                 orderDate={orderDate}
                                 deliveryStatus={order.deliveryStatus}
-                                onConfirmCancel={() => cancelOrderMutation.mutate(order.id)}
-                                isCancelling={cancelOrderMutation.isPending}
+                                onConfirmCancel={handleConfirmCancel}
+                                isCancelling={isCancelling}
                             />
                         </div>
                     </div>

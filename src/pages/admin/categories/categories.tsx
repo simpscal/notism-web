@@ -54,17 +54,28 @@ function AdminCategories() {
         },
     });
 
+    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    }, []);
+
+    const handleCloseDeleteDialog = useCallback(() => {
+        setDeleteDialogOpen(false);
+    }, []);
+
     const handleViewClick = useCallback(
-        (categoryId: string) => {
+        (categoryId: string) => () => {
             navigate(`/${ROUTES.ADMIN.CATEGORY_DETAIL(categoryId)}`);
         },
         [navigate]
     );
 
-    const handleDeleteClick = useCallback((categoryId: string, categoryName: string) => {
-        setSelectedCategory({ id: categoryId, name: categoryName });
-        setDeleteDialogOpen(true);
-    }, []);
+    const handleDeleteClick = useCallback(
+        (categoryId: string, categoryName: string) => () => {
+            setSelectedCategory({ id: categoryId, name: categoryName });
+            setDeleteDialogOpen(true);
+        },
+        []
+    );
 
     const handleConfirmDelete = useCallback(() => {
         if (selectedCategory) {
@@ -113,7 +124,7 @@ function AdminCategories() {
                         aria-label='Search categories'
                         placeholder={t('admin.categories.searchPlaceholder')}
                         value={search}
-                        onChange={e => setSearch(e.target.value)}
+                        onChange={handleSearchChange}
                     />
                     <InputGroupAddon>
                         <Search className='size-4' />
@@ -159,13 +170,13 @@ function AdminCategories() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align='end'>
-                                                    <DropdownMenuItem onClick={() => handleViewClick(category.id)}>
+                                                    <DropdownMenuItem onClick={handleViewClick(category.id)}>
                                                         <Eye className='h-4 w-4' />
                                                         {t('common.view')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant='destructive'
-                                                        onClick={() => handleDeleteClick(category.id, category.name)}
+                                                        onClick={handleDeleteClick(category.id, category.name)}
                                                     >
                                                         <Trash2 className='h-4 w-4' />
                                                         {t('common.delete')}
@@ -198,7 +209,7 @@ function AdminCategories() {
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button variant='outline' onClick={() => setDeleteDialogOpen(false)}>
+                        <Button variant='outline' onClick={handleCloseDeleteDialog}>
                             {t('common.cancel')}
                         </Button>
                         <Button

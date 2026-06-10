@@ -105,11 +105,22 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
 
     const { mutate: updateStatus, isPending: isUpdating } = updateDeliveryStatusMutation;
 
+    const handleSearchInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(event.target.value);
+    }, []);
+
     const handleStatusChange = useCallback(
-        (orderId: string, newStatus: string) => {
+        (orderId: string) => (newStatus: string) => {
             updateStatus({ orderId, deliveryStatus: newStatus });
         },
         [updateStatus]
+    );
+
+    const handleViewClick = useCallback(
+        (slugId: string) => () => {
+            onOrderClick(slugId);
+        },
+        [onOrderClick]
     );
 
     if (isLoading) {
@@ -141,7 +152,7 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
                         type='text'
                         placeholder={t('orders.searchPlaceholder')}
                         value={searchInput}
-                        onChange={e => setSearchInput(e.target.value)}
+                        onChange={handleSearchInputChange}
                     />
                     <InputGroupAddon>
                         <Search />
@@ -216,7 +227,7 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
                                         <TableCell>
                                             <Select
                                                 value={order.deliveryStatus}
-                                                onValueChange={value => handleStatusChange(order.id, value)}
+                                                onValueChange={handleStatusChange(order.id)}
                                                 disabled={isUpdating}
                                             >
                                                 <SelectTrigger className='w-full'>
@@ -245,7 +256,7 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align='end'>
-                                                    <DropdownMenuItem onClick={() => onOrderClick(order.slugId)}>
+                                                    <DropdownMenuItem onClick={handleViewClick(order.slugId)}>
                                                         <Eye className='h-4 w-4' />
                                                         {t('common.view')}
                                                     </DropdownMenuItem>

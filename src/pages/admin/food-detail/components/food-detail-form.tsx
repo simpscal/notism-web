@@ -1,4 +1,4 @@
-import { memo, type ReactNode, useMemo } from 'react';
+import { memo, type ReactNode, useCallback, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -28,6 +28,13 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
     const categoryOptions = useMemo(
         () => storeCategories.map(c => ({ value: c.id, label: c.name })),
         [storeCategories]
+    );
+
+    const handleAvailableChange = useCallback(
+        (checked: boolean) => {
+            form.setValue('isAvailable', !!checked, { shouldDirty: true });
+        },
+        [form]
     );
 
     return (
@@ -144,12 +151,7 @@ function FoodDetailForm({ onSubmit, children }: FoodDetailFormProps) {
                         <Field>
                             <FieldLabel>{t('admin.food.available')}</FieldLabel>
                             <div className='w-fit'>
-                                <Switch
-                                    checked={form.watch('isAvailable')}
-                                    onCheckedChange={checked =>
-                                        form.setValue('isAvailable', !!checked, { shouldDirty: true })
-                                    }
-                                />
+                                <Switch checked={form.watch('isAvailable')} onCheckedChange={handleAvailableChange} />
                             </div>
                         </Field>
                         <Field>

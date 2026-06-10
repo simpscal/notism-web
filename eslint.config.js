@@ -26,6 +26,32 @@ export default tseslint.config(
         },
         rules: {
             ...reactHooks.configs.recommended.rules,
+
+            // No event logic inline in the template: a JSX event attribute (onClick,
+            // onChange, onSubmit, onValueChange, …) may only reference a handler — a bare
+            // prop pass-through (onClick={onClose}), a named handler (onClick={handleSave}),
+            // or a curried factory (onClick={handleSelect(id)}). An inline arrow/function/
+            // .bind that carries logic is not allowed. Non-event props (className, render)
+            // and references are untouched.
+            'no-restricted-syntax': [
+                'error',
+                {
+                    selector: 'JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > ArrowFunctionExpression',
+                    message:
+                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                },
+                {
+                    selector: 'JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > FunctionExpression',
+                    message:
+                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                },
+                {
+                    selector:
+                        "JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > CallExpression[callee.property.name='bind']",
+                    message:
+                        'No inline .bind in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                },
+            ],
             ...reactRefresh.configs.recommended.rules,
             ...tanstackQuery.configs.recommended.rules,
 
@@ -94,6 +120,15 @@ export default tseslint.config(
                     endOfLine: 'lf',
                 },
             ],
+        },
+    },
+    {
+        // Storybook stories and test files are fixtures, not shipped UI — their
+        // inline mock callbacks are not real event emissions, so the named-handler
+        // rule does not apply to them.
+        files: ['**/*.stories.{ts,tsx}', '**/*.test.{ts,tsx}', 'test/**/*.{ts,tsx}'],
+        rules: {
+            'no-restricted-syntax': 'off',
         },
     }
 );

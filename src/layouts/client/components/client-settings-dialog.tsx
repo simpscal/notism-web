@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/dialog';
 import { Field, FieldLabel } from '@/components/field';
@@ -14,6 +14,13 @@ interface ClientSettingsDialogProps {
 function ClientSettingsDialog({ open, onOpenChange }: ClientSettingsDialogProps) {
     const { theme, setTheme } = useTheme();
 
+    const handleThemeChange = useCallback(
+        (value: string) => {
+            setTheme(value as 'light' | 'dark' | 'system');
+        },
+        [setTheme]
+    );
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
@@ -25,10 +32,7 @@ function ClientSettingsDialog({ open, onOpenChange }: ClientSettingsDialogProps)
                 <div className='space-y-6 py-4'>
                     <Field>
                         <FieldLabel>Theme</FieldLabel>
-                        <RadioGroup
-                            value={theme}
-                            onValueChange={value => setTheme(value as 'light' | 'dark' | 'system')}
-                        >
+                        <RadioGroup value={theme} onValueChange={handleThemeChange}>
                             <div className='flex items-center space-x-2'>
                                 <RadioGroupItem value='light' id='light' />
                                 <Label htmlFor='light' className='font-normal cursor-pointer'>

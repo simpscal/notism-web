@@ -15,6 +15,10 @@ export function DatePickerWithPresets() {
     const { t } = useTranslation();
     const [date, setDate] = React.useState<Date>();
 
+    const handlePresetChange = React.useCallback((value: string) => {
+        setDate(addDays(new Date(), parseInt(value)));
+    }, []);
+
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -27,7 +31,7 @@ export function DatePickerWithPresets() {
                 </Button>
             </PopoverTrigger>
             <PopoverContent align='start' className='flex w-auto flex-col space-y-2 p-2'>
-                <Select onValueChange={value => setDate(addDays(new Date(), parseInt(value)))}>
+                <Select onValueChange={handlePresetChange}>
                     <SelectTrigger>
                         <SelectValue placeholder={t('common.select')} />
                     </SelectTrigger>

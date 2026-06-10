@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -96,10 +96,14 @@ function SettingsAppearanceSection() {
 
     const hasUnsavedChanges = selectedTheme !== theme;
 
-    const handleSave = () => {
+    const handleThemeChange = useCallback((value: string) => {
+        setSelectedTheme(value as ThemeValue);
+    }, []);
+
+    const handleSave = useCallback(() => {
         setTheme(selectedTheme);
         toast.success(t('settings.appearance.saveSuccess'));
-    };
+    }, [setTheme, selectedTheme, t]);
 
     const themeOptions: {
         value: ThemeValue;
@@ -145,7 +149,7 @@ function SettingsAppearanceSection() {
                     </p>
                     <RadioGroup
                         value={selectedTheme}
-                        onValueChange={value => setSelectedTheme(value as ThemeValue)}
+                        onValueChange={handleThemeChange}
                         className='grid grid-cols-1 gap-3 sm:grid-cols-3'
                     >
                         {themeOptions.map(option => {

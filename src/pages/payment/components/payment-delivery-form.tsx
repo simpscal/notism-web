@@ -1,5 +1,5 @@
 import { Banknote, MapPin, Pencil } from 'lucide-react';
-import { memo, useState } from 'react';
+import { ChangeEvent, memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
@@ -31,10 +31,22 @@ function PaymentDeliveryForm({
 
     const hasSavedAddress = Boolean(savedAddress);
 
-    const handlePlaceOrder = () => {
+    const handleEditClick = useCallback(() => {
+        setIsEditing(true);
+    }, []);
+
+    const handleAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setAddress(e.target.value);
+    }, []);
+
+    const handleNotesChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+        setNotes(e.target.value);
+    }, []);
+
+    const handlePlaceOrder = useCallback(() => {
         const deliveryAddress = hasSavedAddress && !isEditing ? savedAddress! : address;
         onPlaceOrder(deliveryAddress, notes);
-    };
+    }, [hasSavedAddress, isEditing, savedAddress, address, notes, onPlaceOrder]);
 
     return (
         <Card>
@@ -56,7 +68,7 @@ function PaymentDeliveryForm({
                         <button
                             className='mt-0.5 flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline'
                             type='button'
-                            onClick={() => setIsEditing(true)}
+                            onClick={handleEditClick}
                         >
                             <Pencil className='h-3 w-3' />
                             {t('payment.delivery.edit')}
@@ -69,7 +81,7 @@ function PaymentDeliveryForm({
                             <Input
                                 id='delivery-address'
                                 value={address}
-                                onChange={e => setAddress(e.target.value)}
+                                onChange={handleAddressChange}
                                 disabled={disabled}
                                 placeholder={t('payment.delivery.addressPlaceholder')}
                             />
@@ -84,7 +96,7 @@ function PaymentDeliveryForm({
                             <Textarea
                                 id='delivery-notes'
                                 value={notes}
-                                onChange={e => setNotes(e.target.value)}
+                                onChange={handleNotesChange}
                                 disabled={disabled}
                                 placeholder={t('payment.delivery.notesPlaceholder')}
                                 rows={3}

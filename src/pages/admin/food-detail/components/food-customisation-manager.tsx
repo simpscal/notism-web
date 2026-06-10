@@ -114,27 +114,54 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
         },
     });
 
-    const handleOpenAddOption = useCallback((groupId: string) => {
-        setTargetGroupId(groupId);
-        setOptLabel('');
-        setOptSurcharge('');
-        setAddOptionOpen(true);
-    }, []);
-
     const { mutate: deleteGroup } = deleteGroupMutation;
     const { mutate: deleteOption } = deleteOptionMutation;
     const { mutate: saveGroup } = addGroupMutation;
     const { mutate: saveOption } = addOptionMutation;
 
+    const handleOpenAddGroup = useCallback(() => {
+        setAddGroupOpen(true);
+    }, []);
+
+    const handleCloseAddGroup = useCallback(() => {
+        setAddGroupOpen(false);
+    }, []);
+
+    const handleCloseAddOption = useCallback(() => {
+        setAddOptionOpen(false);
+    }, []);
+
+    const handleOpenAddOption = useCallback(
+        (groupId: string) => () => {
+            setTargetGroupId(groupId);
+            setOptLabel('');
+            setOptSurcharge('');
+            setAddOptionOpen(true);
+        },
+        []
+    );
+
+    const handleGroupLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setGroupLabel(e.target.value);
+    }, []);
+
+    const handleOptLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setOptLabel(e.target.value);
+    }, []);
+
+    const handleOptSurchargeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setOptSurcharge(e.target.value);
+    }, []);
+
     const handleDeleteGroup = useCallback(
-        (groupId: string) => {
+        (groupId: string) => () => {
             deleteGroup(groupId);
         },
         [deleteGroup]
     );
 
     const handleDeleteOption = useCallback(
-        (groupId: string, optionId: string) => {
+        (groupId: string, optionId: string) => () => {
             deleteOption({ groupId, optionId });
         },
         [deleteOption]
@@ -155,7 +182,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                 <div className='space-y-1'>
                     <p className='text-base font-semibold'>{t('admin.customisationManager.title')}</p>
                 </div>
-                <Button variant='outline' size='sm' onClick={() => setAddGroupOpen(true)}>
+                <Button variant='outline' size='sm' onClick={handleOpenAddGroup}>
                     <Plus className='h-4 w-4' />
                     {t('admin.customisationManager.addGroupButton')}
                 </Button>
@@ -188,7 +215,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                         variant='ghost'
                                         size='sm'
                                         className='h-7 gap-1 text-xs'
-                                        onClick={() => handleOpenAddOption(group.id)}
+                                        onClick={handleOpenAddOption(group.id)}
                                     >
                                         <Plus className='h-3 w-3' />
                                         {t('admin.customisationManager.addOption')}
@@ -217,7 +244,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteGroup(group.id)}>
+                                                <AlertDialogAction onClick={handleDeleteGroup(group.id)}>
                                                     {t('admin.customisationManager.remove')}
                                                 </AlertDialogAction>
                                             </AlertDialogFooter>
@@ -278,7 +305,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                                         <AlertDialogFooter>
                                                             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                                                             <AlertDialogAction
-                                                                onClick={() => handleDeleteOption(group.id, opt.value)}
+                                                                onClick={handleDeleteOption(group.id, opt.value)}
                                                             >
                                                                 {t('admin.customisationManager.remove')}
                                                             </AlertDialogAction>
@@ -308,7 +335,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                 id='group-label'
                                 placeholder={t('admin.customisationManager.groupLabelPlaceholder')}
                                 value={groupLabel}
-                                onChange={e => setGroupLabel(e.target.value)}
+                                onChange={handleGroupLabelChange}
                             />
                             <p className='text-xs text-muted-foreground'>
                                 {t('admin.customisationManager.groupLabelHelper')}
@@ -327,7 +354,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant='outline' onClick={() => setAddGroupOpen(false)}>
+                        <Button variant='outline' onClick={handleCloseAddGroup}>
                             {t('common.cancel')}
                         </Button>
                         <Button disabled={!groupLabel.trim() || addGroupMutation.isPending} onClick={handleSaveGroup}>
@@ -352,7 +379,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                 id='option-label'
                                 placeholder={t('admin.customisationManager.optionLabelPlaceholder')}
                                 value={optLabel}
-                                onChange={e => setOptLabel(e.target.value)}
+                                onChange={handleOptLabelChange}
                             />
                         </div>
                         <div className='space-y-1.5'>
@@ -362,7 +389,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                                 type='number'
                                 placeholder={t('admin.customisationManager.surchargePlaceholder')}
                                 value={optSurcharge}
-                                onChange={e => setOptSurcharge(e.target.value)}
+                                onChange={handleOptSurchargeChange}
                                 min={0}
                             />
                             <p className='text-xs text-muted-foreground'>
@@ -371,7 +398,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant='outline' onClick={() => setAddOptionOpen(false)}>
+                        <Button variant='outline' onClick={handleCloseAddOption}>
                             {t('common.cancel')}
                         </Button>
                         <Button disabled={!optLabel.trim() || addOptionMutation.isPending} onClick={handleSaveOption}>

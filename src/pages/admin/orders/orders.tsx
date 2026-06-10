@@ -32,6 +32,12 @@ function AdminOrders() {
         setPaymentStatusFilter(value);
     }, []);
 
+    const handleViewModeChange = useCallback((value: string) => {
+        if (value) {
+            setViewMode(value as ViewMode);
+        }
+    }, []);
+
     const paymentStatusParam = paymentStatusFilter === PAYMENT_STATUS_ALL ? undefined : paymentStatusFilter;
 
     return (
@@ -57,11 +63,7 @@ function AdminOrders() {
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        <ToggleGroup
-                            type='single'
-                            value={viewMode}
-                            onValueChange={value => value && setViewMode(value as ViewMode)}
-                        >
+                        <ToggleGroup type='single' value={viewMode} onValueChange={handleViewModeChange}>
                             <ToggleGroupItem value='kanban' aria-label='Kanban view'>
                                 <LayoutGrid className='h-4 w-4' />
                             </ToggleGroupItem>

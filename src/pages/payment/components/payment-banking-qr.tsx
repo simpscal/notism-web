@@ -1,5 +1,5 @@
 import { CreditCard, ShieldCheck } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
@@ -45,6 +45,10 @@ function PaymentBankingQr({
     const [imgError, setImgError] = useState(false);
     const qrUrl = buildQrUrl(bankCode, accountNumber, accountHolderName, amount, orderReference);
 
+    const handleImageError = useCallback(() => {
+        setImgError(true);
+    }, []);
+
     return (
         <Card>
             <CardHeader className='pb-3'>
@@ -67,7 +71,7 @@ function PaymentBankingQr({
                                 src={qrUrl}
                                 alt='VietQR payment code'
                                 className='h-44 w-44 rounded-lg border-2 border-primary/40 object-cover'
-                                onError={() => setImgError(true)}
+                                onError={handleImageError}
                             />
                         )}
                         {waiting && (
