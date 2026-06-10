@@ -6,6 +6,7 @@ import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts';
 
 import { adminApi } from '@/apis';
 import { formatVnd } from '@/app/utils/currency.utils';
+import { getRevenuePeriodsUtc } from '@/app/utils/dashboard-time.utils';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/chart';
@@ -204,9 +205,14 @@ function RevenueSection() {
 
     const [granularity, setGranularity] = useState<DashboardRevenueGranularityViewModel>(DEFAULT_GRANULARITY);
 
+    // The client owns timezone conversion: compute the local period boundaries
+    // for the active granularity, convert to the UTC boundary set, and derive a
+    // stable label per bucket. The backend derives no window itself.
+    const { boundaries, labels } = useMemo(() => getRevenuePeriodsUtc(granularity), [granularity]);
+
     const { data, isLoading, isError, refetch } = useQuery({
-        queryKey: ['admin', 'dashboard', 'revenue-series', granularity] as const,
-        queryFn: () => adminApi.getDashboardRevenueSeries({ granularity }),
+        queryKey: ['admin', 'dashboard', 'revenue-series', granularity, boundaries, labels] as const,
+        queryFn: () => adminApi.getDashboardRevenueSeries({ boundaries, labels, granularity }),
     });
 
     const handleRetry = useCallback(() => {
