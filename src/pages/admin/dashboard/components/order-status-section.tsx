@@ -1,106 +1,113 @@
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, CircleDot, ClipboardList, Loader, RefreshCw, type LucideIcon } from 'lucide-react';
-import { memo, useCallback } from 'react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 
 import { adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+import { Card, CardContent } from '@/components/card';
+import {
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
+    ChartTooltip,
+    ChartTooltipContent,
+    type ChartConfig,
+} from '@/components/chart';
 import ErrorState from '@/components/error-state';
 import { Skeleton } from '@/components/skeleton';
 import type { DashboardOrderStatusSummaryViewModel } from '@/features/admin';
 
 type OrderStatusBucketKey = keyof DashboardOrderStatusSummaryViewModel;
 
-interface OrderStatusBucketMeta {
-    key: OrderStatusBucketKey;
-    labelKey: string;
-    icon: LucideIcon;
-    /** Token-driven accent for the card icon chip. */
-    accentClass: string;
-}
+const ORDER_STATUS_BUCKETS: readonly OrderStatusBucketKey[] = ['new', 'inProgress', 'completed'];
 
-const ORDER_STATUS_BUCKETS: OrderStatusBucketMeta[] = [
-    {
-        key: 'new',
-        labelKey: 'admin.dashboard.orderStatus.statuses.new',
-        icon: CircleDot,
-        accentClass: 'bg-secondary text-secondary-foreground',
-    },
-    {
-        key: 'inProgress',
-        labelKey: 'admin.dashboard.orderStatus.statuses.inProgress',
-        icon: Loader,
-        accentClass: 'bg-primary/10 text-primary',
-    },
-    {
-        key: 'completed',
-        labelKey: 'admin.dashboard.orderStatus.statuses.completed',
-        icon: ClipboardList,
-        accentClass: 'bg-success/15 text-success',
-    },
-];
+/** Per-status colour tokens, per the design contract. */
+const STATUS_CHART_CONFIG = {
+    new: { label: 'New', color: 'var(--chart-2)' },
+    inProgress: { label: 'In Progress', color: 'var(--chart-4)' },
+    completed: { label: 'Completed', color: 'var(--chart-1)' },
+} satisfies ChartConfig;
+
+interface StatusDatum {
+    key: OrderStatusBucketKey;
+    label: string;
+    count: number;
+    fill: string;
+}
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
     return <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>{children}</h2>;
 }
 
-interface StatusCardProps {
-    meta: OrderStatusBucketMeta;
-    count: number;
-    onSelect: (bucketKey: OrderStatusBucketKey) => void;
+interface StatusChartProps {
+    data: StatusDatum[];
+    /** Curried factory: returns the click handler for a given status bucket. */
+    onSelect: (bucketKey: OrderStatusBucketKey) => () => void;
 }
 
-function StatusCard({ meta, count, onSelect }: StatusCardProps) {
+function StatusChart({ data, onSelect }: StatusChartProps) {
     const { t } = useTranslation();
-    const Icon = meta.icon;
-    const label = t(meta.labelKey);
-
-    const handleClick = useCallback(() => onSelect(meta.key), [onSelect, meta.key]);
 
     return (
-        <button
-            type='button'
-            onClick={handleClick}
-            className='group block w-full rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
-            aria-label={t('admin.dashboard.orderStatus.cardAriaLabel', { label, count })}
-        >
-            <Card className='transition-colors group-hover:border-primary/40 group-hover:bg-accent/30'>
-                <CardHeader className='flex-row items-center justify-between gap-2 space-y-0 pb-2'>
-                    <CardTitle className='text-sm font-medium text-muted-foreground'>{label}</CardTitle>
-                    <span className={`flex h-8 w-8 items-center justify-center rounded-full ${meta.accentClass}`}>
-                        <Icon className='h-4 w-4' />
-                    </span>
-                </CardHeader>
-                <CardContent>
-                    <p className='text-3xl font-bold tracking-tight text-foreground'>{count.toLocaleString('en-US')}</p>
-                    <p className='mt-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100'>
-                        {t('admin.dashboard.orderStatus.viewOrders')}
-                    </p>
-                </CardContent>
-            </Card>
-        </button>
+        <Card>
+            <CardContent className='pt-6'>
+                <p className='mb-4 text-sm text-muted-foreground'>{t('admin.dashboard.orderStatus.description')}</p>
+                <ChartContainer
+                    config={STATUS_CHART_CONFIG}
+                    role='img'
+                    aria-label={t('admin.dashboard.orderStatus.chartAriaLabel')}
+                    className='aspect-auto h-[280px] w-full'
+                >
+                    <BarChart accessibilityLayer data={data} margin={{ top: 24, right: 8, left: 0, bottom: 0 }}>
+                        <XAxis dataKey='label' tickLine={false} axisLine={false} tickMargin={8} />
+                        <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent nameKey='key' />} />
+                        <ChartLegend content={<ChartLegendContent nameKey='key' />} />
+                        <Bar dataKey='count' radius={[6, 6, 0, 0]} minPointSize={3} className='cursor-pointer'>
+                            <LabelList
+                                dataKey='count'
+                                position='top'
+                                className='fill-foreground text-xs font-semibold tabular-nums'
+                            />
+                            {data.map(d => (
+                                <Cell
+                                    key={d.key}
+                                    fill={d.fill}
+                                    role='button'
+                                    tabIndex={0}
+                                    aria-label={t('admin.dashboard.orderStatus.barAriaLabel', {
+                                        label: d.label,
+                                        count: d.count,
+                                    })}
+                                    className='cursor-pointer outline-none hover:opacity-80 focus-visible:opacity-80'
+                                    onClick={onSelect(d.key)}
+                                />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     );
 }
 
 function StatusSkeleton() {
     return (
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-            {[0, 1, 2].map(i => (
-                <Card key={i}>
-                    <CardHeader className='flex-row items-center justify-between gap-2 space-y-0 pb-2'>
-                        <Skeleton className='h-4 w-24' />
-                        <Skeleton className='h-8 w-8 rounded-full' />
-                    </CardHeader>
-                    <CardContent>
-                        <Skeleton className='h-9 w-16' />
-                        <Skeleton className='mt-2 h-3 w-20' />
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
+        <Card>
+            <CardContent className='pt-6'>
+                <Skeleton className='mb-4 h-4 w-72' />
+                {/* Chart region placeholder */}
+                <div className='flex h-[280px] items-end gap-6 px-2'>
+                    <Skeleton className='h-1/3 w-full rounded-md' />
+                    <Skeleton className='h-1/4 w-full rounded-md' />
+                    <Skeleton className='h-full w-full rounded-md' />
+                </div>
+            </CardContent>
+        </Card>
     );
 }
 
@@ -136,8 +143,21 @@ function OrderStatusSection() {
         queryFn: () => adminApi.getDashboardOrderStatusSummary(),
     });
 
+    const chartData = useMemo<StatusDatum[]>(() => {
+        if (!data) {
+            return [];
+        }
+
+        return ORDER_STATUS_BUCKETS.map(key => ({
+            key,
+            label: t(`admin.dashboard.orderStatus.statuses.${key}`),
+            count: data[key],
+            fill: `var(--color-${key})`,
+        }));
+    }, [data, t]);
+
     const handleSelect = useCallback(
-        (bucketKey: OrderStatusBucketKey) => {
+        (bucketKey: OrderStatusBucketKey) => () => {
             navigate(`/${ROUTES.ADMIN.ORDERS}?status=${bucketKey}`);
         },
         [navigate]
@@ -156,11 +176,7 @@ function OrderStatusSection() {
             ) : isError || !data ? (
                 <StatusError onRetry={handleRetry} />
             ) : (
-                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-                    {ORDER_STATUS_BUCKETS.map(meta => (
-                        <StatusCard key={meta.key} meta={meta} count={data[meta.key]} onSelect={handleSelect} />
-                    ))}
-                </div>
+                <StatusChart data={chartData} onSelect={handleSelect} />
             )}
         </section>
     );

@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, delay } from 'msw';
 import { setupServer } from 'msw/node';
@@ -46,37 +46,48 @@ function renderSection() {
     );
 }
 
+/**
+ * Resolve the interactive chart bar (the SVG rectangle) for a given status by its
+ * accessible label. Recharts can leak the same aria-label onto the bar's value
+ * label text, so we scope strictly to the bar rectangle the user clicks.
+ */
+function getBar(container: HTMLElement, label: string): SVGPathElement | null {
+    return container.querySelector<SVGPathElement>(`path.recharts-rectangle[aria-label="${label}"]`);
+}
+
+async function findBar(container: HTMLElement, label: string): Promise<SVGPathElement> {
+    let bar: SVGPathElement | null = null;
+    await waitFor(() => {
+        bar = getBar(container, label);
+        expect(bar).not.toBeNull();
+    });
+    return bar as unknown as SVGPathElement;
+}
+
 describe('OrderStatusSection', () => {
-    it('renders a card with the count for each status in the success state', async () => {
+    it('renders a chart with a clickable bar carrying the count for each status in the success state', async () => {
         server.use(http.get(SUMMARY_URL, () => HttpResponse.json(populatedSummary)));
 
-        renderSection();
+        const { container } = renderSection();
 
-        await waitFor(() => {
-            expect(screen.getByText('New')).toBeInTheDocument();
-        });
-
-        expect(screen.getByText('In Progress')).toBeInTheDocument();
-        expect(screen.getByText('Completed')).toBeInTheDocument();
-        expect(screen.getByText('12')).toBeInTheDocument();
-        expect(screen.getByText('5')).toBeInTheDocument();
-        expect(screen.getByText('184')).toBeInTheDocument();
+        const newBar = await findBar(container, 'New orders: 12. View orders filtered to New.');
+        expect(newBar).toHaveAttribute('role', 'button');
+        expect(getBar(container, 'In Progress orders: 5. View orders filtered to In Progress.')).not.toBeNull();
+        expect(getBar(container, 'Completed orders: 184. View orders filtered to Completed.')).not.toBeNull();
     });
 
-    it('shows a count of zero when a status has no orders', async () => {
+    it('still renders a labelled bar for a status with zero orders', async () => {
         server.use(http.get(SUMMARY_URL, () => HttpResponse.json(emptySummary)));
 
-        renderSection();
+        const { container } = renderSection();
 
-        await waitFor(() => {
-            expect(screen.getByText('New')).toBeInTheDocument();
-        });
-
-        // Both "New" and "In Progress" are zero.
-        expect(screen.getAllByText('0')).toHaveLength(2);
+        // Zero-count statuses keep a labelled, accessible bar in the chart.
+        await findBar(container, 'New orders: 0. View orders filtered to New.');
+        expect(getBar(container, 'In Progress orders: 0. View orders filtered to In Progress.')).not.toBeNull();
+        expect(getBar(container, 'Completed orders: 184. View orders filtered to Completed.')).not.toBeNull();
     });
 
-    it('shows skeleton placeholders while the order data is loading', async () => {
+    it('shows a skeleton placeholder in place of the chart while the order data is loading', async () => {
         server.use(
             http.get(SUMMARY_URL, async () => {
                 await delay('infinite');
@@ -86,9 +97,9 @@ describe('OrderStatusSection', () => {
 
         const { container } = renderSection();
 
-        // Skeletons render immediately; the populated cards do not.
+        // Skeletons render immediately; the populated chart bars do not.
         expect(container.querySelectorAll('[data-slot="skeleton"]').length).toBeGreaterThan(0);
-        expect(screen.queryByText('12')).not.toBeInTheDocument();
+        expect(getBar(container, 'New orders: 12. View orders filtered to New.')).toBeNull();
     });
 
     it('shows an error message with a retry action when loading fails, and refetches on retry', async () => {
@@ -103,7 +114,7 @@ describe('OrderStatusSection', () => {
             })
         );
 
-        renderSection();
+        const { container } = renderSection();
 
         await waitFor(() => {
             expect(screen.getByText("Couldn't load order status counts")).toBeInTheDocument();
@@ -112,21 +123,19 @@ describe('OrderStatusSection', () => {
         const retryButton = screen.getByRole('button', { name: 'Retry' });
         await userEvent.click(retryButton);
 
-        await waitFor(() => {
-            expect(screen.getByText('12')).toBeInTheDocument();
-        });
+        await findBar(container, 'New orders: 12. View orders filtered to New.');
     });
 
-    it('navigates to the filtered orders list when a status card is clicked', async () => {
+    it('navigates to the filtered orders list when a status bar is clicked', async () => {
         server.use(http.get(SUMMARY_URL, () => HttpResponse.json(populatedSummary)));
 
-        renderSection();
+        const { container } = renderSection();
 
-        const card = await screen.findByRole('button', {
-            name: 'New orders: 12. View filtered list.',
-        });
+        const bar = await findBar(container, 'New orders: 12. View orders filtered to New.');
 
-        await userEvent.click(card);
+        // The bar is an SVG <path>; fireEvent dispatches the click recharts wires
+        // up, whereas userEvent's hit-testing does not resolve SVG geometry in jsdom.
+        fireEvent.click(bar);
 
         await waitFor(() => {
             expect(screen.getByTestId('location-display')).toHaveTextContent('/admin/orders?status=new');

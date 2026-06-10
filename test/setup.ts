@@ -1,38 +1,33 @@
 import '@testing-library/jest-dom';
 
+import { cloneElement, isValidElement, type ReactNode } from 'react';
 import { vi } from 'vitest';
 
-// ---------------------------------------------------------------------------
-// Recharts + jsdom interop
-//
-// Recharts relies on ResizeObserver and measures its parent via
-// ResponsiveContainer. jsdom implements neither layout nor ResizeObserver, so
-// charts render at 0×0 and never paint. Provide a ResizeObserver polyfill and
-// give ResponsiveContainer a fixed size so chart children render in tests.
-// ---------------------------------------------------------------------------
-
-class ResizeObserverStub {
+// jsdom has no layout engine, so recharts' ResponsiveContainer measures a 0x0
+// box and renders nothing. Polyfill ResizeObserver and replace ResponsiveContainer
+// with a wrapper that hands the chart explicit pixel dimensions, so bars, axes
+// and labels render and can be asserted on in tests.
+class ResizeObserverMock {
     observe() {}
     unobserve() {}
     disconnect() {}
 }
 
-if (!('ResizeObserver' in globalThis)) {
-    (globalThis as unknown as { ResizeObserver: typeof ResizeObserverStub }).ResizeObserver = ResizeObserverStub;
-}
+globalThis.ResizeObserver = globalThis.ResizeObserver ?? (ResizeObserverMock as unknown as typeof ResizeObserver);
+
+const CHART_WIDTH = 800;
+const CHART_HEIGHT = 320;
 
 vi.mock('recharts', async () => {
     const actual = await vi.importActual<typeof import('recharts')>('recharts');
-    const { createElement } = await import('react');
-    const OriginalResponsiveContainer = actual.ResponsiveContainer as unknown as React.ComponentType<{
-        width: number;
-        height: number;
-        children: React.ReactNode;
-    }>;
-
     return {
         ...actual,
-        ResponsiveContainer: ({ children }: { children: React.ReactNode }) =>
-            createElement(OriginalResponsiveContainer, { width: 800, height: 400, children }),
+        ResponsiveContainer: ({ children }: { children: ReactNode }) =>
+            isValidElement(children)
+                ? cloneElement(children as React.ReactElement<{ width?: number; height?: number }>, {
+                      width: CHART_WIDTH,
+                      height: CHART_HEIGHT,
+                  })
+                : children,
     };
 });

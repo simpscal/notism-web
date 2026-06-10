@@ -485,8 +485,9 @@
                     "inProgress": "Đang xử lý",
                     "completed": "Hoàn thành"
                 },
-                "viewOrders": "Xem đơn hàng →",
-                "cardAriaLabel": "{{label}} đơn hàng: {{count}}. Xem danh sách đã lọc.",
+                "description": "Số lượng đơn hàng theo trạng thái theo thời gian thực. Chọn một cột để xem đơn hàng đã lọc của trạng thái đó.",
+                "chartAriaLabel": "Số lượng đơn hàng theo trạng thái. Chọn một cột để mở danh sách đơn hàng đã lọc.",
+                "barAriaLabel": "{{label}} đơn hàng: {{count}}. Xem đơn hàng đã lọc theo {{label}}.",
                 "errorTitle": "Không thể tải số liệu trạng thái đơn hàng",
                 "errorDescription": "Chúng tôi không thể tải tổng quan trạng thái đơn hàng. Vui lòng thử lại.",
                 "retry": "Thử lại"
