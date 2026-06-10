@@ -30,6 +30,7 @@ import {
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import { Skeleton } from '@/components/skeleton';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 // ---------------------------------------------------------------------------
 // Utilities
@@ -83,6 +84,77 @@ const METRICS_POPULATED: TodaysMetrics = { revenue: 4_185_000, orderCount: 17 };
 const METRICS_EMPTY: TodaysMetrics = { revenue: 0, orderCount: 0 };
 
 const TODAY_LABEL = '10 Jun 2026';
+
+// ---------------------------------------------------------------------------
+// Revenue over time (story 224)
+//
+// One total revenue value per period at the active granularity. The admin
+// switches between Year / Month / Day; the chart re-totals into one bar per
+// year, per month (of the current year), or per day (of the current month).
+// Every period in the displayed range is present — periods with no revenue
+// still render as a bar with value 0. Mock-only fixtures.
+// ---------------------------------------------------------------------------
+
+type RevenueGranularity = 'year' | 'month' | 'day';
+
+interface RevenuePoint {
+    /** Short axis label, e.g. "2024", "Jan", "01". */
+    label: string;
+    /** Total revenue in VND for the period; 0 for empty periods. */
+    revenue: number;
+}
+
+interface RevenueDataset {
+    year: RevenuePoint[];
+    month: RevenuePoint[];
+    day: RevenuePoint[];
+}
+
+const CURRENT_YEAR = 2026;
+const CURRENT_MONTH_LABEL = 'June';
+
+const GRANULARITY_META: Record<RevenueGranularity, { label: string; rangeLabel: string }> = {
+    year: { label: 'Year', rangeLabel: 'Per year' },
+    month: { label: 'Month', rangeLabel: `Per month — ${CURRENT_YEAR}` },
+    day: { label: 'Day', rangeLabel: `Per day — ${CURRENT_MONTH_LABEL} ${CURRENT_YEAR}` },
+};
+
+const GRANULARITY_ORDER: RevenueGranularity[] = ['year', 'month', 'day'];
+
+const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Populated dataset — note deliberate zero-revenue periods at every granularity. */
+const REVENUE_POPULATED: RevenueDataset = {
+    year: [
+        { label: '2022', revenue: 0 }, // pre-launch — zero period kept on the chart
+        { label: '2023', revenue: 612_400_000 },
+        { label: '2024', revenue: 938_750_000 },
+        { label: '2025', revenue: 1_204_300_000 },
+        { label: '2026', revenue: 486_120_000 },
+    ],
+    month: MONTH_LABELS.map((label, i) => {
+        // Months Jan–Jun have revenue; future months of the current year are 0.
+        const byMonth = [72_400_000, 64_900_000, 81_350_000, 0, 95_700_000, 41_870_000];
+        return { label, revenue: i < byMonth.length ? byMonth[i] : 0 };
+    }),
+    day: Array.from({ length: 30 }, (_, i) => {
+        const day = i + 1;
+        // A realistic spread with several zero-revenue days (e.g. closed days).
+        const pattern = [
+            1_840_000, 2_120_000, 0, 1_560_000, 2_780_000, 3_010_000, 0, 1_240_000, 1_990_000, 2_450_000, 0, 2_870_000,
+            3_320_000, 1_710_000, 0, 2_060_000, 2_640_000, 1_180_000, 0, 2_910_000, 3_540_000, 1_620_000, 0, 2_230_000,
+            2_780_000, 1_450_000, 0, 1_990_000, 2_510_000, 1_340_000,
+        ];
+        return { label: String(day).padStart(2, '0'), revenue: pattern[i] ?? 0 };
+    }),
+};
+
+/** Empty dataset — range is present but every period totals 0 (no sales yet). */
+const REVENUE_EMPTY: RevenueDataset = {
+    year: REVENUE_POPULATED.year.map(p => ({ ...p, revenue: 0 })),
+    month: REVENUE_POPULATED.month.map(p => ({ ...p, revenue: 0 })),
+    day: REVENUE_POPULATED.day.map(p => ({ ...p, revenue: 0 })),
+};
 
 // ---------------------------------------------------------------------------
 // Admin top navigation — reproduces layouts/admin/admin-toolbar-desktop.tsx
@@ -453,6 +525,162 @@ function StatusError() {
 }
 
 // ---------------------------------------------------------------------------
+// Revenue over time (story 224)
+//
+// Single bar chart totalling revenue per period at the active granularity.
+// The Year/Month/Day ToggleGroup re-totals the series; Month is the default,
+// scoped to the current year. Zero-revenue periods remain rendered as a bar
+// with value 0. Values are VND-formatted in the axis, tooltip, and per-bar
+// aria-label so a non-engineer reads exact totals.
+// ---------------------------------------------------------------------------
+
+const REVENUE_OVER_TIME_CONFIG = {
+    revenue: { label: 'Revenue', color: 'var(--chart-1)' },
+} satisfies ChartConfig;
+
+/** Compact VND axis tick — e.g. "1.2B ₫", "95M ₫", "0 ₫" — keeps the Y axis legible. */
+function formatVndCompact(amount: number): string {
+    if (amount === 0) return '0 ₫';
+    if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(1).replace(/\.0$/, '')}B ₫`;
+    if (amount >= 1_000_000) return `${Math.round(amount / 1_000_000)}M ₫`;
+    if (amount >= 1_000) return `${Math.round(amount / 1_000)}K ₫`;
+    return `${amount} ₫`;
+}
+
+function RevenueSection({
+    dataset,
+    initialGranularity = 'month',
+}: {
+    dataset: RevenueDataset;
+    initialGranularity?: RevenueGranularity;
+}) {
+    const [granularity, setGranularity] = React.useState<RevenueGranularity>(initialGranularity);
+    const data = dataset[granularity];
+    const meta = GRANULARITY_META[granularity];
+    const total = data.reduce((sum, p) => sum + p.revenue, 0);
+
+    return (
+        <section>
+            <SectionHeading>Revenue over time</SectionHeading>
+            <Card>
+                <CardContent className='pt-6'>
+                    <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                        <div>
+                            <p className='text-sm text-muted-foreground'>
+                                Total revenue per period — {meta.rangeLabel.toLowerCase()}.
+                            </p>
+                            <p className='mt-1 text-2xl font-bold tracking-tight text-foreground tabular-nums'>
+                                {formatVnd(total)}
+                            </p>
+                        </div>
+                        <ToggleGroup
+                            type='single'
+                            value={granularity}
+                            onValueChange={value => {
+                                if (value) setGranularity(value as RevenueGranularity);
+                            }}
+                            variant='outline'
+                            size='sm'
+                            aria-label='Revenue granularity'
+                            className='self-start sm:self-auto'
+                        >
+                            {GRANULARITY_ORDER.map(key => (
+                                <ToggleGroupItem
+                                    key={key}
+                                    value={key}
+                                    aria-label={`Total revenue ${GRANULARITY_META[key].label.toLowerCase()} by ${GRANULARITY_META[key].label.toLowerCase()}`}
+                                    className='px-3'
+                                >
+                                    {GRANULARITY_META[key].label}
+                                </ToggleGroupItem>
+                            ))}
+                        </ToggleGroup>
+                    </div>
+                    <ChartContainer
+                        config={REVENUE_OVER_TIME_CONFIG}
+                        role='img'
+                        aria-label={`Revenue per ${granularity}. ${meta.rangeLabel}. Total ${formatVnd(total)}.`}
+                        className='aspect-auto h-[300px] w-full'
+                    >
+                        <BarChart accessibilityLayer data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+                            <XAxis
+                                dataKey='label'
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                interval={granularity === 'day' ? 2 : 0}
+                                minTickGap={4}
+                            />
+                            <YAxis
+                                tickLine={false}
+                                axisLine={false}
+                                width={56}
+                                tickFormatter={value => formatVndCompact(Number(value))}
+                            />
+                            <ChartTooltip
+                                cursor={false}
+                                content={
+                                    <ChartTooltipContent
+                                        formatter={value => formatVnd(Number(value))}
+                                        labelFormatter={label => `${meta.label}: ${label}`}
+                                    />
+                                }
+                            />
+                            <Bar dataKey='revenue' name='Revenue' fill='var(--color-revenue)' radius={[6, 6, 0, 0]}>
+                                {data.map(d => (
+                                    <Cell
+                                        key={d.label}
+                                        aria-label={`${meta.label} ${d.label}: ${formatVnd(d.revenue)}`}
+                                    />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+        </section>
+    );
+}
+
+function RevenueSkeleton() {
+    return (
+        <section>
+            <SectionHeading>Revenue over time</SectionHeading>
+            <Card>
+                <CardContent className='pt-6'>
+                    <div className='mb-4 flex items-center justify-between'>
+                        <div className='space-y-2'>
+                            <Skeleton className='h-4 w-56' />
+                            <Skeleton className='h-7 w-40' />
+                        </div>
+                        {/* Granularity toggle placeholder */}
+                        <Skeleton className='h-8 w-44 rounded-md' />
+                    </div>
+                    {/* Chart region placeholder */}
+                    <div className='flex h-[300px] items-end gap-3 px-2'>
+                        {['h-1/3', 'h-2/3', 'h-1/2', 'h-3/4', 'h-2/5', 'h-full', 'h-1/4', 'h-3/5'].map((h, i) => (
+                            <Skeleton key={i} className={`${h} w-full rounded-md`} />
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </section>
+    );
+}
+
+function RevenueError() {
+    return (
+        <section>
+            <SectionHeading>Revenue over time</SectionHeading>
+            <SectionError
+                title="Couldn't load revenue over time"
+                description='We were unable to fetch the revenue breakdown. Please try again.'
+            />
+        </section>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Story compositions
 // ---------------------------------------------------------------------------
 
@@ -462,6 +690,8 @@ function DefaultStory() {
             <MetricsSection metrics={METRICS_POPULATED} />
             <Separator className='mb-8' />
             <StatusSection statuses={STATUS_POPULATED} />
+            <Separator className='my-8' />
+            <RevenueSection dataset={REVENUE_POPULATED} />
         </PageShell>
     );
 }
@@ -472,6 +702,8 @@ function EmptyStory() {
             <MetricsSection metrics={METRICS_EMPTY} />
             <Separator className='mb-8' />
             <StatusSection statuses={STATUS_EMPTY} />
+            <Separator className='my-8' />
+            <RevenueSection dataset={REVENUE_EMPTY} />
         </PageShell>
     );
 }
@@ -482,6 +714,8 @@ function LoadingStory() {
             <MetricsSkeleton />
             <Separator className='mb-8' />
             <StatusSkeleton />
+            <Separator className='my-8' />
+            <RevenueSkeleton />
         </PageShell>
     );
 }
@@ -492,17 +726,37 @@ function ErrorStory() {
             <MetricsError />
             <Separator className='mb-8' />
             <StatusError />
+            <Separator className='my-8' />
+            <RevenueError />
         </PageShell>
     );
 }
 
-/** Partial — metrics resolved, status chart failed independently. */
+/**
+ * Partial — metrics resolved, status chart failed independently, and revenue
+ * over time resolved. Demonstrates each section's state being independent.
+ */
 function PartialStory() {
     return (
         <PageShell>
             <MetricsSection metrics={METRICS_POPULATED} />
             <Separator className='mb-8' />
             <StatusError />
+            <Separator className='my-8' />
+            <RevenueSection dataset={REVENUE_POPULATED} />
+        </PageShell>
+    );
+}
+
+/**
+ * Revenue granularity — defaults the section to the Day view so reviewers see
+ * per-day totals (incl. zero-revenue days as value-0 bars) and can switch
+ * between Year / Month / Day via the toggle.
+ */
+function RevenueGranularityStory() {
+    return (
+        <PageShell>
+            <RevenueSection dataset={REVENUE_POPULATED} initialGranularity='day' />
         </PageShell>
     );
 }
@@ -545,4 +799,9 @@ export const Error: Story = {
 export const Partial: Story = {
     name: 'Partial — Sales Loaded, Status Chart Failed',
     render: () => <PartialStory />,
+};
+
+export const RevenueGranularity: Story = {
+    name: 'Revenue — Day View & Granularity Toggle',
+    render: () => <RevenueGranularityStory />,
 };
