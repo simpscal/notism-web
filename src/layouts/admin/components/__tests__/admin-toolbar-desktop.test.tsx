@@ -1,17 +1,11 @@
-import { render, screen } from '@testing-library/react';
-import { ReactNode } from 'react';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import AdminToolbarDesktop from '../admin-toolbar-desktop';
 
 import { ROUTES } from '@/app/constants';
-import i18n from '@/app/i18n/i18n';
-import { ThemeProvider } from '@/core/contexts/theme.context';
 import { UserProfileViewModel } from '@/features/user/models';
-import { store } from '@/store';
+import { renderWithProviders } from '@/test/utils';
 
 const USER: UserProfileViewModel = {
     id: '1',
@@ -25,43 +19,14 @@ const USER: UserProfileViewModel = {
 function renderToolbar({ initialPath = `/${ROUTES.ADMIN.DASHBOARD}` }: { initialPath?: string } = {}) {
     const onLogout = vi.fn();
 
-    const Wrapper = ({ children }: { children: ReactNode }) => (
-        <Provider store={store}>
-            <I18nextProvider i18n={i18n}>
-                <ThemeProvider>
-                    <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
-                </ThemeProvider>
-            </I18nextProvider>
-        </Provider>
-    );
-
-    render(
-        <Wrapper>
-            <AdminToolbarDesktop user={USER} onLogout={onLogout} />
-        </Wrapper>
-    );
+    renderWithProviders(<AdminToolbarDesktop user={USER} onLogout={onLogout} />, {
+        initialEntries: [initialPath],
+    });
 
     return { onLogout };
 }
 
 describe('AdminToolbarDesktop', () => {
-    beforeAll(() => {
-        Object.defineProperty(window, 'matchMedia', {
-            writable: true,
-            configurable: true,
-            value: vi.fn().mockImplementation((query: string) => ({
-                matches: false,
-                media: query,
-                onchange: null,
-                addListener: vi.fn(),
-                removeListener: vi.fn(),
-                addEventListener: vi.fn(),
-                removeEventListener: vi.fn(),
-                dispatchEvent: vi.fn(),
-            })),
-        });
-    });
-
     it('renders Dashboard as the first nav link', () => {
         renderToolbar();
 

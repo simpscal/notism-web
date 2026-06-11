@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 
 import i18n from '@/app/i18n/i18n';
+import { ThemeProvider } from '@/core/contexts/theme.context';
 import { store } from '@/store';
 
 function createTestQueryClient() {
@@ -20,15 +21,18 @@ function createTestQueryClient() {
 interface TestProvidersProps {
     children: ReactNode;
     queryClient?: QueryClient;
+    initialEntries?: string[];
 }
 
-function TestProviders({ children, queryClient }: TestProvidersProps) {
+function TestProviders({ children, queryClient, initialEntries }: TestProvidersProps) {
     const client = queryClient ?? createTestQueryClient();
     return (
         <Provider store={store}>
             <QueryClientProvider client={client}>
                 <I18nextProvider i18n={i18n}>
-                    <MemoryRouter>{children}</MemoryRouter>
+                    <ThemeProvider defaultTheme='light'>
+                        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+                    </ThemeProvider>
                 </I18nextProvider>
             </QueryClientProvider>
         </Provider>
@@ -37,11 +41,15 @@ function TestProviders({ children, queryClient }: TestProvidersProps) {
 
 function renderWithProviders(
     ui: ReactElement,
-    options?: Omit<RenderOptions, 'wrapper'> & { queryClient?: QueryClient }
+    options?: Omit<RenderOptions, 'wrapper'> & { queryClient?: QueryClient; initialEntries?: string[] }
 ) {
-    const { queryClient, ...renderOptions } = options ?? {};
+    const { queryClient, initialEntries, ...renderOptions } = options ?? {};
     return render(ui, {
-        wrapper: ({ children }) => <TestProviders queryClient={queryClient}>{children}</TestProviders>,
+        wrapper: ({ children }) => (
+            <TestProviders queryClient={queryClient} initialEntries={initialEntries}>
+                {children}
+            </TestProviders>
+        ),
         ...renderOptions,
     });
 }
