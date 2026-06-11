@@ -12,6 +12,9 @@ import {
     toAdminOrdersForKanban,
     toAdminOrders,
     toAdminUsers,
+    toDashboardOrderStatusSummary,
+    toDashboardRevenueSeries,
+    toDashboardTodaySales,
 } from './mappers';
 import {
     AdminOrderDetailResponseModel,
@@ -34,6 +37,11 @@ import {
     GetAdminOrdersResponseModel,
     GetAdminUsersRequestModel,
     GetAdminUsersResponseModel,
+    GetDashboardOrderStatusSummaryResponseModel,
+    GetDashboardRevenueSeriesRequestModel,
+    GetDashboardRevenueSeriesResponseModel,
+    GetDashboardTodaySalesRequestModel,
+    GetDashboardTodaySalesResponseModel,
     UpdateAdminFoodRequestModel,
     UpdateAdminUserRoleRequestModel,
     UpdateCategoryRequestModel,
@@ -70,6 +78,34 @@ export const adminApi = {
             `${API_ENDPOINTS.ADMIN.ORDERS_KANBAN}?${searchParams.toString()}`
         );
         return toAdminOrdersForKanban(response);
+    },
+
+    getDashboardOrderStatusSummary: async () => {
+        const response = await apiClient.get<GetDashboardOrderStatusSummaryResponseModel>(
+            API_ENDPOINTS.ADMIN.DASHBOARD_ORDER_STATUS_SUMMARY
+        );
+        return toDashboardOrderStatusSummary(response);
+    },
+
+    getDashboardTodaySales: async (params: GetDashboardTodaySalesRequestModel) => {
+        const searchParams = new URLSearchParams();
+        searchParams.append('startUtc', params.startUtc);
+        searchParams.append('endUtc', params.endUtc);
+        const response = await apiClient.get<GetDashboardTodaySalesResponseModel>(
+            `${API_ENDPOINTS.ADMIN.DASHBOARD_TODAY_SALES}?${searchParams.toString()}`
+        );
+        return toDashboardTodaySales(response);
+    },
+
+    getDashboardRevenueSeries: async (params: GetDashboardRevenueSeriesRequestModel) => {
+        const searchParams = new URLSearchParams();
+        params.boundaries.forEach(boundary => searchParams.append('boundaries', boundary));
+        params.labels.forEach(label => searchParams.append('labels', label));
+        searchParams.append('granularity', params.granularity);
+        const response = await apiClient.get<GetDashboardRevenueSeriesResponseModel>(
+            `${API_ENDPOINTS.ADMIN.DASHBOARD_REVENUE_SERIES}?${searchParams.toString()}`
+        );
+        return toDashboardRevenueSeries(response);
     },
 
     getOrderById: async (slugId: string) => {

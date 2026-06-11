@@ -17,6 +17,9 @@ import { useInView } from 'react-intersection-observer';
 import { cn } from '@/app/utils/tailwind.utils';
 import Spinner from '@/components/spinner';
 
+/** How long a column stays visually emphasised after `isHighlighted` rises, before it auto-fades. */
+export const HIGHLIGHT_DURATION_MS = 3000;
+
 export interface KanbanColumn<TItem> {
     id: string;
     title: string;
@@ -25,6 +28,11 @@ export interface KanbanColumn<TItem> {
     hasMore?: boolean;
     onLoadMore?: () => void;
     isLoadingMore?: boolean;
+    /**
+     * Source-agnostic trigger for a momentary emphasis pulse. On the rising edge (false→true, or
+     * true on first mount) the column scrolls into view and is visually emphasised, then auto-fades.
+     */
+    isHighlighted?: boolean;
 }
 
 export interface KanbanProps<TItem> {
@@ -84,8 +92,10 @@ function KanbanColumn<TItem>({
     sourceColumnId: string | null;
     overColumnId: string | null;
 }) {
+    const columnRef = useRef<HTMLDivElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const { ref: loadMoreRef, inView } = useInView();
+    const [isHighlightActive, setIsHighlightActive] = useState(false);
 
     const { setNodeRef: setDroppableRef, isOver } = useDroppable({
         id: column.id,
@@ -100,8 +110,27 @@ function KanbanColumn<TItem>({
         }
     }, [inView, column.hasMore, column.isLoadingMore, column.onLoadMore]);
 
+    // On the rising edge of `isHighlighted`, pulse the column: scroll it into view, emphasise it,
+    // then auto-fade after HIGHLIGHT_DURATION_MS. Each column manages its own timer independently.
+    useEffect(() => {
+        if (!column.isHighlighted) return;
+
+        setIsHighlightActive(true);
+        columnRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+        const timer = setTimeout(() => setIsHighlightActive(false), HIGHLIGHT_DURATION_MS);
+
+        return () => clearTimeout(timer);
+    }, [column.isHighlighted]);
+
     return (
-        <div className={cn('flex flex-col h-full bg-muted/30 flex-shrink-0')}>
+        <div
+            ref={columnRef}
+            className={cn(
+                'flex flex-col h-full bg-muted/30 flex-shrink-0',
+                isHighlightActive && 'ring-2 ring-inset ring-primary/40 bg-primary/5'
+            )}
+        >
             {/* Column header */}
             <div className='sticky top-0 z-10 border-b border-border bg-background px-4 py-3'>
                 <div className='flex items-center justify-between'>

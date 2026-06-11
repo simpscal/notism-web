@@ -173,6 +173,7 @@
     },
     "nav": {
         "home": "Home",
+        "dashboard": "Dashboard",
         "foods": "Foods",
         "orders": "Orders",
         "cart": "Cart",
@@ -474,6 +475,56 @@
         }
     },
     "admin": {
+        "dashboard": {
+            "title": "Dashboard",
+            "subtitle": "Operational overview for {{date}}",
+            "orderStatus": {
+                "heading": "Orders by status",
+                "statuses": {
+                    "new": "New",
+                    "inProgress": "In Progress",
+                    "completed": "Completed"
+                },
+                "description": "Live order count per status. Select a bar to view that status's filtered orders.",
+                "chartAriaLabel": "Order count by status. Select a bar to open the filtered orders list.",
+                "barAriaLabel": "{{label}} orders: {{count}}. View orders filtered to {{label}}.",
+                "errorTitle": "Couldn't load order status counts",
+                "errorDescription": "We were unable to fetch the order status overview. Please try again.",
+                "retry": "Retry"
+            },
+            "todaySales": {
+                "heading": "Today's sales",
+                "revenueLabel": "Today's revenue",
+                "ordersLabel": "Today's orders",
+                "revenueAriaLabel": "Today's revenue: {{value}}",
+                "ordersAriaLabel": "Today's orders: {{value}}",
+                "errorTitle": "Couldn't load today's metrics",
+                "errorDescription": "Something went wrong fetching revenue and order totals. Please try again.",
+                "retry": "Retry"
+            },
+            "revenue": {
+                "heading": "Revenue over time",
+                "description": "Total revenue per period — {{range}}.",
+                "rangeLabel": {
+                    "year": "per year",
+                    "month": "per month",
+                    "day": "per day"
+                },
+                "granularity": {
+                    "year": "Year",
+                    "month": "Month",
+                    "day": "Day"
+                },
+                "granularityAriaLabel": "Revenue granularity",
+                "granularityOptionAriaLabel": "Total revenue by {{label}}",
+                "chartAriaLabel": "Revenue per {{granularity}}. Total {{total}}.",
+                "barAriaLabel": "{{label}}: {{value}}",
+                "tooltipLabel": "{{label}}",
+                "errorTitle": "Couldn't load revenue over time",
+                "errorDescription": "We were unable to fetch the revenue breakdown. Please try again.",
+                "retry": "Retry"
+            }
+        },
         "orders": {
             "title": "Orders",
             "management": "Orders Management",

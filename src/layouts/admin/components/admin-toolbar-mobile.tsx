@@ -1,4 +1,4 @@
-import { LogIn, LogOut, Moon, Package, Settings, Store, Sun, UtensilsCrossed } from 'lucide-react';
+import { LayoutDashboard, LogIn, LogOut, Moon, Package, Settings, Store, Sun, UtensilsCrossed } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink } from 'react-router-dom';
@@ -39,6 +39,21 @@ function AdminToolbarMobile({ user, onLogout }: AdminToolbarMobileProps) {
         <>
             {/* Fixed bottom bar */}
             <div className='fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t bg-background px-2 lg:hidden'>
+                {/* Dashboard shortcut */}
+                <NavLink
+                    to={`/${ROUTES.ADMIN.DASHBOARD}`}
+                    aria-label={t('nav.dashboard')}
+                    className={({ isActive }) =>
+                        cn(
+                            'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
+                            isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                        )
+                    }
+                >
+                    <LayoutDashboard className='h-6 w-6' />
+                    <span className='text-[10px] font-medium'>{t('nav.dashboard')}</span>
+                </NavLink>
+
                 {/* Orders shortcut */}
                 <NavLink
                     to={`/${ROUTES.ADMIN.ORDERS}`}

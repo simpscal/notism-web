@@ -14,6 +14,9 @@ import type {
     GetAdminOrdersForKanbanResponseModel,
     GetAdminOrdersResponseModel,
     GetAdminUsersResponseModel,
+    GetDashboardOrderStatusSummaryResponseModel,
+    GetDashboardRevenueSeriesResponseModel,
+    GetDashboardTodaySalesResponseModel,
 } from '../models';
 
 import { toCustomisationGroup } from './food.mapper';
@@ -34,6 +37,10 @@ import type {
     AdminUserDetailViewModel,
     AdminUserViewModel,
     AdminUsersViewModel,
+    DashboardOrderStatusSummaryViewModel,
+    DashboardRevenueGranularityViewModel,
+    DashboardRevenueSeriesViewModel,
+    DashboardTodaySalesViewModel,
 } from '@/features/admin/models';
 
 export function toAdminOrder(response: AdminOrderResponseModel): AdminOrderViewModel {
@@ -64,6 +71,35 @@ export function toAdminOrdersForKanban(response: GetAdminOrdersForKanbanResponse
     return {
         items: response.items.map(toAdminOrder),
         totalCount: response.totalCount,
+    };
+}
+
+export function toDashboardOrderStatusSummary(
+    response: GetDashboardOrderStatusSummaryResponseModel
+): DashboardOrderStatusSummaryViewModel {
+    return {
+        new: response.new,
+        inProgress: response.inProgress,
+        completed: response.completed,
+    };
+}
+
+export function toDashboardTodaySales(response: GetDashboardTodaySalesResponseModel): DashboardTodaySalesViewModel {
+    return {
+        revenue: response.revenue,
+        orderCount: response.orderCount,
+    };
+}
+
+export function toDashboardRevenueSeries(
+    response: GetDashboardRevenueSeriesResponseModel
+): DashboardRevenueSeriesViewModel {
+    return {
+        granularity: response.granularity as DashboardRevenueGranularityViewModel,
+        points: response.points.map(point => ({
+            period: point.period,
+            revenue: point.revenue,
+        })),
     };
 }
 

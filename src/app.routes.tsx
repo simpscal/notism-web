@@ -6,6 +6,7 @@ import { AuthLayout } from '@/layouts/auth';
 import { ClientLayout } from '@/layouts/client';
 import { AdminCategories } from '@/pages/admin/categories';
 import { AdminCategoryDetail } from '@/pages/admin/category-detail';
+import AdminDashboard from '@/pages/admin/dashboard/dashboard';
 import AdminFoodDetail from '@/pages/admin/food-detail/food-detail';
 import AdminFoods from '@/pages/admin/foods/foods';
 import AdminOrderDetail from '@/pages/admin/order-detail/order-detail';
@@ -83,6 +84,8 @@ function AppRoutes() {
 
             <Route element={<AdminRouteGuard />}>
                 <Route element={<AdminLayout />}>
+                    <Route path='admin' element={<Navigate replace to='dashboard' />} />
+                    <Route path='admin/dashboard' element={<AdminDashboard />} />
                     <Route path='admin/orders' element={<AdminOrders />} />
                     <Route path='admin/orders/:id' element={<AdminOrderDetail />} />
                     <Route path='admin/categories' element={<AdminCategories />} />

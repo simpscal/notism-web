@@ -20,6 +20,31 @@ export interface AdminOrdersViewModel {
     totalCount: number;
 }
 
+export interface DashboardOrderStatusSummaryViewModel {
+    new: number;
+    inProgress: number;
+    completed: number;
+}
+
+export interface DashboardTodaySalesViewModel {
+    revenue: number;
+    orderCount: number;
+}
+
+export type DashboardRevenueGranularityViewModel = 'year' | 'month' | 'day';
+
+export interface DashboardRevenuePointViewModel {
+    /** Period label as returned by the server, e.g. "2024", "Jun", "01". */
+    period: string;
+    /** Total revenue in VND for the period; 0 for empty periods. */
+    revenue: number;
+}
+
+export interface DashboardRevenueSeriesViewModel {
+    granularity: DashboardRevenueGranularityViewModel;
+    points: DashboardRevenuePointViewModel[];
+}
+
 export interface AdminOrderDetailViewModel {
     id: string;
     slugId: string;

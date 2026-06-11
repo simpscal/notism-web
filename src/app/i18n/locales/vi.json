@@ -173,6 +173,7 @@
     },
     "nav": {
         "home": "Trang chủ",
+        "dashboard": "Bảng điều khiển",
         "foods": "Thực phẩm",
         "orders": "Đơn hàng",
         "cart": "Giỏ hàng",
@@ -474,6 +475,56 @@
         }
     },
     "admin": {
+        "dashboard": {
+            "title": "Bảng điều khiển",
+            "subtitle": "Tổng quan vận hành cho {{date}}",
+            "orderStatus": {
+                "heading": "Đơn hàng theo trạng thái",
+                "statuses": {
+                    "new": "Mới",
+                    "inProgress": "Đang xử lý",
+                    "completed": "Hoàn thành"
+                },
+                "description": "Số lượng đơn hàng theo trạng thái theo thời gian thực. Chọn một cột để xem đơn hàng đã lọc của trạng thái đó.",
+                "chartAriaLabel": "Số lượng đơn hàng theo trạng thái. Chọn một cột để mở danh sách đơn hàng đã lọc.",
+                "barAriaLabel": "{{label}} đơn hàng: {{count}}. Xem đơn hàng đã lọc theo {{label}}.",
+                "errorTitle": "Không thể tải số liệu trạng thái đơn hàng",
+                "errorDescription": "Chúng tôi không thể tải tổng quan trạng thái đơn hàng. Vui lòng thử lại.",
+                "retry": "Thử lại"
+            },
+            "todaySales": {
+                "heading": "Doanh số hôm nay",
+                "revenueLabel": "Doanh thu hôm nay",
+                "ordersLabel": "Đơn hàng hôm nay",
+                "revenueAriaLabel": "Doanh thu hôm nay: {{value}}",
+                "ordersAriaLabel": "Đơn hàng hôm nay: {{value}}",
+                "errorTitle": "Không thể tải số liệu hôm nay",
+                "errorDescription": "Đã xảy ra lỗi khi tải doanh thu và tổng số đơn hàng. Vui lòng thử lại.",
+                "retry": "Thử lại"
+            },
+            "revenue": {
+                "heading": "Doanh thu theo thời gian",
+                "description": "Tổng doanh thu theo từng kỳ — {{range}}.",
+                "rangeLabel": {
+                    "year": "theo năm",
+                    "month": "theo tháng",
+                    "day": "theo ngày"
+                },
+                "granularity": {
+                    "year": "Năm",
+                    "month": "Tháng",
+                    "day": "Ngày"
+                },
+                "granularityAriaLabel": "Mức độ chi tiết doanh thu",
+                "granularityOptionAriaLabel": "Tổng doanh thu theo {{label}}",
+                "chartAriaLabel": "Doanh thu theo {{granularity}}. Tổng {{total}}.",
+                "barAriaLabel": "{{label}}: {{value}}",
+                "tooltipLabel": "{{label}}",
+                "errorTitle": "Không thể tải doanh thu theo thời gian",
+                "errorDescription": "Chúng tôi không thể tải phân tích doanh thu. Vui lòng thử lại.",
+                "retry": "Thử lại"
+            }
+        },
         "orders": {
             "title": "Đơn hàng",
             "management": "Quản lý đơn hàng",
