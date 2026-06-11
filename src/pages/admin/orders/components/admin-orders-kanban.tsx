@@ -15,7 +15,7 @@ import { DELIVERY_STATUS } from '@/features/order';
 interface AdminOrdersKanbanProps {
     onOrderClick: (slugId: string) => void;
     paymentStatus?: string;
-    /** Delivery-status keys to visually emphasise (dashboard drill-through). */
+    /** Delivery-status keys to momentarily emphasise. */
     highlightedStatuses?: string[];
 }
 
