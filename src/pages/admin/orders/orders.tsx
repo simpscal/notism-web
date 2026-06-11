@@ -16,7 +16,7 @@ type ViewMode = 'kanban' | 'grid';
 
 const PAYMENT_STATUS_ALL = 'all';
 
-/** Maps a dashboard status bucket key to the delivery statuses it covers in the kanban. */
+/** Maps a status bucket key to the delivery statuses it covers in the kanban. */
 const STATUS_BUCKET_TO_DELIVERY_STATUSES: Record<string, DeliveryStatusEnum[]> = {
     new: [DeliveryStatusEnum.Placed],
     inProgress: [DeliveryStatusEnum.Preparing, DeliveryStatusEnum.OnTheWay],
@@ -32,7 +32,7 @@ function AdminOrders() {
         () => (statusBucket ? (STATUS_BUCKET_TO_DELIVERY_STATUSES[statusBucket] ?? []) : []),
         [statusBucket]
     );
-    // When drilled into from the dashboard the kanban groups by delivery status, so default to it.
+    // A status bucket in the URL targets delivery-status columns, so default to the kanban view.
     const [viewMode, setViewMode] = useState<ViewMode>('kanban');
     const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>(PAYMENT_STATUS_ALL);
 
