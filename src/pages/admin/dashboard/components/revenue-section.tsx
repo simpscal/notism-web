@@ -6,7 +6,6 @@ import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts';
 
 import { adminApi } from '@/apis';
 import { formatVnd } from '@/app/utils/currency.utils';
-import { getRevenuePeriodsUtc } from '@/app/utils/dashboard-time.utils';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/chart';
@@ -14,6 +13,7 @@ import ErrorState from '@/components/error-state';
 import { Skeleton } from '@/components/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 import type { DashboardRevenueGranularityViewModel, DashboardRevenuePointViewModel } from '@/features/admin';
+import { getRevenuePeriodsUtc } from '@/pages/admin/dashboard/utils';
 
 const GRANULARITY_ORDER: readonly DashboardRevenueGranularityViewModel[] = ['year', 'month', 'day'];
 
