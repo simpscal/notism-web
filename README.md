@@ -152,7 +152,6 @@ Project documentation is located in the `docs/` folder:
 | `docs/rules/pages-and-features.md`     | Page and feature layer examples              |
 | `docs/rules/store.md`                  | Redux Toolkit patterns                       |
 | `docs/rules/core.md`                   | Core layer (hooks, context, guards) examples |
-| `docs/rules/app-layer.md`              | App layer (constants, enums, utils) examples |
 | `docs/integration-flows/oauth-flow.md` | OAuth login sequence diagram                 |
 
 ---
