@@ -46,6 +46,10 @@ export interface UpdateCartItemQuantityRequestModel {
     quantity: number;
 }
 
+export interface UpdateCartItemQuantityResponseModel {
+    id: string;
+}
+
 export interface BulkAddCartItemsRequestModel {
     items: AddCartItemRequestModel[];
 }

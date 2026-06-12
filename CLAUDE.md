@@ -105,15 +105,12 @@ src/app/utils/currency.utils.test.ts             ❌ (flat co-location)
 | Topic                       | Location                               |
 | --------------------------- | -------------------------------------- |
 | Architecture                | `docs/rules/architecture.md`           |
-| Best practices index        | `docs/rules/best-practices.md`         |
 | Naming conventions          | `docs/rules/naming.md`                 |
 | Components                  | `docs/rules/components.md`             |
 | TanStack Query              | `docs/rules/tanstack-query.md`         |
-| API and Hooks               | `docs/rules/api-and-hooks.md`          |
 | Pages and Features          | `docs/rules/pages-and-features.md`     |
 | Store                       | `docs/rules/store.md`                  |
 | Core Layer                  | `docs/rules/core.md`                   |
-| App Layer                   | `docs/rules/app-layer.md`              |
 | Forms                       | `docs/rules/forms.md`                  |
 | Internationalisation (i18n) | `docs/rules/i18n.md`                   |
 | OAuth flow                  | `docs/integration-flows/oauth-flow.md` |

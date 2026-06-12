@@ -146,13 +146,11 @@ Project documentation is located in the `docs/` folder:
 | `docs/rules/naming.md`                 | Naming conventions for all layers            |
 | `docs/rules/components.md`             | Component conventions and examples           |
 | `docs/rules/tanstack-query.md`         | useQuery / useMutation patterns              |
-| `docs/rules/api-and-hooks.md`          | API layer and custom hook patterns           |
 | `docs/rules/forms.md`                  | React Hook Form + Zod rules                  |
 | `docs/rules/i18n.md`                   | Internationalisation rules                   |
 | `docs/rules/pages-and-features.md`     | Page and feature layer examples              |
 | `docs/rules/store.md`                  | Redux Toolkit patterns                       |
 | `docs/rules/core.md`                   | Core layer (hooks, context, guards) examples |
-| `docs/rules/app-layer.md`              | App layer (constants, enums, utils) examples |
 | `docs/integration-flows/oauth-flow.md` | OAuth login sequence diagram                 |
 
 ---
