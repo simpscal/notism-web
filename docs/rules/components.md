@@ -639,6 +639,39 @@ const AdminFoodsPage = () => {
 - ❌ Using raw text or ad-hoc divs for query errors instead of `ErrorState`.
 - ❌ Showing error toasts for the same failure that is already shown via `ErrorState` (global API interceptor may still show toasts; avoid duplicating in component).
 
+### Global Error Handling
+
+**Rule: Don't catch an error just to show an error toast from a component — API failures are already handled globally.**
+
+The API client (`src/apis/client.ts`) has a response interceptor that inspects every non-OK response and shows a `toast.error(...)` with a localised title/description per status code (400/403/404/500/503/…). This runs for **every** request. So wrapping a call in `try/catch` (or `.catch`) only to surface another error toast double-notifies the user.
+
+```typescript
+// ❌ Bad: component re-reports a failure the interceptor already toasted
+const handleSave = useCallback(async () => {
+    try {
+        await updateItem(payload);
+    } catch {
+        toast.error(t('common.error')); // duplicate toast
+    }
+}, [updateItem, t]);
+```
+
+```typescript
+// ✅ Good: let the global interceptor own the error toast; swallow to avoid
+// an unhandled rejection, take no further UI action.
+const handleSave = useCallback(() => {
+    void updateItem(payload).catch(() => {});
+}, [updateItem]);
+```
+
+**When a local `catch` IS justified** — the component needs to do something the interceptor cannot:
+
+- Show a **domain-specific message** the generic interceptor doesn't know, not a restatement of the HTTP error.
+- **Roll back optimistic UI** or reset local state.
+- Branch control flow (retry, navigate, focus a field).
+
+In those cases handle the side effect — do not add a second generic error toast.
+
 ### Component Architecture Patterns
 
 #### Composition Over Inheritance
