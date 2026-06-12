@@ -108,7 +108,6 @@ src/app/utils/currency.utils.test.ts             ❌ (flat co-location)
 | Naming conventions          | `docs/rules/naming.md`                 |
 | Components                  | `docs/rules/components.md`             |
 | TanStack Query              | `docs/rules/tanstack-query.md`         |
-| API and Hooks               | `docs/rules/api-and-hooks.md`          |
 | Pages and Features          | `docs/rules/pages-and-features.md`     |
 | Store                       | `docs/rules/store.md`                  |
 | Core Layer                  | `docs/rules/core.md`                   |
