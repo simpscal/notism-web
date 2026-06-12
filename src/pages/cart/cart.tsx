@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -11,11 +11,14 @@ import { Button } from '@/components/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { useAppSelector, useAppDispatch } from '@/core/hooks';
+import { useAppSelector, useAppDispatch, useDebouncedCallback } from '@/core/hooks';
 import { useCart } from '@/features/cart';
+import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar } from '@/features/order';
 import { selectCartItems, selectCartIsInitialized, setItemSelection } from '@/store/cart';
+
+const QUANTITY_DEBOUNCE_MS = 400;
 
 function Cart() {
     const { t } = useTranslation();
@@ -24,14 +27,13 @@ function Cart() {
     const { updateCartItemQuantity, removeFromCart, replaceCartItemCustomisations } = useCart();
 
     const user = useAppSelector(state => state.user.user);
-    const items = useAppSelector(selectCartItems);
+    const storeItems = useAppSelector(selectCartItems);
     const isInitialized = useAppSelector(selectCartIsInitialized);
 
-    // Always points at the latest items so rapid successive clicks read the
-    // up-to-date quantity instead of the render-time closure snapshot. Without
-    // this, several quick clicks all stack on the same stale value (AC3).
-    const itemsRef = useRef(items);
-    itemsRef.current = items;
+    const [items, setItems] = useState<CartItemViewModel[]>(storeItems);
+    useEffect(() => {
+        setItems(storeItems);
+    }, [storeItems]);
 
     const selectedItemsList = useMemo(() => {
         return items.filter(item => item.isSelected);
@@ -44,28 +46,33 @@ function Cart() {
         }, 0);
     }, [selectedItemsList]);
 
-    const handleQuantityChange = useCallback(
-        async (id: string, delta: number) => {
-            // Read the latest quantity from the ref so consecutive clicks
-            // accumulate rather than overwriting one another.
-            const item = itemsRef.current.find(i => i.id === id);
-            if (!item) return;
+    const flushQuantity = useDebouncedCallback((id: string, quantity: number) => {
+        void updateCartItemQuantity(id, quantity).catch(() => {});
+    }, QUANTITY_DEBOUNCE_MS);
 
-            const newQuantity = item.quantity + delta;
-            try {
-                if (newQuantity <= 0) {
-                    await removeFromCart(id);
-                    toast.success(t('cart.itemRemoved'));
-                } else if (newQuantity > item.stockQuantity) {
-                    toast.error(t('cart.insufficientStock', { quantity: item.stockQuantity }));
-                } else {
-                    await updateCartItemQuantity(id, newQuantity);
-                }
-            } catch {
-                toast.error(t('cart.updateQuantityFailed'));
+    const handleQuantityChange = useCallback(
+        (id: string, delta: number) => {
+            const current = items.find(i => i.id === id);
+            if (!current) return;
+
+            const newQuantity = current.quantity + delta;
+
+            if (newQuantity <= 0) {
+                void removeFromCart(id)
+                    .then(() => toast.success(t('cart.itemRemoved')))
+                    .catch(() => {});
+                return;
             }
+
+            if (newQuantity > current.stockQuantity) {
+                toast.error(t('cart.insufficientStock', { quantity: current.stockQuantity }));
+                return;
+            }
+
+            setItems(prev => prev.map(item => (item.id === id ? { ...item, quantity: newQuantity } : item)));
+            flushQuantity(id, id, newQuantity);
         },
-        [updateCartItemQuantity, removeFromCart, t]
+        [items, removeFromCart, flushQuantity, t]
     );
 
     const handleRemoveItem = useCallback(

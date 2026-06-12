@@ -104,7 +104,54 @@ describe('Cart — quantity controls', () => {
         expect(within(summary as HTMLElement).getByText('Pho ×4')).toBeInTheDocument();
     });
 
-    it('surfaces an error toast and keeps the original quantity when the save fails', async () => {
+    it('reflects an increment immediately in the local view, before the debounced save resolves', async () => {
+        await seedCart();
+        let patchCalls = 0;
+        server.use(
+            http.patch(ITEM_URL('item-1'), () => {
+                patchCalls += 1;
+                return HttpResponse.json({ id: 'item-1' });
+            })
+        );
+
+        renderWithProviders(<Cart />);
+        const lineItem = (await screen.findAllByText('Pho'))[0].closest('div[class*="cursor-pointer"]')!;
+
+        const { incrementBtn } = getQuantityControls();
+        await userEvent.click(incrementBtn);
+
+        // Local clone updates instantly, decoupled from the server round-trip.
+        expect(within(lineItem as HTMLElement).getByText('2')).toBeInTheDocument();
+        await waitFor(() => expect(patchCalls).toBeGreaterThan(0));
+    });
+
+    it('coalesces a burst of clicks into a single debounced request carrying the latest quantity', async () => {
+        await seedCart();
+        const patchBodies: number[] = [];
+        server.use(
+            http.patch(ITEM_URL('item-1'), async ({ request }) => {
+                const body = (await request.json()) as { quantity: number };
+                patchBodies.push(body.quantity);
+                return HttpResponse.json({ id: 'item-1' });
+            })
+        );
+
+        renderWithProviders(<Cart />);
+        const lineItem = (await screen.findAllByText('Pho'))[0].closest('div[class*="cursor-pointer"]')!;
+
+        const { incrementBtn } = getQuantityControls();
+        await userEvent.click(incrementBtn);
+        await userEvent.click(incrementBtn);
+        await userEvent.click(incrementBtn);
+
+        await waitFor(() => expect(within(lineItem as HTMLElement).getByText('4')).toBeInTheDocument());
+        await waitFor(() => expect(patchBodies.length).toBeGreaterThan(0));
+        // The coalesced request(s) carry the final quantity, never a stale value.
+        expect(patchBodies.at(-1)).toBe(4);
+        expect(patchBodies.length).toBeLessThan(3);
+    });
+
+    it('keeps the optimistic quantity and shows no error toast when the save fails', async () => {
         await seedCart();
         server.use(http.patch(ITEM_URL('item-1'), () => new HttpResponse(null, { status: 500 })));
 
@@ -114,7 +161,8 @@ describe('Cart — quantity controls', () => {
         const { incrementBtn } = getQuantityControls();
         await userEvent.click(incrementBtn);
 
-        await waitFor(() => expect(toastError).toHaveBeenCalled());
-        await waitFor(() => expect(within(lineItem as HTMLElement).getByText('1')).toBeInTheDocument());
+        // Optimistic local value stands; failures no longer interrupt the shopper.
+        await waitFor(() => expect(within(lineItem as HTMLElement).getByText('2')).toBeInTheDocument());
+        expect(toastError).not.toHaveBeenCalled();
     });
 });

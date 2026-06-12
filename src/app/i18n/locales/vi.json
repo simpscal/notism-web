@@ -200,7 +200,6 @@
         "itemRemoved": "Mục đã bị xóa khỏi giỏ hàng",
         "selectAtLeastOne": "Vui lòng chọn ít nhất một mục để tiếp tục",
         "insufficientStock": "Chỉ còn {{quantity}} mục khả dụng",
-        "updateQuantityFailed": "Không thể cập nhật số lượng. Vui lòng thử lại.",
         "saveBadge": "Tiết kiệm {{amount}}",
         "itemCount_one": "{{count}} mục",
         "itemCount_other": "{{count}} mục",
