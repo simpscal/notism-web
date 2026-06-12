@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -27,6 +27,12 @@ function Cart() {
     const items = useAppSelector(selectCartItems);
     const isInitialized = useAppSelector(selectCartIsInitialized);
 
+    // Always points at the latest items so rapid successive clicks read the
+    // up-to-date quantity instead of the render-time closure snapshot. Without
+    // this, several quick clicks all stack on the same stale value (AC3).
+    const itemsRef = useRef(items);
+    itemsRef.current = items;
+
     const selectedItemsList = useMemo(() => {
         return items.filter(item => item.isSelected);
     }, [items]);
@@ -40,20 +46,26 @@ function Cart() {
 
     const handleQuantityChange = useCallback(
         async (id: string, delta: number) => {
-            const item = items.find(i => i.id === id);
+            // Read the latest quantity from the ref so consecutive clicks
+            // accumulate rather than overwriting one another.
+            const item = itemsRef.current.find(i => i.id === id);
             if (!item) return;
 
             const newQuantity = item.quantity + delta;
-            if (newQuantity <= 0) {
-                await removeFromCart(id);
-                toast.success(t('cart.itemRemoved'));
-            } else if (newQuantity > item.stockQuantity) {
-                toast.error(t('cart.insufficientStock', { quantity: item.stockQuantity }));
-            } else {
-                await updateCartItemQuantity(id, newQuantity);
+            try {
+                if (newQuantity <= 0) {
+                    await removeFromCart(id);
+                    toast.success(t('cart.itemRemoved'));
+                } else if (newQuantity > item.stockQuantity) {
+                    toast.error(t('cart.insufficientStock', { quantity: item.stockQuantity }));
+                } else {
+                    await updateCartItemQuantity(id, newQuantity);
+                }
+            } catch {
+                toast.error(t('cart.updateQuantityFailed'));
             }
         },
-        [updateCartItemQuantity, removeFromCart, items, t]
+        [updateCartItemQuantity, removeFromCart, t]
     );
 
     const handleRemoveItem = useCallback(

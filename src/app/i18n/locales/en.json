@@ -200,6 +200,7 @@
         "itemRemoved": "Item removed from cart",
         "selectAtLeastOne": "Please select at least one item to proceed",
         "insufficientStock": "Only {{quantity}} items available",
+        "updateQuantityFailed": "Could not update quantity. Please try again.",
         "saveBadge": "Save {{amount}}",
         "itemCount_one": "{{count}} item",
         "itemCount_other": "{{count}} items",

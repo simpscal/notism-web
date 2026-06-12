@@ -7,6 +7,7 @@ import {
     GetCartResponseModel,
     ReplaceCartItemCustomisationsRequestModel,
     UpdateCartItemQuantityRequestModel,
+    UpdateCartItemQuantityResponseModel,
 } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
@@ -23,8 +24,10 @@ export const cartApi = {
     },
 
     updateItemQuantity: async (itemId: string, data: UpdateCartItemQuantityRequestModel) => {
-        const response = await apiClient.patch<CartItemResponseModel>(API_ENDPOINTS.CART.ITEM(itemId), data);
-        return toCartItem(response);
+        // The backend returns only `{ id }` here — do NOT run it through toCartItem
+        // (it would throw on the missing fields). A 2xx means the new quantity is
+        // persisted; the caller treats the requested quantity as authoritative.
+        return apiClient.patch<UpdateCartItemQuantityResponseModel>(API_ENDPOINTS.CART.ITEM(itemId), data);
     },
 
     removeItem: (itemId: string) => {
