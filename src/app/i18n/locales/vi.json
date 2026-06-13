@@ -237,7 +237,8 @@
         "statuses": {
             "paid": "Đã thanh toán",
             "unpaid": "Chờ thanh toán",
-            "failed": "Thất bại"
+            "failed": "Thất bại",
+            "refunded": "Đã hoàn tiền"
         },
         "confirmedPanel": {
             "title": "Thanh toán đã xác nhận",

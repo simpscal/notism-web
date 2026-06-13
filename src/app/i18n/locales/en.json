@@ -237,7 +237,8 @@
         "statuses": {
             "paid": "Paid",
             "unpaid": "Pending Payment",
-            "failed": "Failed"
+            "failed": "Failed",
+            "refunded": "Refunded"
         },
         "confirmedPanel": {
             "title": "Payment confirmed",

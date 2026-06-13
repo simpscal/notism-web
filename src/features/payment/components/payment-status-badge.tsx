@@ -19,6 +19,10 @@ function PaymentStatusBadge({ paymentStatus }: PaymentStatusBadgeProps) {
         return <Badge variant='destructive'>{t('payment.statuses.failed')}</Badge>;
     }
 
+    if (paymentStatus === PaymentStatusEnum.Refunded) {
+        return <Badge variant='warning'>{t('payment.statuses.refunded')}</Badge>;
+    }
+
     return <Badge variant='secondary'>{t('payment.statuses.unpaid')}</Badge>;
 }
 
