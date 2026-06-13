@@ -37,6 +37,10 @@ export interface UpdateOrderDeliveryStatusRequestModel {
     deliveryStatus: string;
 }
 
+export interface UpdateOrderPaymentStatusRequestModel {
+    paymentStatus: string;
+}
+
 export interface AdminUserResponseModel {
     id: string;
     firstName: string;

@@ -9,6 +9,7 @@
         "add": "Add",
         "search": "Search",
         "noResults": "No results found",
+        "all": "All",
         "error": "Error",
         "success": "Success",
         "close": "Close",
@@ -233,6 +234,11 @@
         "paymentConfirmed": "Payment confirmed. You can now view your order.",
         "awaitingTransfer": "Awaiting Bank Transfer",
         "awaitingTransferDescription": "Complete your bank transfer to confirm the order",
+        "statuses": {
+            "paid": "Paid",
+            "unpaid": "Pending Payment",
+            "failed": "Failed"
+        },
         "confirmedPanel": {
             "title": "Payment confirmed",
             "descriptionStart": "Your transfer of",
@@ -340,11 +346,6 @@
             "onTheWay": "On the Way",
             "delivered": "Delivered",
             "cancelled": "Cancelled"
-        },
-        "paymentStatuses": {
-            "all": "All",
-            "paid": "Paid",
-            "unpaid": "Pending Payment"
         },
         "checkout": {
             "progress": {
@@ -542,7 +543,19 @@
             "updateSuccess": "Order status updated successfully",
             "statusUpdated": "Order status updated successfully",
             "failedToLoad": "Failed to load orders",
-            "view": "View"
+            "view": "View",
+            "paymentStatus": {
+                "label": "Update payment status",
+                "currentStatus": "Current status",
+                "method": "Method",
+                "saving": "Saving…",
+                "dialog": {
+                    "title": "Change payment status?",
+                    "description": "This order's payment status will change from {{from}} to {{to}}. You can change it again at any time.",
+                    "confirm": "Confirm change",
+                    "cancel": "Cancel"
+                }
+            }
         },
         "foods": {
             "title": "Foods",

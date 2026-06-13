@@ -20,4 +20,11 @@ describe('PaymentStatusBadge', () => {
         const badge = screen.getByText('Pending Payment');
         expect(badge).toBeInTheDocument();
     });
+
+    it('renders "Failed" badge when paymentStatus is Failed', () => {
+        renderWithProviders(<PaymentStatusBadge paymentStatus={PaymentStatusEnum.Failed} />);
+
+        const badge = screen.getByText('Failed');
+        expect(badge).toBeInTheDocument();
+    });
 });
