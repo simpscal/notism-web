@@ -1,83 +1,29 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse, delay } from 'msw';
-import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import PaymentCard from '../payment-card';
 
-import type { AdminOrderResponseModel } from '@/apis';
-import { Toaster } from '@/components/sonner';
-import type { AdminOrderDetailViewModel } from '@/features/admin';
 import { PaymentStatusEnum } from '@/features/payment';
-import { createTestQueryClient, renderWithProviders } from '@/test/utils';
+import { renderWithProviders } from '@/test/utils';
 
-const API_BASE = 'http://localhost:5000/api';
-const PAYMENT_STATUS_URL = `${API_BASE}/admin/orders/:id/payment-status`;
-
-const server = setupServer();
-
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-const ORDER_ID = 'order-1';
-const SLUG_ID = 'A1B2C3';
-
-const detailViewModel: AdminOrderDetailViewModel = {
-    id: ORDER_ID,
-    slugId: SLUG_ID,
-    totalAmount: 485_000,
-    paymentMethod: 'card',
-    deliveryStatus: 'on-the-way',
-    paymentStatus: PaymentStatusEnum.Unpaid,
-    paidAt: null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    deliveryNotes: null,
-    items: [],
-    deliveryStatusTiming: {
-        orderPlacedCompletedAt: null,
-        preparingCompletedAt: null,
-        onTheWayCompletedAt: null,
-        deliveredCompletedAt: null,
-    },
-};
-
-function buildApiResponse(paymentStatus: string): AdminOrderResponseModel {
-    return {
-        id: ORDER_ID,
-        slugId: SLUG_ID,
-        userId: 'user-1',
-        userEmail: 'a@example.com',
-        userName: 'Alice',
-        totalAmount: 485_000,
-        deliveryStatus: 'on-the-way',
-        paymentStatus,
-        createdAt: detailViewModel.createdAt,
-        updatedAt: detailViewModel.updatedAt,
-        totalItems: 0,
-        deliveryNotes: null,
-    };
+interface RenderOverrides {
+    paymentStatus?: string;
+    paymentMethod?: string;
+    isPending?: boolean;
 }
 
-function renderCard(overrides: Partial<AdminOrderDetailViewModel> = {}) {
-    const order = { ...detailViewModel, ...overrides };
-    const queryClient = createTestQueryClient();
-    queryClient.setQueryData(['admin', 'orders', 'detail', order.slugId], order);
-    const utils = renderWithProviders(
-        <>
-            <PaymentCard
-                orderId={order.id}
-                slugId={order.slugId}
-                paymentStatus={order.paymentStatus}
-                paymentMethod={order.paymentMethod}
-            />
-            <Toaster />
-        </>,
-        { queryClient }
-    );
-    return { ...utils, queryClient, order };
+function renderCard(overrides: RenderOverrides = {}) {
+    const onConfirm = vi.fn();
+    const props = {
+        paymentStatus: PaymentStatusEnum.Unpaid as string,
+        paymentMethod: 'card',
+        isPending: false,
+        onConfirm,
+        ...overrides,
+    };
+    const utils = renderWithProviders(<PaymentCard {...props} />);
+    return { ...utils, onConfirm };
 }
 
 /** The read-only "Current status" badge text (scoped to its row). */
@@ -105,13 +51,14 @@ describe('PaymentCard', () => {
         expect(screen.getByRole('combobox', { name: /update payment status/i })).toBeEnabled();
     });
 
-    it('does NOT open the dialog when the admin re-selects the status the order already has', async () => {
+    it('does NOT open the dialog or call onConfirm when re-selecting the current status', async () => {
         const user = userEvent.setup();
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
 
-        await pickStatus(user, 'Unpaid');
+        await pickStatus(user, 'Pending Payment');
 
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        expect(onConfirm).not.toHaveBeenCalled();
     });
 
     it('opens the confirmation dialog when a different status is selected', async () => {
@@ -124,94 +71,47 @@ describe('PaymentCard', () => {
         expect(within(dialog).getByText('Change payment status?')).toBeInTheDocument();
     });
 
-    it('leaves the payment status unchanged when the dialog is cancelled', async () => {
+    it('confirms the change: calls onConfirm with the picked status', async () => {
         const user = userEvent.setup();
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+
+        await pickStatus(user, 'Paid');
+        const dialog = await screen.findByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: 'Confirm change' }));
+
+        expect(onConfirm).toHaveBeenCalledTimes(1);
+        expect(onConfirm).toHaveBeenCalledWith('paid');
+    });
+
+    it('does not call onConfirm and keeps the current status when the dialog is cancelled', async () => {
+        const user = userEvent.setup();
+        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
 
         await pickStatus(user, 'Paid');
         const dialog = await screen.findByRole('dialog');
         await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
 
         await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-        // Badge still shows the original status.
+        expect(onConfirm).not.toHaveBeenCalled();
         expect(currentBadgeText()).toBe('Pending Payment');
-        expect(screen.queryByText('Paid')).not.toBeInTheDocument();
     });
 
-    it('confirms the change: fires the PATCH mutation and the badge reflects the new status', async () => {
-        const user = userEvent.setup();
-        let requestBody: { paymentStatus?: string } | null = null;
-        server.use(
-            http.patch(PAYMENT_STATUS_URL, async ({ request }) => {
-                requestBody = (await request.json()) as { paymentStatus: string };
-                return HttpResponse.json(buildApiResponse('paid'));
-            })
-        );
+    it('shows the saving label and disables the Select while pending', () => {
+        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid, isPending: true });
 
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
-
-        await pickStatus(user, 'Paid');
-        const dialog = await screen.findByRole('dialog');
-        await user.click(within(dialog).getByRole('button', { name: 'Confirm change' }));
-
-        await waitFor(() => expect(requestBody).toEqual({ paymentStatus: 'paid' }));
-        await waitFor(() => expect(currentBadgeText()).toBe('Paid'));
-    });
-
-    it('shows the saving spinner while the change persists', async () => {
-        const user = userEvent.setup();
-        server.use(
-            http.patch(PAYMENT_STATUS_URL, async () => {
-                await delay(100);
-                return HttpResponse.json(buildApiResponse('paid'));
-            })
-        );
-
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
-
-        await pickStatus(user, 'Paid');
-        const dialog = await screen.findByRole('dialog');
-        await user.click(within(dialog).getByRole('button', { name: 'Confirm change' }));
-
-        expect(await screen.findByText('Saving…')).toBeInTheDocument();
+        expect(screen.getByText('Saving…')).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /update payment status/i })).toBeDisabled();
     });
 
-    it('reverts the badge and shows a destructive toast when the change fails', async () => {
+    it('renders the Unpaid option as "Pending Payment"', async () => {
         const user = userEvent.setup();
-        server.use(http.patch(PAYMENT_STATUS_URL, () => new HttpResponse(null, { status: 500 })));
+        renderCard({ paymentStatus: PaymentStatusEnum.Paid });
 
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+        const trigger = screen.getByRole('combobox', { name: /update payment status/i });
+        await user.click(trigger);
 
-        await pickStatus(user, 'Paid');
-        const dialog = await screen.findByRole('dialog');
-        await user.click(within(dialog).getByRole('button', { name: 'Confirm change' }));
-
-        // Failure toast copy.
-        await waitFor(() =>
-            expect(screen.getByText("Couldn't update the payment status. Please try again.")).toBeInTheDocument()
-        );
-        // Badge reverted to the original status.
-        await waitFor(() => expect(currentBadgeText()).toBe('Pending Payment'));
-    });
-
-    it('allows the change for a cash-on-delivery order regardless of payment method', async () => {
-        const user = userEvent.setup();
-        let requestBody: { paymentStatus?: string } | null = null;
-        server.use(
-            http.patch(PAYMENT_STATUS_URL, async ({ request }) => {
-                requestBody = (await request.json()) as { paymentStatus: string };
-                return HttpResponse.json(buildApiResponse('failed'));
-            })
-        );
-
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid, paymentMethod: 'cash on delivery' });
-
-        await pickStatus(user, 'Failed');
-        const dialog = await screen.findByRole('dialog');
-        await user.click(within(dialog).getByRole('button', { name: 'Confirm change' }));
-
-        await waitFor(() => expect(requestBody).toEqual({ paymentStatus: 'failed' }));
-        await waitFor(() => expect(currentBadgeText()).toBe('Failed'));
+        expect(await screen.findByRole('option', { name: 'Pending Payment' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Paid' })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: 'Failed' })).toBeInTheDocument();
     });
 });

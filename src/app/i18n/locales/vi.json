@@ -9,6 +9,7 @@
         "add": "Thêm",
         "search": "Tìm kiếm",
         "noResults": "Không tìm thấy kết quả",
+        "all": "Tất cả",
         "error": "Lỗi",
         "success": "Thành công",
         "close": "Đóng",
@@ -233,6 +234,11 @@
         "paymentConfirmed": "Thanh toán đã được xác nhận. Bạn có thể xem đơn hàng ngay bây giờ.",
         "awaitingTransfer": "Chờ chuyển khoản",
         "awaitingTransferDescription": "Hoàn tất chuyển khoản để xác nhận đơn hàng",
+        "statuses": {
+            "paid": "Đã thanh toán",
+            "unpaid": "Chờ thanh toán",
+            "failed": "Thất bại"
+        },
         "confirmedPanel": {
             "title": "Thanh toán đã xác nhận",
             "descriptionStart": "Giao dịch",
@@ -340,12 +346,6 @@
             "onTheWay": "Đang giao",
             "delivered": "Đã giao",
             "cancelled": "Đã hủy"
-        },
-        "paymentStatuses": {
-            "all": "Tất cả",
-            "paid": "Đã thanh toán",
-            "unpaid": "Chờ thanh toán",
-            "failed": "Thất bại"
         },
         "checkout": {
             "progress": {
@@ -549,18 +549,12 @@
                 "currentStatus": "Trạng thái hiện tại",
                 "method": "Phương thức",
                 "saving": "Đang lưu…",
-                "options": {
-                    "paid": "Đã thanh toán",
-                    "unpaid": "Chưa thanh toán",
-                    "failed": "Thất bại"
-                },
                 "dialog": {
                     "title": "Thay đổi trạng thái thanh toán?",
                     "description": "Trạng thái thanh toán của đơn hàng này sẽ thay đổi từ {{from}} sang {{to}}. Bạn có thể thay đổi lại bất cứ lúc nào.",
                     "confirm": "Xác nhận thay đổi",
                     "cancel": "Hủy"
-                },
-                "updateError": "Không thể cập nhật trạng thái thanh toán. Vui lòng thử lại."
+                }
             }
         },
         "foods": {

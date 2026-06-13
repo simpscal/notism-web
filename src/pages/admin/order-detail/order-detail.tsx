@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, StickyNote } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
+import type { AdminOrderDetailViewModel } from '@/features/admin';
 import { OrderDeliveryStatusTimeline, OrderHeader, PaymentMethodEnum } from '@/features/order';
 import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
 import { PaymentCard } from '@/pages/admin/order-detail/components';
@@ -19,6 +20,7 @@ import { PaymentCard } from '@/pages/admin/order-detail/components';
 function AdminOrderDetail() {
     const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
+    const queryClient = useQueryClient();
 
     const {
         data: order,
@@ -31,6 +33,17 @@ function AdminOrderDetail() {
         },
         enabled: !!id,
     });
+
+    const { mutate: mutatePaymentStatus, isPending: isPaymentStatusPending } = useMutation({
+        mutationFn: (next: string) => adminApi.updateOrderPaymentStatus(order!.id, { paymentStatus: next }),
+        onSuccess: updatedOrder => {
+            queryClient.setQueryData<AdminOrderDetailViewModel>(['admin', 'orders', 'detail', id], oldData =>
+                oldData ? { ...oldData, paymentStatus: updatedOrder.paymentStatus } : oldData
+            );
+        },
+    });
+
+    const handleConfirmPaymentStatus = useCallback((next: string) => mutatePaymentStatus(next), [mutatePaymentStatus]);
 
     const orderDate = useMemo(() => {
         if (!order) return '';
@@ -177,10 +190,10 @@ function AdminOrderDetail() {
 
                     <div className='space-y-6'>
                         <PaymentCard
-                            orderId={order.id}
-                            slugId={id!}
                             paymentStatus={order.paymentStatus}
                             paymentMethod={order.paymentMethod}
+                            isPending={isPaymentStatusPending}
+                            onConfirm={handleConfirmPaymentStatus}
                         />
                     </div>
                 </div>
