@@ -49,6 +49,7 @@ export const API_ENDPOINTS = {
         ORDERS_KANBAN: 'admin/orders/kanban',
         ORDER_DETAIL: (slugId: string) => `admin/orders/${slugId}`,
         ORDER_DELIVERY_STATUS: (id: string) => `admin/orders/${id}/delivery-status`,
+        ORDER_PAYMENT_STATUS: (id: string) => `admin/orders/${id}/payment-status`,
         USERS: 'admin/users',
         USER_DETAIL: (id: string) => `admin/users/${id}`,
         USER_DELETE: (id: string) => `admin/users/${id}`,

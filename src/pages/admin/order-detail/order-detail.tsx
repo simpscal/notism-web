@@ -14,6 +14,7 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { OrderDeliveryStatusTimeline, OrderHeader, PaymentMethodEnum } from '@/features/order';
 import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
+import { PaymentCard } from '@/pages/admin/order-detail/components';
 
 function AdminOrderDetail() {
     const { t, i18n } = useTranslation();
@@ -172,6 +173,15 @@ function AdminOrderDetail() {
                                 </CardContent>
                             </Card>
                         )}
+                    </div>
+
+                    <div className='space-y-6'>
+                        <PaymentCard
+                            orderId={order.id}
+                            slugId={id!}
+                            paymentStatus={order.paymentStatus}
+                            paymentMethod={order.paymentMethod}
+                        />
                     </div>
                 </div>
             </div>

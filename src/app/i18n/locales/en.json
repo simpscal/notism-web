@@ -344,7 +344,8 @@
         "paymentStatuses": {
             "all": "All",
             "paid": "Paid",
-            "unpaid": "Pending Payment"
+            "unpaid": "Pending Payment",
+            "failed": "Failed"
         },
         "checkout": {
             "progress": {
@@ -542,7 +543,25 @@
             "updateSuccess": "Order status updated successfully",
             "statusUpdated": "Order status updated successfully",
             "failedToLoad": "Failed to load orders",
-            "view": "View"
+            "view": "View",
+            "paymentStatus": {
+                "label": "Update payment status",
+                "currentStatus": "Current status",
+                "method": "Method",
+                "saving": "Saving…",
+                "options": {
+                    "paid": "Paid",
+                    "unpaid": "Unpaid",
+                    "failed": "Failed"
+                },
+                "dialog": {
+                    "title": "Change payment status?",
+                    "description": "This order's payment status will change from {{from}} to {{to}}. You can change it again at any time.",
+                    "confirm": "Confirm change",
+                    "cancel": "Cancel"
+                },
+                "updateError": "Couldn't update the payment status. Please try again."
+            }
         },
         "foods": {
             "title": "Foods",

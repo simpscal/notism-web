@@ -48,6 +48,7 @@ import {
     UpdateCustomisationGroupRequestModel,
     UpdateCustomisationOptionRequestModel,
     UpdateOrderDeliveryStatusRequestModel,
+    UpdateOrderPaymentStatusRequestModel,
 } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
@@ -116,6 +117,14 @@ export const adminApi = {
     updateOrderDeliveryStatus: async (orderId: string, data: UpdateOrderDeliveryStatusRequestModel) => {
         const response = await apiClient.patch<AdminOrderResponseModel>(
             API_ENDPOINTS.ADMIN.ORDER_DELIVERY_STATUS(orderId),
+            data
+        );
+        return toAdminOrder(response);
+    },
+
+    updateOrderPaymentStatus: async (orderId: string, data: UpdateOrderPaymentStatusRequestModel) => {
+        const response = await apiClient.patch<AdminOrderResponseModel>(
+            API_ENDPOINTS.ADMIN.ORDER_PAYMENT_STATUS(orderId),
             data
         );
         return toAdminOrder(response);

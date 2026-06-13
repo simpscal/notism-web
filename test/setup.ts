@@ -15,6 +15,16 @@ class ResizeObserverMock {
 
 globalThis.ResizeObserver = globalThis.ResizeObserver ?? (ResizeObserverMock as unknown as typeof ResizeObserver);
 
+// jsdom lacks the Pointer Capture and scrollIntoView APIs that Radix UI
+// primitives (Select, etc.) call when opening. Polyfill them so dropdown
+// interactions can be driven in tests.
+if (typeof Element !== 'undefined') {
+    Element.prototype.hasPointerCapture = Element.prototype.hasPointerCapture ?? (() => false);
+    Element.prototype.setPointerCapture = Element.prototype.setPointerCapture ?? (() => undefined);
+    Element.prototype.releasePointerCapture = Element.prototype.releasePointerCapture ?? (() => undefined);
+    Element.prototype.scrollIntoView = Element.prototype.scrollIntoView ?? (() => undefined);
+}
+
 const CHART_WIDTH = 800;
 const CHART_HEIGHT = 320;
 
