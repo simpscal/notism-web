@@ -1,9 +1,5 @@
 # Store
 
-## State Ownership
-
-TanStack Query owns all server data. Redux owns auth, cart, and cross-route reference data only. Never put fetched data in Redux.
-
 ## Store Examples
 
 ### Store Configuration
