@@ -145,6 +145,7 @@ This document defines the naming conventions used throughout the React applicati
 - Examples: `user.api.test.ts`, `auth.guard.test.tsx`
 - Placement: always inside a `__tests__/` subdirectory co-located with the module under test
 - Example tree: `src/app/utils/__tests__/currency.utils.test.ts`
+- Test helper: `import { renderWithProviders } from '@/test/utils'` (wraps Redux, QueryClient, i18n, Router)
 
 ## Constants
 

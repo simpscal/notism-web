@@ -47,37 +47,6 @@ src/
   mocks/            # MSW handlers for API mocking
 ```
 
-## Architecture
-
-| Layer         | Responsibility                      |
-| ------------- | ----------------------------------- |
-| `layouts/`    | Top-level structural containers     |
-| `pages/`      | Page components, route rendering    |
-| `features/`   | Shared business logic between pages |
-| `components/` | Reusable UI components              |
-| `core/`       | Hooks, contexts, guards             |
-| `store/`      | Redux state                         |
-| `apis/`       | API calls                           |
-
-Dependency rule: higher layers import from lower layers only. Never reverse.
-
-State: Redux Toolkit (global) + TanStack Query (server state)
-Forms: React Hook Form + Zod validation
-Routing: React Router v7 via `app.routes.tsx`
-
-## State Management
-
-TanStack Query owns all server data. Redux owns auth, cart, and cross-route reference data only. Never put fetched data in Redux. Never call API functions directly in components.
-
-## Tailwind v4 Tokens
-
-No `tailwind.config.js`. All colors are CSS custom properties. Use semantic tokens only:
-`bg-background`, `bg-primary`, `text-primary-foreground`, `text-destructive`, `text-muted-foreground`, `bg-card`, `border-border`.
-
-Never use raw palette values (`bg-blue-500`, `text-red-600`, `bg-white`).
-
-Conditional class merging: `cn()` from `@/app/utils/tailwind.utils`.
-
 ## Import Aliases
 
 | Alias          | Path                 |
@@ -90,30 +59,20 @@ Conditional class merging: `cn()` from `@/app/utils/tailwind.utils`.
 | `@/test/utils` | `test/utils.tsx`     |
 | `@/`           | `src/` (fallback)    |
 
-## Tests
+## Conventions — load before editing
 
-Test helper: `import { renderWithProviders } from '@/test/utils'` (wraps Redux, QueryClient, i18n, Router).
-File placement: always in a `__tests__/` subdirectory co-located with the module under test. This applies to every layer — `app/utils/`, `features/`, `pages/`, `components/`, etc.
-
-```
-src/app/utils/__tests__/currency.utils.test.ts   ✅
-src/app/utils/currency.utils.test.ts             ❌ (flat co-location)
-```
-
-## Document Navigation
-
-| Topic                       | Location                               |
-| --------------------------- | -------------------------------------- |
-| Architecture                | `docs/rules/architecture.md`           |
-| Naming conventions          | `docs/rules/naming.md`                 |
-| Components                  | `docs/rules/components.md`             |
-| TanStack Query              | `docs/rules/tanstack-query.md`         |
-| Pages and Features          | `docs/rules/pages-and-features.md`     |
-| Store                       | `docs/rules/store.md`                  |
-| Core Layer                  | `docs/rules/core.md`                   |
-| Forms                       | `docs/rules/forms.md`                  |
-| Internationalisation (i18n) | `docs/rules/i18n.md`                   |
-| OAuth flow                  | `docs/integration-flows/oauth-flow.md` |
+| When you…                                                                                  | Read                                   |
+| ------------------------------------------------------------------------------------------ | -------------------------------------- |
+| Add/move a file between `src/` layers, or import across layer boundaries                   | `docs/rules/architecture.md`           |
+| Create any new file (component, hook, util, model, slice, test, context, guard, api)       | `docs/rules/naming.md`                 |
+| Create/edit any `.tsx` component; add Tailwind classes; handle JSX events                  | `docs/rules/components.md`             |
+| Add `useQuery`/`useMutation`/`useInfiniteQuery`; fetch data in `features/**` or `pages/**` | `docs/rules/tanstack-query.md`         |
+| Add/edit a file under `src/pages/**` or `src/features/**`                                  | `docs/rules/pages-and-features.md`     |
+| Create/edit a Redux slice under `src/store/**`; use `useAppSelector`/`useAppDispatch`      | `docs/rules/store.md`                  |
+| Create/edit a file under `src/core/hooks\|contexts\|guards/**`                             | `docs/rules/core.md`                   |
+| Build a form; use `useForm`/`zodResolver`/`Controller`/`<Field>`/Zod schema                | `docs/rules/forms.md`                  |
+| Add a user-visible string; edit `src/app/i18n/locales/*.json`; use `useTranslation`/`t()`  | `docs/rules/i18n.md`                   |
+| Implement or change the OAuth login flow                                                   | `docs/integration-flows/oauth-flow.md` |
 
 ## CI/CD
 
