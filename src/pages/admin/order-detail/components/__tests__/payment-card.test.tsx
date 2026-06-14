@@ -114,4 +114,14 @@ describe('PaymentCard', () => {
         expect(screen.getByRole('option', { name: 'Paid' })).toBeInTheDocument();
         expect(screen.getByRole('option', { name: 'Failed' })).toBeInTheDocument();
     });
+
+    it('renders Refunded as a selectable option', async () => {
+        const user = userEvent.setup();
+        renderCard({ paymentStatus: PaymentStatusEnum.Paid });
+
+        const trigger = screen.getByRole('combobox', { name: /update payment status/i });
+        await user.click(trigger);
+
+        expect(await screen.findByRole('option', { name: 'Refunded' })).toBeInTheDocument();
+    });
 });
