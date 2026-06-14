@@ -12,10 +12,18 @@ function PaymentStatusBadge({ paymentStatus }: PaymentStatusBadgeProps) {
     const { t } = useTranslation();
 
     if (paymentStatus === PaymentStatusEnum.Paid) {
-        return <Badge variant='success'>{t('order.paymentStatuses.paid')}</Badge>;
+        return <Badge variant='success'>{t('payment.statuses.paid')}</Badge>;
     }
 
-    return <Badge variant='secondary'>{t('order.paymentStatuses.unpaid')}</Badge>;
+    if (paymentStatus === PaymentStatusEnum.Failed) {
+        return <Badge variant='destructive'>{t('payment.statuses.failed')}</Badge>;
+    }
+
+    if (paymentStatus === PaymentStatusEnum.Refunded) {
+        return <Badge variant='warning'>{t('payment.statuses.refunded')}</Badge>;
+    }
+
+    return <Badge variant='secondary'>{t('payment.statuses.unpaid')}</Badge>;
 }
 
 export default memo(PaymentStatusBadge);

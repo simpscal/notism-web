@@ -20,4 +20,19 @@ describe('PaymentStatusBadge', () => {
         const badge = screen.getByText('Pending Payment');
         expect(badge).toBeInTheDocument();
     });
+
+    it('renders "Failed" badge when paymentStatus is Failed', () => {
+        renderWithProviders(<PaymentStatusBadge paymentStatus={PaymentStatusEnum.Failed} />);
+
+        const badge = screen.getByText('Failed');
+        expect(badge).toBeInTheDocument();
+    });
+
+    it('renders "Refunded" badge with warning variant when paymentStatus is Refunded', () => {
+        renderWithProviders(<PaymentStatusBadge paymentStatus={PaymentStatusEnum.Refunded} />);
+
+        const badge = screen.getByText('Refunded');
+        expect(badge).toBeInTheDocument();
+        expect(badge).toHaveClass('text-warning');
+    });
 });

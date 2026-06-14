@@ -69,13 +69,9 @@ function AdminOrders() {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value={PAYMENT_STATUS_ALL}>{t('order.paymentStatuses.all')}</SelectItem>
-                                <SelectItem value={PaymentStatusEnum.Paid}>
-                                    {t('order.paymentStatuses.paid')}
-                                </SelectItem>
-                                <SelectItem value={PaymentStatusEnum.Unpaid}>
-                                    {t('order.paymentStatuses.unpaid')}
-                                </SelectItem>
+                                <SelectItem value={PAYMENT_STATUS_ALL}>{t('common.all')}</SelectItem>
+                                <SelectItem value={PaymentStatusEnum.Paid}>{t('payment.statuses.paid')}</SelectItem>
+                                <SelectItem value={PaymentStatusEnum.Unpaid}>{t('payment.statuses.unpaid')}</SelectItem>
                             </SelectContent>
                         </Select>
                         <ToggleGroup type='single' value={viewMode} onValueChange={handleViewModeChange}>
