@@ -365,6 +365,26 @@
                 "trustedTitle": "Được khách hàng tin tưởng",
                 "trustedDesc": "Trải nghiệm mua sắm được đánh giá cao"
             }
+        },
+        "refund": {
+            "statuses": {
+                "pending": "Đang chờ",
+                "processing": "Đang xử lý",
+                "paid": "Đã hoàn tiền",
+                "failed": "Thất bại"
+            },
+            "actions": {
+                "approve": "Duyệt hoàn tiền",
+                "markFailed": "Đánh dấu thất bại",
+                "retry": "Thử lại hoàn tiền",
+                "reason": "Lý do"
+            },
+            "manualTransferInstruction": "Nhập mã hoàn tiền {{refundId}} vào nội dung chuyển khoản để hệ thống tự động đối soát.",
+            "paidBanner": {
+                "title": "Đã hoàn tiền",
+                "message": "— {{amount}} cho đơn hàng {{orderRef}} đã được chuyển vào ngân hàng của bạn vào {{sentDate}}.",
+                "viewOrder": "Xem đơn hàng"
+            }
         }
     },
     "orderDetail": {
