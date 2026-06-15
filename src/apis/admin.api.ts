@@ -11,6 +11,8 @@ import {
     toAdminFoods,
     toAdminOrdersForKanban,
     toAdminOrders,
+    toAdminRefundDetail,
+    toAdminRefunds,
     toAdminUsers,
     toDashboardOrderStatusSummary,
     toDashboardRevenueSeries,
@@ -19,6 +21,7 @@ import {
 import {
     AdminOrderDetailResponseModel,
     AdminOrderResponseModel,
+    AdminRefundDetailResponseModel,
     AdminUserDetailResponseModel,
     AdminCategoryResponseModel,
     CreateAdminFoodRequestModel,
@@ -35,8 +38,11 @@ import {
     GetAdminOrdersForKanbanResponseModel,
     GetAdminOrdersRequestModel,
     GetAdminOrdersResponseModel,
+    GetAdminRefundsRequestModel,
+    GetAdminRefundsResponseModel,
     GetAdminUsersRequestModel,
     GetAdminUsersResponseModel,
+    MarkRefundFailedRequestModel,
     GetDashboardOrderStatusSummaryResponseModel,
     GetDashboardRevenueSeriesRequestModel,
     GetDashboardRevenueSeriesResponseModel,
@@ -128,6 +134,41 @@ export const adminApi = {
             data
         );
         return toAdminOrder(response);
+    },
+
+    getRefunds: async (params?: GetAdminRefundsRequestModel) => {
+        const searchParams = new URLSearchParams();
+        if (params?.status) searchParams.append('status', params.status);
+        if (params?.skip !== undefined) searchParams.append('skip', params.skip.toString());
+        if (params?.take !== undefined) searchParams.append('take', params.take.toString());
+        const queryString = searchParams.toString();
+        const response = await apiClient.get<GetAdminRefundsResponseModel>(
+            `${API_ENDPOINTS.ADMIN.REFUNDS}${queryString ? `?${queryString}` : ''}`
+        );
+        return toAdminRefunds(response);
+    },
+
+    getRefundById: async (id: string) => {
+        const response = await apiClient.get<AdminRefundDetailResponseModel>(API_ENDPOINTS.ADMIN.REFUND_DETAIL(id));
+        return toAdminRefundDetail(response);
+    },
+
+    approveRefund: async (id: string) => {
+        const response = await apiClient.post<AdminRefundDetailResponseModel>(API_ENDPOINTS.ADMIN.REFUND_APPROVE(id));
+        return toAdminRefundDetail(response);
+    },
+
+    markRefundFailed: async (id: string, data: MarkRefundFailedRequestModel) => {
+        const response = await apiClient.post<AdminRefundDetailResponseModel>(
+            API_ENDPOINTS.ADMIN.REFUND_MARK_FAILED(id),
+            data
+        );
+        return toAdminRefundDetail(response);
+    },
+
+    retryRefund: async (id: string) => {
+        const response = await apiClient.post<AdminRefundDetailResponseModel>(API_ENDPOINTS.ADMIN.REFUND_RETRY(id));
+        return toAdminRefundDetail(response);
     },
 
     getUsers: async (params?: GetAdminUsersRequestModel) => {

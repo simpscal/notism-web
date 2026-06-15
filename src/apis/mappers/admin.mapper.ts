@@ -3,6 +3,8 @@ import type {
     AdminFoodItemResponseModel,
     AdminOrderDetailResponseModel,
     AdminOrderResponseModel,
+    AdminRefundDetailResponseModel,
+    AdminRefundListItemResponseModel,
     AdminUserDetailResponseModel,
     AdminUserResponseModel,
     CustomisationGroupResponseModel,
@@ -13,6 +15,7 @@ import type {
     GetAdminFoodsResponseModel,
     GetAdminOrdersForKanbanResponseModel,
     GetAdminOrdersResponseModel,
+    GetAdminRefundsResponseModel,
     GetAdminUsersResponseModel,
     GetDashboardOrderStatusSummaryResponseModel,
     GetDashboardRevenueSeriesResponseModel,
@@ -42,6 +45,7 @@ import type {
     DashboardRevenueSeriesViewModel,
     DashboardTodaySalesViewModel,
 } from '@/features/admin/models';
+import type { RefundDetailViewModel, RefundListItemViewModel, RefundsViewModel } from '@/features/order/models';
 
 export function toAdminOrder(response: AdminOrderResponseModel): AdminOrderViewModel {
     return {
@@ -71,6 +75,40 @@ export function toAdminOrdersForKanban(response: GetAdminOrdersForKanbanResponse
     return {
         items: response.items.map(toAdminOrder),
         totalCount: response.totalCount,
+    };
+}
+
+export function toAdminRefundListItem(response: AdminRefundListItemResponseModel): RefundListItemViewModel {
+    return {
+        id: response.id,
+        slugId: response.slugId,
+        orderId: response.orderId,
+        orderSlugId: response.orderSlugId,
+        amount: response.amount,
+        status: response.status,
+        createdAt: response.createdAt,
+    };
+}
+
+export function toAdminRefunds(response: GetAdminRefundsResponseModel): RefundsViewModel {
+    return {
+        items: response.items.map(toAdminRefundListItem),
+        totalCount: response.totalCount,
+    };
+}
+
+export function toAdminRefundDetail(response: AdminRefundDetailResponseModel): RefundDetailViewModel {
+    return {
+        id: response.id,
+        slugId: response.slugId,
+        orderId: response.orderId,
+        orderSlugId: response.orderSlugId,
+        amount: response.amount,
+        status: response.status,
+        createdAt: response.createdAt,
+        paidAt: response.paidAt,
+        transferReference: response.transferReference,
+        failureReason: response.failureReason,
     };
 }
 

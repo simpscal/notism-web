@@ -40,6 +40,17 @@ export interface OrderPaymentQrResponseModel {
     orderReference: string;
 }
 
+export interface RefundSummaryResponseModel {
+    id: string;
+    slugId: string;
+    orderId: string;
+    orderSlugId: string;
+    amount: number;
+    status: string;
+    createdAt: string;
+    paidAt: string | null;
+}
+
 export interface OrderResponseModel {
     id: string;
     slugId: string;
@@ -54,6 +65,7 @@ export interface OrderResponseModel {
     deliveryNotes: string | null;
     items: OrderItemResponseModel[];
     deliveryStatusTiming: DeliveryStatusTimingResponseModel;
+    refund: RefundSummaryResponseModel | null;
 }
 
 export interface GetOrdersRequestModel {

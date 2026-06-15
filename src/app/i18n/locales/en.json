@@ -365,6 +365,26 @@
                 "trustedTitle": "Trusted by customers",
                 "trustedDesc": "Top-rated shopping experience"
             }
+        },
+        "refund": {
+            "statuses": {
+                "pending": "Pending",
+                "processing": "Processing",
+                "paid": "Paid",
+                "failed": "Failed"
+            },
+            "actions": {
+                "approve": "Approve refund",
+                "markFailed": "Mark as failed",
+                "retry": "Retry refund",
+                "reason": "Reason"
+            },
+            "manualTransferInstruction": "Put the refund ID {{refundId}} in the bank transfer content so the payment is matched automatically.",
+            "paidBanner": {
+                "title": "Refund sent",
+                "message": "— {{amount}} for order {{orderRef}} was transferred to your bank on {{sentDate}}.",
+                "viewOrder": "View order"
+            }
         }
     },
     "orderDetail": {

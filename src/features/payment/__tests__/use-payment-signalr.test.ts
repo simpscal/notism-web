@@ -140,4 +140,54 @@ describe('usePaymentSignalR', () => {
 
         expect(mockOn).not.toHaveBeenCalled();
     });
+
+    it('registers the onRefundPaid callback via connection.on when provided', async () => {
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), onRefundPaid: vi.fn() }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        expect(mockOn).toHaveBeenCalledWith('ReceiveRefundPaidNotification', expect.any(Function));
+    });
+
+    it('calls onRefundPaid with the refund-paid payload when ReceiveRefundPaidNotification fires', async () => {
+        const onRefundPaid = vi.fn();
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), onRefundPaid }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        const registeredHandler = mockOn.mock.calls.find(
+            (args: unknown[]) => args[0] === 'ReceiveRefundPaidNotification'
+        )?.[1] as ((payload: unknown) => void) | undefined;
+
+        expect(registeredHandler).toBeDefined();
+
+        const refundPaidPayload = {
+            refundId: 'refund-id',
+            orderId: 'order-id',
+            orderRef: 'A1B2C3',
+            amount: 485_000,
+            sentDate: '2026-06-13T14:27:00.000Z',
+        };
+
+        act(() => {
+            registeredHandler!(refundPaidPayload);
+        });
+
+        expect(onRefundPaid).toHaveBeenCalledWith(refundPaidPayload);
+    });
+
+    it('does not register ReceiveRefundPaidNotification handler when onRefundPaid is omitted', async () => {
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        const refundCall = mockOn.mock.calls.find((args: unknown[]) => args[0] === 'ReceiveRefundPaidNotification');
+        expect(refundCall).toBeUndefined();
+    });
 });

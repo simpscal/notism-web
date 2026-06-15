@@ -1,4 +1,5 @@
 import { OrderDeliveryStatusTimingViewModel } from './order-delivery-status-timing.model';
+import { RefundSummaryViewModel } from './refund.model';
 
 export interface OrderItemViewModel {
     id: string;
@@ -35,6 +36,7 @@ export interface OrderViewModel {
     deliveryNotes: string | null;
     items: OrderItemViewModel[];
     deliveryStatusTiming: OrderDeliveryStatusTimingViewModel;
+    refund: RefundSummaryViewModel | null;
 }
 
 export interface OrdersViewModel {

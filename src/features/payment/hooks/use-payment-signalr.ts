@@ -1,19 +1,28 @@
 import { useEffect } from 'react';
 
-import { createPaymentHubConnection, type PaymentNotificationPayload } from '../payment-signalr';
+import {
+    createPaymentHubConnection,
+    type PaidRefundNotification,
+    type PaymentNotificationPayload,
+} from '../payment-signalr';
 
 export interface UsePaymentSignalROptions {
     onNotification: (payload: PaymentNotificationPayload) => void;
+    onRefundPaid?: (payload: PaidRefundNotification) => void;
     enabled?: boolean;
 }
 
-export function usePaymentSignalR({ onNotification, enabled = true }: UsePaymentSignalROptions): void {
+export function usePaymentSignalR({ onNotification, onRefundPaid, enabled = true }: UsePaymentSignalROptions): void {
     useEffect(() => {
         if (!enabled) return;
 
         const connection = createPaymentHubConnection();
 
         connection.on('ReceivePaymentNotification', onNotification);
+
+        if (onRefundPaid) {
+            connection.on('ReceiveRefundPaidNotification', onRefundPaid);
+        }
 
         connection
             .start()
@@ -27,5 +36,5 @@ export function usePaymentSignalR({ onNotification, enabled = true }: UsePayment
         return () => {
             connection.stop().catch(() => {});
         };
-    }, [onNotification, enabled]);
+    }, [onNotification, onRefundPaid, enabled]);
 }
