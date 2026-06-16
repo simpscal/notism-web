@@ -67,10 +67,23 @@ function OrderDetail() {
         },
     });
 
+    const { mutate: requestRefund, isPending: isRequestingRefund } = useMutation({
+        mutationFn: (orderId: string) => orderApi.requestRefund(orderId),
+        onSuccess: () => {
+            toast.success(t('orderDetail.refundRequestedSuccess'));
+            queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });
+        },
+    });
+
     const handleConfirmCancel = useCallback(() => {
         if (!order) return;
         cancelOrder(order.id);
     }, [order, cancelOrder]);
+
+    const handleConfirmRefund = useCallback(() => {
+        if (!order) return;
+        requestRefund(order.id);
+    }, [order, requestRefund]);
 
     const orderDate = useMemo(() => {
         if (!order) return '';
@@ -158,8 +171,14 @@ function OrderDetail() {
                                 slugId={order.slugId}
                                 orderDate={orderDate}
                                 deliveryStatus={order.deliveryStatus}
+                                totalAmount={order.totalAmount}
+                                paymentMethod={order.paymentMethod}
+                                deliveredCompletedAt={order.deliveryStatusTiming.deliveredCompletedAt}
+                                refund={order.refund}
                                 onConfirmCancel={handleConfirmCancel}
                                 isCancelling={isCancelling}
+                                onConfirmRefund={handleConfirmRefund}
+                                isRequestingRefund={isRequestingRefund}
                             />
                         </div>
                     </div>
