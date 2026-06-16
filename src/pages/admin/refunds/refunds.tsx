@@ -28,8 +28,8 @@ function AdminRefunds() {
     }, []);
 
     const handleRefundClick = useCallback(
-        (slugId: string) => {
-            navigate(`/${ROUTES.ADMIN.REFUND_DETAIL(slugId)}`);
+        (id: string) => {
+            navigate(`/${ROUTES.ADMIN.REFUND_DETAIL(id)}`);
         },
         [navigate]
     );

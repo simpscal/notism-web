@@ -12,7 +12,6 @@ export interface RefundSummaryViewModel {
 
 export interface RefundListItemViewModel {
     id: string;
-    slugId: string;
     orderId: string;
     orderSlugId: string;
     amount: number;
@@ -29,7 +28,6 @@ export interface RefundsViewModel {
 
 export interface RefundDetailViewModel {
     id: string;
-    slugId: string;
     orderId: string;
     orderSlugId: string;
     amount: number;

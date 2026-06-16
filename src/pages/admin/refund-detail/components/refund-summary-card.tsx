@@ -7,7 +7,7 @@ import { Separator } from '@/components/separator';
 import { RefundStatusBadge, RefundStatusEnum } from '@/features/order';
 
 interface RefundSummaryCardProps {
-    slugId: string;
+    id: string;
     orderSlugId: string;
     amount: number;
     status: string;
@@ -28,7 +28,7 @@ function SummaryRow({ label, children }: SummaryRowProps) {
     );
 }
 
-function RefundSummaryCard({ slugId, orderSlugId, amount, status, createdDate }: RefundSummaryCardProps) {
+function RefundSummaryCard({ id, orderSlugId, amount, status, createdDate }: RefundSummaryCardProps) {
     const { t } = useTranslation();
 
     return (
@@ -43,10 +43,14 @@ function RefundSummaryCard({ slugId, orderSlugId, amount, status, createdDate }:
                 </div>
                 <Separator />
                 <SummaryRow label={t('admin.refundDetail.refundId')}>
-                    <code className='font-mono text-xs'>{slugId}</code>
+                    <code className='font-mono text-xs'>{id}</code>
                 </SummaryRow>
                 <SummaryRow label={t('admin.refundDetail.order')}>
-                    <span className='font-mono text-primary'>#{orderSlugId}</span>
+                    {orderSlugId ? (
+                        <span className='font-mono text-primary'>#{orderSlugId}</span>
+                    ) : (
+                        <span className='text-muted-foreground'>—</span>
+                    )}
                 </SummaryRow>
                 <SummaryRow label={t('admin.refundDetail.amount')}>{formatVnd(amount)}</SummaryRow>
                 <SummaryRow label={t('admin.refundDetail.created')}>{createdDate}</SummaryRow>

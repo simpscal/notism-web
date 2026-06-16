@@ -132,7 +132,7 @@ function AdminRefundDetail() {
             <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
                 <div className='space-y-6'>
                     <RefundSummaryCard
-                        slugId={refund.slugId}
+                        id={refund.id}
                         orderSlugId={refund.orderSlugId}
                         amount={refund.amount}
                         status={refund.status}
@@ -162,7 +162,7 @@ function AdminRefundDetail() {
                         <DialogDescription>
                             {t('admin.refundDetail.confirmDescription', {
                                 amount: formatVnd(refund.amount),
-                                orderRef: refund.orderSlugId,
+                                orderRef: refund.orderSlugId || '—',
                             })}
                         </DialogDescription>
                     </DialogHeader>

@@ -33,7 +33,6 @@ afterAll(() => server.close());
 function makeRefund(overrides: Partial<AdminRefundDetailResponseModel> = {}): AdminRefundDetailResponseModel {
     return {
         id: REFUND_ID,
-        slugId: 'RF-7C21',
         orderId: 'ord-1',
         orderSlugId: 'A1B2C3',
         amount: 485_000,
@@ -72,10 +71,20 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        expect(await screen.findByText('RF-7C21')).toBeInTheDocument();
+        expect(await screen.findByText(REFUND_ID)).toBeInTheDocument();
         expect(screen.getByText('#A1B2C3')).toBeInTheDocument();
         expect(screen.getByText('485,000 ₫')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Approve refund' })).toBeInTheDocument();
+    });
+
+    it('renders a placeholder for the order reference when the order slug is absent', async () => {
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ orderSlugId: '' }))));
+
+        renderPage();
+
+        expect(await screen.findByText(REFUND_ID)).toBeInTheDocument();
+        expect(screen.queryByText(/#A1B2C3/)).not.toBeInTheDocument();
+        expect(screen.getByText('—')).toBeInTheDocument();
     });
 
     it('approves through the confirm dialog and moves the refund to processing', async () => {
