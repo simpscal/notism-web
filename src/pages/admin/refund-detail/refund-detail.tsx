@@ -1,0 +1,185 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft } from 'lucide-react';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useParams } from 'react-router-dom';
+
+import { RefundActionPanel, RefundFailureCard, RefundSummaryCard, TransferRecordCard } from './components';
+
+import { adminApi } from '@/apis';
+import { ROUTES } from '@/app/constants';
+import { formatVnd } from '@/app/utils';
+import { Button } from '@/components/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
+import ErrorState from '@/components/error-state';
+import Spinner from '@/components/spinner';
+import { REFUND_QUERY_KEYS, RefundStatusEnum, type RefundDetailViewModel } from '@/features/order';
+
+function AdminRefundDetail() {
+    const { t, i18n } = useTranslation();
+    const { id } = useParams<{ id: string }>();
+    const queryClient = useQueryClient();
+    const [confirmOpen, setConfirmOpen] = useState(false);
+
+    const {
+        data: refund,
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey: REFUND_QUERY_KEYS.adminDetail(id!),
+        queryFn: () => adminApi.getRefundById(id!),
+        enabled: !!id,
+    });
+
+    const approveMutation = useMutation({
+        mutationFn: () => adminApi.approveRefund(id!),
+        onSuccess: approved => {
+            queryClient.setQueryData<RefundDetailViewModel>(REFUND_QUERY_KEYS.adminDetail(id!), approved);
+            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminDetail(id!) });
+            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminList() });
+            setConfirmOpen(false);
+        },
+    });
+
+    const createdDate = useMemo(() => {
+        if (!refund) return '';
+        return new Date(refund.createdAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }, [refund, i18n.language]);
+
+    const paidDate = useMemo(() => {
+        if (!refund?.paidAt) return '';
+        return new Date(refund.paidAt).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }, [refund, i18n.language]);
+
+    const handleApproveClick = useCallback(() => {
+        setConfirmOpen(true);
+    }, []);
+
+    const handleCancelApprove = useCallback(() => {
+        setConfirmOpen(false);
+    }, []);
+
+    const { mutate: approveRefund } = approveMutation;
+
+    const handleConfirmApprove = useCallback(() => {
+        approveRefund();
+    }, [approveRefund]);
+
+    const handleConfirmOpenChange = useCallback((open: boolean) => {
+        if (!open) setConfirmOpen(false);
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div
+                className='flex h-full w-full items-center justify-center'
+                role='status'
+                aria-label={t('common.loading')}
+            >
+                <Spinner size='lg' />
+            </div>
+        );
+    }
+
+    if (isError || !refund) {
+        return (
+            <div className='container mx-auto px-4 py-8'>
+                <Button variant='ghost' className='mb-8' asChild>
+                    <Link to={`/${ROUTES.ADMIN.REFUNDS}`}>
+                        <ArrowLeft className='h-4 w-4' />
+                        {t('admin.refundDetail.backToRefunds')}
+                    </Link>
+                </Button>
+                <ErrorState
+                    title={t('admin.refundDetail.failedToLoad')}
+                    description={t('admin.refundDetail.failedToLoadDescription')}
+                    action={
+                        <Button asChild>
+                            <Link to={`/${ROUTES.ADMIN.REFUNDS}`}>{t('admin.refundDetail.backToRefunds')}</Link>
+                        </Button>
+                    }
+                />
+            </div>
+        );
+    }
+
+    return (
+        <div className='container mx-auto px-4 py-8'>
+            <Button variant='ghost' className='mb-6' asChild>
+                <Link to={`/${ROUTES.ADMIN.REFUNDS}`}>
+                    <ArrowLeft className='h-4 w-4' />
+                    {t('admin.refundDetail.backToRefunds')}
+                </Link>
+            </Button>
+
+            <div className='mb-6'>
+                <h1 className='text-2xl font-bold text-foreground'>{t('admin.refundDetail.title')}</h1>
+                <p className='mt-0.5 text-sm text-muted-foreground'>{t('admin.refundDetail.subtitle')}</p>
+            </div>
+
+            <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
+                <div className='space-y-6'>
+                    <RefundSummaryCard
+                        slugId={refund.slugId}
+                        orderSlugId={refund.orderSlugId}
+                        amount={refund.amount}
+                        status={refund.status}
+                        createdDate={createdDate}
+                    />
+                    {refund.status === RefundStatusEnum.Paid && refund.transferReference && (
+                        <TransferRecordCard paidDate={paidDate} transferReference={refund.transferReference} />
+                    )}
+                    {refund.status === RefundStatusEnum.Failed && refund.failureReason && (
+                        <RefundFailureCard reason={refund.failureReason} />
+                    )}
+                </div>
+
+                <div className='space-y-6'>
+                    <RefundActionPanel
+                        status={refund.status}
+                        isBusy={approveMutation.isPending}
+                        onApprove={handleApproveClick}
+                    />
+                </div>
+            </div>
+
+            <Dialog open={confirmOpen} onOpenChange={handleConfirmOpenChange}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t('admin.refundDetail.confirmTitle')}</DialogTitle>
+                        <DialogDescription>
+                            {t('admin.refundDetail.confirmDescription', {
+                                amount: formatVnd(refund.amount),
+                                orderRef: refund.orderSlugId,
+                            })}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant='outline' onClick={handleCancelApprove} disabled={approveMutation.isPending}>
+                            {t('common.cancel')}
+                        </Button>
+                        <Button onClick={handleConfirmApprove} disabled={approveMutation.isPending}>
+                            {approveMutation.isPending
+                                ? t('admin.refundDetail.approving')
+                                : t('admin.refundDetail.confirmAction')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+}
+
+export default memo(AdminRefundDetail);
