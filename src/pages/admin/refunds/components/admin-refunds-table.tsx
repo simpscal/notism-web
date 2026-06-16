@@ -17,7 +17,7 @@ const EMPTY_STATE_COL_SPAN = 7;
 const SKELETON_ROWS = [1, 2, 3, 4, 5];
 
 interface AdminRefundsTableProps {
-    onRefundClick: (slugId: string) => void;
+    onRefundClick: (id: string) => void;
     status?: string;
 }
 
@@ -60,8 +60,8 @@ function AdminRefundsTable({ onRefundClick, status }: AdminRefundsTableProps) {
     const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
     const handleViewClick = useCallback(
-        (slugId: string) => () => {
-            onRefundClick(slugId);
+        (id: string) => () => {
+            onRefundClick(id);
         },
         [onRefundClick]
     );
@@ -127,12 +127,16 @@ function AdminRefundsTable({ onRefundClick, status }: AdminRefundsTableProps) {
                             refunds.map(refund => (
                                 <TableRow key={refund.id}>
                                     <TableCell className='font-medium'>
-                                        <Link
-                                            to={`/${ROUTES.ADMIN.ORDER_DETAIL(refund.orderSlugId)}`}
-                                            className='font-mono text-primary underline-offset-4 hover:underline'
-                                        >
-                                            #{refund.orderSlugId}
-                                        </Link>
+                                        {refund.orderSlugId ? (
+                                            <Link
+                                                to={`/${ROUTES.ADMIN.ORDER_DETAIL(refund.orderSlugId)}`}
+                                                className='font-mono text-primary underline-offset-4 hover:underline'
+                                            >
+                                                #{refund.orderSlugId}
+                                            </Link>
+                                        ) : (
+                                            <span className='text-muted-foreground'>—</span>
+                                        )}
                                     </TableCell>
                                     <TableCell className='font-semibold'>{formatVnd(refund.amount)}</TableCell>
                                     <TableCell>
@@ -161,7 +165,7 @@ function AdminRefundsTable({ onRefundClick, status }: AdminRefundsTableProps) {
                                             size='icon-sm'
                                             className='h-8 w-8'
                                             aria-label={t('admin.refunds.viewRefund')}
-                                            onClick={handleViewClick(refund.slugId)}
+                                            onClick={handleViewClick(refund.id)}
                                         >
                                             <Eye className='h-4 w-4' />
                                         </Button>

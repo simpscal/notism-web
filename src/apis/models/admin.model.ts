@@ -108,7 +108,6 @@ export interface GetAdminOrdersForKanbanResponseModel {
 
 export interface AdminRefundListItemResponseModel {
     id: string;
-    slugId: string;
     orderId: string;
     orderSlugId: string;
     amount: number;
@@ -131,7 +130,6 @@ export interface GetAdminRefundsResponseModel {
 
 export interface AdminRefundDetailResponseModel {
     id: string;
-    slugId: string;
     orderId: string;
     orderSlugId: string;
     amount: number;

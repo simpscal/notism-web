@@ -81,7 +81,6 @@ export function toAdminOrdersForKanban(response: GetAdminOrdersForKanbanResponse
 export function toAdminRefundListItem(response: AdminRefundListItemResponseModel): RefundListItemViewModel {
     return {
         id: response.id,
-        slugId: response.slugId,
         orderId: response.orderId,
         orderSlugId: response.orderSlugId,
         amount: response.amount,
@@ -102,7 +101,6 @@ export function toAdminRefunds(response: GetAdminRefundsResponseModel): RefundsV
 export function toAdminRefundDetail(response: AdminRefundDetailResponseModel): RefundDetailViewModel {
     return {
         id: response.id,
-        slugId: response.slugId,
         orderId: response.orderId,
         orderSlugId: response.orderSlugId,
         amount: response.amount,

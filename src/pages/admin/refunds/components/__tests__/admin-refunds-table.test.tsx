@@ -15,7 +15,6 @@ const REFUNDS_URL = 'http://localhost:5000/api/admin/refunds';
 
 const makeRefund = (n: number, status: string, overrides: Record<string, unknown> = {}) => ({
     id: `refund-${n}`,
-    slugId: `RF-${String(n).padStart(4, '0')}`,
     orderId: `order-${n}`,
     orderSlugId: `ORD${String(n).padStart(4, '0')}`,
     amount: 100000 + n,
@@ -111,7 +110,7 @@ describe('AdminRefundsTable', () => {
         await waitFor(() => expect(screen.queryByText(t('admin.refunds.failedToLoad'))).not.toBeInTheDocument());
     });
 
-    it('emits onRefundClick with the refund slug when the view action is pressed', async () => {
+    it('emits onRefundClick with the refund id when the view action is pressed', async () => {
         const onRefundClick = vi.fn();
         server.use(
             http.get(REFUNDS_URL, () => HttpResponse.json({ totalCount: 1, items: [makeRefund(1, 'pending')] }))
@@ -122,6 +121,22 @@ describe('AdminRefundsTable', () => {
         const row = (await screen.findByText('#ORD0001')).closest('tr') as HTMLElement;
         await userEvent.click(within(row).getByRole('button', { name: t('admin.refunds.viewRefund') }));
 
-        expect(onRefundClick).toHaveBeenCalledWith('RF-0001');
+        expect(onRefundClick).toHaveBeenCalledWith('refund-1');
+    });
+
+    it('renders a placeholder in the Order column when the order slug is absent', async () => {
+        server.use(
+            http.get(REFUNDS_URL, () =>
+                HttpResponse.json({ totalCount: 1, items: [makeRefund(1, 'pending', { orderSlugId: '' })] })
+            )
+        );
+
+        renderWithProviders(<AdminRefundsTable onRefundClick={vi.fn()} />);
+
+        const viewButton = await screen.findByRole('button', { name: t('admin.refunds.viewRefund') });
+        const row = viewButton.closest('tr') as HTMLElement;
+        expect(within(row).queryByText(/#ORD/)).not.toBeInTheDocument();
+        const orderCell = row.querySelector('td') as HTMLElement;
+        expect(within(orderCell).getByText('—')).toBeInTheDocument();
     });
 });
