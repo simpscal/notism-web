@@ -49,6 +49,7 @@ export interface RefundSummaryResponseModel {
     status: string;
     createdAt: string;
     paidAt: string | null;
+    transferReference: string | null;
 }
 
 export interface OrderResponseModel {

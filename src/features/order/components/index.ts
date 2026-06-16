@@ -4,3 +4,6 @@ export { default as OrderCheckoutProgress } from './order-checkout-progress';
 export { default as OrderCheckoutTrustBar } from './order-checkout-trust-bar';
 export { default as RefundStatusBadge } from './refund-status-badge';
 export { default as RefundStatusPanel } from './refund-status-panel';
+export { default as RefundPaidBanner } from './refund-paid-banner';
+export type { RefundPaidBannerData } from './refund-paid-banner';
+export { default as RefundPaidBannerStack } from './refund-paid-banner-stack';

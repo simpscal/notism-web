@@ -22,12 +22,14 @@ const PENDING_REFUND: RefundSummaryViewModel = {
     status: 'pending',
     createdAt: '2026-06-13T10:00:00Z',
     paidAt: null,
+    transferReference: null,
 };
 
 const PAID_REFUND: RefundSummaryViewModel = {
     ...PENDING_REFUND,
     status: 'paid',
     paidAt: '2026-06-14T10:00:00Z',
+    transferReference: 'VCB-TRF-20260613-0099431',
 };
 
 const baseProps: OrderActionCardProps = {
@@ -93,5 +95,12 @@ describe('OrderActionCard — refund region', () => {
         renderCard({ refund: PAID_REFUND, onConfirmRefund: vi.fn() });
 
         expect(screen.getByText(t('order.refund.statuses.paid'))).toBeInTheDocument();
+    });
+
+    it('shows the transfer reference on the paid panel', () => {
+        renderCard({ refund: PAID_REFUND, onConfirmRefund: vi.fn() });
+
+        expect(screen.getByText(PAID_REFUND.transferReference!)).toBeInTheDocument();
+        expect(screen.getByText(t('orderDetail.refund.transferReference'))).toBeInTheDocument();
     });
 });

@@ -28,6 +28,7 @@ export function toRefundSummary(response: RefundSummaryResponseModel): RefundSum
         status: response.status,
         createdAt: response.createdAt,
         paidAt: response.paidAt,
+        transferReference: response.transferReference,
     };
 }
 
