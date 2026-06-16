@@ -42,7 +42,7 @@ function RefundActionPanel({ status, isBusy, onApprove }: RefundActionPanelProps
         return (
             <Card>
                 <CardContent className='flex items-center gap-3 py-6' role='status' aria-live='polite'>
-                    <Spinner size='md' />
+                    <Spinner size='md' className='flex-shrink-0' />
                     <div>
                         <div className='font-medium'>{t('admin.refundDetail.processingTitle')}</div>
                         <p className='text-sm text-muted-foreground'>{t('admin.refundDetail.processingDescription')}</p>
