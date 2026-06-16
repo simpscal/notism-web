@@ -10,6 +10,7 @@
         "search": "Tìm kiếm",
         "noResults": "Không tìm thấy kết quả",
         "all": "Tất cả",
+        "retry": "Thử lại",
         "error": "Lỗi",
         "success": "Thành công",
         "close": "Đóng",
@@ -177,6 +178,7 @@
         "dashboard": "Bảng điều khiển",
         "foods": "Thực phẩm",
         "orders": "Đơn hàng",
+        "refunds": "Hoàn tiền",
         "cart": "Giỏ hàng",
         "theme": "Giao diện",
         "appearance": "Giao diện",
@@ -591,6 +593,20 @@
                     "cancel": "Hủy"
                 }
             }
+        },
+        "refunds": {
+            "title": "Hoàn tiền",
+            "subtitle": "Đối soát mọi khoản hoàn tiền — duyệt, thử lại và xem mã chuyển khoản.",
+            "order": "Đơn hàng",
+            "amount": "Số tiền",
+            "status": "Trạng thái",
+            "transferReference": "Mã chuyển khoản",
+            "created": "Ngày tạo",
+            "paid": "Ngày trả",
+            "actions": "Hành động",
+            "viewRefund": "Xem hoàn tiền",
+            "empty": "Không có khoản hoàn tiền nào với trạng thái này.",
+            "failedToLoad": "Không thể tải danh sách hoàn tiền"
         },
         "foods": {
             "title": "Thực phẩm",

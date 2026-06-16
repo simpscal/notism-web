@@ -16,7 +16,9 @@ export interface RefundListItemViewModel {
     orderSlugId: string;
     amount: number;
     status: string;
+    transferReference: string | null;
     createdAt: string;
+    paidAt: string | null;
 }
 
 export interface RefundsViewModel {
