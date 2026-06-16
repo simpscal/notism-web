@@ -14,6 +14,7 @@ const API_BASE = 'http://localhost:5000/api';
 const REFUND_ID = 'rf-123';
 const DETAIL_URL = `${API_BASE}/admin/refunds/${REFUND_ID}`;
 const APPROVE_URL = `${API_BASE}/admin/refunds/${REFUND_ID}/approve`;
+const RETRY_URL = `${API_BASE}/admin/refunds/${REFUND_ID}/retry`;
 
 // Mock useParams to provide the id route param the page reads.
 vi.mock('react-router-dom', async importOriginal => {
@@ -172,5 +173,105 @@ describe('AdminRefundDetail page', () => {
 
         expect(await screen.findByText('Transfer Failed')).toBeInTheDocument();
         expect(screen.getByText(reason)).toBeInTheDocument();
+    });
+
+    it('renders the retry action for a failed refund', async () => {
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(makeRefund({ status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }))
+            )
+        );
+
+        renderPage();
+
+        expect(await screen.findByRole('button', { name: 'Retry refund' })).toBeInTheDocument();
+    });
+
+    it('does not render the retry action for a paid refund', async () => {
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Paid }))));
+
+        renderPage();
+
+        await screen.findByText(REFUND_ID);
+        expect(screen.queryByRole('button', { name: 'Retry refund' })).not.toBeInTheDocument();
+    });
+
+    it('does not render the retry action for a pending refund', async () => {
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Pending }))));
+
+        renderPage();
+
+        await screen.findByRole('button', { name: 'Approve refund' });
+        expect(screen.queryByRole('button', { name: 'Retry refund' })).not.toBeInTheDocument();
+    });
+
+    it('does not render the retry action for a processing refund', async () => {
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }))));
+
+        renderPage();
+
+        await screen.findByText('Transfer in progress');
+        expect(screen.queryByRole('button', { name: 'Retry refund' })).not.toBeInTheDocument();
+    });
+
+    it('retries through the confirm dialog and moves the refund to processing', async () => {
+        const user = userEvent.setup();
+        const retrySpy = vi.fn();
+        let retried = false;
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(
+                    makeRefund(
+                        retried
+                            ? { status: RefundStatusEnum.Processing }
+                            : { status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }
+                    )
+                )
+            )
+        );
+        server.use(
+            http.post(RETRY_URL, () => {
+                retrySpy();
+                retried = true;
+                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }), { status: 202 });
+            })
+        );
+
+        renderPage();
+
+        await user.click(await screen.findByRole('button', { name: 'Retry refund' }));
+
+        const dialog = await screen.findByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: 'Retry' }));
+
+        await waitFor(() => expect(retrySpy).toHaveBeenCalledTimes(1));
+        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Retry refund' })).not.toBeInTheDocument();
+    });
+
+    it('does not retry when the confirm dialog is cancelled', async () => {
+        const user = userEvent.setup();
+        const retrySpy = vi.fn();
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(makeRefund({ status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }))
+            )
+        );
+        server.use(
+            http.post(RETRY_URL, () => {
+                retrySpy();
+                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }), { status: 202 });
+            })
+        );
+
+        renderPage();
+
+        await user.click(await screen.findByRole('button', { name: 'Retry refund' }));
+        const dialog = await screen.findByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+
+        await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+        expect(retrySpy).not.toHaveBeenCalled();
+        expect(screen.getByRole('button', { name: 'Retry refund' })).toBeInTheDocument();
     });
 });

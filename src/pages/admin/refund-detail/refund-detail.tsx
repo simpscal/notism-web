@@ -20,6 +20,7 @@ function AdminRefundDetail() {
     const { id } = useParams<{ id: string }>();
     const queryClient = useQueryClient();
     const [confirmOpen, setConfirmOpen] = useState(false);
+    const [retryConfirmOpen, setRetryConfirmOpen] = useState(false);
 
     const {
         data: refund,
@@ -38,6 +39,16 @@ function AdminRefundDetail() {
             void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminDetail(id!) });
             void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminList() });
             setConfirmOpen(false);
+        },
+    });
+
+    const retryMutation = useMutation({
+        mutationFn: () => adminApi.retryRefund(id!),
+        onSuccess: retried => {
+            queryClient.setQueryData<RefundDetailViewModel>(REFUND_QUERY_KEYS.adminDetail(id!), retried);
+            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminDetail(id!) });
+            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminList() });
+            setRetryConfirmOpen(false);
         },
     });
 
@@ -79,6 +90,24 @@ function AdminRefundDetail() {
 
     const handleConfirmOpenChange = useCallback((open: boolean) => {
         if (!open) setConfirmOpen(false);
+    }, []);
+
+    const handleRetryClick = useCallback(() => {
+        setRetryConfirmOpen(true);
+    }, []);
+
+    const handleCancelRetry = useCallback(() => {
+        setRetryConfirmOpen(false);
+    }, []);
+
+    const { mutate: retryRefund } = retryMutation;
+
+    const handleConfirmRetry = useCallback(() => {
+        retryRefund();
+    }, [retryRefund]);
+
+    const handleRetryConfirmOpenChange = useCallback((open: boolean) => {
+        if (!open) setRetryConfirmOpen(false);
     }, []);
 
     if (isLoading) {
@@ -149,8 +178,13 @@ function AdminRefundDetail() {
                 <div className='space-y-6'>
                     <RefundActionPanel
                         status={refund.status}
-                        isBusy={approveMutation.isPending}
+                        isBusy={
+                            refund.status === RefundStatusEnum.Failed
+                                ? retryMutation.isPending
+                                : approveMutation.isPending
+                        }
                         onApprove={handleApproveClick}
+                        onRetry={handleRetryClick}
                     />
                 </div>
             </div>
@@ -174,6 +208,30 @@ function AdminRefundDetail() {
                             {approveMutation.isPending
                                 ? t('admin.refundDetail.approving')
                                 : t('admin.refundDetail.confirmAction')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={retryConfirmOpen} onOpenChange={handleRetryConfirmOpenChange}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t('admin.refundDetail.retryConfirmTitle')}</DialogTitle>
+                        <DialogDescription>
+                            {t('admin.refundDetail.retryConfirmDescription', {
+                                amount: formatVnd(refund.amount),
+                                orderRef: refund.orderSlugId || '—',
+                            })}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant='outline' onClick={handleCancelRetry} disabled={retryMutation.isPending}>
+                            {t('common.cancel')}
+                        </Button>
+                        <Button onClick={handleConfirmRetry} disabled={retryMutation.isPending}>
+                            {retryMutation.isPending
+                                ? t('admin.refundDetail.retrying')
+                                : t('admin.refundDetail.retryConfirmAction')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
