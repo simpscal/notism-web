@@ -769,6 +769,13 @@
             "copyReference": "Copy transfer reference",
             "transferRecordNote": "The transfer completed. This record is read-only.",
             "failureTitle": "Transfer Failed",
+            "retryTitle": "Retry Refund",
+            "retryDescription": "Retrying re-initiates the bank transfer for the full amount. If it fails again, the latest failure reason is recorded.",
+            "retryAction": "Retry refund",
+            "retrying": "Retrying…",
+            "retryConfirmTitle": "Retry this refund?",
+            "retryConfirmDescription": "This re-initiates the {{amount}} refund for order #{{orderRef}} and moves it back to processing. The bank transfer is then made and matched against the refund ID.",
+            "retryConfirmAction": "Retry",
             "failedToLoad": "Failed to load refund details",
             "failedToLoadDescription": "Please try again later or go back to the refunds list."
         },

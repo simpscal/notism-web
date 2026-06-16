@@ -769,6 +769,13 @@
             "copyReference": "Sao chép mã tham chiếu",
             "transferRecordNote": "Giao dịch chuyển khoản đã hoàn tất. Hồ sơ này chỉ để xem.",
             "failureTitle": "Chuyển khoản thất bại",
+            "retryTitle": "Thử lại hoàn tiền",
+            "retryDescription": "Thử lại sẽ khởi tạo lại giao dịch chuyển khoản cho toàn bộ số tiền. Nếu lại thất bại, lý do thất bại mới nhất sẽ được ghi nhận.",
+            "retryAction": "Thử lại hoàn tiền",
+            "retrying": "Đang thử lại…",
+            "retryConfirmTitle": "Thử lại khoản hoàn tiền này?",
+            "retryConfirmDescription": "Thao tác này khởi tạo lại khoản hoàn tiền {{amount}} cho đơn hàng #{{orderRef}} và chuyển về trạng thái đang xử lý. Sau đó giao dịch chuyển khoản được thực hiện và đối soát theo mã hoàn tiền.",
+            "retryConfirmAction": "Thử lại",
             "failedToLoad": "Không thể tải chi tiết hoàn tiền",
             "failedToLoadDescription": "Vui lòng thử lại sau hoặc quay lại danh sách hoàn tiền."
         },
