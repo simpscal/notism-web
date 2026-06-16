@@ -408,6 +408,20 @@
         "cancelling": "Đang hủy...",
         "cancelConfirmTitle": "Hủy đơn hàng",
         "cancelConfirmDescription": "Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể được hoàn tác.",
+        "requestRefund": "Yêu cầu hoàn tiền",
+        "requesting": "Đang gửi yêu cầu…",
+        "requestRefundConfirmTitle": "Yêu cầu hoàn tiền?",
+        "requestRefundConfirmDescription": "Chúng tôi sẽ tiến hành hoàn {{amount}} về tài khoản ngân hàng bạn đã thanh toán. Hoàn tiền thường được gửi trong vài ngày làm việc.",
+        "requestRefundNotNow": "Để sau",
+        "refundRequestedSuccess": "Đã gửi yêu cầu hoàn tiền",
+        "refund": {
+            "label": "Hoàn tiền",
+            "amount": "Số tiền",
+            "sentOn": "Gửi vào",
+            "transferReference": "Mã giao dịch",
+            "copyReference": "Sao chép mã giao dịch",
+            "pendingMessage": "Chúng tôi đã bắt đầu hoàn tiền về tài khoản ngân hàng của bạn. Bạn sẽ được thông báo khi tiền được gửi."
+        },
         "notFound": {
             "title": "Không tìm thấy đơn hàng",
             "description": "Đơn hàng bạn đang tìm không tồn tại hoặc đã bị xóa."

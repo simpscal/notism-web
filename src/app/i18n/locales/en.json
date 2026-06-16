@@ -408,6 +408,20 @@
         "cancelling": "Cancelling...",
         "cancelConfirmTitle": "Cancel Order",
         "cancelConfirmDescription": "Are you sure you want to cancel this order? This action cannot be undone.",
+        "requestRefund": "Request refund",
+        "requesting": "Requesting…",
+        "requestRefundConfirmTitle": "Request a refund?",
+        "requestRefundConfirmDescription": "We'll start a refund of {{amount}} to the bank account you paid from. Refunds are usually sent within a few business days.",
+        "requestRefundNotNow": "Not now",
+        "refundRequestedSuccess": "Refund requested",
+        "refund": {
+            "label": "Refund",
+            "amount": "Amount",
+            "sentOn": "Sent on",
+            "transferReference": "Transfer reference",
+            "copyReference": "Copy transfer reference",
+            "pendingMessage": "We've started your refund to your bank account. You'll be notified once it's sent."
+        },
         "notFound": {
             "title": "Order Not Found",
             "description": "The order you're looking for doesn't exist or has been removed."

@@ -17,7 +17,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { DELIVERY_STATUS, DeliveryStatusEnum, type DeliveryStatusConfig } from '@/features/order';
+import {
+    DELIVERY_STATUS,
+    DeliveryStatusEnum,
+    RefundStatusBadge,
+    toCustomerRefundStatus,
+    type DeliveryStatusConfig,
+} from '@/features/order';
 
 const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
     const step = DELIVERY_STATUS.find(s => s.key === status);
@@ -137,13 +143,20 @@ function Orders() {
                                             </CardTitle>
                                             <p className='text-xs text-muted-foreground'>{orderDate}</p>
                                         </div>
-                                        <Badge
-                                            variant='outline'
-                                            className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
-                                        >
-                                            <StatusIcon className='h-3 w-3' />
-                                            {t(statusInfo.label)}
-                                        </Badge>
+                                        <div className='flex flex-wrap items-center justify-end gap-2'>
+                                            <Badge
+                                                variant='outline'
+                                                className={`${statusInfo.colorClass} flex w-fit items-center gap-1.5`}
+                                            >
+                                                <StatusIcon className='h-3 w-3' />
+                                                {t(statusInfo.label)}
+                                            </Badge>
+                                            {order.refund && (
+                                                <RefundStatusBadge
+                                                    status={toCustomerRefundStatus(order.refund.status)}
+                                                />
+                                            )}
+                                        </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent className='space-y-3'>
