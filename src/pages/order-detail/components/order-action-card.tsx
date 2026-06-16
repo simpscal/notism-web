@@ -181,7 +181,7 @@ function OrderActionCard({
                             status={refund.status}
                             amount={refund.amount}
                             sentDate={refund.paidAt}
-                            transferReference={null}
+                            transferReference={refund.transferReference}
                         />
                     ) : showRefundRequest ? (
                         <>

@@ -7,6 +7,7 @@ export interface RefundSummaryViewModel {
     status: string;
     createdAt: string;
     paidAt: string | null;
+    transferReference: string | null;
 }
 
 export interface RefundListItemViewModel {
