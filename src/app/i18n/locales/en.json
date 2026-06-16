@@ -10,6 +10,7 @@
         "search": "Search",
         "noResults": "No results found",
         "all": "All",
+        "retry": "Retry",
         "error": "Error",
         "success": "Success",
         "close": "Close",
@@ -177,6 +178,7 @@
         "dashboard": "Dashboard",
         "foods": "Foods",
         "orders": "Orders",
+        "refunds": "Refunds",
         "cart": "Cart",
         "theme": "Theme",
         "appearance": "Appearance",
@@ -591,6 +593,20 @@
                     "cancel": "Cancel"
                 }
             }
+        },
+        "refunds": {
+            "title": "Refunds",
+            "subtitle": "Reconcile every refund — approve, retry, and view transfer references.",
+            "order": "Order",
+            "amount": "Amount",
+            "status": "Status",
+            "transferReference": "Transfer reference",
+            "created": "Created",
+            "paid": "Paid",
+            "actions": "Actions",
+            "viewRefund": "View refund",
+            "empty": "No refunds with this status.",
+            "failedToLoad": "Couldn’t load refunds"
         },
         "foods": {
             "title": "Foods",

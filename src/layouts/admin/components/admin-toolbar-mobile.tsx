@@ -1,4 +1,15 @@
-import { LayoutDashboard, LogIn, LogOut, Moon, Package, Settings, Store, Sun, UtensilsCrossed } from 'lucide-react';
+import {
+    LayoutDashboard,
+    LogIn,
+    LogOut,
+    Moon,
+    Package,
+    RotateCcw,
+    Settings,
+    Store,
+    Sun,
+    UtensilsCrossed,
+} from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink } from 'react-router-dom';
@@ -67,6 +78,21 @@ function AdminToolbarMobile({ user, onLogout }: AdminToolbarMobileProps) {
                 >
                     <Package className='h-6 w-6' />
                     <span className='text-[10px] font-medium'>{t('nav.orders')}</span>
+                </NavLink>
+
+                {/* Refunds shortcut */}
+                <NavLink
+                    to={`/${ROUTES.ADMIN.REFUNDS}`}
+                    aria-label={t('nav.refunds')}
+                    className={({ isActive }) =>
+                        cn(
+                            'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
+                            isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                        )
+                    }
+                >
+                    <RotateCcw className='h-6 w-6' />
+                    <span className='text-[10px] font-medium'>{t('nav.refunds')}</span>
                 </NavLink>
 
                 {/* Foods shortcut */}

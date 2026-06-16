@@ -86,7 +86,9 @@ export function toAdminRefundListItem(response: AdminRefundListItemResponseModel
         orderSlugId: response.orderSlugId,
         amount: response.amount,
         status: response.status,
+        transferReference: response.transferReference,
         createdAt: response.createdAt,
+        paidAt: response.paidAt,
     };
 }
 
