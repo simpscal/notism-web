@@ -382,6 +382,7 @@
                 "reason": "Reason"
             },
             "manualTransferInstruction": "Put the refund ID {{refundId}} in the bank transfer content so the payment is matched automatically.",
+            "setUpBankDetailsCta": "Set up your bank details to receive your refund.",
             "paidBanner": {
                 "title": "Refund sent",
                 "message": "— {{amount}} for order {{orderRef}} was transferred to your bank on {{sentDate}}.",
@@ -773,6 +774,7 @@
             "title": "Refund detail",
             "subtitle": "Approve and review the bank transfer for this refund.",
             "summaryTitle": "Refund Summary",
+            "scanToPay": "Scan this QR with your banking app to send the refund.",
             "status": "Status",
             "refundId": "Refund ID",
             "order": "Order",
