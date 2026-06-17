@@ -416,6 +416,9 @@
         "requestRefundConfirmTitle": "Request a refund?",
         "requestRefundConfirmDescription": "We'll start a refund of {{amount}} to the bank account you paid from. Refunds are usually sent within a few business days.",
         "requestRefundNotNow": "Not now",
+        "addBankDetailsTitle": "Add your bank details first",
+        "addBankDetailsDescription": "We don't have a bank account on file to send your refund to. Add your bank details, then request the refund again.",
+        "addBankDetails": "Add bank details",
         "refundRequestedSuccess": "Refund requested",
         "refund": {
             "label": "Refund",
