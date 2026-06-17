@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { OrderActionCard, OrderDetailError, OrderItemsCard } from './components';
 
-import { orderApi } from '@/apis';
+import { orderApi, paymentApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
@@ -17,6 +17,7 @@ import {
     OrderDeliveryStatusTimeline,
     OrderHeader,
     PaymentMethodEnum,
+    shouldShowRefundRequest,
 } from '@/features/order';
 import {
     BankingPaymentConfirmedPanel,
@@ -75,6 +76,21 @@ function OrderDetail() {
         },
     });
 
+    const canRequestRefund =
+        !!order &&
+        shouldShowRefundRequest({
+            paymentMethod: order.paymentMethod,
+            deliveryStatus: order.deliveryStatus,
+            deliveredCompletedAt: order.deliveryStatusTiming.deliveredCompletedAt,
+            hasRefund: !!order.refund,
+        });
+
+    const { data: bankAccount } = useQuery({
+        queryKey: ['bank-account'],
+        queryFn: () => paymentApi.getBankAccount(),
+        enabled: canRequestRefund,
+    });
+
     const handleConfirmCancel = useCallback(() => {
         if (!order) return;
         cancelOrder(order.id);
@@ -84,6 +100,10 @@ function OrderDetail() {
         if (!order) return;
         requestRefund(order.id);
     }, [order, requestRefund]);
+
+    const handleAddBankDetails = useCallback(() => {
+        navigate(`/${ROUTES.SETTINGS.PAYMENT}`);
+    }, [navigate]);
 
     const orderDate = useMemo(() => {
         if (!order) return '';
@@ -179,6 +199,8 @@ function OrderDetail() {
                                 isCancelling={isCancelling}
                                 onConfirmRefund={handleConfirmRefund}
                                 isRequestingRefund={isRequestingRefund}
+                                hasBankDetails={bankAccount != null}
+                                onAddBankDetails={handleAddBankDetails}
                             />
                         </div>
                     </div>

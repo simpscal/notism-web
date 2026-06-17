@@ -1,4 +1,4 @@
-import { Clock } from 'lucide-react';
+import { Clock, Landmark } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -47,6 +47,8 @@ export interface OrderActionCardProps {
     isCancelling?: boolean;
     onConfirmRefund?: () => void;
     isRequestingRefund?: boolean;
+    hasBankDetails?: boolean;
+    onAddBankDetails?: () => void;
 }
 
 function OrderActionCard({
@@ -61,6 +63,8 @@ function OrderActionCard({
     isCancelling = false,
     onConfirmRefund,
     isRequestingRefund = false,
+    hasBankDetails = false,
+    onAddBankDetails,
 }: OrderActionCardProps) {
     const { t } = useTranslation();
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -100,6 +104,11 @@ function OrderActionCard({
     const handleConfirmRefund = useCallback(() => {
         onConfirmRefund?.();
     }, [onConfirmRefund]);
+
+    const handleAddBankDetails = useCallback(() => {
+        setShowRefundDialog(false);
+        onAddBankDetails?.();
+    }, [onAddBankDetails]);
 
     return (
         <Card className='sticky top-4'>
@@ -203,28 +212,50 @@ function OrderActionCard({
                             </Button>
                             <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
                                 <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>{t('orderDetail.requestRefundConfirmTitle')}</DialogTitle>
-                                        <DialogDescription>
-                                            {t('orderDetail.requestRefundConfirmDescription', {
-                                                amount: formatVnd(totalAmount),
-                                            })}
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <DialogFooter>
-                                        <Button
-                                            variant='outline'
-                                            onClick={handleRefundNotNowClick}
-                                            disabled={isRequestingRefund}
-                                        >
-                                            {t('orderDetail.requestRefundNotNow')}
-                                        </Button>
-                                        <Button onClick={handleConfirmRefund} disabled={isRequestingRefund}>
-                                            {isRequestingRefund
-                                                ? t('orderDetail.requesting')
-                                                : t('orderDetail.requestRefund')}
-                                        </Button>
-                                    </DialogFooter>
+                                    {hasBankDetails ? (
+                                        <>
+                                            <DialogHeader>
+                                                <DialogTitle>{t('orderDetail.requestRefundConfirmTitle')}</DialogTitle>
+                                                <DialogDescription>
+                                                    {t('orderDetail.requestRefundConfirmDescription', {
+                                                        amount: formatVnd(totalAmount),
+                                                    })}
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <DialogFooter>
+                                                <Button
+                                                    variant='outline'
+                                                    onClick={handleRefundNotNowClick}
+                                                    disabled={isRequestingRefund}
+                                                >
+                                                    {t('orderDetail.requestRefundNotNow')}
+                                                </Button>
+                                                <Button onClick={handleConfirmRefund} disabled={isRequestingRefund}>
+                                                    {isRequestingRefund
+                                                        ? t('orderDetail.requesting')
+                                                        : t('orderDetail.requestRefund')}
+                                                </Button>
+                                            </DialogFooter>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <DialogHeader>
+                                                <DialogTitle>{t('orderDetail.addBankDetailsTitle')}</DialogTitle>
+                                                <DialogDescription>
+                                                    {t('orderDetail.addBankDetailsDescription')}
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <DialogFooter>
+                                                <Button variant='outline' onClick={handleRefundNotNowClick}>
+                                                    {t('orderDetail.requestRefundNotNow')}
+                                                </Button>
+                                                <Button onClick={handleAddBankDetails}>
+                                                    <Landmark className='h-4 w-4' />
+                                                    {t('orderDetail.addBankDetails')}
+                                                </Button>
+                                            </DialogFooter>
+                                        </>
+                                    )}
                                 </DialogContent>
                             </Dialog>
                         </>

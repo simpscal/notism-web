@@ -416,6 +416,9 @@
         "requestRefundConfirmTitle": "Yêu cầu hoàn tiền?",
         "requestRefundConfirmDescription": "Chúng tôi sẽ tiến hành hoàn {{amount}} về tài khoản ngân hàng bạn đã thanh toán. Hoàn tiền thường được gửi trong vài ngày làm việc.",
         "requestRefundNotNow": "Để sau",
+        "addBankDetailsTitle": "Thêm thông tin ngân hàng trước",
+        "addBankDetailsDescription": "Chúng tôi chưa có tài khoản ngân hàng nào để gửi tiền hoàn cho bạn. Hãy thêm thông tin ngân hàng, sau đó yêu cầu hoàn tiền lại.",
+        "addBankDetails": "Thêm thông tin ngân hàng",
         "refundRequestedSuccess": "Đã gửi yêu cầu hoàn tiền",
         "refund": {
             "label": "Hoàn tiền",
