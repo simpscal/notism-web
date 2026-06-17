@@ -9,6 +9,7 @@ import {
     FolderOpen,
     LayoutDashboard,
     Moon,
+    QrCode,
     RotateCcw,
     ShoppingBag,
     Users,
@@ -21,7 +22,9 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
+import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
+import { Skeleton } from '@/components/skeleton';
 import { Toaster } from '@/components/sonner';
 import Spinner from '@/components/spinner';
 
@@ -31,15 +34,35 @@ import Spinner from '@/components/spinner';
 // opened from the Refunds ledger (story 245 / AdminRefundsLedger.stories.tsx).
 //
 // The page composes inside the existing AdminLayout (sticky admin top-nav,
-// rendered here as a faithful AdminTopNav matching the dashboard surface). The
-// refund-detail content is the NEW surface this story specifies:
+// rendered here as a faithful AdminTopNav matching the dashboard surface).
 //
-//   • A refund summary (order ref, amount, created date, current status badge).
-//   • A status-driven action region:
+// LAYOUT (job-led, status-adaptive — behaviour unchanged from the prior
+// version, only the visual structure/hierarchy):
+//
+//   • A status HERO strip leads the page: the current status badge, the refund
+//     amount, and a one-line "what to do next" cue. Ops reads state + required
+//     action first, before any facts.
+//   • Below the hero, a two-region body whose EMPHASIS follows the job for the
+//     current status (the regions stay consistent so the page never restructures
+//     wholesale — only weight shifts):
+//       – Pending / Failed → the ACTION is the job: the action card takes the
+//         wide primary column; the read-only summary is the supporting rail.
+//       – Processing → SCANNING THE QR is the job: the VietQR panel becomes a
+//         wide focal card (large code beside its payload fields) spanning the
+//         content, with the summary + transfer-in-progress note demoted beneath.
+//       – Paid → the transfer record is the read-only outcome and leads; the
+//         summary supports.
+//
+//   The status-driven action semantics are unchanged:
 //       – Pending  → "Approve refund" (244). Confirm opens a Dialog; on confirm
 //         the transfer is initiated automatically and the refund shows as
 //         Processing.
-//       – Processing → read-only, spinner, no actions (auto transfer in flight).
+//       – Processing → read-only, spinner, no actions (auto transfer in
+//         flight) PLUS a SePay-hosted VietQR image (255) staff scan to send the
+//         refund. The QR encodes the customer's payout account, the full order
+//         total, and the refund id GUID as the FIRST token of the transfer
+//         content (so the SePay outbound webhook auto-matches it — #250 parses
+//         Split('-')[0] + Guid.TryParseExact("N")). Shown ONLY for Processing.
 //       – Paid     → read-only transfer reference + paid date (244 / shown to
 //         staff and customer). No actions.
 //       – Failed   → failure reason shown (244) + "Retry refund" (247). Retry
@@ -64,12 +87,32 @@ function formatVnd(amount: number): string {
 
 type RefundStatus = 'pending' | 'processing' | 'paid' | 'failed';
 
+/**
+ * Customer payout bank details captured in story 254. Used to build the VietQR
+ * payment payload shown to staff while a refund is Processing (255).
+ */
+interface PayoutAccount {
+    bankCode: string;
+    accountNumber: string;
+    accountHolderName: string;
+}
+
 interface Refund {
+    /**
+     * The refund's id GUID. This is the FIRST token of the VietQR transfer
+     * content so the SePay outbound webhook can match the inbound transfer
+     * (tech story #250: it parses Content.Trim().Split('-')[0] and
+     * Guid.TryParseExact(token, "N", …)). Stored in "N" format — 32 hex
+     * digits, no hyphens — so the first-token split yields the whole GUID.
+     */
+    id: string;
     slugId: string;
     orderSlugId: string;
     amount: number;
     status: RefundStatus;
     createdDate: string;
+    /** customer's payout bank account — drives the VietQR payload (255). */
+    payout: PayoutAccount;
     /** present once Paid (244). */
     transferReference: string | null;
     /** present once Paid (244). */
@@ -95,7 +138,7 @@ function RefundStatusBadge({ status }: { status: RefundStatus }) {
     if (status === 'processing') {
         return (
             <Badge variant='secondary' className='gap-1'>
-                <Spinner size='sm' />
+                <Spinner size='sm' className='shrink-0' />
                 Processing
             </Badge>
         );
@@ -111,15 +154,64 @@ function RefundStatusBadge({ status }: { status: RefundStatus }) {
 }
 
 // ---------------------------------------------------------------------------
+// Status hero — leads the page: status + amount + the next-step cue. Makes the
+// current job unmistakable before any read-only facts.
+// ---------------------------------------------------------------------------
+
+const STATUS_CUE: Record<RefundStatus, string> = {
+    pending: 'Awaiting approval — approve to initiate the bank transfer.',
+    processing: 'Transfer in progress — scan the VietQR code below to send the refund.',
+    paid: 'Refund paid — the bank transfer completed successfully.',
+    failed: 'Transfer failed — review the reason and retry the transfer.',
+};
+
+function StatusHero({ refund }: { refund: Refund }) {
+    return (
+        <Card
+            className={
+                refund.status === 'failed'
+                    ? 'border-destructive/30'
+                    : refund.status === 'processing'
+                      ? 'border-primary/30'
+                      : undefined
+            }
+        >
+            <CardContent className='flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between'>
+                <div className='space-y-2'>
+                    <RefundStatusBadge status={refund.status} />
+                    <p className='text-sm text-muted-foreground'>{STATUS_CUE[refund.status]}</p>
+                </div>
+                <div className='shrink-0 text-left sm:text-right'>
+                    <div className='text-xs uppercase tracking-wide text-muted-foreground'>Refund amount</div>
+                    <div className='text-2xl font-bold tabular-nums text-foreground'>{formatVnd(refund.amount)}</div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
 
+const PAYOUT_ACCOUNT: PayoutAccount = {
+    bankCode: 'Vietcombank',
+    accountNumber: '1023456789',
+    accountHolderName: 'Nguyen Van A',
+};
+
+// Refund id in "N" format (no hyphens) — leads the VietQR transfer content so
+// SePay's Split('-')[0] + Guid.TryParseExact(…, "N") matches the refund (#250).
+const REFUND_ID = 'b1c7d2e3f4a5460789ab0123456789cd';
+
 const REFUND_PENDING: Refund = {
+    id: REFUND_ID,
     slugId: 'RF-7C21',
     orderSlugId: 'A1B2C3',
     amount: 485_000,
     status: 'pending',
     createdDate: '13 June 2026, 10:40',
+    payout: PAYOUT_ACCOUNT,
     transferReference: null,
     paidDate: null,
     failureReason: null,
@@ -227,11 +319,6 @@ function RefundSummaryCard({ refund }: { refund: Refund }) {
                 <CardTitle>Refund Summary</CardTitle>
             </CardHeader>
             <CardContent className='space-y-3'>
-                <div className='flex items-center justify-between'>
-                    <span className='text-sm text-muted-foreground'>Status</span>
-                    <RefundStatusBadge status={refund.status} />
-                </div>
-                <Separator />
                 <SummaryRow label='Refund ID'>
                     <code className='font-mono text-xs'>{refund.slugId}</code>
                 </SummaryRow>
@@ -298,6 +385,116 @@ function FailureCard({ reason }: { reason: string }) {
 }
 
 // ---------------------------------------------------------------------------
+// VietQR payment card — shown ONLY while Processing (255).
+//
+// The QR is a SePay-hosted VietQR image (https://qr.sepay.vn/img) built from
+// the payout bank code + account number, the full order total as the transfer
+// amount, and a transfer description whose FIRST token is the refund id GUID.
+// Tech story #250 matches the inbound transfer by parsing
+// Content.Trim().Split('-')[0] and Guid.TryParseExact(token, "N", …), so the
+// description must LEAD with the "N"-format (dashless) refund id GUID — never a
+// slug like "RF-7C21" (a slug's hyphen would truncate the parsed token).
+//
+// The card is hidden for Pending / Paid / Failed, and reappears when a Failed
+// refund is retried back to Processing (the harness flips status → processing,
+// so this card renders again with no extra logic).
+//
+// SePay's QR image endpoint mirrors the existing payment QR builder
+// (src/features/payment/components/payment-qr.tsx) — see <confirmations> for
+// the exact SePay URL/param contract to verify against the SePay account.
+// ---------------------------------------------------------------------------
+
+const SEPAY_QR_BASE_URL = 'https://qr.sepay.vn/img';
+
+/**
+ * Build the SePay-hosted VietQR image URL. The transfer description (`des`)
+ * LEADS with the refund id GUID so SePay's outbound webhook auto-matches the
+ * refund (#250). Amount is the full order total.
+ */
+function buildSepayQrUrl(refund: Refund): string {
+    const params = new URLSearchParams({
+        bank: refund.payout.bankCode,
+        acc: refund.payout.accountNumber,
+        amount: String(refund.amount),
+        des: refund.id,
+        template: 'compact',
+    });
+    return `${SEPAY_QR_BASE_URL}?${params.toString()}`;
+}
+
+function QrFieldRow({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <div className='flex items-start justify-between gap-3 text-sm'>
+            <span className='shrink-0 text-muted-foreground'>{label}</span>
+            <span className='text-right font-medium'>{children}</span>
+        </div>
+    );
+}
+
+function VietQrCard({ refund }: { refund: Refund }) {
+    return (
+        <Card className='border-primary/30'>
+            <CardHeader>
+                <CardTitle className='flex items-center gap-2'>
+                    <QrCode className='h-4 w-4 text-primary' />
+                    Scan to pay refund
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                {/* Wide focal layout: the QR is the job while Processing, so it
+                    leads at a generous size with its payload fields alongside on
+                    wide screens (stacked on narrow). */}
+                <div className='grid gap-6 md:grid-cols-[auto_1fr] md:items-start'>
+                    <div className='flex flex-col items-center gap-3'>
+                        {/* SePay-hosted VietQR image — encodes the payout account,
+                            the full order total, and the refund id GUID as the
+                            content (255). */}
+                        <img
+                            src={buildSepayQrUrl(refund)}
+                            alt={`SePay VietQR payment code for refund ${refund.slugId}`}
+                            className='h-64 w-64 max-w-full rounded-xl border border-border bg-white'
+                        />
+                        <span className='flex items-center gap-1.5 text-xs font-medium text-muted-foreground'>
+                            <Spinner size='sm' className='shrink-0' />
+                            Waiting for the transfer to be sent…
+                        </span>
+                    </div>
+
+                    <div className='space-y-4'>
+                        <p className='text-sm text-muted-foreground'>
+                            Scan this VietQR code with a Vietnamese banking app to send the refund. The transfer
+                            pre-fills with the customer&apos;s account, the full order total, and the refund id as the
+                            content.
+                        </p>
+
+                        <div className='space-y-2 rounded-lg border bg-muted/30 p-4'>
+                            <QrFieldRow label='Bank'>{refund.payout.bankCode}</QrFieldRow>
+                            <QrFieldRow label='Account'>
+                                <code className='font-mono text-xs'>{refund.payout.accountNumber}</code>
+                            </QrFieldRow>
+                            <QrFieldRow label='Holder'>{refund.payout.accountHolderName}</QrFieldRow>
+                            <Separator />
+                            <QrFieldRow label='Amount'>
+                                <span className='font-semibold'>{formatVnd(refund.amount)}</span>
+                            </QrFieldRow>
+                            <QrFieldRow label='Content'>
+                                <code className='break-all text-right font-mono text-xs text-primary'>{refund.id}</code>
+                            </QrFieldRow>
+                        </div>
+
+                        <p className='text-xs text-muted-foreground'>
+                            Keep the content starting with the refund id{' '}
+                            <code className='break-all font-mono'>{refund.id}</code> so the payment is matched
+                            automatically.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Action region — status-driven primary action (244 / 247).
 // ---------------------------------------------------------------------------
 
@@ -322,7 +519,7 @@ function ActionPanel({ refund, isBusy, onApprove, onRetry }: ActionPanelProps) {
                     <Button size='lg' className='w-full' onClick={onApprove} disabled={isBusy}>
                         {isBusy ? (
                             <>
-                                <Spinner size='sm' />
+                                <Spinner size='sm' className='shrink-0' />
                                 Initiating…
                             </>
                         ) : (
@@ -338,7 +535,7 @@ function ActionPanel({ refund, isBusy, onApprove, onRetry }: ActionPanelProps) {
         return (
             <Card>
                 <CardContent className='flex items-center gap-3 py-6' role='status' aria-live='polite'>
-                    <Spinner size='md' />
+                    <Spinner size='md' className='shrink-0' />
                     <div>
                         <div className='font-medium'>Transfer in progress</div>
                         <p className='text-sm text-muted-foreground'>
@@ -364,7 +561,7 @@ function ActionPanel({ refund, isBusy, onApprove, onRetry }: ActionPanelProps) {
                     <Button size='lg' className='w-full' onClick={onRetry} disabled={isBusy}>
                         {isBusy ? (
                             <>
-                                <Spinner size='sm' />
+                                <Spinner size='sm' className='shrink-0' />
                                 Retrying…
                             </>
                         ) : (
@@ -432,17 +629,45 @@ function RefundDetail({
     onCancelApprove,
     onRetry,
 }: DetailProps) {
-    return (
-        <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
-            <div className='space-y-6'>
-                <RefundSummaryCard refund={refund} />
-                {refund.status === 'paid' && <TransferRecordCard refund={refund} />}
-                {refund.status === 'failed' && refund.failureReason && <FailureCard reason={refund.failureReason} />}
-            </div>
+    // Layout emphasis follows the job for the current status. The summary is a
+    // consistent supporting rail in every status; only the lead region changes.
+    const summary = <RefundSummaryCard refund={refund} />;
 
-            <div className='space-y-6'>
-                <ActionPanel refund={refund} isBusy={isBusy} onApprove={onApproveClick} onRetry={onRetry} />
-            </div>
+    return (
+        <div className='space-y-6'>
+            <StatusHero refund={refund} />
+
+            {refund.status === 'processing' ? (
+                // Processing → scanning the QR is the job: it leads full-width as
+                // a focal panel; the supporting facts + in-progress note sit below.
+                <>
+                    {/* VietQR — shown only while Processing (255); hidden for
+                        Pending / Paid / Failed, re-shown on retry → Processing. */}
+                    <VietQrCard refund={refund} />
+                    <div className='grid gap-6 lg:grid-cols-[1fr_1fr]'>
+                        <ActionPanel refund={refund} isBusy={isBusy} onApprove={onApproveClick} onRetry={onRetry} />
+                        {summary}
+                    </div>
+                </>
+            ) : refund.status === 'paid' ? (
+                // Paid → the transfer record is the read-only outcome and leads.
+                <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
+                    <TransferRecordCard refund={refund} />
+                    {summary}
+                </div>
+            ) : (
+                // Pending / Failed → the action is the job and takes the wide lead
+                // column; failure reason (when present) sits above the action.
+                <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
+                    <div className='space-y-6'>
+                        {refund.status === 'failed' && refund.failureReason && (
+                            <FailureCard reason={refund.failureReason} />
+                        )}
+                        <ActionPanel refund={refund} isBusy={isBusy} onApprove={onApproveClick} onRetry={onRetry} />
+                    </div>
+                    {summary}
+                </div>
+            )}
 
             {/* Approve confirmation Dialog (244) — initiating a transfer is a
                 consequential action, so confirm before it fires. */}
@@ -567,6 +792,75 @@ function StaticDetail(refund: Refund, confirmOpen = false, isBusy = false) {
     );
 }
 
+/** Loading — the detail skeleton while the refund loads. Mirrors the post-load
+ *  layout: a hero strip placeholder over a two-column body. */
+function LoadingDetail() {
+    return (
+        <PageShell>
+            <div className='space-y-6'>
+                <Card>
+                    <CardContent className='flex items-center justify-between py-6'>
+                        <div className='space-y-2'>
+                            <Skeleton className='h-6 w-28 rounded-full' />
+                            <Skeleton className='h-4 w-72' />
+                        </div>
+                        <Skeleton className='h-9 w-32' />
+                    </CardContent>
+                </Card>
+                <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className='h-5 w-40' />
+                        </CardHeader>
+                        <CardContent className='space-y-3'>
+                            <Skeleton className='h-4 w-full' />
+                            <Skeleton className='h-10 w-full' />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className='h-5 w-36' />
+                        </CardHeader>
+                        <CardContent className='space-y-3'>
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className='flex items-center justify-between'>
+                                    <Skeleton className='h-4 w-20' />
+                                    <Skeleton className='h-4 w-28' />
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </PageShell>
+    );
+}
+
+/** Error — the refund failed to load; reuses the shared ErrorState with a
+ *  Retry action, matching the ledger surface's error pattern. */
+function ErrorDetail() {
+    return (
+        <PageShell>
+            <Card>
+                <CardContent>
+                    <ErrorState
+                        className='py-16'
+                        iconSize='sm'
+                        title='Couldn’t load this refund'
+                        description='Something went wrong fetching the refund detail. Please try again.'
+                        action={
+                            <Button variant='outline'>
+                                <RotateCcw className='h-4 w-4' />
+                                Retry
+                            </Button>
+                        }
+                    />
+                </CardContent>
+            </Card>
+        </PageShell>
+    );
+}
+
 // ---------------------------------------------------------------------------
 // Meta + Stories
 // ---------------------------------------------------------------------------
@@ -595,9 +889,17 @@ export const ApproveConfirmDialog: Story = {
     render: () => StaticDetail(REFUND_PENDING, true),
 };
 
-/** Processing — the auto transfer is in flight; read-only, no actions (244 / 247). */
+/** Processing — the auto transfer is in flight; read-only, no actions, with the
+ *  VietQR payment code shown for staff to scan (244 / 247 / 255). */
 export const Processing: Story = {
-    name: 'Loading — Processing The Transfer (244 / 247)',
+    name: 'Processing — Transfer In Flight + VietQR (255)',
+    parameters: {
+        docs: {
+            description: {
+                story: 'While Processing, staff see a SePay-hosted VietQR image encoding the customer’s payout account, the full order total, and the refund id GUID as the FIRST token of the transfer content (so the SePay outbound webhook auto-matches via Split("-")[0] + Guid.TryParseExact("N"), per #250). The QR is shown ONLY for Processing — Pending, Paid, and Failed show no QR.',
+            },
+        },
+    },
     render: () => StaticDetail(REFUND_PROCESSING),
 };
 
@@ -613,9 +915,11 @@ export const Failed: Story = {
     render: () => StaticDetail(REFUND_FAILED),
 };
 
-/** Retry success — from Failed, retry re-initiates → Processing → Paid (247). */
+/** Retry success — from Failed, retry re-initiates → Processing → Paid (247).
+ *  The VietQR code is hidden while Failed and reappears the moment retry flips
+ *  the refund back to Processing (255). */
 export const RetrySuccess: Story = {
-    name: 'Retry Flow — Failed → Processing → Paid (247)',
+    name: 'Retry Flow — Failed → Processing (QR Returns) → Paid (247 / 255)',
     render: () => <RefundDetailHarness initial={REFUND_FAILED} outcome='paid' />,
 };
 
@@ -631,4 +935,16 @@ export const RetryFailsAgain: Story = {
         },
     },
     render: () => <RefundDetailHarness initial={REFUND_FAILED} outcome='failed' />,
+};
+
+/** Loading — skeleton placeholder while the refund detail is fetched. */
+export const Loading: Story = {
+    name: 'Loading — Detail Skeleton',
+    render: () => <LoadingDetail />,
+};
+
+/** Error — the refund detail failed to load; shared ErrorState + Retry. */
+export const ErrorStateStory: Story = {
+    name: 'Error — Failed To Load Refund',
+    render: () => <ErrorDetail />,
 };

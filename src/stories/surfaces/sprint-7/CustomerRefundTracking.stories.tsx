@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CheckCircle2, Clock, Copy } from 'lucide-react';
+import { CheckCircle2, Clock, Copy, Landmark, TriangleAlert } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/badge';
@@ -26,6 +26,18 @@ import Spinner from '@/components/spinner';
 //     action is REPLACED by a refund-status panel showing "Refund pending".
 //   • 246 — when the refund is Paid the panel shows the transfer reference and
 //     the date the refund was sent.
+//   • 242 — a refund created on cancellation reads as "Refund pending" like any
+//     other pending refund. BUT when that cancel-initiated refund is created
+//     while the customer has no bank details on file, it cannot be sent — it is
+//     HELD awaiting bank details: tracking shows a "bank details needed" panel
+//     with an "Add bank details" action routing to the customer's general bank/
+//     payment settings (story 254 — settings/payment, same target as the
+//     request-refund dialog's button).
+//   • 243 (amended) — confirming "Request refund" with NO bank details on file
+//     does NOT create a refund; the confirm dialog instead prompts the customer
+//     to add their bank details first, with an "Add bank details" action routing
+//     to the customer's general bank/payment settings (story 254 — the Payment
+//     section of the account settings, settings/payment).
 //
 // Visibility rules captured below (shouldShowRequestAction): no action for COD
 // orders, for not-yet-delivered orders, beyond the 24h window, or when a refund
@@ -51,10 +63,12 @@ function formatVnd(amount: number): string {
 /**
  * Customer-visible refund status. A Failed refund is intentionally NOT surfaced
  * to the customer as "Failed" — see <confirmations>. To the customer a refund
- * in flight always reads as Pending; only Paid is a terminal customer-visible
- * state. So the customer view models just Pending | Paid.
+ * in flight always reads as Pending; Paid is the terminal customer-visible
+ * state. A cancel-initiated refund created while the customer has NO bank
+ * details on file cannot be sent — it is HELD awaiting bank details, and the
+ * customer is prompted to add them so the refund can proceed.
  */
-type CustomerRefundStatus = 'pending' | 'paid';
+type CustomerRefundStatus = 'pending' | 'held' | 'paid';
 
 interface CustomerRefund {
     status: CustomerRefundStatus;
@@ -74,6 +88,8 @@ interface OrderContext {
     delivered: boolean;
     /** within the 24h post-delivery window (243). */
     withinRefundWindow: boolean;
+    /** whether the customer has refund-payout bank details on file (242 / 243). */
+    hasBankDetails: boolean;
     refund: CustomerRefund | null;
 }
 
@@ -97,11 +113,19 @@ const BASE_ORDER: OrderContext = {
     paymentMethod: 'banking',
     delivered: true,
     withinRefundWindow: true,
+    hasBankDetails: true,
     refund: null,
 };
 
 const REFUND_PENDING: CustomerRefund = {
     status: 'pending',
+    amount: 485_000,
+    transferReference: null,
+    sentDate: null,
+};
+
+const REFUND_HELD: CustomerRefund = {
+    status: 'held',
     amount: 485_000,
     transferReference: null,
     sentDate: null,
@@ -119,8 +143,9 @@ const REFUND_PAID: CustomerRefund = {
 // Replaces the "Request refund" action.
 // ---------------------------------------------------------------------------
 
-function RefundStatusPanel({ refund }: { refund: CustomerRefund }) {
+function RefundStatusPanel({ refund, onAddBankDetails }: { refund: CustomerRefund; onAddBankDetails: () => void }) {
     const isPaid = refund.status === 'paid';
+    const isHeld = refund.status === 'held';
 
     return (
         <div className='rounded-lg border bg-muted/30 p-4' role='status' aria-live='polite'>
@@ -130,6 +155,11 @@ function RefundStatusPanel({ refund }: { refund: CustomerRefund }) {
                     <Badge variant='success' className='gap-1'>
                         <CheckCircle2 className='h-3 w-3' />
                         Refund sent
+                    </Badge>
+                ) : isHeld ? (
+                    <Badge variant='warning' className='gap-1'>
+                        <TriangleAlert className='h-3 w-3' />
+                        Bank details needed
                     </Badge>
                 ) : (
                     <Badge variant='warning' className='gap-1'>
@@ -164,6 +194,18 @@ function RefundStatusPanel({ refund }: { refund: CustomerRefund }) {
                             </div>
                         </div>
                     </>
+                ) : isHeld ? (
+                    <>
+                        <p className='text-xs text-muted-foreground'>
+                            We can&apos;t send your refund yet — we don&apos;t have a bank account on file. Add your
+                            bank details and we&apos;ll send it to that account.
+                        </p>
+                        <Separator />
+                        <Button variant='default' size='sm' className='w-full' onClick={onAddBankDetails}>
+                            <Landmark className='h-4 w-4' />
+                            Add bank details
+                        </Button>
+                    </>
                 ) : (
                     <p className='text-xs text-muted-foreground'>
                         We&apos;ve started your refund to your bank account. You&apos;ll be notified once it&apos;s
@@ -192,6 +234,8 @@ interface RefundActionCardProps {
     onRequestClick: () => void;
     onConfirmRequest: () => void;
     onCancelRequest: () => void;
+    /** Routes to the customer's general bank/payment settings (254 — settings/payment). */
+    onAddBankDetails: () => void;
 }
 
 function RefundActionCard({
@@ -201,6 +245,7 @@ function RefundActionCard({
     onRequestClick,
     onConfirmRequest,
     onCancelRequest,
+    onAddBankDetails,
 }: RefundActionCardProps) {
     const showRequest = shouldShowRequestAction(order);
 
@@ -244,7 +289,7 @@ function RefundActionCard({
                     {/* Refund region — request action OR status panel (243 final AC:
                         an existing refund's status REPLACES the action). */}
                     {order.refund ? (
-                        <RefundStatusPanel refund={order.refund} />
+                        <RefundStatusPanel refund={order.refund} onAddBankDetails={onAddBankDetails} />
                     ) : showRequest ? (
                         <Button
                             variant='outline'
@@ -266,26 +311,50 @@ function RefundActionCard({
                 </div>
             </CardContent>
 
-            {/* Request-refund confirmation Dialog (243) — mirrors the existing
-                cancel-confirm Dialog on this card. */}
+            {/* Request-refund confirmation Dialog (243). When the customer has no
+                bank details on file, it does NOT create a refund — it prompts
+                them to add their bank details first (243 amended). */}
             <Dialog open={confirmOpen} onOpenChange={open => (!open ? onCancelRequest() : undefined)}>
                 <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Request a refund?</DialogTitle>
-                        <DialogDescription>
-                            We&apos;ll start a refund of{' '}
-                            <span className='font-medium text-foreground'>{formatVnd(order.totalAmount)}</span> to the
-                            bank account you paid from. Refunds are usually sent within a few business days.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant='outline' onClick={onCancelRequest} disabled={isRequesting}>
-                            Not now
-                        </Button>
-                        <Button onClick={onConfirmRequest} disabled={isRequesting}>
-                            {isRequesting ? 'Requesting…' : 'Request refund'}
-                        </Button>
-                    </DialogFooter>
+                    {order.hasBankDetails ? (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle>Request a refund?</DialogTitle>
+                                <DialogDescription>
+                                    We&apos;ll start a refund of{' '}
+                                    <span className='font-medium text-foreground'>{formatVnd(order.totalAmount)}</span>{' '}
+                                    to the bank account on file. Refunds are usually sent within a few business days.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                                <Button variant='outline' onClick={onCancelRequest} disabled={isRequesting}>
+                                    Not now
+                                </Button>
+                                <Button onClick={onConfirmRequest} disabled={isRequesting}>
+                                    {isRequesting ? 'Requesting…' : 'Request refund'}
+                                </Button>
+                            </DialogFooter>
+                        </>
+                    ) : (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle>Add your bank details first</DialogTitle>
+                                <DialogDescription>
+                                    We don&apos;t have a bank account on file to send your refund to. Add your bank
+                                    details, then request the refund again.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                                <Button variant='outline' onClick={onCancelRequest}>
+                                    Not now
+                                </Button>
+                                <Button onClick={onAddBankDetails}>
+                                    <Landmark className='h-4 w-4' />
+                                    Add bank details
+                                </Button>
+                            </DialogFooter>
+                        </>
+                    )}
                 </DialogContent>
             </Dialog>
         </Card>
@@ -376,6 +445,14 @@ function RefundTrackingHarness({ initialOrder }: { initialOrder: OrderContext })
         }, 700);
     };
 
+    // Routes to the customer's general bank/payment settings (254 —
+    // settings/payment). In the story we simulate the return trip: details
+    // added → the order gains bank details so the customer can request again.
+    const handleAddBankDetails = () => {
+        setConfirmOpen(false);
+        setOrder(previous => ({ ...previous, hasBankDetails: true }));
+    };
+
     return (
         <PageShell>
             <RefundActionCard
@@ -385,6 +462,7 @@ function RefundTrackingHarness({ initialOrder }: { initialOrder: OrderContext })
                 onRequestClick={handleRequestClick}
                 onConfirmRequest={handleConfirmRequest}
                 onCancelRequest={handleCancelRequest}
+                onAddBankDetails={handleAddBankDetails}
             />
         </PageShell>
     );
@@ -402,6 +480,7 @@ function StaticCard(order: OrderContext, confirmOpen = false) {
                 onRequestClick={NOOP}
                 onConfirmRequest={NOOP}
                 onCancelRequest={NOOP}
+                onAddBankDetails={NOOP}
             />
         </PageShell>
     );
@@ -462,6 +541,21 @@ export const NonBankTransfer: Story = {
     render: () => StaticCard({ ...BASE_ORDER, paymentMethod: 'cash on delivery' }),
 };
 
+/** Request with no bank details — confirming "Request refund" when no bank
+ *  details are on file does NOT create a refund; the dialog prompts the
+ *  customer to add their bank details first (243 amended). Dialog shown open. */
+export const RequestNeedsBankDetails: Story = {
+    name: 'Request Prompt — Add Bank Details First (243)',
+    parameters: {
+        docs: {
+            description: {
+                story: 'Confirming "Request refund" with no bank details on file does not create a refund. The dialog prompts the customer to add their bank details first; the "Add bank details" action routes to the customer\'s general bank/payment settings (story 254 — the Payment section of the account settings, settings/payment).',
+            },
+        },
+    },
+    render: () => StaticCard({ ...BASE_ORDER, hasBankDetails: false }, true),
+};
+
 /** Loading — the order-tracking page skeleton while the order loads. */
 export const Loading: Story = {
     name: 'Loading — Skeleton State',
@@ -512,5 +606,36 @@ export const CancelledOrderRefund: Story = {
             },
         },
     },
-    render: () => StaticCard({ ...BASE_ORDER, delivered: false, withinRefundWindow: false, refund: REFUND_PENDING }),
+    render: () =>
+        StaticCard({
+            ...BASE_ORDER,
+            delivered: false,
+            withinRefundWindow: false,
+            hasBankDetails: true,
+            refund: REFUND_PENDING,
+        }),
+};
+
+/** Refund held — a cancel-initiated refund created while the customer has no
+ *  bank details on file cannot be sent; tracking shows a "bank details needed"
+ *  panel with an "Add bank details" action that routes to the customer's
+ *  general bank/payment settings (story 254 — settings/payment, the same target
+ *  as the request-refund dialog's button). */
+export const RefundHeldNeedsBankDetails: Story = {
+    name: 'Refund Held — Bank Details Needed (242)',
+    parameters: {
+        docs: {
+            description: {
+                story: 'When a paid bank-transfer order is cancelled but the customer has no bank account on file, the full-total refund is created but cannot be sent — it is held awaiting bank details. Tracking shows a "bank details needed" panel; the "Add bank details" action routes to the customer\'s general bank/payment settings (story 254 — settings/payment, the same target as the request-refund dialog\'s button).',
+            },
+        },
+    },
+    render: () =>
+        StaticCard({
+            ...BASE_ORDER,
+            delivered: false,
+            withinRefundWindow: false,
+            hasBankDetails: false,
+            refund: REFUND_HELD,
+        }),
 };
