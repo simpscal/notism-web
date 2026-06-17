@@ -301,7 +301,9 @@
             "autoConfirm": "After your transfer the payment will be confirmed automatically.",
             "qrUnavailable": "QR unavailable",
             "loadErrorTitle": "Unable to load payment details",
-            "loadErrorDescription": "Bank account details could not be retrieved. Please try again later."
+            "loadErrorDescription": "Bank account details could not be retrieved. Please try again later.",
+            "notAvailableTitle": "Bank transfer unavailable",
+            "notAvailableDescription": "This store has not set up a bank account to receive transfers. Please choose another payment method."
         },
         "banking": "Banking"
     },

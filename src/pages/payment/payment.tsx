@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { CartItemViewModel } from '@/features/cart/models';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import { PaymentNotificationPayload, PaymentNotificationType, usePaymentSignalR } from '@/features/payment';
+import { BankAccountViewModel } from '@/features/payment/models';
 import {
     loadCart,
     selectCartItems,
@@ -42,19 +43,19 @@ function Payment() {
     const [bankingCheckout, setBankingCheckout] = useState(false);
     const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
     const [checkoutId, setCheckoutId] = useState<string | null>(null);
+    const [storeBankAccount, setStoreBankAccount] = useState<BankAccountViewModel | null>(null);
     const [successState, setSuccessState] = useState<PaymentSuccessState | null>(null);
     const [successItems, setSuccessItems] = useState<CartItemViewModel[]>([]);
 
-    const { data: bankAccount, isError: isBankAccountError } = useQuery({
-        queryKey: ['bank-account'],
-        queryFn: () => paymentApi.getBankAccount(),
-        enabled: bankingCheckout,
-    });
-
-    const { mutate: createBankingCheckout, isPending: isCreatingCheckout } = useMutation({
+    const {
+        mutate: createBankingCheckout,
+        isPending: isCreatingCheckout,
+        isError: isCheckoutError,
+    } = useMutation({
         mutationFn: (data: { cartItemIds: string[]; totalAmount: number }) => paymentApi.createBankingCheckout(data),
         onSuccess: result => {
             setCheckoutId(result.checkoutId);
+            setStoreBankAccount(result.bankAccount);
             setBankingCheckout(true);
         },
     });
@@ -223,7 +224,7 @@ function Payment() {
                         />
 
                         {paymentMethod === PaymentMethodEnum.Banking &&
-                            (isBankAccountError ? (
+                            (isCheckoutError ? (
                                 <Card>
                                     <CardContent>
                                         <ErrorState
@@ -233,17 +234,27 @@ function Payment() {
                                         />
                                     </CardContent>
                                 </Card>
-                            ) : isCreatingCheckout || !bankAccount ? (
+                            ) : isCreatingCheckout ? (
                                 <Card>
                                     <CardContent className='flex items-center justify-center py-12'>
                                         <Spinner size='lg' />
                                     </CardContent>
                                 </Card>
+                            ) : !storeBankAccount ? (
+                                <Card>
+                                    <CardContent>
+                                        <ErrorState
+                                            title={t('payment.bankTransfer.notAvailableTitle')}
+                                            description={t('payment.bankTransfer.notAvailableDescription')}
+                                            iconSize='sm'
+                                        />
+                                    </CardContent>
+                                </Card>
                             ) : (
                                 <PaymentBankingQr
-                                    bankCode={bankAccount.bankCode}
-                                    accountNumber={bankAccount.accountNumber}
-                                    accountHolderName={bankAccount.accountHolderName}
+                                    bankCode={storeBankAccount.bankCode}
+                                    accountNumber={storeBankAccount.accountNumber}
+                                    accountHolderName={storeBankAccount.accountHolderName}
                                     amount={totalPrice}
                                     orderReference={checkoutId ? checkoutId.replace(/-/g, '') : ''}
                                 />

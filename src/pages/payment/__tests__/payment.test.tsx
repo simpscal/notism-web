@@ -24,20 +24,17 @@ vi.mock('@/features/payment', async importOriginal => {
     };
 });
 
-const BANK_ACCOUNT_URL = '*/payments/bank-account';
 const BANKING_CHECKOUT_URL = '*/payments/banking/checkout';
 
 const server = setupServer(
-    http.get(BANK_ACCOUNT_URL, () =>
-        HttpResponse.json({
-            bankCode: 'VCB',
-            accountNumber: '1234567890',
-            accountHolderName: 'Nguyen Van A',
-        })
-    ),
     http.post(BANKING_CHECKOUT_URL, () =>
         HttpResponse.json({
             checkoutId: '550e8400-e29b-41d4-a716-446655440000',
+            bankAccount: {
+                bankCode: 'VCB',
+                accountNumber: '1234567890',
+                accountHolderName: 'Nguyen Van A',
+            },
         })
     )
 );
