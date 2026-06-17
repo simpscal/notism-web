@@ -512,6 +512,30 @@
             "saveSuccess": "Appearance preferences saved!"
         }
     },
+    "customer": {
+        "payment": {
+            "paneTitle": "Bank account",
+            "subtitle": "The bank account on file for your account. Keep these details up to date so payments to you reach the right account.",
+            "retry": "Retry",
+            "bankName": "Bank name",
+            "bankNamePlaceholder": "e.g. Vietcombank",
+            "bankNameHint": "Type your bank name exactly as recognised by our payment provider (SePay) so it maps to the right account.",
+            "accountNumber": "Account number",
+            "accountNumberPlaceholder": "e.g. 1023456789",
+            "accountNumberHint": "Digits only, exactly as shown in your banking app.",
+            "accountHolderName": "Account holder name",
+            "accountHolderNamePlaceholder": "e.g. Nguyen Van A",
+            "saveChanges": "Save changes",
+            "saving": "Saving...",
+            "cancel": "Cancel",
+            "saveSuccess": "Bank account details saved",
+            "bankNameRequired": "Bank name is required",
+            "accountNumberRequired": "Account number is required",
+            "accountHolderNameRequired": "Account holder name is required",
+            "loadErrorTitle": "Failed to load bank details",
+            "loadErrorDescription": "We couldn’t load your saved bank details. Please try again."
+        }
+    },
     "admin": {
         "dashboard": {
             "title": "Dashboard",

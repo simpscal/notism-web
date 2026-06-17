@@ -128,10 +128,10 @@ describe('Settings shell', () => {
         expect(profileLink).toHaveAttribute('data-active', 'false');
     });
 
-    it('omits the admin-only Payment nav item for non-admin users', () => {
+    it('shows the Payment nav item for non-admin (customer) users', () => {
         renderSettings({ role: UserRoleEnum.User, initialPath: '/settings/profile' });
 
-        expect(screen.queryByRole('link', { name: /payment/i })).not.toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /payment/i })).toBeInTheDocument();
     });
 
     it('shows the Payment nav item for admin users', () => {

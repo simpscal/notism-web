@@ -77,9 +77,7 @@ function AppRoutes() {
                         <Route index element={<Navigate replace to='profile' />} />
                         <Route path='profile' element={<SettingsProfile />} />
                         <Route path='appearance' element={<SettingsAppearance />} />
-                        <Route element={<AdminRouteGuard />}>
-                            <Route path='payment' element={<SettingsPayment />} />
-                        </Route>
+                        <Route path='payment' element={<SettingsPayment />} />
                     </Route>
                 </Route>
             </Route>
