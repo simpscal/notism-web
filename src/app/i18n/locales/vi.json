@@ -382,6 +382,7 @@
                 "reason": "Lý do"
             },
             "manualTransferInstruction": "Nhập mã hoàn tiền {{refundId}} vào nội dung chuyển khoản để hệ thống tự động đối soát.",
+            "setUpBankDetailsCta": "Thiết lập thông tin ngân hàng để nhận khoản hoàn tiền của bạn.",
             "paidBanner": {
                 "title": "Đã hoàn tiền",
                 "message": "— {{amount}} cho đơn hàng {{orderRef}} đã được chuyển vào ngân hàng của bạn vào {{sentDate}}.",
@@ -773,6 +774,7 @@
             "title": "Chi tiết hoàn tiền",
             "subtitle": "Duyệt và xem lại giao dịch chuyển khoản cho khoản hoàn tiền này.",
             "summaryTitle": "Tóm tắt hoàn tiền",
+            "scanToPay": "Quét mã QR này bằng ứng dụng ngân hàng để gửi khoản hoàn tiền.",
             "status": "Trạng thái",
             "refundId": "Mã hoàn tiền",
             "order": "Đơn hàng",
