@@ -4,7 +4,13 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
-import { RefundActionPanel, RefundFailureCard, RefundSummaryCard, TransferRecordCard } from './components';
+import {
+    RefundActionPanel,
+    RefundFailureCard,
+    RefundSummaryCard,
+    RefundVietQrCard,
+    TransferRecordCard,
+} from './components';
 
 import { adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
@@ -160,6 +166,15 @@ function AdminRefundDetail() {
 
             <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
                 <div className='space-y-6'>
+                    {refund.status === RefundStatusEnum.Processing && (
+                        <RefundVietQrCard
+                            refundId={refund.id}
+                            amount={refund.amount}
+                            bankCode={refund.bankCode}
+                            accountNumber={refund.accountNumber}
+                            accountHolderName={refund.accountHolderName}
+                        />
+                    )}
                     <RefundSummaryCard
                         id={refund.id}
                         orderSlugId={refund.orderSlugId}

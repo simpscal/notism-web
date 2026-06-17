@@ -109,6 +109,9 @@ export function toAdminRefundDetail(response: AdminRefundDetailResponseModel): R
         paidAt: response.paidAt,
         transferReference: response.transferReference,
         failureReason: response.failureReason,
+        bankCode: response.bankCode,
+        accountNumber: response.accountNumber,
+        accountHolderName: response.accountHolderName,
     };
 }
 

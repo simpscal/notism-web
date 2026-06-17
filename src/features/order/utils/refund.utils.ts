@@ -19,7 +19,7 @@ interface RefundVietQrParams {
  * matches a refund by `content.Trim().Split('-')[0]` + `Guid.TryParseExact(.., "N")`,
  * so this is the exact token shape the transfer description must lead with (#250).
  */
-function toNFormatGuid(refundId: string): string {
+export function toNFormatGuid(refundId: string): string {
     return refundId.replace(/-/g, '').toLowerCase();
 }
 

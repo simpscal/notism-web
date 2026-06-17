@@ -36,4 +36,7 @@ export interface RefundDetailViewModel {
     paidAt: string | null;
     transferReference: string | null;
     failureReason: string | null;
+    bankCode: string | null;
+    accountNumber: string | null;
+    accountHolderName: string | null;
 }
