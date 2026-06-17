@@ -42,6 +42,9 @@ function makeRefund(overrides: Partial<AdminRefundDetailResponseModel> = {}): Ad
         paidAt: null,
         transferReference: null,
         failureReason: null,
+        bankCode: null,
+        accountNumber: null,
+        accountHolderName: null,
         ...overrides,
     };
 }
@@ -247,6 +250,88 @@ describe('AdminRefundDetail page', () => {
         await waitFor(() => expect(retrySpy).toHaveBeenCalledTimes(1));
         expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'Retry refund' })).not.toBeInTheDocument();
+    });
+
+    it('shows the VietQR payment card while a refund is processing', async () => {
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(
+                    makeRefund({
+                        status: RefundStatusEnum.Processing,
+                        bankCode: 'VCB',
+                        accountNumber: '1023456789',
+                        accountHolderName: 'Nguyen Van A',
+                    })
+                )
+            )
+        );
+
+        renderPage();
+
+        expect(await screen.findByText('Scan to pay refund')).toBeInTheDocument();
+        expect(screen.getByRole('img')).toBeInTheDocument();
+    });
+
+    it('shows the missing payout details state while processing without saved bank details', async () => {
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(
+                    makeRefund({
+                        status: RefundStatusEnum.Processing,
+                        bankCode: null,
+                        accountNumber: null,
+                        accountHolderName: null,
+                    })
+                )
+            )
+        );
+
+        renderPage();
+
+        expect(await screen.findByText('Scan to pay refund')).toBeInTheDocument();
+        expect(screen.getByText('No payout account on file')).toBeInTheDocument();
+        expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    });
+
+    it('does not show the VietQR card for a pending refund', async () => {
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Pending }))));
+
+        renderPage();
+
+        await screen.findByRole('button', { name: 'Approve refund' });
+        expect(screen.queryByText('Scan to pay refund')).not.toBeInTheDocument();
+    });
+
+    it('does not show the VietQR card for a paid refund', async () => {
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(
+                    makeRefund({
+                        status: RefundStatusEnum.Paid,
+                        paidAt: '2026-06-13T14:27:00Z',
+                        transferReference: 'VCB-TRF-20260613-0099431',
+                    })
+                )
+            )
+        );
+
+        renderPage();
+
+        await screen.findByText('Transfer Record');
+        expect(screen.queryByText('Scan to pay refund')).not.toBeInTheDocument();
+    });
+
+    it('does not show the VietQR card for a failed refund', async () => {
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(makeRefund({ status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }))
+            )
+        );
+
+        renderPage();
+
+        await screen.findByText('Transfer Failed');
+        expect(screen.queryByText('Scan to pay refund')).not.toBeInTheDocument();
     });
 
     it('does not retry when the confirm dialog is cancelled', async () => {
