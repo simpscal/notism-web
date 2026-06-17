@@ -512,6 +512,30 @@
             "saveSuccess": "Đã lưu tùy chọn giao diện!"
         }
     },
+    "customer": {
+        "payment": {
+            "paneTitle": "Tài khoản ngân hàng",
+            "subtitle": "Tài khoản ngân hàng được lưu cho tài khoản của bạn. Hãy cập nhật thông tin này để các khoản thanh toán đến đúng tài khoản.",
+            "retry": "Thử lại",
+            "bankName": "Tên ngân hàng",
+            "bankNamePlaceholder": "Ví dụ: Vietcombank",
+            "bankNameHint": "Nhập tên ngân hàng chính xác như được nhà cung cấp thanh toán (SePay) công nhận để khớp đúng tài khoản.",
+            "accountNumber": "Số tài khoản",
+            "accountNumberPlaceholder": "VD: 1023456789",
+            "accountNumberHint": "Chỉ nhập chữ số, đúng như hiển thị trong ứng dụng ngân hàng của bạn.",
+            "accountHolderName": "Tên chủ tài khoản",
+            "accountHolderNamePlaceholder": "VD: Nguyễn Văn A",
+            "saveChanges": "Lưu thay đổi",
+            "saving": "Đang lưu...",
+            "cancel": "Hủy",
+            "saveSuccess": "Đã lưu thông tin tài khoản ngân hàng",
+            "bankNameRequired": "Tên ngân hàng là bắt buộc",
+            "accountNumberRequired": "Số tài khoản là bắt buộc",
+            "accountHolderNameRequired": "Tên chủ tài khoản là bắt buộc",
+            "loadErrorTitle": "Không thể tải thông tin ngân hàng",
+            "loadErrorDescription": "Chúng tôi không thể tải thông tin ngân hàng đã lưu của bạn. Vui lòng thử lại."
+        }
+    },
     "admin": {
         "dashboard": {
             "title": "Bảng điều khiển",
