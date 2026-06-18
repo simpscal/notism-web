@@ -9,3 +9,8 @@ export interface SaveBankAccountRequestModel {
     accountNumber: string;
     accountHolderName: string;
 }
+
+export interface BankingCheckoutResponseModel {
+    checkoutId: string;
+    bankAccount: BankAccountResponseModel | null;
+}

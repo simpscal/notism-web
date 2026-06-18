@@ -1,6 +1,6 @@
 import { apiClient } from './client';
-import { toBankAccount } from './mappers';
-import { BankAccountResponseModel, SaveBankAccountRequestModel } from './models';
+import { toBankAccount, toBankingCheckout } from './mappers';
+import { BankAccountResponseModel, BankingCheckoutResponseModel, SaveBankAccountRequestModel } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
 
@@ -14,7 +14,11 @@ export const paymentApi = {
         return apiClient.put<void>(API_ENDPOINTS.PAYMENT.BANK_ACCOUNT, data);
     },
 
-    createBankingCheckout: (data: { cartItemIds: string[]; totalAmount: number }) => {
-        return apiClient.post<{ checkoutId: string }>(API_ENDPOINTS.PAYMENT.BANKING_CHECKOUT, data);
+    createBankingCheckout: async (data: { cartItemIds: string[]; totalAmount: number }) => {
+        const response = await apiClient.post<BankingCheckoutResponseModel>(
+            API_ENDPOINTS.PAYMENT.BANKING_CHECKOUT,
+            data
+        );
+        return toBankingCheckout(response);
     },
 };
