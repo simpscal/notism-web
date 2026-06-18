@@ -55,10 +55,15 @@ interface RefundRequestEligibility {
     hasRefund: boolean;
 }
 
+const REFUND_ELIGIBLE_PAYMENT_METHODS: readonly string[] = [
+    PaymentMethodEnum.Banking,
+    PaymentMethodEnum.CashOnDelivery,
+];
+
 /**
  * Whether the customer "Request refund" action should be shown (story #243).
- * Visible only for a bank-transfer order that is delivered, still within the 24h
- * post-delivery window, and has no refund yet.
+ * Visible only for a bank-transfer or cash-on-delivery order that is delivered,
+ * still within the 24h post-delivery window, and has no refund yet.
  */
 export function shouldShowRefundRequest({
     paymentMethod,
@@ -67,7 +72,7 @@ export function shouldShowRefundRequest({
     hasRefund,
 }: RefundRequestEligibility): boolean {
     if (hasRefund) return false;
-    if (paymentMethod !== PaymentMethodEnum.Banking) return false;
+    if (!REFUND_ELIGIBLE_PAYMENT_METHODS.includes(paymentMethod)) return false;
     if (deliveryStatus !== DeliveryStatusEnum.Delivered) return false;
     if (!deliveredCompletedAt) return false;
 

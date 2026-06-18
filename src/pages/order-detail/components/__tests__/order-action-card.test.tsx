@@ -52,10 +52,10 @@ describe('OrderActionCard — refund region', () => {
         expect(screen.getByRole('button', { name: t('orderDetail.requestRefund') })).toBeInTheDocument();
     });
 
-    it('hides the action for a cash-on-delivery order', () => {
+    it('shows the action for a delivered cash-on-delivery order within 24h with no refund', () => {
         renderCard({ paymentMethod: PaymentMethodEnum.CashOnDelivery, onConfirmRefund: vi.fn() });
 
-        expect(screen.queryByRole('button', { name: t('orderDetail.requestRefund') })).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: t('orderDetail.requestRefund') })).toBeInTheDocument();
     });
 
     it('hides the action beyond the 24h window', () => {
