@@ -7,6 +7,7 @@ export const PaymentNotificationType = {
     Success: 'payment-success',
     Failure: 'payment-failure',
     RefundPaid: 'refund-paid',
+    RefundStatusChanged: 'refund-status-changed',
 } as const;
 
 export type PaymentNotificationType = (typeof PaymentNotificationType)[keyof typeof PaymentNotificationType];
@@ -35,10 +36,25 @@ export interface RefundPaidNotificationPayload {
 }
 
 /**
+ * Admin-facing payload pushed to the "admins" group on the shared
+ * `ReceivePaymentNotification` channel when a refund becomes Paid or Failed.
+ * Consumers narrow by `type` and match `refundId` to the open detail.
+ */
+export interface RefundStatusChangedNotificationPayload {
+    type: typeof PaymentNotificationType.RefundStatusChanged;
+    refundId: string;
+    status: string;
+    timestamp: string;
+}
+
+/**
  * Discriminated union of every payload the server pushes on the single shared
  * `ReceivePaymentNotification` channel. Narrow by `type` to classify.
  */
-export type PaymentSharedNotification = PaymentNotificationPayload | RefundPaidNotificationPayload;
+export type PaymentSharedNotification =
+    | PaymentNotificationPayload
+    | RefundPaidNotificationPayload
+    | RefundStatusChangedNotificationPayload;
 
 /**
  * Banner-facing shape for a paid refund. Produced by mapping a

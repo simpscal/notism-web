@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
 import { REFUND_QUERY_KEYS, RefundStatusEnum, type RefundDetailViewModel } from '@/features/order';
+import { PaymentNotificationType, usePaymentSignalR, type PaymentSharedNotification } from '@/features/payment';
 
 function AdminRefundDetail() {
     const { t, i18n } = useTranslation();
@@ -57,6 +58,18 @@ function AdminRefundDetail() {
             setRetryConfirmOpen(false);
         },
     });
+
+    const handleRefundNotification = useCallback(
+        (payload: PaymentSharedNotification) => {
+            if (payload.type !== PaymentNotificationType.RefundStatusChanged || payload.refundId !== id) return;
+
+            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminDetail(id!) });
+            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminList() });
+        },
+        [id, queryClient]
+    );
+
+    usePaymentSignalR({ onNotification: handleRefundNotification });
 
     const createdDate = useMemo(() => {
         if (!refund) return '';

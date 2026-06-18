@@ -8,6 +8,7 @@ import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
 import { RefundStatusEnum } from '@/features/order';
+import type { PaymentSharedNotification } from '@/features/payment';
 import { renderWithProviders } from '@/test/utils';
 
 const API_BASE = 'http://localhost:5000/api';
@@ -25,10 +26,27 @@ vi.mock('react-router-dom', async importOriginal => {
     };
 });
 
+// Capture the page's onNotification handler so tests can push hub events
+// without opening a real WebSocket connection.
+let capturedOnNotification: ((payload: PaymentSharedNotification) => void) | undefined;
+
+vi.mock('@/features/payment', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/features/payment')>();
+    return {
+        ...actual,
+        usePaymentSignalR: (options: { onNotification: (payload: PaymentSharedNotification) => void }) => {
+            capturedOnNotification = options.onNotification;
+        },
+    };
+});
+
 const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+    server.resetHandlers();
+    capturedOnNotification = undefined;
+});
 afterAll(() => server.close());
 
 function makeRefund(overrides: Partial<AdminRefundDetailResponseModel> = {}): AdminRefundDetailResponseModel {
@@ -358,5 +376,143 @@ describe('AdminRefundDetail page', () => {
         await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
         expect(retrySpy).not.toHaveBeenCalled();
         expect(screen.getByRole('button', { name: 'Retry refund' })).toBeInTheDocument();
+    });
+});
+
+describe('AdminRefundDetail — live refund-status-changed updates', () => {
+    const pushNotification = async (payload: PaymentSharedNotification) => {
+        const { act } = await import('@testing-library/react');
+        act(() => {
+            capturedOnNotification?.(payload);
+        });
+    };
+
+    it('flips the open refund from processing to paid without a manual refresh', async () => {
+        let paid = false;
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(
+                    paid
+                        ? makeRefund({
+                              status: RefundStatusEnum.Paid,
+                              paidAt: '2026-06-13T14:27:00Z',
+                              transferReference: 'VCB-TRF-20260613-0099431',
+                          })
+                        : makeRefund({ status: RefundStatusEnum.Processing })
+                )
+            )
+        );
+
+        renderPage();
+
+        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+
+        paid = true;
+        await pushNotification({
+            type: 'refund-status-changed',
+            refundId: REFUND_ID,
+            status: 'paid',
+            timestamp: '2026-06-13T14:27:00Z',
+        });
+
+        expect(await screen.findByText('Transfer Record')).toBeInTheDocument();
+        expect(screen.getByText('VCB-TRF-20260613-0099431')).toBeInTheDocument();
+    });
+
+    it('flips the open refund from processing to failed without a manual refresh', async () => {
+        const reason = 'Beneficiary account number rejected by the receiving bank.';
+        let failed = false;
+        server.use(
+            http.get(DETAIL_URL, () =>
+                HttpResponse.json(
+                    failed
+                        ? makeRefund({ status: RefundStatusEnum.Failed, failureReason: reason })
+                        : makeRefund({ status: RefundStatusEnum.Processing })
+                )
+            )
+        );
+
+        renderPage();
+
+        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+
+        failed = true;
+        await pushNotification({
+            type: 'refund-status-changed',
+            refundId: REFUND_ID,
+            status: 'failed',
+            timestamp: '2026-06-13T14:30:00Z',
+        });
+
+        expect(await screen.findByText('Transfer Failed')).toBeInTheDocument();
+        expect(screen.getByText(reason)).toBeInTheDocument();
+    });
+
+    it('ignores a refund-status-changed notification for a different refund id', async () => {
+        let refetched = false;
+        server.use(
+            http.get(DETAIL_URL, () => {
+                if (refetched) {
+                    return HttpResponse.json(
+                        makeRefund({
+                            status: RefundStatusEnum.Paid,
+                            paidAt: '2026-06-13T14:27:00Z',
+                            transferReference: 'VCB-TRF-20260613-0099431',
+                        })
+                    );
+                }
+                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }));
+            })
+        );
+
+        renderPage();
+
+        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+
+        refetched = true;
+        await pushNotification({
+            type: 'refund-status-changed',
+            refundId: 'rf-999-other',
+            status: 'paid',
+            timestamp: '2026-06-13T14:27:00Z',
+        });
+
+        // No refetch should be triggered, so the detail stays processing.
+        await waitFor(() => expect(screen.getByText('Transfer in progress')).toBeInTheDocument());
+        expect(screen.queryByText('Transfer Record')).not.toBeInTheDocument();
+    });
+
+    it('ignores a non-matching notification type', async () => {
+        let refetched = false;
+        server.use(
+            http.get(DETAIL_URL, () => {
+                if (refetched) {
+                    return HttpResponse.json(
+                        makeRefund({
+                            status: RefundStatusEnum.Paid,
+                            paidAt: '2026-06-13T14:27:00Z',
+                            transferReference: 'VCB-TRF-20260613-0099431',
+                        })
+                    );
+                }
+                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }));
+            })
+        );
+
+        renderPage();
+
+        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+
+        refetched = true;
+        await pushNotification({
+            type: 'payment-success',
+            orderId: 'ord-1',
+            slugId: 'ORD-ABC123',
+            message: 'Payment confirmed',
+            timestamp: '2026-06-13T14:27:00Z',
+        });
+
+        await waitFor(() => expect(screen.getByText('Transfer in progress')).toBeInTheDocument());
+        expect(screen.queryByText('Transfer Record')).not.toBeInTheDocument();
     });
 });
