@@ -15,14 +15,18 @@ export function useReloadUser() {
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.user.user);
     const isAuthInitialized = useAppSelector(state => state.auth.isInitialized);
+    const accessToken = useAppSelector(state => state.auth.accessToken);
 
-    const accessToken = tokenManagerUtils.getToken();
-    const hasValidToken = Boolean(accessToken);
+    // Fall back to persisted token for cold starts where Redux has not yet hydrated it.
+    const hasValidToken = Boolean(accessToken ?? tokenManagerUtils.getToken());
 
+    // Gate on token presence only. Gating on `!user` skipped the reload after
+    // login/register/OAuth — those responses omit location — so the authoritative
+    // full profile never loaded until a manual refresh cleared the store.
     const query = useQuery({
         queryKey: QUERY_KEY,
         queryFn: () => authApi.reload(),
-        enabled: hasValidToken && !user,
+        enabled: hasValidToken,
         retry: false,
     });
 
