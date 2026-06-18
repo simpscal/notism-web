@@ -4,49 +4,7 @@ import { RefundStatusEnum } from '../enums/refund-status.enum';
 
 const REFUND_WINDOW_MS = 24 * 60 * 60 * 1000;
 
-const SEPAY_QR_BASE_URL = 'https://qr.sepay.vn/img';
-
-interface RefundVietQrParams {
-    refundId: string;
-    bankCode: string;
-    accountNumber: string;
-    amount: number;
-    descriptionSuffix?: string;
-}
-
-/**
- * "N"-format GUID: 32 lowercase hex chars, no hyphens. The SePay outbound webhook
- * matches a refund by `content.Trim().Split('-')[0]` + `Guid.TryParseExact(.., "N")`,
- * so this is the exact token shape the transfer description must lead with (#250).
- */
-export function toNFormatGuid(refundId: string): string {
-    return refundId.replace(/-/g, '').toLowerCase();
-}
-
-/**
- * Admin refund VietQR builder (story #251 / #250). Mirrors the inbound VietQR builders
- * but targets SePay's hosted endpoint. `des` LEADS with the N-format refund id as the
- * first `-`-delimited token so the SePay outbound webhook auto-matches the refund.
- */
-export function buildRefundVietQrUrl({
-    refundId,
-    bankCode,
-    accountNumber,
-    amount,
-    descriptionSuffix,
-}: RefundVietQrParams): string {
-    const refundToken = toNFormatGuid(refundId);
-    const des = descriptionSuffix ? `${refundToken}-${descriptionSuffix}` : refundToken;
-
-    const params = new URLSearchParams({
-        bank: bankCode,
-        acc: accountNumber,
-        amount: String(amount),
-        des,
-    });
-
-    return `${SEPAY_QR_BASE_URL}?${params.toString()}`;
-}
+export { toNFormatGuid } from '@/features/payment';
 
 interface RefundRequestEligibility {
     paymentMethod: string;

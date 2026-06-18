@@ -67,7 +67,7 @@ afterAll(() => server.close());
 const t = (key: string) => i18n.t(key);
 
 describe('Payment — Banking Checkout Transition', () => {
-    it('shows the QR panel built from the store bank account in the checkout response', async () => {
+    it('shows the SePay QR panel built from the store bank account in the checkout response', async () => {
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
@@ -81,6 +81,15 @@ describe('Payment — Banking Checkout Transition', () => {
         });
 
         expect(screen.getByText(STORE_BANK_ACCOUNT.accountNumber)).toBeInTheDocument();
+
+        const img = screen.getByRole('img', { name: t('payment.bankTransfer.qrImageAlt') });
+        const src = new URL(img.getAttribute('src') ?? '');
+
+        expect(`${src.origin}${src.pathname}`).toBe('https://qr.sepay.vn/img');
+        expect(src.searchParams.get('bank')).toBe(STORE_BANK_ACCOUNT.bankCode);
+        expect(src.searchParams.get('acc')).toBe(STORE_BANK_ACCOUNT.accountNumber);
+        expect(src.searchParams.get('amount')).toBe('50000');
+        expect(src.searchParams.get('des')).toBe('550e8400e29b41d4a716446655440000');
     });
 
     it('shows the unavailable terminal state (no perpetual spinner) when the checkout response has no bank account', async () => {
