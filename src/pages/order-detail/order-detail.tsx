@@ -21,8 +21,8 @@ import {
 } from '@/features/order';
 import {
     BankingPaymentConfirmedPanel,
-    PaymentNotificationPayload,
     PaymentNotificationType,
+    PaymentSharedNotification,
     PaymentStatusEnum,
     usePaymentSignalR,
 } from '@/features/payment';
@@ -34,7 +34,7 @@ function OrderDetail() {
     const queryClient = useQueryClient();
 
     const handlePaymentNotification = useCallback(
-        (payload: PaymentNotificationPayload) => {
+        (payload: PaymentSharedNotification) => {
             if (payload.type === PaymentNotificationType.Success) {
                 toast.success(payload.message);
                 queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });

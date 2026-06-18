@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RefundPaidBannerStack from '../refund-paid-banner-stack';
 
 import i18n from '@/app/i18n/i18n';
-import type { PaidRefundNotification } from '@/features/payment';
+import type { PaymentSharedNotification } from '@/features/payment';
 import { renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
@@ -17,45 +17,61 @@ vi.mock('react-router-dom', async () => {
     return { ...actual, useNavigate: () => navigateMock };
 });
 
-let capturedOnRefundPaid: ((payload: PaidRefundNotification) => void) | undefined;
+let capturedOnNotification: ((payload: PaymentSharedNotification) => void) | undefined;
 
 vi.mock('@/features/payment', async () => {
     const actual = await vi.importActual<typeof import('@/features/payment')>('@/features/payment');
     return {
         ...actual,
-        usePaymentSignalR: (options: { onRefundPaid?: (payload: PaidRefundNotification) => void }) => {
-            capturedOnRefundPaid = options.onRefundPaid;
+        usePaymentSignalR: (options: { onNotification?: (payload: PaymentSharedNotification) => void }) => {
+            capturedOnNotification = options.onNotification;
         },
     };
 });
 
-const REFUND_ONE: PaidRefundNotification = {
+interface RefundFixture {
+    refundId: string;
+    orderId: string;
+    orderRef: string;
+    amount: number;
+    timestamp: string;
+}
+
+const REFUND_ONE: RefundFixture = {
     refundId: 'rfd-9001',
     orderId: 'A1B2C3',
     orderRef: 'ORD-20260613-0099',
     amount: 485_000,
-    sentDate: '13 June 2026, 14:27',
+    timestamp: '13 June 2026, 14:27',
 };
 
-const REFUND_TWO: PaidRefundNotification = {
+const REFUND_TWO: RefundFixture = {
     refundId: 'rfd-9002',
     orderId: 'D4E5F6',
     orderRef: 'ORD-20260612-0074',
     amount: 215_000,
-    sentDate: '12 June 2026, 10:05',
+    timestamp: '12 June 2026, 10:05',
 };
 
-const pushRefund = async (payload: PaidRefundNotification) => {
+const pushRefund = async (payload: RefundFixture) => {
     const { act } = await import('@testing-library/react');
     act(() => {
-        capturedOnRefundPaid?.(payload);
+        capturedOnNotification?.({
+            type: 'refund-paid',
+            refundId: payload.refundId,
+            orderId: payload.orderId,
+            orderRef: payload.orderRef,
+            amount: payload.amount,
+            message: 'Your refund has been paid',
+            timestamp: payload.timestamp,
+        });
     });
 };
 
 describe('RefundPaidBannerStack', () => {
     beforeEach(() => {
         navigateMock.mockReset();
-        capturedOnRefundPaid = undefined;
+        capturedOnNotification = undefined;
         localStorage.clear();
     });
 
@@ -115,5 +131,22 @@ describe('RefundPaidBannerStack', () => {
         await pushRefund(REFUND_ONE);
 
         expect(screen.queryByText(new RegExp(REFUND_ONE.orderRef))).not.toBeInTheDocument();
+    });
+
+    it('ignores non-refund-paid notifications on the shared channel', async () => {
+        const { act } = await import('@testing-library/react');
+        renderWithProviders(<RefundPaidBannerStack />);
+
+        act(() => {
+            capturedOnNotification?.({
+                type: 'payment-success',
+                orderId: 'A1B2C3',
+                slugId: 'ORD-ABC123',
+                message: 'Payment confirmed',
+                timestamp: '2026-06-13T14:27:00.000Z',
+            });
+        });
+
+        expect(screen.queryByText(t('order.refund.paidBanner.title'))).not.toBeInTheDocument();
     });
 });

@@ -6,9 +6,12 @@ import { REFUND_PAID_BANNER_DISMISSED_KEY } from '../constants';
 import RefundPaidBanner, { type RefundPaidBannerData } from './refund-paid-banner';
 
 import { ROUTES } from '@/app/constants';
-import { type PaidRefundNotification, usePaymentSignalR } from '@/features/payment';
-
-const noop = () => {};
+import {
+    type PaidRefundNotification,
+    type PaymentSharedNotification,
+    PaymentNotificationType,
+    usePaymentSignalR,
+} from '@/features/payment';
 
 function readDismissedIds(): string[] {
     try {
@@ -45,7 +48,23 @@ function RefundPaidBannerStack() {
         });
     }, []);
 
-    usePaymentSignalR({ onNotification: noop, onRefundPaid: handleRefundPaid });
+    const handleNotification = useCallback(
+        (payload: PaymentSharedNotification) => {
+            if (payload.type !== PaymentNotificationType.RefundPaid) {
+                return;
+            }
+            handleRefundPaid({
+                refundId: payload.refundId,
+                orderId: payload.orderId,
+                orderRef: payload.orderRef,
+                amount: payload.amount,
+                sentDate: payload.timestamp,
+            });
+        },
+        [handleRefundPaid]
+    );
+
+    usePaymentSignalR({ onNotification: handleNotification });
 
     const handleOpenOrder = useCallback(
         (orderId: string) => {

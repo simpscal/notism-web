@@ -17,7 +17,7 @@ import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { CartItemViewModel } from '@/features/cart/models';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
-import { PaymentNotificationPayload, PaymentNotificationType, usePaymentSignalR } from '@/features/payment';
+import { PaymentNotificationType, PaymentSharedNotification, usePaymentSignalR } from '@/features/payment';
 import { BankAccountViewModel } from '@/features/payment/models';
 import {
     loadCart,
@@ -73,7 +73,7 @@ function Payment() {
     });
 
     const handlePaymentNotification = useCallback(
-        (payload: PaymentNotificationPayload) => {
+        (payload: PaymentSharedNotification) => {
             if (payload.type === PaymentNotificationType.Success) {
                 setConfirmedSlugId(payload.slugId);
                 setSuccessItems([...selectedItems]);
