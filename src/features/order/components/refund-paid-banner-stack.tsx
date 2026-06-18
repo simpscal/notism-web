@@ -50,14 +50,18 @@ function RefundPaidBannerStack() {
 
     const handleNotification = useCallback(
         (payload: PaymentSharedNotification) => {
-            if (payload.type !== PaymentNotificationType.RefundPaid) {
+            if (
+                payload.type !== PaymentNotificationType.RefundStatusChanged ||
+                payload.status !== 'paid' ||
+                !payload.orderId
+            ) {
                 return;
             }
             handleRefundPaid({
                 refundId: payload.refundId,
                 orderId: payload.orderId,
-                orderRef: payload.orderRef,
-                amount: payload.amount,
+                orderRef: payload.orderRef ?? '',
+                amount: payload.amount ?? 0,
                 sentDate: payload.timestamp,
             });
         },
