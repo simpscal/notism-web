@@ -19,33 +19,13 @@ import {
     PaymentMethodEnum,
     shouldShowRefundRequest,
 } from '@/features/order';
-import {
-    BankingPaymentConfirmedPanel,
-    PaymentNotificationPayload,
-    PaymentNotificationType,
-    PaymentStatusEnum,
-    usePaymentSignalR,
-} from '@/features/payment';
+import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-
-    const handlePaymentNotification = useCallback(
-        (payload: PaymentNotificationPayload) => {
-            if (payload.type === PaymentNotificationType.Success) {
-                toast.success(payload.message);
-                queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });
-            } else if (payload.type === PaymentNotificationType.Failure) {
-                toast.error(payload.message);
-            }
-        },
-        [queryClient, id]
-    );
-
-    usePaymentSignalR({ onNotification: handlePaymentNotification });
 
     const {
         data: order,

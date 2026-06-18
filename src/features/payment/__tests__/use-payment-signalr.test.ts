@@ -141,46 +141,38 @@ describe('usePaymentSignalR', () => {
         expect(mockOn).not.toHaveBeenCalled();
     });
 
-    it('registers the onRefundPaid callback via connection.on when provided', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), onRefundPaid: vi.fn() }));
-
-        await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 0));
-        });
-
-        expect(mockOn).toHaveBeenCalledWith('ReceiveRefundPaidNotification', expect.any(Function));
-    });
-
-    it('calls onRefundPaid with the refund-paid payload when ReceiveRefundPaidNotification fires', async () => {
-        const onRefundPaid = vi.fn();
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), onRefundPaid }));
+    it('calls onNotification with a refund-paid payload when ReceivePaymentNotification fires with refund-paid type', async () => {
+        const onNotification = vi.fn();
+        renderHook(() => usePaymentSignalR({ onNotification }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
         });
 
         const registeredHandler = mockOn.mock.calls.find(
-            (args: unknown[]) => args[0] === 'ReceiveRefundPaidNotification'
+            (args: unknown[]) => args[0] === 'ReceivePaymentNotification'
         )?.[1] as ((payload: unknown) => void) | undefined;
 
         expect(registeredHandler).toBeDefined();
 
         const refundPaidPayload = {
+            type: 'refund-paid',
             refundId: 'refund-id',
             orderId: 'order-id',
             orderRef: 'A1B2C3',
             amount: 485_000,
-            sentDate: '2026-06-13T14:27:00.000Z',
+            message: 'Your refund has been paid',
+            timestamp: '2026-06-13T14:27:00.000Z',
         };
 
         act(() => {
             registeredHandler!(refundPaidPayload);
         });
 
-        expect(onRefundPaid).toHaveBeenCalledWith(refundPaidPayload);
+        expect(onNotification).toHaveBeenCalledWith(refundPaidPayload);
     });
 
-    it('does not register ReceiveRefundPaidNotification handler when onRefundPaid is omitted', async () => {
+    it('does not register a dedicated ReceiveRefundPaidNotification handler', async () => {
         renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
 
         await act(async () => {
