@@ -72,7 +72,7 @@ describe('OrderActionCard — refund region', () => {
 
     it('opens a confirm dialog and triggers the refund request on confirm', async () => {
         const onConfirmRefund = vi.fn();
-        renderCard({ onConfirmRefund });
+        renderCard({ onConfirmRefund, hasBankDetails: true });
 
         await userEvent.click(screen.getByRole('button', { name: t('orderDetail.requestRefund') }));
 
