@@ -1,10 +1,11 @@
 import { apiClient } from './client';
-import { toCreateOrder, toOrders, toOrder, toRefundSummary } from './mappers';
+import { toCreateOrder, toHeldRefund, toOrders, toOrder, toRefundSummary } from './mappers';
 import {
     CreateOrderRequestModel,
     CreateOrderResponseModel,
     GetOrdersRequestModel,
     GetOrdersResponseModel,
+    HeldRefundResponseModel,
     OrderResponseModel,
     RefundSummaryResponseModel,
 } from './models';
@@ -41,5 +42,10 @@ export const orderApi = {
     requestRefund: async (id: string) => {
         const response = await apiClient.post<RefundSummaryResponseModel>(API_ENDPOINTS.ORDER.REFUND(id));
         return toRefundSummary(response);
+    },
+
+    getHeldRefunds: async () => {
+        const response = await apiClient.get<HeldRefundResponseModel[]>(API_ENDPOINTS.ORDER.HELD_REFUNDS);
+        return response.map(toHeldRefund);
     },
 };

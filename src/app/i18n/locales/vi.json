@@ -389,6 +389,13 @@
                 "title": "Đã hoàn tiền",
                 "message": "— {{amount}} cho đơn hàng {{orderRef}} đã được chuyển vào ngân hàng của bạn vào {{sentDate}}.",
                 "viewOrder": "Xem đơn hàng"
+            },
+            "heldReminderBanner": {
+                "titleSingle": "Thêm thông tin ngân hàng để nhận khoản hoàn tiền của bạn",
+                "messageSingle": "— khoản hoàn {{amount}} cho đơn hàng {{orderRef}} đang được giữ lại cho đến khi chúng tôi có tài khoản để chuyển vào.",
+                "titleMultiple": "Thêm thông tin ngân hàng để nhận các khoản hoàn tiền của bạn",
+                "messageMultiple": "— {{count}} khoản hoàn tiền với tổng cộng {{amount}} đang được giữ lại cho đến khi chúng tôi có tài khoản để chuyển vào.",
+                "cta": "Thêm thông tin ngân hàng"
             }
         }
     },

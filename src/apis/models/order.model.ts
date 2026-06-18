@@ -69,6 +69,12 @@ export interface OrderResponseModel {
     refund: RefundSummaryResponseModel | null;
 }
 
+export interface HeldRefundResponseModel {
+    refundId: string;
+    orderReference: string;
+    amount: number;
+}
+
 export interface GetOrdersRequestModel {
     skip?: number;
     take?: number;
