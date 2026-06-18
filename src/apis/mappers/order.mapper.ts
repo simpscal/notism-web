@@ -2,6 +2,7 @@ import type {
     CreateOrderResponseModel,
     DeliveryStatusTimingResponseModel,
     GetOrdersResponseModel,
+    HeldRefundResponseModel,
     OrderItemResponseModel,
     OrderPaymentQrResponseModel,
     OrderResponseModel,
@@ -10,6 +11,7 @@ import type {
 
 import type {
     CreateOrderViewModel,
+    HeldRefundViewModel,
     OrderDeliveryStatusTimingViewModel,
     OrderItemViewModel,
     OrderPaymentQrViewModel,
@@ -17,6 +19,14 @@ import type {
     OrderViewModel,
     RefundSummaryViewModel,
 } from '@/features/order/models';
+
+export function toHeldRefund(response: HeldRefundResponseModel): HeldRefundViewModel {
+    return {
+        refundId: response.refundId,
+        orderRef: response.orderReference,
+        amount: response.amount,
+    };
+}
 
 export function toRefundSummary(response: RefundSummaryResponseModel): RefundSummaryViewModel {
     return {

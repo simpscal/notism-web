@@ -389,6 +389,13 @@
                 "title": "Refund sent",
                 "message": "— {{amount}} for order {{orderRef}} was transferred to your bank on {{sentDate}}.",
                 "viewOrder": "View order"
+            },
+            "heldReminderBanner": {
+                "titleSingle": "Add your bank details to receive your refund",
+                "messageSingle": "— your {{amount}} refund for order {{orderRef}} is on hold until we have an account to send it to.",
+                "titleMultiple": "Add your bank details to receive your refunds",
+                "messageMultiple": "— {{count}} refunds totalling {{amount}} are on hold until we have an account to send them to.",
+                "cta": "Add bank details"
             }
         }
     },

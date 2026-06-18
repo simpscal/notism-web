@@ -7,3 +7,5 @@ export { default as RefundStatusPanel } from './refund-status-panel';
 export { default as RefundPaidBanner } from './refund-paid-banner';
 export type { RefundPaidBannerData } from './refund-paid-banner';
 export { default as RefundPaidBannerStack } from './refund-paid-banner-stack';
+export { default as HeldRefundReminderBanner } from './held-refund-reminder-banner';
+export { default as HeldRefundReminderBannerContainer } from './held-refund-reminder-banner-container';

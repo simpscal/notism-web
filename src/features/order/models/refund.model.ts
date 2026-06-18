@@ -26,6 +26,12 @@ export interface RefundsViewModel {
     items: RefundListItemViewModel[];
 }
 
+export interface HeldRefundViewModel {
+    refundId: string;
+    orderRef: string;
+    amount: number;
+}
+
 export interface RefundDetailViewModel {
     id: string;
     orderId: string;

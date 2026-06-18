@@ -36,6 +36,7 @@ export const API_ENDPOINTS = {
         DETAIL: (id: string) => `orders/${id}`,
         CANCEL: (id: string) => `orders/${id}/cancel`,
         REFUND: (id: string) => `orders/${id}/refund`,
+        HELD_REFUNDS: 'orders/held-refunds',
     },
     PAYMENT: {
         BANK_ACCOUNT: 'payments/bank-account',

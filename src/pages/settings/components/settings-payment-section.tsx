@@ -80,6 +80,7 @@ function SettingsPaymentSection({ variant = 'admin' }: SettingsPaymentSectionPro
         mutationFn: (payload: BankAccountFormValues) => paymentApi.saveBankAccount(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: BANK_ACCOUNT_QUERY_KEY });
+            queryClient.invalidateQueries({ queryKey: ['orders', 'held-refunds'] });
             toast.success(t(`${prefix}.saveSuccess`));
         },
     });
