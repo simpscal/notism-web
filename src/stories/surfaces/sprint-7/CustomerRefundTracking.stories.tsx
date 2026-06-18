@@ -19,9 +19,12 @@ import Spinner from '@/components/spinner';
 // order-action-card.tsx), which today holds order id / date / status + a
 // "Cancel order" action. This sprint adds, ON THAT CARD, a refund region:
 //
-//   • 243 — a "Request refund" action, shown ONLY for a delivered bank-transfer
-//     order within 24h of delivery that has NO refund yet. Confirming opens a
-//     Dialog (mirrors the existing cancel-confirm Dialog on the same card).
+//   • 243 — a "Request refund" action, shown ONLY for a delivered order paid by
+//     bank transfer OR cash on delivery, within 24h of delivery, that has NO
+//     refund yet. Confirming opens a Dialog (mirrors the existing cancel-confirm
+//     Dialog on the same card). COD orders are now eligible because the refund
+//     payout always goes to the customer's saved bank details (settings/payment),
+//     regardless of how the order was originally paid.
 //   • 242 / 243 — once a refund exists (created on cancel OR on request), the
 //     action is REPLACED by a refund-status panel showing "Refund pending".
 //   • 246 — when the refund is Paid the panel shows the transfer reference and
@@ -39,9 +42,12 @@ import Spinner from '@/components/spinner';
 //     to the customer's general bank/payment settings (story 254 — the Payment
 //     section of the account settings, settings/payment).
 //
-// Visibility rules captured below (shouldShowRequestAction): no action for COD
-// orders, for not-yet-delivered orders, beyond the 24h window, or when a refund
-// already exists (its status replaces the action — 243 final AC).
+// Visibility rules captured below (shouldShowRequestAction): no action for
+// not-yet-delivered orders, beyond the 24h window, or when a refund already
+// exists (its status replaces the action — 243 final AC). The only payment
+// methods this app models are 'banking' and 'cash on delivery', and BOTH are now
+// refund-eligible — so there is no representable payment-type negative left (see
+// <confirmations>).
 //
 // Everything else on the page (nav, hero, checkout progress, delivery timeline,
 // order-items card) is unchanged → rendered as labelled placeholders so the
@@ -94,12 +100,15 @@ interface OrderContext {
 }
 
 /**
- * Request-refund action visibility (243). Shown only when: paid by bank
- * transfer, delivered, within 24h, and no refund exists yet. A refund that
- * already exists replaces the action with its status (handled in the card).
+ * Request-refund action visibility (243). Shown only when: delivered, within
+ * 24h, and no refund exists yet — for orders paid by EITHER bank transfer OR
+ * cash on delivery (the payout always lands on the customer's saved bank
+ * details, so COD is eligible too). A refund that already exists replaces the
+ * action with its status (handled in the card).
  */
 function shouldShowRequestAction(order: OrderContext): boolean {
-    return order.paymentMethod === 'banking' && order.delivered && order.withinRefundWindow && order.refund === null;
+    const eligiblePayment = order.paymentMethod === 'banking' || order.paymentMethod === 'cash on delivery';
+    return eligiblePayment && order.delivered && order.withinRefundWindow && order.refund === null;
 }
 
 // ---------------------------------------------------------------------------
@@ -534,11 +543,19 @@ export const OutsideWindow: Story = {
     render: () => StaticCard({ ...BASE_ORDER, withinRefundWindow: false }),
 };
 
-/** No action — not paid by bank transfer (cash on delivery): no "Request
- *  refund" (242 / 243 negative ACs). */
-export const NonBankTransfer: Story = {
-    name: 'No Action — Cash On Delivery Order (242 / 243)',
-    render: () => StaticCard({ ...BASE_ORDER, paymentMethod: 'cash on delivery' }),
+/** COD order — a delivered, within-24h cash-on-delivery order with no refund yet
+ *  now shows "Request refund" too (243, COD eligibility): the payout goes to the
+ *  customer's saved bank details regardless of how the order was paid. */
+export const CashOnDeliveryRequestAvailable: Story = {
+    name: 'COD Order — Request Refund Available (243)',
+    parameters: {
+        docs: {
+            description: {
+                story: 'A cash-on-delivery order is now refund-eligible just like a bank-transfer order: delivered, within 24h, and no existing refund → "Request refund" is shown. The refund payout always lands on the customer\'s saved bank details (settings/payment), so the original payment method no longer gates the action. The held / no-bank-details prompt paths are unchanged.',
+            },
+        },
+    },
+    render: () => <RefundTrackingHarness initialOrder={{ ...BASE_ORDER, paymentMethod: 'cash on delivery' }} />,
 };
 
 /** Request with no bank details — confirming "Request refund" when no bank

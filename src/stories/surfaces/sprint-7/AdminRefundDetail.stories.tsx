@@ -165,7 +165,25 @@ const STATUS_CUE: Record<RefundStatus, string> = {
     failed: 'Transfer failed — review the reason and retry the transfer.',
 };
 
-function StatusHero({ refund }: { refund: Refund }) {
+/**
+ * Subtle "Live" affordance — signals the detail is subscribed and re-renders on
+ * an externally-pushed status change (no manual refresh; #245 live-update ACs).
+ * Shown only while the refund is in a non-terminal state that can still flip
+ * (Pending / Processing); a small pulsing dot communicates the live connection.
+ */
+function LiveIndicator() {
+    return (
+        <span className='inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground'>
+            <span className='relative flex h-2 w-2'>
+                <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75' />
+                <span className='relative inline-flex h-2 w-2 rounded-full bg-success' />
+            </span>
+            Live
+        </span>
+    );
+}
+
+function StatusHero({ refund, live = false }: { refund: Refund; live?: boolean }) {
     return (
         <Card
             className={
@@ -178,7 +196,10 @@ function StatusHero({ refund }: { refund: Refund }) {
         >
             <CardContent className='flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between'>
                 <div className='space-y-2'>
-                    <RefundStatusBadge status={refund.status} />
+                    <div className='flex items-center gap-3'>
+                        <RefundStatusBadge status={refund.status} />
+                        {live && (refund.status === 'pending' || refund.status === 'processing') && <LiveIndicator />}
+                    </div>
                     <p className='text-sm text-muted-foreground'>{STATUS_CUE[refund.status]}</p>
                 </div>
                 <div className='shrink-0 text-left sm:text-right'>
@@ -614,6 +635,11 @@ interface DetailProps {
     refund: Refund;
     isBusy: boolean;
     confirmOpen: boolean;
+    /** When true, the detail is subscribed to live status pushes (#245): show the
+     *  "Live" affordance and announce externally-pushed status changes. */
+    live?: boolean;
+    /** A11y announcement for the latest status change (drives the aria-live region). */
+    liveAnnouncement?: string | null;
     onApproveClick: () => void;
     onConfirmApprove: () => void;
     onCancelApprove: () => void;
@@ -624,6 +650,8 @@ function RefundDetail({
     refund,
     isBusy,
     confirmOpen,
+    live = false,
+    liveAnnouncement = null,
     onApproveClick,
     onConfirmApprove,
     onCancelApprove,
@@ -635,7 +663,14 @@ function RefundDetail({
 
     return (
         <div className='space-y-6'>
-            <StatusHero refund={refund} />
+            {/* Live status announcer (#245) — an externally-pushed Paid/Failed
+                transition arrives WITHOUT any staff action; this polite aria-live
+                region announces it so it reaches assistive tech without a refresh. */}
+            <div role='status' aria-live='polite' className='sr-only'>
+                {liveAnnouncement}
+            </div>
+
+            <StatusHero refund={refund} live={live} />
 
             {refund.status === 'processing' ? (
                 // Processing → scanning the QR is the job: it leads full-width as
@@ -707,12 +742,61 @@ interface HarnessProps {
     outcome?: 'paid' | 'failed';
     /** When true, approve/retry never resolves — stays Processing. */
     stickyProcessing?: boolean;
+    /**
+     * Live push (#245): while staff PASSIVELY view (no approve/retry click), an
+     * externally-confirmed payout flips the status on a timer that is independent
+     * of the action handlers — standing in for the real-time/webhook-driven update
+     * the Admin Refund Detail subscribes to in production. The detail re-renders
+     * and announces via the aria-live region, with NO manual page refresh.
+     */
+    livePushTo?: 'paid' | 'failed';
+    /** Delay before the live push arrives, ms. */
+    livePushDelayMs?: number;
 }
 
-function RefundDetailHarness({ initial, outcome = 'paid', stickyProcessing = false }: HarnessProps) {
+function RefundDetailHarness({
+    initial,
+    outcome = 'paid',
+    stickyProcessing = false,
+    livePushTo,
+    livePushDelayMs = 1600,
+}: HarnessProps) {
     const [refund, setRefund] = React.useState<Refund>(initial);
     const [confirmOpen, setConfirmOpen] = React.useState(false);
     const [isBusy, setIsBusy] = React.useState(false);
+    const [liveAnnouncement, setLiveAnnouncement] = React.useState<string | null>(null);
+
+    // Passive live push — fires once on mount, on its OWN timer, with no staff
+    // interaction. Mirrors a subscription/poll delivering an external status
+    // change while the detail is simply open (#245 live-update ACs).
+    React.useEffect(() => {
+        if (!livePushTo) return;
+        const timer = window.setTimeout(() => {
+            setRefund(current => {
+                // Ignore a stale push if staff already moved the refund elsewhere.
+                if (current.status !== 'pending' && current.status !== 'processing') return current;
+                return livePushTo === 'paid'
+                    ? {
+                          ...current,
+                          status: 'paid',
+                          transferReference: REFUND_PAID.transferReference,
+                          paidDate: REFUND_PAID.paidDate,
+                          failureReason: null,
+                      }
+                    : {
+                          ...current,
+                          status: 'failed',
+                          failureReason: REFUND_FAILED.failureReason,
+                      };
+            });
+            setLiveAnnouncement(
+                livePushTo === 'paid'
+                    ? 'Refund status updated to Paid. The transfer reference and paid date are now shown.'
+                    : 'Refund status updated to Failed. Review the failure reason and retry the transfer.'
+            );
+        }, livePushDelayMs);
+        return () => window.clearTimeout(timer);
+    }, []);
 
     const settle = () => {
         if (stickyProcessing) return;
@@ -765,6 +849,8 @@ function RefundDetailHarness({ initial, outcome = 'paid', stickyProcessing = fal
                 refund={refund}
                 isBusy={isBusy}
                 confirmOpen={confirmOpen}
+                live={Boolean(livePushTo)}
+                liveAnnouncement={liveAnnouncement}
                 onApproveClick={handleApproveClick}
                 onConfirmApprove={handleConfirmApprove}
                 onCancelApprove={handleCancelApprove}
@@ -935,6 +1021,39 @@ export const RetryFailsAgain: Story = {
         },
     },
     render: () => <RefundDetailHarness initial={REFUND_FAILED} outcome='failed' />,
+};
+
+/** Live update → Paid (#245) — staff are PASSIVELY viewing a Pending refund (no
+ *  approve/retry click). An externally-confirmed payout arrives on an independent
+ *  timer and flips the status straight to Paid — the transfer reference and paid
+ *  date appear and the aria-live region announces it, all WITHOUT a page refresh
+ *  and without any staff action. A subtle "Live" indicator marks the connection. */
+export const LiveUpdateToPaid: Story = {
+    name: 'Live Update — Pending → Paid Without Refresh (245)',
+    parameters: {
+        docs: {
+            description: {
+                story: 'Staff open a refund and do nothing. An externally-confirmed payout (real-time/webhook-driven in production; modelled here as a status push on an independent timer) flips the status Pending → Paid with no manual refresh and no approve/retry click. The detail re-renders to the Paid transfer record and the polite aria-live region announces the change. Reload Storybook or re-select the story to replay the push.',
+            },
+        },
+    },
+    render: () => <RefundDetailHarness initial={REFUND_PENDING} livePushTo='paid' />,
+};
+
+/** Live update → Failed (#245) — the parallel transition: staff passively view a
+ *  Processing refund and an externally-pushed payout FAILURE arrives on its own
+ *  timer, flipping the status to Failed (with the failure reason + Retry) without
+ *  any refresh or staff action. Announced via the aria-live region. */
+export const LiveUpdateToFailed: Story = {
+    name: 'Live Update — Processing → Failed Without Refresh (245)',
+    parameters: {
+        docs: {
+            description: {
+                story: 'The parallel live transition: while staff passively view a Processing refund, an externally-pushed payout failure arrives (independent of approve/retry) and the status flips to Failed without a page refresh — the failure reason and Retry action appear, and the aria-live region announces it. Reload or re-select the story to replay the push.',
+            },
+        },
+    },
+    render: () => <RefundDetailHarness initial={REFUND_PROCESSING} livePushTo='failed' />,
 };
 
 /** Loading — skeleton placeholder while the refund detail is fetched. */
