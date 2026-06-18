@@ -57,7 +57,8 @@ const pushRefund = async (payload: RefundFixture) => {
     const { act } = await import('@testing-library/react');
     act(() => {
         capturedOnNotification?.({
-            type: 'refund-paid',
+            type: 'refund-status-changed',
+            status: 'paid',
             refundId: payload.refundId,
             orderId: payload.orderId,
             orderRef: payload.orderRef,

@@ -156,7 +156,8 @@ describe('usePaymentSignalR', () => {
         expect(registeredHandler).toBeDefined();
 
         const refundPaidPayload = {
-            type: 'refund-paid',
+            type: 'refund-status-changed',
+            status: 'paid',
             refundId: 'refund-id',
             orderId: 'order-id',
             orderRef: 'A1B2C3',
