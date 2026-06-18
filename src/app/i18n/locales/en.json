@@ -300,6 +300,7 @@
             "amount": "Amount",
             "autoConfirm": "After your transfer the payment will be confirmed automatically.",
             "qrUnavailable": "QR unavailable",
+            "qrImageAlt": "SePay payment QR code",
             "loadErrorTitle": "Unable to load payment details",
             "loadErrorDescription": "Bank account details could not be retrieved. Please try again later.",
             "notAvailableTitle": "Bank transfer unavailable",

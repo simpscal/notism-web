@@ -300,6 +300,7 @@
             "amount": "Số tiền",
             "autoConfirm": "Sau khi chuyển khoản, thanh toán của bạn sẽ được xác nhận tự động.",
             "qrUnavailable": "Mã QR không khả dụng",
+            "qrImageAlt": "Mã QR thanh toán SePay",
             "loadErrorTitle": "Không thể tải thông tin thanh toán",
             "loadErrorDescription": "Không thể lấy thông tin tài khoản ngân hàng. Vui lòng thử lại sau.",
             "notAvailableTitle": "Chuyển khoản ngân hàng không khả dụng",

@@ -254,7 +254,6 @@ function Payment() {
                                 <PaymentBankingQr
                                     bankCode={storeBankAccount.bankCode}
                                     accountNumber={storeBankAccount.accountNumber}
-                                    accountHolderName={storeBankAccount.accountHolderName}
                                     amount={totalPrice}
                                     orderReference={checkoutId ? checkoutId.replace(/-/g, '') : ''}
                                 />

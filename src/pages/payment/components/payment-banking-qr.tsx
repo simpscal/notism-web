@@ -6,44 +6,20 @@ import { formatVnd } from '@/app/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-
-const VIETQR_BASE_URL = 'https://img.vietqr.io/image';
-
-function buildQrUrl(
-    bankCode: string,
-    accountNumber: string,
-    accountHolderName: string,
-    amount: number,
-    orderReference: string
-): string {
-    const params = new URLSearchParams({
-        amount: String(amount),
-        addInfo: orderReference,
-        accountName: accountHolderName,
-    });
-    return `${VIETQR_BASE_URL}/${bankCode}-${accountNumber}-compact2.jpg?${params.toString()}`;
-}
+import { buildSepayQrUrl } from '@/features/payment';
 
 interface PaymentBankingQrProps {
     bankCode: string;
     accountNumber: string;
-    accountHolderName: string;
     amount: number;
     orderReference: string;
     waiting?: boolean;
 }
 
-function PaymentBankingQr({
-    bankCode,
-    accountNumber,
-    accountHolderName,
-    amount,
-    orderReference,
-    waiting,
-}: PaymentBankingQrProps) {
+function PaymentBankingQr({ bankCode, accountNumber, amount, orderReference, waiting }: PaymentBankingQrProps) {
     const { t } = useTranslation();
     const [imgError, setImgError] = useState(false);
-    const qrUrl = buildQrUrl(bankCode, accountNumber, accountHolderName, amount, orderReference);
+    const qrUrl = buildSepayQrUrl({ bank: bankCode, acc: accountNumber, amount, des: orderReference });
 
     const handleImageError = useCallback(() => {
         setImgError(true);
@@ -69,7 +45,7 @@ function PaymentBankingQr({
                         ) : (
                             <img
                                 src={qrUrl}
-                                alt='VietQR payment code'
+                                alt={t('payment.bankTransfer.qrImageAlt')}
                                 className='h-44 w-44 rounded-lg border-2 border-primary/40 object-cover'
                                 onError={handleImageError}
                             />
