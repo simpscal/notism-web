@@ -11,6 +11,8 @@ import AdminFoodDetail from '@/pages/admin/food-detail/food-detail';
 import AdminFoods from '@/pages/admin/foods/foods';
 import AdminOrderDetail from '@/pages/admin/order-detail/order-detail';
 import AdminOrders from '@/pages/admin/orders/orders';
+import AdminRefundDetail from '@/pages/admin/refund-detail';
+import AdminRefunds from '@/pages/admin/refunds/refunds';
 import AdminUserDetail from '@/pages/admin/user-detail';
 import AdminUsers from '@/pages/admin/users/users';
 import { Cart } from '@/pages/cart';
@@ -75,9 +77,7 @@ function AppRoutes() {
                         <Route index element={<Navigate replace to='profile' />} />
                         <Route path='profile' element={<SettingsProfile />} />
                         <Route path='appearance' element={<SettingsAppearance />} />
-                        <Route element={<AdminRouteGuard />}>
-                            <Route path='payment' element={<SettingsPayment />} />
-                        </Route>
+                        <Route path='payment' element={<SettingsPayment />} />
                     </Route>
                 </Route>
             </Route>
@@ -88,6 +88,8 @@ function AppRoutes() {
                     <Route path='admin/dashboard' element={<AdminDashboard />} />
                     <Route path='admin/orders' element={<AdminOrders />} />
                     <Route path='admin/orders/:id' element={<AdminOrderDetail />} />
+                    <Route path='admin/refunds' element={<AdminRefunds />} />
+                    <Route path='admin/refunds/:id' element={<AdminRefundDetail />} />
                     <Route path='admin/categories' element={<AdminCategories />} />
                     <Route path='admin/categories/new' element={<AdminCategoryDetail />} />
                     <Route path='admin/categories/:id' element={<AdminCategoryDetail />} />

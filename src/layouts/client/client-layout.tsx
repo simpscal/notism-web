@@ -8,6 +8,7 @@ import ClientToolbarMobile from './components/client-toolbar-mobile';
 import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { HeldRefundReminderBannerContainer, RefundPaidBannerStack } from '@/features/order';
 import { resetStore } from '@/store/root.actions';
 
 function ClientLayout() {
@@ -24,6 +25,8 @@ function ClientLayout() {
 
     return (
         <div className='flex h-screen flex-col bg-background'>
+            <HeldRefundReminderBannerContainer />
+            <RefundPaidBannerStack />
             <>
                 <ClientToolbarDesktop user={user} onLogout={handleLogout} />
                 <ClientToolbarMobile user={user} onLogout={handleLogout} />

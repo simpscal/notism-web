@@ -10,6 +10,7 @@
         "search": "Search",
         "noResults": "No results found",
         "all": "All",
+        "retry": "Retry",
         "error": "Error",
         "success": "Success",
         "close": "Close",
@@ -177,6 +178,7 @@
         "dashboard": "Dashboard",
         "foods": "Foods",
         "orders": "Orders",
+        "refunds": "Refunds",
         "cart": "Cart",
         "theme": "Theme",
         "appearance": "Appearance",
@@ -298,8 +300,11 @@
             "amount": "Amount",
             "autoConfirm": "After your transfer the payment will be confirmed automatically.",
             "qrUnavailable": "QR unavailable",
+            "qrImageAlt": "SePay payment QR code",
             "loadErrorTitle": "Unable to load payment details",
-            "loadErrorDescription": "Bank account details could not be retrieved. Please try again later."
+            "loadErrorDescription": "Bank account details could not be retrieved. Please try again later.",
+            "notAvailableTitle": "Bank transfer unavailable",
+            "notAvailableDescription": "This store has not set up a bank account to receive transfers. Please choose another payment method."
         },
         "banking": "Banking"
     },
@@ -365,6 +370,34 @@
                 "trustedTitle": "Trusted by customers",
                 "trustedDesc": "Top-rated shopping experience"
             }
+        },
+        "refund": {
+            "statuses": {
+                "pending": "Pending",
+                "processing": "Processing",
+                "paid": "Paid",
+                "failed": "Failed"
+            },
+            "actions": {
+                "approve": "Approve refund",
+                "markFailed": "Mark as failed",
+                "retry": "Retry refund",
+                "reason": "Reason"
+            },
+            "manualTransferInstruction": "Put the refund ID {{refundId}} in the bank transfer content so the payment is matched automatically.",
+            "setUpBankDetailsCta": "Set up your bank details to receive your refund.",
+            "paidBanner": {
+                "title": "Refund sent",
+                "message": "— {{amount}} for order {{orderRef}} was transferred to your bank on {{sentDate}}.",
+                "viewOrder": "View order"
+            },
+            "heldReminderBanner": {
+                "titleSingle": "Add your bank details to receive your refund",
+                "messageSingle": "— your {{amount}} refund for order {{orderRef}} is on hold until we have an account to send it to.",
+                "titleMultiple": "Add your bank details to receive your refunds",
+                "messageMultiple": "— {{count}} refunds totalling {{amount}} are on hold until we have an account to send them to.",
+                "cta": "Add bank details"
+            }
         }
     },
     "orderDetail": {
@@ -388,6 +421,23 @@
         "cancelling": "Cancelling...",
         "cancelConfirmTitle": "Cancel Order",
         "cancelConfirmDescription": "Are you sure you want to cancel this order? This action cannot be undone.",
+        "requestRefund": "Request refund",
+        "requesting": "Requesting…",
+        "requestRefundConfirmTitle": "Request a refund?",
+        "requestRefundConfirmDescription": "We'll start a refund of {{amount}} to the bank account you paid from. Refunds are usually sent within a few business days.",
+        "requestRefundNotNow": "Not now",
+        "addBankDetailsTitle": "Add your bank details first",
+        "addBankDetailsDescription": "We don't have a bank account on file to send your refund to. Add your bank details, then request the refund again.",
+        "addBankDetails": "Add bank details",
+        "refundRequestedSuccess": "Refund requested",
+        "refund": {
+            "label": "Refund",
+            "amount": "Amount",
+            "sentOn": "Sent on",
+            "transferReference": "Transfer reference",
+            "copyReference": "Copy transfer reference",
+            "pendingMessage": "We've started your refund to your bank account. You'll be notified once it's sent."
+        },
         "notFound": {
             "title": "Order Not Found",
             "description": "The order you're looking for doesn't exist or has been removed."
@@ -476,6 +526,30 @@
             "saveSuccess": "Appearance preferences saved!"
         }
     },
+    "customer": {
+        "payment": {
+            "paneTitle": "Bank account",
+            "subtitle": "The bank account on file for your account. Keep these details up to date so payments to you reach the right account.",
+            "retry": "Retry",
+            "bankName": "Bank name",
+            "bankNamePlaceholder": "e.g. Vietcombank",
+            "bankNameHint": "Type your bank name exactly as recognised by our payment provider (SePay) so it maps to the right account.",
+            "accountNumber": "Account number",
+            "accountNumberPlaceholder": "e.g. 1023456789",
+            "accountNumberHint": "Digits only, exactly as shown in your banking app.",
+            "accountHolderName": "Account holder name",
+            "accountHolderNamePlaceholder": "e.g. Nguyen Van A",
+            "saveChanges": "Save changes",
+            "saving": "Saving...",
+            "cancel": "Cancel",
+            "saveSuccess": "Bank account details saved",
+            "bankNameRequired": "Bank name is required",
+            "accountNumberRequired": "Account number is required",
+            "accountHolderNameRequired": "Account holder name is required",
+            "loadErrorTitle": "Failed to load bank details",
+            "loadErrorDescription": "We couldn’t load your saved bank details. Please try again."
+        }
+    },
     "admin": {
         "dashboard": {
             "title": "Dashboard",
@@ -557,6 +631,20 @@
                     "cancel": "Cancel"
                 }
             }
+        },
+        "refunds": {
+            "title": "Refunds",
+            "subtitle": "Reconcile every refund — approve, retry, and view transfer references.",
+            "order": "Order",
+            "amount": "Amount",
+            "status": "Status",
+            "transferReference": "Transfer reference",
+            "created": "Created",
+            "paid": "Paid",
+            "actions": "Actions",
+            "viewRefund": "View refund",
+            "empty": "No refunds with this status.",
+            "failedToLoad": "Couldn’t load refunds"
         },
         "foods": {
             "title": "Foods",
@@ -693,6 +781,55 @@
             "saving": "Saving...",
             "saveChanges": "Save Changes",
             "deleteUser": "Delete User"
+        },
+        "refundDetail": {
+            "backToRefunds": "Back to Refunds",
+            "title": "Refund detail",
+            "subtitle": "Approve and review the bank transfer for this refund.",
+            "summaryTitle": "Refund Summary",
+            "scanToPay": "Scan this QR with your banking app to send the refund.",
+            "qrTitle": "Scan to pay refund",
+            "qrImageAlt": "SePay VietQR payment code for refund {{refundId}}",
+            "qrWaiting": "Waiting for the transfer to be sent…",
+            "qrDescription": "Scan this VietQR code with a Vietnamese banking app to send the refund. The transfer pre-fills with the customer's account, the full order total, and the refund id as the content.",
+            "qrBank": "Bank",
+            "qrAccount": "Account",
+            "qrHolder": "Holder",
+            "qrAmount": "Amount",
+            "qrContent": "Content",
+            "qrContentHint": "Keep the content starting with the refund id",
+            "qrContentHintSuffix": "so the payment is matched automatically.",
+            "qrMissingTitle": "No payout account on file",
+            "qrMissingDescription": "This customer has no saved bank details, so a payment QR can't be built. Ask the customer to add a payout account before paying the refund.",
+            "status": "Status",
+            "refundId": "Refund ID",
+            "order": "Order",
+            "amount": "Amount",
+            "created": "Created",
+            "approveTitle": "Approve Refund",
+            "approveDescription": "Approving moves this refund to processing so the bank transfer can be made for the full amount.",
+            "approveAction": "Approve refund",
+            "approving": "Approving…",
+            "confirmTitle": "Approve this refund?",
+            "confirmDescription": "This moves the {{amount}} refund for order #{{orderRef}} to processing. The bank transfer is then made and matched against the refund ID.",
+            "confirmAction": "Approve",
+            "processingTitle": "Transfer in progress",
+            "processingDescription": "The bank transfer is being processed. This view updates once it completes.",
+            "transferRecordTitle": "Transfer Record",
+            "paidOn": "Paid on",
+            "transferReference": "Transfer reference",
+            "copyReference": "Copy transfer reference",
+            "transferRecordNote": "The transfer completed. This record is read-only.",
+            "failureTitle": "Transfer Failed",
+            "retryTitle": "Retry Refund",
+            "retryDescription": "Retrying re-initiates the bank transfer for the full amount. If it fails again, the latest failure reason is recorded.",
+            "retryAction": "Retry refund",
+            "retrying": "Retrying…",
+            "retryConfirmTitle": "Retry this refund?",
+            "retryConfirmDescription": "This re-initiates the {{amount}} refund for order #{{orderRef}} and moves it back to processing. The bank transfer is then made and matched against the refund ID.",
+            "retryConfirmAction": "Retry",
+            "failedToLoad": "Failed to load refund details",
+            "failedToLoadDescription": "Please try again later or go back to the refunds list."
         },
         "user": {
             "details": "User Details",

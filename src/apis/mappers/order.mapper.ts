@@ -2,19 +2,45 @@ import type {
     CreateOrderResponseModel,
     DeliveryStatusTimingResponseModel,
     GetOrdersResponseModel,
+    HeldRefundResponseModel,
     OrderItemResponseModel,
     OrderPaymentQrResponseModel,
     OrderResponseModel,
+    RefundSummaryResponseModel,
 } from '../models';
 
 import type {
     CreateOrderViewModel,
+    HeldRefundViewModel,
     OrderDeliveryStatusTimingViewModel,
     OrderItemViewModel,
     OrderPaymentQrViewModel,
     OrdersViewModel,
     OrderViewModel,
+    RefundSummaryViewModel,
 } from '@/features/order/models';
+
+export function toHeldRefund(response: HeldRefundResponseModel): HeldRefundViewModel {
+    return {
+        refundId: response.refundId,
+        orderRef: response.orderReference,
+        amount: response.amount,
+    };
+}
+
+export function toRefundSummary(response: RefundSummaryResponseModel): RefundSummaryViewModel {
+    return {
+        id: response.id,
+        slugId: response.slugId,
+        orderId: response.orderId,
+        orderSlugId: response.orderSlugId,
+        amount: response.amount,
+        status: response.status,
+        createdAt: response.createdAt,
+        paidAt: response.paidAt,
+        transferReference: response.transferReference,
+    };
+}
 
 export function toOrderItem(item: OrderItemResponseModel): OrderItemViewModel {
     return {
@@ -65,6 +91,7 @@ export function toOrder(response: OrderResponseModel): OrderViewModel {
         deliveryNotes: response.deliveryNotes,
         items: response.items.map(toOrderItem),
         deliveryStatusTiming: toDeliveryStatusTiming(response.deliveryStatusTiming),
+        refund: response.refund ? toRefundSummary(response.refund) : null,
     };
 }
 

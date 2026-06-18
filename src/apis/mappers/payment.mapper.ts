@@ -1,6 +1,6 @@
-import type { BankAccountResponseModel } from '../models';
+import type { BankAccountResponseModel, BankingCheckoutResponseModel } from '../models';
 
-import type { BankAccountViewModel } from '@/features/payment/models';
+import type { BankAccountViewModel, BankingCheckoutViewModel } from '@/features/payment/models';
 
 export function toBankAccount(response: BankAccountResponseModel | null): BankAccountViewModel | null {
     if (!response) {
@@ -11,5 +11,12 @@ export function toBankAccount(response: BankAccountResponseModel | null): BankAc
         bankCode: response.bankCode,
         accountNumber: response.accountNumber,
         accountHolderName: response.accountHolderName,
+    };
+}
+
+export function toBankingCheckout(response: BankingCheckoutResponseModel): BankingCheckoutViewModel {
+    return {
+        checkoutId: response.checkoutId,
+        bankAccount: toBankAccount(response.bankAccount),
     };
 }

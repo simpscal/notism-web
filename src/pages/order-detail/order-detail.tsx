@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { OrderActionCard, OrderDetailError, OrderItemsCard } from './components';
 
-import { orderApi } from '@/apis';
+import { orderApi, paymentApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
@@ -17,34 +17,15 @@ import {
     OrderDeliveryStatusTimeline,
     OrderHeader,
     PaymentMethodEnum,
+    shouldShowRefundRequest,
 } from '@/features/order';
-import {
-    BankingPaymentConfirmedPanel,
-    PaymentNotificationPayload,
-    PaymentNotificationType,
-    PaymentStatusEnum,
-    usePaymentSignalR,
-} from '@/features/payment';
+import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-
-    const handlePaymentNotification = useCallback(
-        (payload: PaymentNotificationPayload) => {
-            if (payload.type === PaymentNotificationType.Success) {
-                toast.success(payload.message);
-                queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });
-            } else if (payload.type === PaymentNotificationType.Failure) {
-                toast.error(payload.message);
-            }
-        },
-        [queryClient, id]
-    );
-
-    usePaymentSignalR({ onNotification: handlePaymentNotification });
 
     const {
         data: order,
@@ -67,10 +48,42 @@ function OrderDetail() {
         },
     });
 
+    const { mutate: requestRefund, isPending: isRequestingRefund } = useMutation({
+        mutationFn: (orderId: string) => orderApi.requestRefund(orderId),
+        onSuccess: () => {
+            toast.success(t('orderDetail.refundRequestedSuccess'));
+            queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });
+        },
+    });
+
+    const canRequestRefund =
+        !!order &&
+        shouldShowRefundRequest({
+            paymentMethod: order.paymentMethod,
+            deliveryStatus: order.deliveryStatus,
+            deliveredCompletedAt: order.deliveryStatusTiming.deliveredCompletedAt,
+            hasRefund: !!order.refund,
+        });
+
+    const { data: bankAccount } = useQuery({
+        queryKey: ['bank-account'],
+        queryFn: () => paymentApi.getBankAccount(),
+        enabled: canRequestRefund,
+    });
+
     const handleConfirmCancel = useCallback(() => {
         if (!order) return;
         cancelOrder(order.id);
     }, [order, cancelOrder]);
+
+    const handleConfirmRefund = useCallback(() => {
+        if (!order) return;
+        requestRefund(order.id);
+    }, [order, requestRefund]);
+
+    const handleAddBankDetails = useCallback(() => {
+        navigate(`/${ROUTES.SETTINGS.PAYMENT}`);
+    }, [navigate]);
 
     const orderDate = useMemo(() => {
         if (!order) return '';
@@ -158,8 +171,16 @@ function OrderDetail() {
                                 slugId={order.slugId}
                                 orderDate={orderDate}
                                 deliveryStatus={order.deliveryStatus}
+                                totalAmount={order.totalAmount}
+                                paymentMethod={order.paymentMethod}
+                                deliveredCompletedAt={order.deliveryStatusTiming.deliveredCompletedAt}
+                                refund={order.refund}
                                 onConfirmCancel={handleConfirmCancel}
                                 isCancelling={isCancelling}
+                                onConfirmRefund={handleConfirmRefund}
+                                isRequestingRefund={isRequestingRefund}
+                                hasBankDetails={bankAccount != null}
+                                onAddBankDetails={handleAddBankDetails}
                             />
                         </div>
                     </div>

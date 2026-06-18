@@ -10,6 +10,7 @@
         "search": "Tìm kiếm",
         "noResults": "Không tìm thấy kết quả",
         "all": "Tất cả",
+        "retry": "Thử lại",
         "error": "Lỗi",
         "success": "Thành công",
         "close": "Đóng",
@@ -177,6 +178,7 @@
         "dashboard": "Bảng điều khiển",
         "foods": "Thực phẩm",
         "orders": "Đơn hàng",
+        "refunds": "Hoàn tiền",
         "cart": "Giỏ hàng",
         "theme": "Giao diện",
         "appearance": "Giao diện",
@@ -298,8 +300,11 @@
             "amount": "Số tiền",
             "autoConfirm": "Sau khi chuyển khoản, thanh toán của bạn sẽ được xác nhận tự động.",
             "qrUnavailable": "Mã QR không khả dụng",
+            "qrImageAlt": "Mã QR thanh toán SePay",
             "loadErrorTitle": "Không thể tải thông tin thanh toán",
-            "loadErrorDescription": "Không thể lấy thông tin tài khoản ngân hàng. Vui lòng thử lại sau."
+            "loadErrorDescription": "Không thể lấy thông tin tài khoản ngân hàng. Vui lòng thử lại sau.",
+            "notAvailableTitle": "Chuyển khoản ngân hàng không khả dụng",
+            "notAvailableDescription": "Cửa hàng này chưa thiết lập tài khoản ngân hàng để nhận chuyển khoản. Vui lòng chọn phương thức thanh toán khác."
         },
         "banking": "Ngân hàng"
     },
@@ -365,6 +370,34 @@
                 "trustedTitle": "Được khách hàng tin tưởng",
                 "trustedDesc": "Trải nghiệm mua sắm được đánh giá cao"
             }
+        },
+        "refund": {
+            "statuses": {
+                "pending": "Đang chờ",
+                "processing": "Đang xử lý",
+                "paid": "Đã hoàn tiền",
+                "failed": "Thất bại"
+            },
+            "actions": {
+                "approve": "Duyệt hoàn tiền",
+                "markFailed": "Đánh dấu thất bại",
+                "retry": "Thử lại hoàn tiền",
+                "reason": "Lý do"
+            },
+            "manualTransferInstruction": "Nhập mã hoàn tiền {{refundId}} vào nội dung chuyển khoản để hệ thống tự động đối soát.",
+            "setUpBankDetailsCta": "Thiết lập thông tin ngân hàng để nhận khoản hoàn tiền của bạn.",
+            "paidBanner": {
+                "title": "Đã hoàn tiền",
+                "message": "— {{amount}} cho đơn hàng {{orderRef}} đã được chuyển vào ngân hàng của bạn vào {{sentDate}}.",
+                "viewOrder": "Xem đơn hàng"
+            },
+            "heldReminderBanner": {
+                "titleSingle": "Thêm thông tin ngân hàng để nhận khoản hoàn tiền của bạn",
+                "messageSingle": "— khoản hoàn {{amount}} cho đơn hàng {{orderRef}} đang được giữ lại cho đến khi chúng tôi có tài khoản để chuyển vào.",
+                "titleMultiple": "Thêm thông tin ngân hàng để nhận các khoản hoàn tiền của bạn",
+                "messageMultiple": "— {{count}} khoản hoàn tiền với tổng cộng {{amount}} đang được giữ lại cho đến khi chúng tôi có tài khoản để chuyển vào.",
+                "cta": "Thêm thông tin ngân hàng"
+            }
         }
     },
     "orderDetail": {
@@ -388,6 +421,23 @@
         "cancelling": "Đang hủy...",
         "cancelConfirmTitle": "Hủy đơn hàng",
         "cancelConfirmDescription": "Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể được hoàn tác.",
+        "requestRefund": "Yêu cầu hoàn tiền",
+        "requesting": "Đang gửi yêu cầu…",
+        "requestRefundConfirmTitle": "Yêu cầu hoàn tiền?",
+        "requestRefundConfirmDescription": "Chúng tôi sẽ tiến hành hoàn {{amount}} về tài khoản ngân hàng bạn đã thanh toán. Hoàn tiền thường được gửi trong vài ngày làm việc.",
+        "requestRefundNotNow": "Để sau",
+        "addBankDetailsTitle": "Thêm thông tin ngân hàng trước",
+        "addBankDetailsDescription": "Chúng tôi chưa có tài khoản ngân hàng nào để gửi tiền hoàn cho bạn. Hãy thêm thông tin ngân hàng, sau đó yêu cầu hoàn tiền lại.",
+        "addBankDetails": "Thêm thông tin ngân hàng",
+        "refundRequestedSuccess": "Đã gửi yêu cầu hoàn tiền",
+        "refund": {
+            "label": "Hoàn tiền",
+            "amount": "Số tiền",
+            "sentOn": "Gửi vào",
+            "transferReference": "Mã giao dịch",
+            "copyReference": "Sao chép mã giao dịch",
+            "pendingMessage": "Chúng tôi đã bắt đầu hoàn tiền về tài khoản ngân hàng của bạn. Bạn sẽ được thông báo khi tiền được gửi."
+        },
         "notFound": {
             "title": "Không tìm thấy đơn hàng",
             "description": "Đơn hàng bạn đang tìm không tồn tại hoặc đã bị xóa."
@@ -476,6 +526,30 @@
             "saveSuccess": "Đã lưu tùy chọn giao diện!"
         }
     },
+    "customer": {
+        "payment": {
+            "paneTitle": "Tài khoản ngân hàng",
+            "subtitle": "Tài khoản ngân hàng được lưu cho tài khoản của bạn. Hãy cập nhật thông tin này để các khoản thanh toán đến đúng tài khoản.",
+            "retry": "Thử lại",
+            "bankName": "Tên ngân hàng",
+            "bankNamePlaceholder": "Ví dụ: Vietcombank",
+            "bankNameHint": "Nhập tên ngân hàng chính xác như được nhà cung cấp thanh toán (SePay) công nhận để khớp đúng tài khoản.",
+            "accountNumber": "Số tài khoản",
+            "accountNumberPlaceholder": "VD: 1023456789",
+            "accountNumberHint": "Chỉ nhập chữ số, đúng như hiển thị trong ứng dụng ngân hàng của bạn.",
+            "accountHolderName": "Tên chủ tài khoản",
+            "accountHolderNamePlaceholder": "VD: Nguyễn Văn A",
+            "saveChanges": "Lưu thay đổi",
+            "saving": "Đang lưu...",
+            "cancel": "Hủy",
+            "saveSuccess": "Đã lưu thông tin tài khoản ngân hàng",
+            "bankNameRequired": "Tên ngân hàng là bắt buộc",
+            "accountNumberRequired": "Số tài khoản là bắt buộc",
+            "accountHolderNameRequired": "Tên chủ tài khoản là bắt buộc",
+            "loadErrorTitle": "Không thể tải thông tin ngân hàng",
+            "loadErrorDescription": "Chúng tôi không thể tải thông tin ngân hàng đã lưu của bạn. Vui lòng thử lại."
+        }
+    },
     "admin": {
         "dashboard": {
             "title": "Bảng điều khiển",
@@ -557,6 +631,20 @@
                     "cancel": "Hủy"
                 }
             }
+        },
+        "refunds": {
+            "title": "Hoàn tiền",
+            "subtitle": "Đối soát mọi khoản hoàn tiền — duyệt, thử lại và xem mã chuyển khoản.",
+            "order": "Đơn hàng",
+            "amount": "Số tiền",
+            "status": "Trạng thái",
+            "transferReference": "Mã chuyển khoản",
+            "created": "Ngày tạo",
+            "paid": "Ngày trả",
+            "actions": "Hành động",
+            "viewRefund": "Xem hoàn tiền",
+            "empty": "Không có khoản hoàn tiền nào với trạng thái này.",
+            "failedToLoad": "Không thể tải danh sách hoàn tiền"
         },
         "foods": {
             "title": "Thực phẩm",
@@ -693,6 +781,55 @@
             "saving": "Đang lưu...",
             "saveChanges": "Lưu thay đổi",
             "deleteUser": "Xóa người dùng"
+        },
+        "refundDetail": {
+            "backToRefunds": "Quay lại hoàn tiền",
+            "title": "Chi tiết hoàn tiền",
+            "subtitle": "Duyệt và xem lại giao dịch chuyển khoản cho khoản hoàn tiền này.",
+            "summaryTitle": "Tóm tắt hoàn tiền",
+            "scanToPay": "Quét mã QR này bằng ứng dụng ngân hàng để gửi khoản hoàn tiền.",
+            "qrTitle": "Quét để hoàn tiền",
+            "qrImageAlt": "Mã QR thanh toán SePay VietQR cho khoản hoàn tiền {{refundId}}",
+            "qrWaiting": "Đang chờ thực hiện chuyển khoản…",
+            "qrDescription": "Quét mã VietQR này bằng ứng dụng ngân hàng Việt Nam để gửi khoản hoàn tiền. Giao dịch sẽ tự điền tài khoản của khách hàng, tổng giá trị đơn hàng và mã hoàn tiền làm nội dung.",
+            "qrBank": "Ngân hàng",
+            "qrAccount": "Số tài khoản",
+            "qrHolder": "Chủ tài khoản",
+            "qrAmount": "Số tiền",
+            "qrContent": "Nội dung",
+            "qrContentHint": "Giữ nội dung bắt đầu bằng mã hoàn tiền",
+            "qrContentHintSuffix": "để thanh toán được đối soát tự động.",
+            "qrMissingTitle": "Chưa có tài khoản nhận tiền",
+            "qrMissingDescription": "Khách hàng này chưa lưu thông tin ngân hàng nên không thể tạo mã QR thanh toán. Vui lòng yêu cầu khách hàng thêm tài khoản nhận tiền trước khi hoàn tiền.",
+            "status": "Trạng thái",
+            "refundId": "Mã hoàn tiền",
+            "order": "Đơn hàng",
+            "amount": "Số tiền",
+            "created": "Tạo lúc",
+            "approveTitle": "Duyệt hoàn tiền",
+            "approveDescription": "Duyệt sẽ chuyển khoản hoàn tiền sang trạng thái đang xử lý để thực hiện chuyển khoản cho toàn bộ số tiền.",
+            "approveAction": "Duyệt hoàn tiền",
+            "approving": "Đang duyệt…",
+            "confirmTitle": "Duyệt khoản hoàn tiền này?",
+            "confirmDescription": "Thao tác này chuyển khoản hoàn tiền {{amount}} cho đơn hàng #{{orderRef}} sang trạng thái đang xử lý. Sau đó giao dịch chuyển khoản được thực hiện và đối soát theo mã hoàn tiền.",
+            "confirmAction": "Duyệt",
+            "processingTitle": "Đang xử lý chuyển khoản",
+            "processingDescription": "Giao dịch chuyển khoản đang được xử lý. Màn hình này sẽ cập nhật khi hoàn tất.",
+            "transferRecordTitle": "Hồ sơ chuyển khoản",
+            "paidOn": "Hoàn tiền vào",
+            "transferReference": "Mã tham chiếu chuyển khoản",
+            "copyReference": "Sao chép mã tham chiếu",
+            "transferRecordNote": "Giao dịch chuyển khoản đã hoàn tất. Hồ sơ này chỉ để xem.",
+            "failureTitle": "Chuyển khoản thất bại",
+            "retryTitle": "Thử lại hoàn tiền",
+            "retryDescription": "Thử lại sẽ khởi tạo lại giao dịch chuyển khoản cho toàn bộ số tiền. Nếu lại thất bại, lý do thất bại mới nhất sẽ được ghi nhận.",
+            "retryAction": "Thử lại hoàn tiền",
+            "retrying": "Đang thử lại…",
+            "retryConfirmTitle": "Thử lại khoản hoàn tiền này?",
+            "retryConfirmDescription": "Thao tác này khởi tạo lại khoản hoàn tiền {{amount}} cho đơn hàng #{{orderRef}} và chuyển về trạng thái đang xử lý. Sau đó giao dịch chuyển khoản được thực hiện và đối soát theo mã hoàn tiền.",
+            "retryConfirmAction": "Thử lại",
+            "failedToLoad": "Không thể tải chi tiết hoàn tiền",
+            "failedToLoadDescription": "Vui lòng thử lại sau hoặc quay lại danh sách hoàn tiền."
         },
         "user": {
             "details": "Chi tiết người dùng",

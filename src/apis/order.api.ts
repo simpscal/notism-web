@@ -1,11 +1,13 @@
 import { apiClient } from './client';
-import { toCreateOrder, toOrders, toOrder } from './mappers';
+import { toCreateOrder, toHeldRefund, toOrders, toOrder, toRefundSummary } from './mappers';
 import {
     CreateOrderRequestModel,
     CreateOrderResponseModel,
     GetOrdersRequestModel,
     GetOrdersResponseModel,
+    HeldRefundResponseModel,
     OrderResponseModel,
+    RefundSummaryResponseModel,
 } from './models';
 
 import { API_ENDPOINTS } from '@/app/constants';
@@ -35,5 +37,15 @@ export const orderApi = {
 
     cancel: (id: string) => {
         return apiClient.post<void>(API_ENDPOINTS.ORDER.CANCEL(id));
+    },
+
+    requestRefund: async (id: string) => {
+        const response = await apiClient.post<RefundSummaryResponseModel>(API_ENDPOINTS.ORDER.REFUND(id));
+        return toRefundSummary(response);
+    },
+
+    getHeldRefunds: async () => {
+        const response = await apiClient.get<HeldRefundResponseModel[]>(API_ENDPOINTS.ORDER.HELD_REFUNDS);
+        return response.map(toHeldRefund);
     },
 };

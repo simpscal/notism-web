@@ -144,6 +144,39 @@ describe('Orders — incremental loading', () => {
         expect(await screen.findByText(t('orders.empty.title'))).toBeInTheDocument();
     });
 
+    it('shows a refund-status badge on rows that have a refund and nothing on rows without', async () => {
+        server.use(
+            http.get(ORDERS_URL, () =>
+                HttpResponse.json({
+                    totalCount: 2,
+                    items: [
+                        {
+                            ...makeOrder(0),
+                            refund: {
+                                id: 'refund-0',
+                                slugId: 'REF-0000',
+                                orderId: 'order-0',
+                                orderSlugId: 'ORD-0000',
+                                amount: 100000,
+                                status: 'pending',
+                                createdAt: '2026-06-13T10:00:00Z',
+                                paidAt: null,
+                            },
+                        },
+                        { ...makeOrder(1), refund: null },
+                    ],
+                })
+            )
+        );
+
+        renderWithProviders(<Orders />);
+
+        await screen.findByText('ORD-0000');
+        expect(screen.getByText(t('order.refund.statuses.pending'))).toBeInTheDocument();
+        // Only one refund badge across the whole list (the second order has none).
+        expect(screen.getAllByText(t('order.refund.statuses.pending'))).toHaveLength(1);
+    });
+
     it('shows an error with retry when the next batch fails, and retry loads it', async () => {
         const total = PAGE_SIZE * 2;
         let firstBatchServed = false;

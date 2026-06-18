@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -46,17 +46,17 @@ const mockCartItem = {
 
 const CREATE_ORDER_URL = '*/orders';
 const BANKING_CHECKOUT_URL = '*/payments/banking/checkout';
-const BANK_ACCOUNT_URL = '*/payments/bank-account';
+
+const STORE_BANK_ACCOUNT = {
+    bankCode: 'VCB',
+    accountNumber: '1234567890',
+    accountHolderName: 'Store Account',
+};
 
 const server = setupServer(
     http.post(CREATE_ORDER_URL, () => HttpResponse.json({ slugId: 'ORD-001' }, { status: 201 })),
-    http.post(BANKING_CHECKOUT_URL, () => HttpResponse.json({ checkoutId: '550e8400-e29b-41d4-a716-446655440000' })),
-    http.get(BANK_ACCOUNT_URL, () =>
-        HttpResponse.json({
-            bankCode: 'VCB',
-            accountNumber: '1234567890',
-            accountHolderName: 'Test Account',
-        })
+    http.post(BANKING_CHECKOUT_URL, () =>
+        HttpResponse.json({ checkoutId: '550e8400-e29b-41d4-a716-446655440000', bankAccount: STORE_BANK_ACCOUNT })
     )
 );
 
@@ -67,7 +67,7 @@ afterAll(() => server.close());
 const t = (key: string) => i18n.t(key);
 
 describe('Payment — Banking Checkout Transition', () => {
-    it('auto-initiates banking checkout when banking radio is selected', async () => {
+    it('shows the SePay QR panel built from the store bank account in the checkout response', async () => {
         renderWithProviders(<Payment />);
 
         await waitFor(() => {
@@ -76,14 +76,73 @@ describe('Payment — Banking Checkout Transition', () => {
 
         await userEvent.click(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') }));
 
-        // After selecting banking, checkout is auto-initiated → QR card appears
         await waitFor(() => {
-            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
+            expect(screen.getByText(t('payment.bankTransfer.title'))).toBeInTheDocument();
         });
+
+        expect(screen.getByText(STORE_BANK_ACCOUNT.accountNumber)).toBeInTheDocument();
+
+        const img = screen.getByRole('img', { name: t('payment.bankTransfer.qrImageAlt') });
+        const src = new URL(img.getAttribute('src') ?? '');
+
+        expect(`${src.origin}${src.pathname}`).toBe('https://qr.sepay.vn/img');
+        expect(src.searchParams.get('bank')).toBe(STORE_BANK_ACCOUNT.bankCode);
+        expect(src.searchParams.get('acc')).toBe(STORE_BANK_ACCOUNT.accountNumber);
+        expect(src.searchParams.get('amount')).toBe('50000');
+        expect(src.searchParams.get('des')).toBe('550e8400e29b41d4a716446655440000');
     });
 
-    it('shows error state when bank account fetch returns 403 Forbidden', async () => {
-        server.use(http.get(BANK_ACCOUNT_URL, () => HttpResponse.json({ message: 'Forbidden' }, { status: 403 })));
+    it('shows the unavailable terminal state (no perpetual spinner) when the checkout response has no bank account', async () => {
+        server.use(
+            http.post(BANKING_CHECKOUT_URL, () =>
+                HttpResponse.json({ checkoutId: '550e8400-e29b-41d4-a716-446655440000', bankAccount: null })
+            )
+        );
+
+        renderWithProviders(<Payment />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') })).toBeInTheDocument();
+        });
+
+        await userEvent.click(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') }));
+
+        await waitFor(() => {
+            expect(screen.getByText(t('payment.bankTransfer.notAvailableTitle'))).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(t('payment.bankTransfer.notAvailableDescription'))).toBeInTheDocument();
+        expect(screen.queryByText(t('payment.bankTransfer.title'))).not.toBeInTheDocument();
+    });
+
+    it('shows a spinner while the checkout request is in flight', async () => {
+        server.use(
+            http.post(BANKING_CHECKOUT_URL, async () => {
+                await delay('infinite');
+                return HttpResponse.json({ checkoutId: 'x', bankAccount: STORE_BANK_ACCOUNT });
+            })
+        );
+
+        const { container } = renderWithProviders(<Payment />);
+
+        await waitFor(() => {
+            expect(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') })).toBeInTheDocument();
+        });
+
+        await userEvent.click(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') }));
+
+        await waitFor(() => {
+            expect(container.querySelector('.animate-spin')).toBeTruthy();
+        });
+
+        expect(screen.queryByText(t('payment.bankTransfer.title'))).not.toBeInTheDocument();
+        expect(screen.queryByText(t('payment.bankTransfer.notAvailableTitle'))).not.toBeInTheDocument();
+    });
+
+    it('shows the error state when the checkout request fails', async () => {
+        server.use(
+            http.post(BANKING_CHECKOUT_URL, () => HttpResponse.json({ message: 'Server error' }, { status: 500 }))
+        );
 
         renderWithProviders(<Payment />);
 
@@ -97,7 +156,7 @@ describe('Payment — Banking Checkout Transition', () => {
             expect(screen.getByText(t('payment.bankTransfer.loadErrorTitle'))).toBeInTheDocument();
         });
 
-        expect(screen.queryByText('Bank transfer')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('payment.bankTransfer.title'))).not.toBeInTheDocument();
     });
 
     it('COD payment calls createOrder immediately without transitioning to banking checkout', async () => {

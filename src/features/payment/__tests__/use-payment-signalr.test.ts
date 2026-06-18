@@ -140,4 +140,47 @@ describe('usePaymentSignalR', () => {
 
         expect(mockOn).not.toHaveBeenCalled();
     });
+
+    it('calls onNotification with a refund-paid payload when ReceivePaymentNotification fires with refund-paid type', async () => {
+        const onNotification = vi.fn();
+        renderHook(() => usePaymentSignalR({ onNotification }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        const registeredHandler = mockOn.mock.calls.find(
+            (args: unknown[]) => args[0] === 'ReceivePaymentNotification'
+        )?.[1] as ((payload: unknown) => void) | undefined;
+
+        expect(registeredHandler).toBeDefined();
+
+        const refundPaidPayload = {
+            type: 'refund-status-changed',
+            status: 'paid',
+            refundId: 'refund-id',
+            orderId: 'order-id',
+            orderRef: 'A1B2C3',
+            amount: 485_000,
+            message: 'Your refund has been paid',
+            timestamp: '2026-06-13T14:27:00.000Z',
+        };
+
+        act(() => {
+            registeredHandler!(refundPaidPayload);
+        });
+
+        expect(onNotification).toHaveBeenCalledWith(refundPaidPayload);
+    });
+
+    it('does not register a dedicated ReceiveRefundPaidNotification handler', async () => {
+        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+
+        await act(async () => {
+            await new Promise(resolve => setTimeout(resolve, 0));
+        });
+
+        const refundCall = mockOn.mock.calls.find((args: unknown[]) => args[0] === 'ReceiveRefundPaidNotification');
+        expect(refundCall).toBeUndefined();
+    });
 });

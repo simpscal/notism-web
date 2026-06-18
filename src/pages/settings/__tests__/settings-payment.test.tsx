@@ -2,10 +2,14 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SettingsPayment from '../settings-payment';
 
+import { UserRoleEnum } from '@/app/enums';
+import { store } from '@/store';
+import { resetStore } from '@/store/root.actions';
+import { setUser } from '@/store/user';
 import { renderWithProviders } from '@/test/utils';
 
 const BANK_ACCOUNT_URL = '*/payments/bank-account';
@@ -21,13 +25,26 @@ vi.mock('sonner', () => ({
 const server = setupServer();
 
 beforeAll(() => server.listen());
+beforeEach(() => {
+    store.dispatch(
+        setUser({
+            id: '1',
+            firstName: 'Admin',
+            lastName: 'User',
+            email: 'admin@example.com',
+            avatarUrl: null,
+            role: UserRoleEnum.Admin,
+        })
+    );
+});
 afterEach(() => {
     server.resetHandlers();
     toastSuccessMock.mockClear();
+    store.dispatch(resetStore());
 });
 afterAll(() => server.close());
 
-describe('SettingsPayment', () => {
+describe('SettingsPayment (admin variant)', () => {
     it('renders loading skeletons initially', () => {
         server.use(
             http.get(BANK_ACCOUNT_URL, async () => {

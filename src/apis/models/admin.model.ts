@@ -106,6 +106,47 @@ export interface GetAdminOrdersForKanbanResponseModel {
     totalCount: number;
 }
 
+export interface AdminRefundListItemResponseModel {
+    id: string;
+    orderId: string;
+    orderSlugId: string;
+    amount: number;
+    status: string;
+    transferReference: string | null;
+    createdAt: string;
+    paidAt: string | null;
+}
+
+export interface GetAdminRefundsRequestModel {
+    status?: string;
+    skip?: number;
+    take?: number;
+}
+
+export interface GetAdminRefundsResponseModel {
+    items: AdminRefundListItemResponseModel[];
+    totalCount: number;
+}
+
+export interface AdminRefundDetailResponseModel {
+    id: string;
+    orderId: string;
+    orderSlugId: string;
+    amount: number;
+    status: string;
+    createdAt: string;
+    paidAt: string | null;
+    transferReference: string | null;
+    failureReason: string | null;
+    bankCode: string | null;
+    accountNumber: string | null;
+    accountHolderName: string | null;
+}
+
+export interface MarkRefundFailedRequestModel {
+    reason: string;
+}
+
 export interface GetDashboardOrderStatusSummaryResponseModel {
     new: number;
     inProgress: number;

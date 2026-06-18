@@ -1,14 +1,23 @@
-import { Clock } from 'lucide-react';
+import { Clock, Landmark } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants/routes.constant';
+import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { DELIVERY_STATUS, DeliveryStatusEnum, type DeliveryStatusConfig } from '@/features/order';
+import Spinner from '@/components/spinner';
+import {
+    DELIVERY_STATUS,
+    DeliveryStatusEnum,
+    RefundStatusPanel,
+    shouldShowRefundRequest,
+    type DeliveryStatusConfig,
+    type RefundSummaryViewModel,
+} from '@/features/order';
 
 const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
     const step = DELIVERY_STATUS.find(s => s.key === status);
@@ -30,21 +39,47 @@ export interface OrderActionCardProps {
     slugId: string;
     orderDate: string;
     deliveryStatus: string;
+    totalAmount: number;
+    paymentMethod: string;
+    deliveredCompletedAt: string | null;
+    refund: RefundSummaryViewModel | null;
     onConfirmCancel?: () => void;
     isCancelling?: boolean;
+    onConfirmRefund?: () => void;
+    isRequestingRefund?: boolean;
+    hasBankDetails?: boolean;
+    onAddBankDetails?: () => void;
 }
 
 function OrderActionCard({
     slugId,
     orderDate,
     deliveryStatus,
+    totalAmount,
+    paymentMethod,
+    deliveredCompletedAt,
+    refund,
     onConfirmCancel,
     isCancelling = false,
+    onConfirmRefund,
+    isRequestingRefund = false,
+    hasBankDetails = false,
+    onAddBankDetails,
 }: OrderActionCardProps) {
     const { t } = useTranslation();
     const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [showRefundDialog, setShowRefundDialog] = useState(false);
     const statusInfo = getDeliveryStatusInfo(deliveryStatus);
     const StatusIcon = statusInfo.icon;
+
+    const showRefundRequest =
+        !!onConfirmRefund &&
+        shouldShowRefundRequest({
+            paymentMethod,
+            deliveryStatus,
+            deliveredCompletedAt,
+            hasRefund: !!refund,
+        });
 
     const handleCancelClick = useCallback(() => {
         setShowCancelDialog(true);
@@ -57,6 +92,23 @@ function OrderActionCard({
     const handleConfirmCancel = useCallback(() => {
         onConfirmCancel?.();
     }, [onConfirmCancel]);
+
+    const handleRequestRefundClick = useCallback(() => {
+        setShowRefundDialog(true);
+    }, []);
+
+    const handleRefundNotNowClick = useCallback(() => {
+        setShowRefundDialog(false);
+    }, []);
+
+    const handleConfirmRefund = useCallback(() => {
+        onConfirmRefund?.();
+    }, [onConfirmRefund]);
+
+    const handleAddBankDetails = useCallback(() => {
+        setShowRefundDialog(false);
+        onAddBankDetails?.();
+    }, [onAddBankDetails]);
 
     return (
         <Card className='sticky top-4'>
@@ -132,6 +184,82 @@ function OrderActionCard({
                             </Dialog>
                         </>
                     )}
+
+                    {refund ? (
+                        <RefundStatusPanel
+                            status={refund.status}
+                            amount={refund.amount}
+                            sentDate={refund.paidAt}
+                            transferReference={refund.transferReference}
+                        />
+                    ) : showRefundRequest ? (
+                        <>
+                            <Button
+                                variant='outline'
+                                size='lg'
+                                className='w-full'
+                                onClick={handleRequestRefundClick}
+                                disabled={isRequestingRefund}
+                            >
+                                {isRequestingRefund ? (
+                                    <>
+                                        <Spinner size='sm' />
+                                        {t('orderDetail.requesting')}
+                                    </>
+                                ) : (
+                                    t('orderDetail.requestRefund')
+                                )}
+                            </Button>
+                            <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
+                                <DialogContent>
+                                    {hasBankDetails ? (
+                                        <>
+                                            <DialogHeader>
+                                                <DialogTitle>{t('orderDetail.requestRefundConfirmTitle')}</DialogTitle>
+                                                <DialogDescription>
+                                                    {t('orderDetail.requestRefundConfirmDescription', {
+                                                        amount: formatVnd(totalAmount),
+                                                    })}
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <DialogFooter>
+                                                <Button
+                                                    variant='outline'
+                                                    onClick={handleRefundNotNowClick}
+                                                    disabled={isRequestingRefund}
+                                                >
+                                                    {t('orderDetail.requestRefundNotNow')}
+                                                </Button>
+                                                <Button onClick={handleConfirmRefund} disabled={isRequestingRefund}>
+                                                    {isRequestingRefund
+                                                        ? t('orderDetail.requesting')
+                                                        : t('orderDetail.requestRefund')}
+                                                </Button>
+                                            </DialogFooter>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <DialogHeader>
+                                                <DialogTitle>{t('orderDetail.addBankDetailsTitle')}</DialogTitle>
+                                                <DialogDescription>
+                                                    {t('orderDetail.addBankDetailsDescription')}
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <DialogFooter>
+                                                <Button variant='outline' onClick={handleRefundNotNowClick}>
+                                                    {t('orderDetail.requestRefundNotNow')}
+                                                </Button>
+                                                <Button onClick={handleAddBankDetails}>
+                                                    <Landmark className='h-4 w-4' />
+                                                    {t('orderDetail.addBankDetails')}
+                                                </Button>
+                                            </DialogFooter>
+                                        </>
+                                    )}
+                                </DialogContent>
+                            </Dialog>
+                        </>
+                    ) : null}
                 </div>
             </CardContent>
         </Card>

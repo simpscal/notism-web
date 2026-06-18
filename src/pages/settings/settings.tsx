@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { UserRoleEnum } from '@/app/enums';
 import { Card } from '@/components/card';
 import {
     Sidebar,
@@ -19,7 +18,6 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from '@/components/sidebar';
-import { useAppSelector } from '@/core/hooks';
 
 type SettingsSectionId = 'profile' | 'appearance' | 'payment';
 
@@ -28,17 +26,14 @@ interface SettingsSection {
     to: string;
     label: string;
     icon: React.ComponentType<{ className?: string }>;
-    adminOnly?: boolean;
 }
 
 function Settings() {
     const { t } = useTranslation();
     const location = useLocation();
-    const user = useAppSelector(state => state.user.user);
-    const isAdmin = useMemo(() => user?.role === UserRoleEnum.Admin, [user?.role]);
 
-    const sections: SettingsSection[] = useMemo(() => {
-        const all: SettingsSection[] = [
+    const sections: SettingsSection[] = useMemo(
+        () => [
             { id: 'profile', to: `/${ROUTES.SETTINGS.PROFILE}`, label: t('settings.tabs.profile'), icon: User },
             {
                 id: 'appearance',
@@ -51,11 +46,10 @@ function Settings() {
                 to: `/${ROUTES.SETTINGS.PAYMENT}`,
                 label: t('settings.tabs.payment'),
                 icon: CreditCard,
-                adminOnly: true,
             },
-        ];
-        return all.filter(section => !section.adminOnly || isAdmin);
-    }, [t, isAdmin]);
+        ],
+        [t]
+    );
 
     const activeSection = useMemo(
         () => sections.find(section => location.pathname.startsWith(section.to)),

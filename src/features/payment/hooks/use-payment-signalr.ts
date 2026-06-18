@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
-import { createPaymentHubConnection, type PaymentNotificationPayload } from '../payment-signalr';
+import { createPaymentHubConnection, type PaymentSharedNotification } from '../payment-signalr';
 
 export interface UsePaymentSignalROptions {
-    onNotification: (payload: PaymentNotificationPayload) => void;
+    onNotification: (payload: PaymentSharedNotification) => void;
     enabled?: boolean;
 }
 

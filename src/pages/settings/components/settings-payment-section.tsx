@@ -1,28 +1,32 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
-import { memo, useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { z } from 'zod';
+
+import BankAccountForm, { BankAccountFormValues, BankAccountFormVariant } from './bank-account-form';
 
 import { paymentApi } from '@/apis';
 import { Button } from '@/components/button';
 import ErrorState from '@/components/error-state';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
 import { Skeleton } from '@/components/skeleton';
 
 const BANK_ACCOUNT_QUERY_KEY = ['bank-account'];
 
-const bankAccountSchema = z.object({
-    bankCode: z.string().min(1),
-    accountNumber: z.string().min(1),
-    accountHolderName: z.string().min(1),
-});
+const COPY_PREFIX: Record<BankAccountFormVariant, string> = {
+    admin: 'settings.payment',
+    customer: 'customer.payment',
+};
 
-type BankAccountFormValues = z.infer<typeof bankAccountSchema>;
+const EMPTY_VALUES: BankAccountFormValues = {
+    bankCode: '',
+    accountNumber: '',
+    accountHolderName: '',
+};
+
+interface SettingsPaymentSectionProps {
+    variant?: BankAccountFormVariant;
+}
 
 function PaymentLoadingState() {
     return (
@@ -49,62 +53,43 @@ function PaymentLoadingState() {
     );
 }
 
-function SettingsPaymentSection() {
+function SettingsPaymentSection({ variant = 'admin' }: SettingsPaymentSectionProps) {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
+
+    const prefix = useMemo(() => COPY_PREFIX[variant], [variant]);
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: BANK_ACCOUNT_QUERY_KEY,
         queryFn: () => paymentApi.getBankAccount(),
     });
 
-    const form = useForm<BankAccountFormValues>({
-        resolver: zodResolver(bankAccountSchema),
-        mode: 'onChange',
-        defaultValues: {
-            bankCode: '',
-            accountNumber: '',
-            accountHolderName: '',
-        },
-    });
-
-    const {
-        reset,
-        formState: { errors, isDirty },
-    } = form;
-
-    useEffect(() => {
-        if (data) {
-            reset({
-                bankCode: data.bankCode ?? '',
-                accountNumber: data.accountNumber ?? '',
-                accountHolderName: data.accountHolderName ?? '',
-            });
-        }
-    }, [data, reset]);
+    const defaultValues = useMemo<BankAccountFormValues>(
+        () =>
+            data
+                ? {
+                      bankCode: data.bankCode ?? '',
+                      accountNumber: data.accountNumber ?? '',
+                      accountHolderName: data.accountHolderName ?? '',
+                  }
+                : EMPTY_VALUES,
+        [data]
+    );
 
     const { mutate: saveBankAccount, isPending } = useMutation({
         mutationFn: (payload: BankAccountFormValues) => paymentApi.saveBankAccount(payload),
-        onSuccess: (_result, payload) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: BANK_ACCOUNT_QUERY_KEY });
-            reset(payload);
-            toast.success(t('settings.payment.saveSuccess'));
+            queryClient.invalidateQueries({ queryKey: ['orders', 'held-refunds'] });
+            toast.success(t(`${prefix}.saveSuccess`));
         },
     });
-
-    const handleCancel = useCallback(() => {
-        reset({
-            bankCode: data?.bankCode ?? '',
-            accountNumber: data?.accountNumber ?? '',
-            accountHolderName: data?.accountHolderName ?? '',
-        });
-    }, [reset, data]);
 
     const handleRetry = useCallback(() => {
         refetch();
     }, [refetch]);
 
-    const handleFormSubmit = useCallback(
+    const handleSubmit = useCallback(
         (values: BankAccountFormValues) => {
             saveBankAccount(values);
         },
@@ -119,13 +104,13 @@ function SettingsPaymentSection() {
         return (
             <div className='px-6 py-10'>
                 <ErrorState
-                    title={t('settings.payment.loadErrorTitle')}
-                    description={t('settings.payment.loadErrorDescription')}
+                    title={t(`${prefix}.loadErrorTitle`)}
+                    description={t(`${prefix}.loadErrorDescription`)}
                     iconSize='sm'
                     action={
                         <Button variant='outline' onClick={handleRetry}>
                             <RefreshCw className='h-4 w-4' />
-                            {t('settings.payment.retry')}
+                            {t(`${prefix}.retry`)}
                         </Button>
                     }
                 />
@@ -134,63 +119,7 @@ function SettingsPaymentSection() {
     }
 
     return (
-        <form onSubmit={form.handleSubmit(handleFormSubmit)} className='flex flex-col'>
-            <div className='space-y-6 px-6 py-6'>
-                {/* Pane heading */}
-                <div className='space-y-1'>
-                    <h2 className='text-lg font-semibold tracking-tight'>{t('settings.payment.paneTitle')}</h2>
-                    <p className='text-sm text-muted-foreground'>{t('settings.payment.subtitle')}</p>
-                </div>
-
-                <Field data-invalid={!!errors.bankCode}>
-                    <FieldLabel htmlFor='bankCode'>{t('settings.payment.bankName')}</FieldLabel>
-                    <Input
-                        id='bankCode'
-                        placeholder={t('settings.payment.bankNamePlaceholder')}
-                        disabled={isPending}
-                        aria-invalid={!!errors.bankCode}
-                        {...form.register('bankCode')}
-                    />
-                    {errors.bankCode && <FieldError>{t('settings.payment.bankNameRequired')}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors.accountNumber}>
-                    <FieldLabel htmlFor='accountNumber'>{t('settings.payment.accountNumber')}</FieldLabel>
-                    <Input
-                        id='accountNumber'
-                        placeholder={t('settings.payment.accountNumberPlaceholder')}
-                        disabled={isPending}
-                        aria-invalid={!!errors.accountNumber}
-                        {...form.register('accountNumber')}
-                    />
-                    {errors.accountNumber && <FieldError>{t('settings.payment.accountNumberRequired')}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors.accountHolderName}>
-                    <FieldLabel htmlFor='accountHolderName'>{t('settings.payment.accountHolderName')}</FieldLabel>
-                    <Input
-                        id='accountHolderName'
-                        placeholder={t('settings.payment.accountHolderNamePlaceholder')}
-                        disabled={isPending}
-                        aria-invalid={!!errors.accountHolderName}
-                        {...form.register('accountHolderName')}
-                    />
-                    {errors.accountHolderName && (
-                        <FieldError>{t('settings.payment.accountHolderNameRequired')}</FieldError>
-                    )}
-                </Field>
-            </div>
-
-            {/* Pane footer */}
-            <div className='flex items-center justify-end gap-2 border-t bg-muted/20 px-6 py-4'>
-                <Button type='button' variant='outline' onClick={handleCancel} disabled={!isDirty || isPending}>
-                    {t('settings.payment.cancel')}
-                </Button>
-                <Button type='submit' disabled={!isDirty || isPending}>
-                    {isPending ? t('settings.payment.saving') : t('settings.payment.saveChanges')}
-                </Button>
-            </div>
-        </form>
+        <BankAccountForm variant={variant} defaultValues={defaultValues} isSaving={isPending} onSubmit={handleSubmit} />
     );
 }
 
