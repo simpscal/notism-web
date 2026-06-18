@@ -2,37 +2,9 @@ import { DeliveryStatusEnum } from '../enums/delivery-status.enum';
 import { PaymentMethodEnum } from '../enums/payment-method.enum';
 import { RefundStatusEnum } from '../enums/refund-status.enum';
 
-import { buildSepayQrUrl, toNFormatGuid } from '@/features/payment';
-
 const REFUND_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 export { toNFormatGuid } from '@/features/payment';
-
-interface RefundVietQrParams {
-    refundId: string;
-    bankCode: string;
-    accountNumber: string;
-    amount: number;
-    descriptionSuffix?: string;
-}
-
-/**
- * Admin refund VietQR builder (story #251 / #250). Mirrors the inbound VietQR builders
- * but targets SePay's hosted endpoint. `des` LEADS with the N-format refund id as the
- * first `-`-delimited token so the SePay outbound webhook auto-matches the refund.
- */
-export function buildRefundVietQrUrl({
-    refundId,
-    bankCode,
-    accountNumber,
-    amount,
-    descriptionSuffix,
-}: RefundVietQrParams): string {
-    const refundToken = toNFormatGuid(refundId);
-    const des = descriptionSuffix ? `${refundToken}-${descriptionSuffix}` : refundToken;
-
-    return buildSepayQrUrl({ bank: bankCode, acc: accountNumber, amount, des });
-}
 
 interface RefundRequestEligibility {
     paymentMethod: string;

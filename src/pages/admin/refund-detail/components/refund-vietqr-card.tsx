@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { buildRefundVietQrUrl, toNFormatGuid } from '@/features/order';
+import { toNFormatGuid } from '@/features/order';
+import { buildSepayQrUrl } from '@/features/payment';
 
 interface RefundVietQrCardProps {
     refundId: string;
@@ -36,12 +37,12 @@ function RefundVietQrCard({ refundId, amount, bankCode, accountNumber, accountHo
 
     const hasPayoutDetails = Boolean(bankCode && accountNumber);
 
+    const contentToken = useMemo(() => toNFormatGuid(refundId), [refundId]);
+
     const qrUrl = useMemo(() => {
         if (!hasPayoutDetails) return '';
-        return buildRefundVietQrUrl({ refundId, bankCode: bankCode!, accountNumber: accountNumber!, amount });
-    }, [hasPayoutDetails, refundId, bankCode, accountNumber, amount]);
-
-    const contentToken = useMemo(() => toNFormatGuid(refundId), [refundId]);
+        return buildSepayQrUrl({ bank: bankCode!, acc: accountNumber!, amount, des: contentToken });
+    }, [hasPayoutDetails, bankCode, accountNumber, amount, contentToken]);
 
     return (
         <Card className='border-primary/30'>
