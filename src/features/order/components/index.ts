@@ -9,3 +9,5 @@ export type { RefundPaidBannerData } from './refund-paid-banner';
 export { default as RefundPaidBannerStack } from './refund-paid-banner-stack';
 export { default as HeldRefundReminderBanner } from './held-refund-reminder-banner';
 export { default as HeldRefundReminderBannerContainer } from './held-refund-reminder-banner-container';
+export { default as PaymentStatusBadge } from './payment-status-badge';
+export { default as BankingPaymentConfirmedPanel } from './banking-payment-confirmed-panel';

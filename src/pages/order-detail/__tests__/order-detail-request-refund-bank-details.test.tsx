@@ -13,8 +13,8 @@ const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
 const navigateMock = vi.fn();
 
-vi.mock('@/features/payment', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/features/payment')>();
+vi.mock('@/features/order', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
         usePaymentSignalR: vi.fn(),
@@ -74,7 +74,7 @@ const BANK_ACCOUNT = {
 };
 
 const ORDER_URL = 'http://localhost:5000/api/orders/test-order-id';
-const BANK_ACCOUNT_URL = 'http://localhost:5000/api/payments/bank-account';
+const BANK_ACCOUNT_URL = 'http://localhost:5000/api/users/bank-account';
 const REQUEST_REFUND_URL = 'http://localhost:5000/api/orders/test-order-id/refund';
 
 let requestRefundCalled = false;

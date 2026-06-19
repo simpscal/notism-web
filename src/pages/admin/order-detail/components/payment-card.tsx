@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { PAYMENT_STATUS_OPTIONS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
+import { PAYMENT_STATUS_OPTIONS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
 
 interface PaymentCardProps {
     paymentStatus: string;

@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/badge';
-import { PaymentStatusEnum } from '@/features/payment';
+import { PaymentStatusEnum } from '@/features/order';
 
 interface PaymentStatusBadgeProps {
     paymentStatus: PaymentStatusEnum;

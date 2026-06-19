@@ -11,3 +11,9 @@ export interface UserProfileResponseModel {
     location?: string;
     authType?: AuthTypeEnum;
 }
+
+export interface BankAccountResponseModel {
+    bankCode: string;
+    accountNumber: string;
+    accountHolderName: string;
+}

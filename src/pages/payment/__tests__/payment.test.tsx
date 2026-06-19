@@ -8,7 +8,7 @@ import Payment from '../payment';
 
 import i18n from '@/app/i18n/i18n';
 import { getFoodPricing } from '@/features/food';
-import { PaymentNotificationType } from '@/features/payment';
+import { PaymentNotificationType } from '@/features/order';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart';
 import { renderWithProviders } from '@/test/utils';
@@ -16,15 +16,15 @@ import { renderWithProviders } from '@/test/utils';
 const t = (key: string) => i18n.t(key);
 
 // Mock SignalR so tests don't attempt real WebSocket connections
-vi.mock('@/features/payment', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/features/payment')>();
+vi.mock('@/features/order', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
         usePaymentSignalR: vi.fn(),
     };
 });
 
-const BANKING_CHECKOUT_URL = '*/payments/banking/checkout';
+const BANKING_CHECKOUT_URL = '*/orders/banking/checkout';
 
 const server = setupServer(
     http.post(BANKING_CHECKOUT_URL, () =>
@@ -145,7 +145,7 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('banking payment success shows success screen with Track order button', async () => {
-        const { usePaymentSignalR } = await import('@/features/payment');
+        const { usePaymentSignalR } = await import('@/features/order');
         const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
 
         let capturedCallback:
@@ -189,7 +189,7 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('shows error toast when payment failure notification arrives', async () => {
-        const { usePaymentSignalR } = await import('@/features/payment');
+        const { usePaymentSignalR } = await import('@/features/order');
         const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
 
         let capturedCallback:

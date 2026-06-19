@@ -6,8 +6,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import AdminOrdersKanban from '../admin-orders-kanban';
 
 import { ADMIN_QUERY_KEYS, type AdminOrderModel, type AdminOrdersModel } from '@/apis';
-import { DeliveryStatusEnum } from '@/features/order';
-import { PaymentStatusEnum } from '@/features/payment';
+import { DeliveryStatusEnum, PaymentStatusEnum } from '@/features/order';
 import { createTestQueryClient, renderWithProviders } from '@/test/utils';
 
 // react-intersection-observer reports inView in jsdom; mock to prevent

@@ -26,8 +26,7 @@ import {
     TablePagination,
     useTableSort,
 } from '@/components/table';
-import { DELIVERY_STATUS } from '@/features/order';
-import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
+import { DELIVERY_STATUS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
 
 const EMPTY_STATE_COL_SPAN = 8;
 

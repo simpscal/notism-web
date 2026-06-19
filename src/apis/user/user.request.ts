@@ -4,3 +4,9 @@ export interface UpdateProfileRequestModel {
     avatarUrl: string | null;
     location?: string | null;
 }
+
+export interface SaveBankAccountRequestModel {
+    bankCode: string;
+    accountNumber: string;
+    accountHolderName: string;
+}

@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RefundPaidBannerStack from '../refund-paid-banner-stack';
 
 import i18n from '@/app/i18n/i18n';
-import type { PaymentSharedNotification } from '@/features/payment';
+import type { PaymentSharedNotification } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
@@ -19,15 +19,11 @@ vi.mock('react-router-dom', async () => {
 
 let capturedOnNotification: ((payload: PaymentSharedNotification) => void) | undefined;
 
-vi.mock('@/features/payment', async () => {
-    const actual = await vi.importActual<typeof import('@/features/payment')>('@/features/payment');
-    return {
-        ...actual,
-        usePaymentSignalR: (options: { onNotification?: (payload: PaymentSharedNotification) => void }) => {
-            capturedOnNotification = options.onNotification;
-        },
-    };
-});
+vi.mock('@/features/order/hooks/use-payment-signalr', () => ({
+    usePaymentSignalR: (options: { onNotification?: (payload: PaymentSharedNotification) => void }) => {
+        capturedOnNotification = options.onNotification;
+    },
+}));
 
 interface RefundFixture {
     refundId: string;

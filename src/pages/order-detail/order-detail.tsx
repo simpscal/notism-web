@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { OrderActionCard, OrderDetailError, OrderItemsCard } from './components';
 
-import { ORDER_QUERY_KEYS, orderApi, PAYMENT_QUERY_KEYS, paymentApi } from '@/apis';
+import { ORDER_QUERY_KEYS, orderApi, USER_QUERY_KEYS, userApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
@@ -18,8 +18,9 @@ import {
     OrderHeader,
     PaymentMethodEnum,
     shouldShowRefundRequest,
+    BankingPaymentConfirmedPanel,
+    PaymentStatusEnum,
 } from '@/features/order';
-import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();
@@ -66,8 +67,8 @@ function OrderDetail() {
         });
 
     const { data: bankAccount } = useQuery({
-        queryKey: PAYMENT_QUERY_KEYS.bankAccount(),
-        queryFn: () => paymentApi.getBankAccount(),
+        queryKey: USER_QUERY_KEYS.bankAccount(),
+        queryFn: () => userApi.getBankAccount(),
         enabled: canRequestRefund,
     });
 

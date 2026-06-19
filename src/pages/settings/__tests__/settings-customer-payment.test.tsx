@@ -12,7 +12,7 @@ import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user';
 import { renderWithProviders } from '@/test/utils';
 
-const BANK_ACCOUNT_URL = '*/payments/bank-account';
+const BANK_ACCOUNT_URL = '*/users/bank-account';
 
 const toastSuccessMock = vi.fn();
 
@@ -148,7 +148,7 @@ describe('SettingsPayment (customer variant)', () => {
         expect(screen.getByRole('button', { name: /save changes/i })).toBeDisabled();
     });
 
-    it('saves to /payments/bank-account and fires a success toast', async () => {
+    it('saves to /users/bank-account and fires a success toast', async () => {
         const putBody = vi.fn();
 
         server.use(

@@ -5,7 +5,7 @@ import type { AdminOrderModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Card, CardContent } from '@/components/card';
-import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
+import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
 
 interface AdminOrderCardProps {
     order: AdminOrderModel;
