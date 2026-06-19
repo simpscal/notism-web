@@ -6,7 +6,8 @@ import { PatternFormat } from 'react-number-format';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
+import type { AdminUsersModel } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
@@ -26,7 +27,6 @@ import {
     useTableSort,
 } from '@/components/table';
 import { useAppSelector } from '@/core/hooks/use-redux.hook';
-import type { AdminUsersViewModel } from '@/features/admin';
 
 function AdminUsers() {
     const { t } = useTranslation();
@@ -54,7 +54,7 @@ function AdminUsers() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['admin', 'users', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }] as const,
+        queryKey: ADMIN_QUERY_KEYS.usersList({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }),
         queryFn: () =>
             adminApi.getUsers({
                 skip: (page - 1) * PAGE_SIZE,
@@ -70,8 +70,8 @@ function AdminUsers() {
         mutationFn: (userId: string) => adminApi.deleteUser(userId),
         onSuccess: (_, userId) => {
             // Remove the user from the cache
-            queryClient.setQueryData<AdminUsersViewModel>(
-                ['admin', 'users', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }] as const,
+            queryClient.setQueryData<AdminUsersModel>(
+                ADMIN_QUERY_KEYS.usersList({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }),
                 oldData => {
                     if (!oldData) return oldData;
 

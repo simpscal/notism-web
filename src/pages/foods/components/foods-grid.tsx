@@ -11,11 +11,11 @@ import FoodCard from './food-card';
 import FoodCardSkeleton from './food-card-skeleton';
 import FoodsEmpty from './foods-empty';
 
-import { foodApi } from '@/apis';
+import { CartItemModel, FOOD_QUERY_KEYS, foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import Spinner from '@/components/spinner';
-import { CartItemViewModel, useCart } from '@/features/cart';
+import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 
 interface FoodsGridProps {
@@ -39,7 +39,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     }, [sortBy]);
 
     const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
-        queryKey: ['foods', 'infinite', { category, keyword, sortBy, sortParams }] as const,
+        queryKey: FOOD_QUERY_KEYS.infinite({ category, keyword, sortBy, sortParams }),
         queryFn: ({ pageParam = 0 }) =>
             foodApi.getFoods({
                 skip: pageParam,
@@ -73,7 +73,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     const handleAddToCart = useCallback(
         async (food: FoodItemViewModel) => {
             const { effectivePrice } = getFoodPricing(food.price, food.discountPrice);
-            const cartItem: Omit<CartItemViewModel, 'quantity'> = {
+            const cartItem: Omit<CartItemModel, 'quantity'> = {
                 id: food.id,
                 name: food.name,
                 description: food.description,

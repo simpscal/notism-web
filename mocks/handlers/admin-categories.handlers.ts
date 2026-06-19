@@ -3,7 +3,7 @@ import { http, HttpResponse, delay } from 'msw';
 import categoriesData from '../data/categories.json';
 import { buildUrl } from '../utils';
 
-import type { AdminCategoryResponseModel, GetAdminCategoriesResponseModel } from '@/apis/models';
+import type { AdminCategoryResponseModel, GetAdminCategoriesResponseModel } from '@/apis';
 import { API_ENDPOINTS } from '@/app/constants';
 
 let categories: AdminCategoryResponseModel[] = JSON.parse(JSON.stringify(categoriesData));

@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
+import type { AdminOrdersModel } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
@@ -25,7 +26,6 @@ import {
     TablePagination,
     useTableSort,
 } from '@/components/table';
-import type { AdminOrdersViewModel } from '@/features/admin';
 import { DELIVERY_STATUS } from '@/features/order';
 import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
 
@@ -62,12 +62,7 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
         isLoading,
         isError,
     } = useQuery({
-        queryKey: [
-            'admin',
-            'orders',
-            'table',
-            { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search, paymentStatus },
-        ] as const,
+        queryKey: ADMIN_QUERY_KEYS.ordersTable({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search, paymentStatus }),
         queryFn: () =>
             adminApi.getOrdersForTable({
                 skip: (page - 1) * PAGE_SIZE,
@@ -89,8 +84,8 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
             adminApi.updateOrderDeliveryStatus(orderId, { deliveryStatus }),
         onSuccess: updatedOrder => {
             // Update table view cache
-            queryClient.setQueryData<AdminOrdersViewModel>(
-                ['admin', 'orders', 'table', { page, pageSize: PAGE_SIZE, sortBy, sortOrder, search, paymentStatus }],
+            queryClient.setQueryData<AdminOrdersModel>(
+                ADMIN_QUERY_KEYS.ordersTable({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search, paymentStatus }),
                 oldData => {
                     if (!oldData) return oldData;
                     return {

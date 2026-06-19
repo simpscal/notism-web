@@ -12,11 +12,11 @@ import {
     syncCartItems,
 } from './cart.thunks';
 
-import { CartItemViewModel } from '@/features/cart/models';
+import { CartItemModel } from '@/apis';
 
 const CART_STORAGE_KEY = 'cart_items';
 
-const setCartInStorage = (items: CartItemViewModel[]) => {
+const setCartInStorage = (items: CartItemModel[]) => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
 };
 
@@ -25,7 +25,7 @@ const clearCartStorage = () => {
 };
 
 export interface ICartState {
-    items: CartItemViewModel[];
+    items: CartItemModel[];
     isInitialized: boolean;
 }
 

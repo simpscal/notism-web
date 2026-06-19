@@ -1,14 +1,14 @@
 import { StickyNote } from 'lucide-react';
 import { memo, useCallback } from 'react';
 
+import type { AdminOrderModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Card, CardContent } from '@/components/card';
-import type { AdminOrderViewModel } from '@/features/admin';
 import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/payment';
 
 interface AdminOrderCardProps {
-    order: AdminOrderViewModel;
+    order: AdminOrderModel;
     onOrderClick: (orderId: string) => void;
 }
 

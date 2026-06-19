@@ -2,7 +2,7 @@ import { http, HttpResponse, delay } from 'msw';
 
 import { buildUrl } from '../utils';
 
-import type { AdminOrderResponseModel } from '@/apis/models';
+import type { AdminOrderResponseModel } from '@/apis';
 import { API_ENDPOINTS } from '@/app/constants';
 import { DeliveryStatusEnum } from '@/features/order';
 import { PaymentStatusEnum } from '@/features/payment';

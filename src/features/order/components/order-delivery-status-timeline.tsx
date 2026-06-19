@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 
 import { DELIVERY_STATUS } from '../constants';
 import { DeliveryStatusEnum } from '../enums';
-import type { OrderDeliveryStatusTimingViewModel } from '../models';
 
+import type { OrderDeliveryStatusTimingModel } from '@/apis';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import Timeline from '@/components/timeline';
 
 export interface OrderDeliveryStatusTimelineProps {
     deliveryStatus: string;
-    deliveryStatusTiming: OrderDeliveryStatusTimingViewModel;
+    deliveryStatusTiming: OrderDeliveryStatusTimingModel;
 }
 
 function OrderDeliveryStatusTimeline({

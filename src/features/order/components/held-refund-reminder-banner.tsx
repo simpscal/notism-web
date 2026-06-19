@@ -2,13 +2,12 @@ import { ChevronRight, Landmark } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { HeldRefundViewModel } from '../models';
-
+import type { HeldRefundModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import Banner from '@/components/banner';
 
 interface HeldRefundReminderBannerProps {
-    held: HeldRefundViewModel[];
+    held: HeldRefundModel[];
     onAddBankDetails: () => void;
 }
 

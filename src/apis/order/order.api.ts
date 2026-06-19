@@ -1,0 +1,57 @@
+import { apiClient } from '../client';
+
+import { toCreateOrder, toHeldRefund, toOrder, toOrders, toRefundSummary } from './order.mapper';
+import { CreateOrderRequestModel, GetOrdersRequestModel } from './order.request';
+import {
+    CreateOrderResponseModel,
+    GetOrdersResponseModel,
+    HeldRefundResponseModel,
+    OrderResponseModel,
+    RefundSummaryResponseModel,
+} from './order.response';
+
+import { API_ENDPOINTS } from '@/app/constants';
+
+export const ORDER_QUERY_KEYS = {
+    infinite: () => ['orders', 'infinite'] as const,
+    detail: (id: string) => ['orders', 'detail', id] as const,
+    heldRefunds: () => ['orders', 'held-refunds'] as const,
+};
+
+export const orderApi = {
+    create: async (data: CreateOrderRequestModel) => {
+        const response = await apiClient.post<CreateOrderResponseModel>(API_ENDPOINTS.ORDER.BASE, data);
+        return toCreateOrder(response);
+    },
+
+    getOrders: async (params?: GetOrdersRequestModel) => {
+        const searchParams = new URLSearchParams();
+        if (params?.skip !== undefined) searchParams.append('skip', params.skip.toString());
+        if (params?.take !== undefined) searchParams.append('take', params.take.toString());
+        if (params?.paymentStatus) searchParams.append('paymentStatus', params.paymentStatus);
+        const queryString = searchParams.toString();
+        const response = await apiClient.get<GetOrdersResponseModel>(
+            `${API_ENDPOINTS.ORDER.LIST}${queryString ? `?${queryString}` : ''}`
+        );
+        return toOrders(response);
+    },
+
+    getOrderById: async (id: string) => {
+        const response = await apiClient.get<OrderResponseModel>(API_ENDPOINTS.ORDER.DETAIL(id));
+        return toOrder(response);
+    },
+
+    cancel: (id: string) => {
+        return apiClient.post<void>(API_ENDPOINTS.ORDER.CANCEL(id));
+    },
+
+    requestRefund: async (id: string) => {
+        const response = await apiClient.post<RefundSummaryResponseModel>(API_ENDPOINTS.ORDER.REFUND(id));
+        return toRefundSummary(response);
+    },
+
+    getHeldRefunds: async () => {
+        const response = await apiClient.get<HeldRefundResponseModel[]>(API_ENDPOINTS.ORDER.HELD_REFUNDS);
+        return response.map(toHeldRefund);
+    },
+};

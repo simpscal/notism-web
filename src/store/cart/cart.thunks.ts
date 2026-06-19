@@ -2,8 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { getCartFromStorage } from './cart.selectors';
 
-import { cartApi } from '@/apis';
-import { CartItemViewModel } from '@/features/cart';
+import { cartApi, CartItemModel } from '@/apis';
 import { RootState } from '@/store';
 
 export const loadCart = createAsyncThunk('cart/load', async (_, { getState }) => {
@@ -20,7 +19,7 @@ export const loadCart = createAsyncThunk('cart/load', async (_, { getState }) =>
 
 export const addItem = createAsyncThunk(
     'cart/addItem',
-    async ({ item, quantity }: { item: Omit<CartItemViewModel, 'quantity'>; quantity: number }, { getState }) => {
+    async ({ item, quantity }: { item: Omit<CartItemModel, 'quantity'>; quantity: number }, { getState }) => {
         const state = getState() as RootState;
         const isAuthenticated = !!state.user.user?.id;
 

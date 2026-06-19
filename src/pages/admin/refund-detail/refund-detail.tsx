@@ -12,14 +12,14 @@ import {
     TransferRecordCard,
 } from './components';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi, type RefundDetailModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
-import { REFUND_QUERY_KEYS, RefundStatusEnum, type RefundDetailViewModel } from '@/features/order';
+import { RefundStatusEnum } from '@/features/order';
 import { PaymentNotificationType, usePaymentSignalR, type PaymentSharedNotification } from '@/features/payment';
 
 function AdminRefundDetail() {
@@ -34,7 +34,7 @@ function AdminRefundDetail() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: REFUND_QUERY_KEYS.adminDetail(id!),
+        queryKey: ADMIN_QUERY_KEYS.refundDetail(id!),
         queryFn: () => adminApi.getRefundById(id!),
         enabled: !!id,
     });
@@ -42,9 +42,9 @@ function AdminRefundDetail() {
     const approveMutation = useMutation({
         mutationFn: () => adminApi.approveRefund(id!),
         onSuccess: approved => {
-            queryClient.setQueryData<RefundDetailViewModel>(REFUND_QUERY_KEYS.adminDetail(id!), approved);
-            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminDetail(id!) });
-            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminList() });
+            queryClient.setQueryData<RefundDetailModel>(ADMIN_QUERY_KEYS.refundDetail(id!), approved);
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundsList() });
             setConfirmOpen(false);
         },
     });
@@ -52,9 +52,9 @@ function AdminRefundDetail() {
     const retryMutation = useMutation({
         mutationFn: () => adminApi.retryRefund(id!),
         onSuccess: retried => {
-            queryClient.setQueryData<RefundDetailViewModel>(REFUND_QUERY_KEYS.adminDetail(id!), retried);
-            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminDetail(id!) });
-            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminList() });
+            queryClient.setQueryData<RefundDetailModel>(ADMIN_QUERY_KEYS.refundDetail(id!), retried);
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundsList() });
             setRetryConfirmOpen(false);
         },
     });
@@ -63,8 +63,8 @@ function AdminRefundDetail() {
         (payload: PaymentSharedNotification) => {
             if (payload.type !== PaymentNotificationType.RefundStatusChanged || payload.refundId !== id) return;
 
-            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminDetail(id!) });
-            void queryClient.invalidateQueries({ queryKey: REFUND_QUERY_KEYS.adminList() });
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundsList() });
         },
         [id, queryClient]
     );

@@ -4,8 +4,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import OrderActionCard, { type OrderActionCardProps } from '../order-action-card';
 
+import type { RefundSummaryModel } from '@/apis';
 import i18n from '@/app/i18n/i18n';
-import { DeliveryStatusEnum, PaymentMethodEnum, type RefundSummaryViewModel } from '@/features/order';
+import { DeliveryStatusEnum, PaymentMethodEnum } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
@@ -13,7 +14,7 @@ const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 const withinWindow = () => new Date(Date.now() - 60 * 60 * 1000).toISOString();
 const beyondWindow = () => new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
-const PENDING_REFUND: RefundSummaryViewModel = {
+const PENDING_REFUND: RefundSummaryModel = {
     id: 'refund-1',
     slugId: 'REF-0001',
     orderId: 'order-1',
@@ -25,7 +26,7 @@ const PENDING_REFUND: RefundSummaryViewModel = {
     transferReference: null,
 };
 
-const PAID_REFUND: RefundSummaryViewModel = {
+const PAID_REFUND: RefundSummaryModel = {
     ...PENDING_REFUND,
     status: 'paid',
     paidAt: '2026-06-14T10:00:00Z',

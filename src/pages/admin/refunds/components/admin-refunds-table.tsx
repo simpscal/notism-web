@@ -4,14 +4,14 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import ErrorState from '@/components/error-state';
 import { Skeleton } from '@/components/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TablePagination, TableRow } from '@/components/table';
-import { REFUND_QUERY_KEYS, RefundStatusBadge, RefundStatusEnum } from '@/features/order';
+import { RefundStatusBadge, RefundStatusEnum } from '@/features/order';
 
 const EMPTY_STATE_COL_SPAN = 7;
 const SKELETON_ROWS = [1, 2, 3, 4, 5];
@@ -45,7 +45,7 @@ function AdminRefundsTable({ onRefundClick, status }: AdminRefundsTableProps) {
         isError,
         refetch,
     } = useQuery({
-        queryKey: [...REFUND_QUERY_KEYS.adminList(), { page, pageSize: PAGE_SIZE, status }] as const,
+        queryKey: [...ADMIN_QUERY_KEYS.refundsList(), { page, pageSize: PAGE_SIZE, status }] as const,
         queryFn: () =>
             adminApi.getRefunds({
                 status,

@@ -4,7 +4,8 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
+import type { DashboardRevenueGranularityModel, DashboardRevenuePointModel } from '@/apis';
 import { formatVnd } from '@/app/utils/currency.utils';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
@@ -12,12 +13,11 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import ErrorState from '@/components/error-state';
 import { Skeleton } from '@/components/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
-import type { DashboardRevenueGranularityViewModel, DashboardRevenuePointViewModel } from '@/features/admin';
 import { getRevenuePeriodsUtc } from '@/pages/admin/dashboard/utils';
 
-const GRANULARITY_ORDER: readonly DashboardRevenueGranularityViewModel[] = ['year', 'month', 'day'];
+const GRANULARITY_ORDER: readonly DashboardRevenueGranularityModel[] = ['year', 'month', 'day'];
 
-const DEFAULT_GRANULARITY: DashboardRevenueGranularityViewModel = 'month';
+const DEFAULT_GRANULARITY: DashboardRevenueGranularityModel = 'month';
 
 const REVENUE_CHART_CONFIG = {
     revenue: { label: 'Revenue', color: 'var(--chart-1)' },
@@ -37,9 +37,9 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 interface RevenueChartProps {
-    granularity: DashboardRevenueGranularityViewModel;
-    points: DashboardRevenuePointViewModel[];
-    onGranularityChange: (granularity: DashboardRevenueGranularityViewModel) => void;
+    granularity: DashboardRevenueGranularityModel;
+    points: DashboardRevenuePointModel[];
+    onGranularityChange: (granularity: DashboardRevenueGranularityModel) => void;
 }
 
 function RevenueChart({ granularity, points, onGranularityChange }: RevenueChartProps) {
@@ -52,7 +52,7 @@ function RevenueChart({ granularity, points, onGranularityChange }: RevenueChart
     const handleValueChange = useCallback(
         (value: string) => {
             if (value) {
-                onGranularityChange(value as DashboardRevenueGranularityViewModel);
+                onGranularityChange(value as DashboardRevenueGranularityModel);
             }
         },
         [onGranularityChange]
@@ -203,7 +203,7 @@ function RevenueError({ onRetry }: { onRetry: () => void }) {
 function RevenueSection() {
     const { t } = useTranslation();
 
-    const [granularity, setGranularity] = useState<DashboardRevenueGranularityViewModel>(DEFAULT_GRANULARITY);
+    const [granularity, setGranularity] = useState<DashboardRevenueGranularityModel>(DEFAULT_GRANULARITY);
 
     // The client owns timezone conversion: compute the local period boundaries
     // for the active granularity, convert to the UTC boundary set, and derive a
@@ -211,7 +211,7 @@ function RevenueSection() {
     const { boundaries, labels } = useMemo(() => getRevenuePeriodsUtc(granularity), [granularity]);
 
     const { data, isLoading, isError, refetch } = useQuery({
-        queryKey: ['admin', 'dashboard', 'revenue-series', granularity, boundaries, labels] as const,
+        queryKey: ADMIN_QUERY_KEYS.dashboardRevenueSeries(granularity, boundaries, labels),
         queryFn: () => adminApi.getDashboardRevenueSeries({ boundaries, labels, granularity }),
     });
 

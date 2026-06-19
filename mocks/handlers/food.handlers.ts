@@ -4,7 +4,7 @@ import categoriesData from '../data/categories.json';
 import foodsData from '../data/foods.json';
 import { buildUrl } from '../utils';
 
-import type { CategoryResponseModel, FoodItemResponseModel, GetFoodByIdResponseModel } from '@/apis/models';
+import type { CategoryResponseModel, FoodItemResponseModel, GetFoodByIdResponseModel } from '@/apis';
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const foodHandlers = [

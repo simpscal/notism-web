@@ -14,7 +14,7 @@ import {
     type CategoryDetailFormValues,
 } from './models';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
@@ -41,7 +41,7 @@ function AdminCategoryDetail() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['admin', 'categories', 'detail', id] as const,
+        queryKey: ADMIN_QUERY_KEYS.categoryDetail(id ?? ''),
         queryFn: () => adminApi.getCategoryById(id!),
         enabled: !!id && !isAddMode,
     });
@@ -74,7 +74,7 @@ function AdminCategoryDetail() {
         mutationFn: (values: CategoryDetailFormValues) =>
             adminApi.updateCategory(id!, categoryDetailFormValuesToRequest(values)),
         onSuccess: updated => {
-            queryClient.setQueryData(['admin', 'categories', 'detail', id], updated);
+            queryClient.setQueryData(ADMIN_QUERY_KEYS.categoryDetail(id ?? ''), updated);
             dispatch(updateCategory(updated));
             form.reset(getDefaultCategoryDetailFormValues(updated));
             toast.success(t('admin.categories.updatedSuccess'));

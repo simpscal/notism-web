@@ -8,17 +8,15 @@ import { PaymentDeliveryForm, PaymentEmpty, PaymentMethod, PaymentOrderSummary, 
 import type { PaymentSuccessState } from './components';
 import PaymentBankingQr from './components/payment-banking-qr';
 
-import { orderApi, paymentApi, userApi } from '@/apis';
+import { orderApi, paymentApi, userApi, BankAccountModel, CartItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { CartItemViewModel } from '@/features/cart/models';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import { PaymentNotificationType, PaymentSharedNotification, usePaymentSignalR } from '@/features/payment';
-import { BankAccountViewModel } from '@/features/payment/models';
 import {
     loadCart,
     selectCartItems,
@@ -43,9 +41,9 @@ function Payment() {
     const [bankingCheckout, setBankingCheckout] = useState(false);
     const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
     const [checkoutId, setCheckoutId] = useState<string | null>(null);
-    const [storeBankAccount, setStoreBankAccount] = useState<BankAccountViewModel | null>(null);
+    const [storeBankAccount, setStoreBankAccount] = useState<BankAccountModel | null>(null);
     const [successState, setSuccessState] = useState<PaymentSuccessState | null>(null);
-    const [successItems, setSuccessItems] = useState<CartItemViewModel[]>([]);
+    const [successItems, setSuccessItems] = useState<CartItemModel[]>([]);
 
     const {
         mutate: createBankingCheckout,

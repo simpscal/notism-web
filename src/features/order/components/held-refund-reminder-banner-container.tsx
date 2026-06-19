@@ -2,11 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { REFUND_QUERY_KEYS } from '../constants';
-
 import HeldRefundReminderBanner from './held-refund-reminder-banner';
 
-import { orderApi } from '@/apis';
+import { ORDER_QUERY_KEYS, orderApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 
 /**
@@ -20,7 +18,7 @@ function HeldRefundReminderBannerContainer() {
     const navigate = useNavigate();
 
     const { data: heldRefunds } = useQuery({
-        queryKey: REFUND_QUERY_KEYS.heldRefunds(),
+        queryKey: ORDER_QUERY_KEYS.heldRefunds(),
         queryFn: () => orderApi.getHeldRefunds(),
     });
 

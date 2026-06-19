@@ -4,9 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import HeldRefundReminderBannerContainer from '../held-refund-reminder-banner-container';
 
-import { orderApi } from '@/apis';
+import { type HeldRefundModel, orderApi } from '@/apis';
 import i18n from '@/app/i18n/i18n';
-import type { HeldRefundViewModel } from '@/features/order/models';
 import { renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
@@ -18,13 +17,13 @@ vi.mock('react-router-dom', async () => {
     return { ...actual, useNavigate: () => navigateMock };
 });
 
-const HELD_ONE: HeldRefundViewModel = {
+const HELD_ONE: HeldRefundModel = {
     refundId: 'rfd-7001',
     orderRef: 'ORD-20260613-0099',
     amount: 485_000,
 };
 
-const HELD_TWO: HeldRefundViewModel = {
+const HELD_TWO: HeldRefundModel = {
     refundId: 'rfd-7002',
     orderRef: 'ORD-20260611-0063',
     amount: 215_000,

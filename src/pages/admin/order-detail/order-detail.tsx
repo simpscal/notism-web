@@ -4,7 +4,8 @@ import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
+import type { AdminOrderDetailModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
@@ -12,7 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import type { AdminOrderDetailViewModel } from '@/features/admin';
 import { OrderDeliveryStatusTimeline, OrderHeader, PaymentMethodEnum } from '@/features/order';
 import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
 import { PaymentCard } from '@/pages/admin/order-detail/components';
@@ -27,7 +27,7 @@ function AdminOrderDetail() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['admin', 'orders', 'detail', id] as const,
+        queryKey: ADMIN_QUERY_KEYS.orderDetail(id ?? ''),
         queryFn: () => {
             return adminApi.getOrderById(id!);
         },
@@ -37,7 +37,7 @@ function AdminOrderDetail() {
     const { mutate: mutatePaymentStatus, isPending: isPaymentStatusPending } = useMutation({
         mutationFn: (next: string) => adminApi.updateOrderPaymentStatus(order!.id, { paymentStatus: next }),
         onSuccess: updatedOrder => {
-            queryClient.setQueryData<AdminOrderDetailViewModel>(['admin', 'orders', 'detail', id], oldData =>
+            queryClient.setQueryData<AdminOrderDetailModel>(ADMIN_QUERY_KEYS.orderDetail(id ?? ''), oldData =>
                 oldData ? { ...oldData, paymentStatus: updatedOrder.paymentStatus } : oldData
             );
         },

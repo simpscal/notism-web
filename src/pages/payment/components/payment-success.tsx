@@ -2,12 +2,12 @@ import { CheckCircle2 } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { CartItemModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import { Separator } from '@/components/separator';
-import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 
 export type PaymentSuccessMethod = 'cod' | 'banking';
@@ -20,7 +20,7 @@ export interface PaymentSuccessState {
 
 interface PaymentSuccessProps {
     success: PaymentSuccessState;
-    items: CartItemViewModel[];
+    items: CartItemModel[];
     onTrackOrder: () => void;
     onBrowseMenu: () => void;
 }

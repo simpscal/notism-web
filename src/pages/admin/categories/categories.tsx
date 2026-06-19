@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
+import type { AdminCategoriesModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
@@ -15,7 +16,6 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input
 import Spinner from '@/components/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
 import { useAppDispatch } from '@/core/hooks';
-import type { AdminCategoriesViewModel } from '@/features/admin';
 import { removeCategory } from '@/store/food';
 
 function AdminCategories() {
@@ -32,14 +32,14 @@ function AdminCategories() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['admin', 'categories'] as const,
+        queryKey: ADMIN_QUERY_KEYS.categoriesList(),
         queryFn: () => adminApi.getCategories(),
     });
 
     const deleteCategoryMutation = useMutation({
         mutationFn: (categoryId: string) => adminApi.deleteCategory(categoryId),
         onSuccess: (_, categoryId) => {
-            queryClient.setQueryData<AdminCategoriesViewModel>(['admin', 'categories'] as const, oldData => {
+            queryClient.setQueryData<AdminCategoriesModel>(ADMIN_QUERY_KEYS.categoriesList(), oldData => {
                 if (!oldData) return oldData;
                 const updatedItems = oldData.items.filter(c => c.id !== categoryId);
                 return {

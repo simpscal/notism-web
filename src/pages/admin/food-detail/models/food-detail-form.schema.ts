@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { AdminFoodDetailViewModel } from '@/features/admin';
+import { AdminFoodDetailModel } from '@/apis';
 
 export const QUANTITY_UNIT_OPTIONS = [
     { value: 'g', label: 'g (gram)' },
@@ -29,7 +29,7 @@ function normalizeQuantityUnit(unit: string): 'g' | 'ml' {
     return 'g';
 }
 
-export function getDefaultFormValues(food: AdminFoodDetailViewModel | null): FoodFormValues {
+export function getDefaultFormValues(food: AdminFoodDetailModel | null): FoodFormValues {
     if (!food) {
         return {
             name: '',

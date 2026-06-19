@@ -3,11 +3,7 @@ import { http, HttpResponse, delay } from 'msw';
 import foodsData from '../data/foods.json';
 import { buildUrl } from '../utils';
 
-import type {
-    AdminFoodItemResponseModel,
-    GetAdminFoodDetailResponseModel,
-    GetFoodByIdResponseModel,
-} from '@/apis/models';
+import type { AdminFoodItemResponseModel, GetAdminFoodDetailResponseModel, GetFoodByIdResponseModel } from '@/apis';
 import { API_ENDPOINTS } from '@/app/constants';
 
 export const adminFoodsHandlers = [

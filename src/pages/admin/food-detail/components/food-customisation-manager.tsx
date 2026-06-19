@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { adminApi } from '@/apis';
+import type { CustomisationGroupModel, CustomisationOptionModel } from '@/apis';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,7 +23,6 @@ import { Input } from '@/components/input';
 import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
-import type { CustomisationGroupViewModel, CustomisationOptionViewModel } from '@/features/food';
 
 // ---------------------------------------------------------------------------
 // FoodCustomisationManager
@@ -30,12 +30,12 @@ import type { CustomisationGroupViewModel, CustomisationOptionViewModel } from '
 
 interface FoodCustomisationManagerProps {
     foodId: string;
-    customisations: CustomisationGroupViewModel[];
+    customisations: CustomisationGroupModel[];
 }
 
 function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationManagerProps) {
     const { t } = useTranslation();
-    const [localGroups, setLocalGroups] = useState<CustomisationGroupViewModel[]>(customisations);
+    const [localGroups, setLocalGroups] = useState<CustomisationGroupModel[]>(customisations);
 
     // Add group dialog state
     const [addGroupOpen, setAddGroupOpen] = useState(false);
@@ -90,7 +90,7 @@ function FoodCustomisationManager({ foodId, customisations }: FoodCustomisationM
         },
         onSuccess: created => {
             if (!targetGroupId) return;
-            const newOption: CustomisationOptionViewModel = {
+            const newOption: CustomisationOptionModel = {
                 value: created.id,
                 label: created.label,
                 ...(created.surcharge != null && created.surcharge > 0 && { surcharge: created.surcharge }),

@@ -3,13 +3,11 @@ import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from './use-redux.hook';
 
-import { authApi } from '@/apis';
+import { authApi, USER_QUERY_KEYS } from '@/apis';
 import { tokenManagerUtils } from '@/app/utils';
 import { setInitialized } from '@/store/auth';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user/user.slice';
-
-const QUERY_KEY = ['user', 'reload'] as const;
 
 export function useReloadUser() {
     const dispatch = useAppDispatch();
@@ -24,7 +22,7 @@ export function useReloadUser() {
     // login/register/OAuth — those responses omit location — so the authoritative
     // full profile never loaded until a manual refresh cleared the store.
     const query = useQuery({
-        queryKey: QUERY_KEY,
+        queryKey: USER_QUERY_KEYS.reload(),
         queryFn: () => authApi.reload(),
         enabled: hasValidToken,
         retry: false,

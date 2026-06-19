@@ -5,9 +5,9 @@ import { setUser } from '../user/user.slice';
 
 import { setToken } from './auth.slice';
 
-import { UserProfileViewModel } from '@/features/user/models';
+import { UserProfileModel } from '@/apis';
 
-export const setAuth = createAsyncThunk<void, { token: string; user: UserProfileViewModel }>(
+export const setAuth = createAsyncThunk<void, { token: string; user: UserProfileModel }>(
     'auth/setAuth',
     async ({ token, user }, { dispatch }) => {
         dispatch(setToken(token));
