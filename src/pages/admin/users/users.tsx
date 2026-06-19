@@ -54,7 +54,7 @@ function AdminUsers() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ADMIN_QUERY_KEYS.usersList({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }),
+        queryKey: ADMIN_QUERY_KEYS.users({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }),
         queryFn: () =>
             adminApi.getUsers({
                 skip: (page - 1) * PAGE_SIZE,
@@ -71,7 +71,7 @@ function AdminUsers() {
         onSuccess: (_, userId) => {
             // Remove the user from the cache
             queryClient.setQueryData<AdminUsersModel>(
-                ADMIN_QUERY_KEYS.usersList({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }),
+                ADMIN_QUERY_KEYS.users({ page, pageSize: PAGE_SIZE, sortBy, sortOrder, search }),
                 oldData => {
                     if (!oldData) return oldData;
 

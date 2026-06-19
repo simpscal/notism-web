@@ -24,7 +24,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus, highlightedStatuses }:
     const queryClient = useQueryClient();
 
     const placedQuery = useInfiniteQuery({
-        queryKey: ADMIN_QUERY_KEYS.ordersKanban(DELIVERY_STATUS[0].key, { paymentStatus }),
+        queryKey: ADMIN_QUERY_KEYS.kanban(DELIVERY_STATUS[0].key, { paymentStatus }),
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[0].key,
@@ -42,7 +42,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus, highlightedStatuses }:
     });
 
     const preparingQuery = useInfiniteQuery({
-        queryKey: ADMIN_QUERY_KEYS.ordersKanban(DELIVERY_STATUS[1].key, { paymentStatus }),
+        queryKey: ADMIN_QUERY_KEYS.kanban(DELIVERY_STATUS[1].key, { paymentStatus }),
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[1].key,
@@ -60,7 +60,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus, highlightedStatuses }:
     });
 
     const onTheWayQuery = useInfiniteQuery({
-        queryKey: ADMIN_QUERY_KEYS.ordersKanban(DELIVERY_STATUS[2].key, { paymentStatus }),
+        queryKey: ADMIN_QUERY_KEYS.kanban(DELIVERY_STATUS[2].key, { paymentStatus }),
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[2].key,
@@ -78,7 +78,7 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus, highlightedStatuses }:
     });
 
     const deliveredQuery = useInfiniteQuery({
-        queryKey: ADMIN_QUERY_KEYS.ordersKanban(DELIVERY_STATUS[3].key, { paymentStatus }),
+        queryKey: ADMIN_QUERY_KEYS.kanban(DELIVERY_STATUS[3].key, { paymentStatus }),
         queryFn: ({ pageParam = 0 }) =>
             adminApi.getOrdersForKanban({
                 status: DELIVERY_STATUS[3].key,
@@ -108,10 +108,10 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus, highlightedStatuses }:
             sourceColumnId: string;
         }) => adminApi.updateOrderDeliveryStatus(orderId, { deliveryStatus }),
         onMutate: async ({ orderId, deliveryStatus: targetColumnId, sourceColumnId }) => {
-            await queryClient.cancelQueries({ queryKey: ADMIN_QUERY_KEYS.ordersKanbanAll() });
+            await queryClient.cancelQueries({ queryKey: ADMIN_QUERY_KEYS.kanbanAll() });
 
-            const sourceKey = ADMIN_QUERY_KEYS.ordersKanban(sourceColumnId, { paymentStatus });
-            const targetKey = ADMIN_QUERY_KEYS.ordersKanban(targetColumnId, { paymentStatus });
+            const sourceKey = ADMIN_QUERY_KEYS.kanban(sourceColumnId, { paymentStatus });
+            const targetKey = ADMIN_QUERY_KEYS.kanban(targetColumnId, { paymentStatus });
 
             const previousSource = queryClient.getQueryData<InfiniteData<AdminOrdersModel>>(sourceKey);
             const previousTarget = queryClient.getQueryData<InfiniteData<AdminOrdersModel>>(targetKey);
@@ -155,18 +155,18 @@ function AdminOrdersKanban({ onOrderClick, paymentStatus, highlightedStatuses }:
         onError: (_err, { sourceColumnId, deliveryStatus: targetColumnId }, context) => {
             if (context?.previousSource)
                 queryClient.setQueryData(
-                    ADMIN_QUERY_KEYS.ordersKanban(sourceColumnId, { paymentStatus }),
+                    ADMIN_QUERY_KEYS.kanban(sourceColumnId, { paymentStatus }),
                     context.previousSource
                 );
             if (context?.previousTarget)
                 queryClient.setQueryData(
-                    ADMIN_QUERY_KEYS.ordersKanban(targetColumnId, { paymentStatus }),
+                    ADMIN_QUERY_KEYS.kanban(targetColumnId, { paymentStatus }),
                     context.previousTarget
                 );
         },
         onSettled: (_data, _err, { sourceColumnId, deliveryStatus: targetColumnId }) => {
-            queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.ordersKanbanColumn(sourceColumnId) });
-            queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.ordersKanbanColumn(targetColumnId) });
+            queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.kanbanColumn(sourceColumnId) });
+            queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.kanbanColumn(targetColumnId) });
         },
         onSuccess: () => toast.success(t('admin.orders.statusUpdated')),
     });

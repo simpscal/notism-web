@@ -32,14 +32,14 @@ function AdminCategories() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ADMIN_QUERY_KEYS.categoriesList(),
+        queryKey: ADMIN_QUERY_KEYS.categories(),
         queryFn: () => adminApi.getCategories(),
     });
 
     const deleteCategoryMutation = useMutation({
         mutationFn: (categoryId: string) => adminApi.deleteCategory(categoryId),
         onSuccess: (_, categoryId) => {
-            queryClient.setQueryData<AdminCategoriesModel>(ADMIN_QUERY_KEYS.categoriesList(), oldData => {
+            queryClient.setQueryData<AdminCategoriesModel>(ADMIN_QUERY_KEYS.categories(), oldData => {
                 if (!oldData) return oldData;
                 const updatedItems = oldData.items.filter(c => c.id !== categoryId);
                 return {

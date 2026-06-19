@@ -2,18 +2,16 @@ import { toast } from 'sonner';
 
 import { apiClient } from '../client';
 
+import { STORAGE_ENDPOINTS } from './storage.constant';
 import { toPresignedUrl } from './storage.mapper';
 import { PresignedUrlResponseModel } from './storage.response';
 
-import { API_ENDPOINTS } from '@/app/constants';
 import { PresignedUrlUploadEnum } from '@/app/enums';
-
-export const STORAGE_QUERY_KEYS = {};
 
 export const storageApi = {
     getPresignedUrl: async (filename: string, contentType: string, presignedUrlType: PresignedUrlUploadEnum) => {
         const response = await apiClient.post<PresignedUrlResponseModel>(
-            API_ENDPOINTS.STORAGE.PRESIGNED_URL_UPLOAD(presignedUrlType),
+            STORAGE_ENDPOINTS.PRESIGNED_URL_UPLOAD(presignedUrlType),
             {
                 filename,
                 contentType,

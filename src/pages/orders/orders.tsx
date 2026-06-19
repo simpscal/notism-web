@@ -43,7 +43,7 @@ function Orders() {
 
     const { data, isLoading, isError, isFetchingNextPage, isFetchNextPageError, hasNextPage, fetchNextPage } =
         useInfiniteQuery({
-            queryKey: ORDER_QUERY_KEYS.infinite(),
+            queryKey: ORDER_QUERY_KEYS.list(),
             queryFn: ({ pageParam = 0 }) => orderApi.getOrders({ skip: pageParam, take: PAGE_SIZE }),
             getNextPageParam: (lastPage, allPages) => {
                 const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);

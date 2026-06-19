@@ -45,7 +45,7 @@ function AdminRefundsTable({ onRefundClick, status }: AdminRefundsTableProps) {
         isError,
         refetch,
     } = useQuery({
-        queryKey: [...ADMIN_QUERY_KEYS.refundsList(), { page, pageSize: PAGE_SIZE, status }] as const,
+        queryKey: [...ADMIN_QUERY_KEYS.refunds(), { page, pageSize: PAGE_SIZE, status }] as const,
         queryFn: () =>
             adminApi.getRefunds({
                 status,

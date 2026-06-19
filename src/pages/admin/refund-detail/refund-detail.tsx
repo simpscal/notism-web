@@ -44,7 +44,7 @@ function AdminRefundDetail() {
         onSuccess: approved => {
             queryClient.setQueryData<RefundDetailModel>(ADMIN_QUERY_KEYS.refundDetail(id!), approved);
             void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
-            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundsList() });
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refunds() });
             setConfirmOpen(false);
         },
     });
@@ -54,7 +54,7 @@ function AdminRefundDetail() {
         onSuccess: retried => {
             queryClient.setQueryData<RefundDetailModel>(ADMIN_QUERY_KEYS.refundDetail(id!), retried);
             void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
-            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundsList() });
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refunds() });
             setRetryConfirmOpen(false);
         },
     });
@@ -64,7 +64,7 @@ function AdminRefundDetail() {
             if (payload.type !== PaymentNotificationType.RefundStatusChanged || payload.refundId !== id) return;
 
             void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
-            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundsList() });
+            void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refunds() });
         },
         [id, queryClient]
     );

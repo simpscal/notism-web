@@ -89,8 +89,8 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
             expect(screen.getByText('#ORD-PAID-001')).toBeInTheDocument();
         });
 
-        const sourceKey = ADMIN_QUERY_KEYS.ordersKanban(DeliveryStatusEnum.Placed, { paymentStatus: undefined });
-        const targetKey = ADMIN_QUERY_KEYS.ordersKanban(DeliveryStatusEnum.Preparing, { paymentStatus: undefined });
+        const sourceKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusEnum.Placed, { paymentStatus: undefined });
+        const targetKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusEnum.Preparing, { paymentStatus: undefined });
 
         // Seed the target column as empty so we can check it after
         queryClient.setQueryData(targetKey, {

@@ -39,7 +39,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     }, [sortBy]);
 
     const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
-        queryKey: FOOD_QUERY_KEYS.infinite({ category, keyword, sortBy, sortParams }),
+        queryKey: FOOD_QUERY_KEYS.list({ category, keyword, sortBy, sortParams }),
         queryFn: ({ pageParam = 0 }) =>
             foodApi.getFoods({
                 skip: pageParam,

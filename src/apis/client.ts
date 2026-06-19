@@ -2,7 +2,9 @@
 import i18next from 'i18next';
 import { toast } from 'sonner';
 
-import { API_ENDPOINTS, ROUTES, TOKEN_KEYS } from '@/app/constants';
+import { AUTH_ENDPOINTS } from './auth/auth.constant';
+
+import { ROUTES, TOKEN_KEYS } from '@/app/constants';
 import { tokenManagerUtils } from '@/app/utils';
 import { navigationUtils } from '@/app/utils/navigation.utils';
 
@@ -286,7 +288,7 @@ export class ApiClient {
         this._isRefreshing = true;
 
         try {
-            const response = await fetch(`${this._baseURL}/${API_ENDPOINTS.AUTH.REFRESH}`, {
+            const response = await fetch(`${this._baseURL}/${AUTH_ENDPOINTS.REFRESH}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

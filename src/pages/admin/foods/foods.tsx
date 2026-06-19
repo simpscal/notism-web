@@ -60,7 +60,7 @@ function AdminFoods() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ADMIN_QUERY_KEYS.foodsList({ page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }),
+        queryKey: ADMIN_QUERY_KEYS.foods({ page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }),
         queryFn: () =>
             adminApi.getFoods({
                 skip: (page - 1) * PAGE_SIZE,
@@ -76,7 +76,7 @@ function AdminFoods() {
         mutationFn: (foodId: string) => adminApi.deleteFood(foodId),
         onSuccess: (_, foodId) => {
             queryClient.setQueryData<AdminFoodsModel>(
-                ADMIN_QUERY_KEYS.foodsList({ page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }),
+                ADMIN_QUERY_KEYS.foods({ page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }),
                 oldData => {
                     if (!oldData) return oldData;
 

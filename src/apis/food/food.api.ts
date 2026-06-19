@@ -1,15 +1,9 @@
 import { apiClient } from '../client';
 
+import { FOOD_ENDPOINTS } from './food.constant';
 import { toCategory, toFood, toFoods } from './food.mapper';
 import { GetFoodsRequestModel } from './food.request';
 import { CategoryResponseModel, GetFoodByIdResponseModel, GetFoodsResponseModel } from './food.response';
-
-import { API_ENDPOINTS } from '@/app/constants';
-
-export const FOOD_QUERY_KEYS = {
-    detail: (id: string) => ['foods', 'detail', id] as const,
-    infinite: <TFilters>(filters: TFilters) => ['foods', 'infinite', filters] as const,
-};
 
 export const foodApi = {
     getFoods: async (params?: GetFoodsRequestModel) => {
@@ -23,18 +17,18 @@ export const foodApi = {
         if (params?.sortOrder) searchParams.append('sortOrder', params.sortOrder);
         const queryString = searchParams.toString();
         const response = await apiClient.get<GetFoodsResponseModel>(
-            `${API_ENDPOINTS.FOOD.LIST}${queryString ? `?${queryString}` : ''}`
+            `${FOOD_ENDPOINTS.LIST}${queryString ? `?${queryString}` : ''}`
         );
         return toFoods(response);
     },
 
     getFoodById: async (id: string) => {
-        const response = await apiClient.get<GetFoodByIdResponseModel>(API_ENDPOINTS.FOOD.DETAIL(id));
+        const response = await apiClient.get<GetFoodByIdResponseModel>(FOOD_ENDPOINTS.DETAIL(id));
         return toFood(response);
     },
 
     getCategories: () =>
         apiClient
-            .get<{ items: CategoryResponseModel[] }>(API_ENDPOINTS.FOOD.CATEGORIES)
+            .get<{ items: CategoryResponseModel[] }>(FOOD_ENDPOINTS.CATEGORIES)
             .then(res => res.items.map(toCategory)),
 };
