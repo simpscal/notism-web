@@ -29,7 +29,7 @@
 4. **components** - Reusable UI components
 5. **core** - React-specific shared resources (hooks, contexts, guards)
 6. **store** - Global application state management
-7. **apis** - API client, API functions, request models, and response models
+7. **apis** - API client + one folder per domain (fetchers, wire types, mapped models, mappers, endpoints, query keys)
 8. **app** - Application configuration, assets, constants, enums, and utilities
 
 ### Layer Dependencies Diagram
@@ -97,7 +97,7 @@ graph TD
 - **Layouts is top-most**: Layouts can import pages for routing configuration
 - **Pages can access layout store**: Pages can only import the store from layouts, not other layout artifacts
 - **Store is accessible**: `layouts`, `pages`, and `features` can access the global store
-- **APIs is centralized**: All API calls, request models, and response models are in `apis`
+- **APIs is per-domain**: All API calls, wire types, mapped models, endpoints, and query keys live under `apis/<domain>/`
 - **App is foundational**: All layers can depend on `app` (configs, constants, enums, utils), but `app` has no dependencies
 
 ---
@@ -106,18 +106,17 @@ graph TD
 
 ```text
 📁 src/
-├── 📁 apis/         # API client, API functions, and models
-│   ├── 📁 models/   # Request and response models
-│   │   ├── 📄 auth.model.ts
-│   │   ├── 📄 oauth.model.ts
-│   │   ├── 📄 user.model.ts
-│   │   └── 📄 index.ts
-│   ├── 📄 client.ts      # API client with interceptors
-│   ├── 📄 auth.api.ts    # Auth API functions
-│   ├── 📄 oauth.api.ts   # OAuth API functions
-│   ├── 📄 user.api.ts    # User API functions
-│   ├── 📄 storage.api.ts # Storage API functions
-│   └── 📄 index.ts       # Barrel exports
+├── 📁 apis/                       # API layer — one folder per domain
+│   ├── 📁 <domain>/               # e.g. auth, user, order, admin
+│   │   ├── 📄 <domain>.api.ts        # API functions (fetchers)
+│   │   ├── 📄 <domain>.request.ts    # *RequestModel — request payload types
+│   │   ├── 📄 <domain>.response.ts   # *ResponseModel — raw wire types (api-internal)
+│   │   ├── 📄 <domain>.model.ts      # *Model — mapped, UI-facing types
+│   │   ├── 📄 <domain>.mapper.ts     # to* functions: response → model
+│   │   ├── 📄 <domain>.constant.ts   # <DOMAIN>_ENDPOINTS + <DOMAIN>_QUERY_KEYS
+│   │   └── 📄 index.ts               # Barrel exports
+│   ├── 📄 client.ts               # API client with interceptors
+│   └── 📄 index.ts                # Barrel exports (re-exports every domain)
 │
 ├── 📁 app/          # Application configuration, assets, constants, enums, and utilities
 │   ├── 📁 assets/   # Images, fonts, icons
@@ -140,9 +139,9 @@ graph TD
 │   │   └── ...
 │   └── ...
 │
-├── 📁 features/     # Business logic, ViewModels, and features
+├── 📁 features/     # Business logic and features
 │   ├── 📁 user/
-│   │   ├── 📁 models/     # ViewModels for UI
+│   │   ├── 📁 models/     # ViewModels — feature-layer-only models (NOT mapped from API)
 │   │   │   ├── 📄 user.model.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 components/
@@ -204,7 +203,7 @@ pages      → layouts (store only), features, components, core, store, apis, ap
 features   → components, core, store, apis, app
 components → core, app
 core       → apis, app
-store      → features (models only), app
+store      → apis (models only), app
 apis       → app
 app        → (no imports from other layers)
 ```
@@ -215,25 +214,31 @@ app        → (no imports from other layers)
 
 ### APIs Folder
 
-Centralized location for all API-related code including the API client, API functions, request models, and response models.
+All API-related code, organized **one folder per domain** under `apis/<domain>/`. Each domain owns its fetchers, wire types, mapped models, mapper, endpoints, and query keys — nothing is shared across domains.
 
-**Contents:**
+**Per-domain contents (`apis/<domain>/`):**
 
-- **client.ts**: API client with interceptors, authentication, and error handling
-- **{domain}.api.ts**: API functions organized by domain (auth, user, oauth, storage)
-- **models/**: Request and response model interfaces
-    - **{domain}.model.ts**: Models for each API domain
+- **{domain}.api.ts**: API functions (pure async fetchers) for the domain
+- **{domain}.request.ts**: `*RequestModel` — request payload types
+- **{domain}.response.ts**: `*ResponseModel` — raw API wire types (api-layer internal)
+- **{domain}.model.ts**: `*Model` — mapped, UI-facing types produced by the mapper
+- **{domain}.mapper.ts**: `to*` functions mapping a `*ResponseModel` → `*Model`
+- **{domain}.constant.ts**: `<DOMAIN>_ENDPOINTS` (URL constants) + `<DOMAIN>_QUERY_KEYS` (React Query keys)
+- **index.ts**: barrel re-export of the domain
+- **client.ts** (top level): API client with interceptors, authentication, and error handling
 
-**Model Types (in `apis/models/`):**
+**Model types:**
 
-- **RequestModel**: Data sent to the API (e.g., `LoginRequestModel`, `SignupRequestModel`)
-- **ResponseModel**: Data received from the API (e.g., `AuthResponseModel`, `UserProfileResponseModel`)
+- **`*Model`** (api layer): the mapped, UI-facing type. This is what app layers consume (via the `@/apis` barrel).
+- **`*ResponseModel`** / **`*RequestModel`** (api layer, internal): raw wire types. Must NOT be imported outside `src/apis/**` — consume the mapped `*Model` or call the api function instead (enforced by eslint).
+- **`*ViewModel`** lives in the **feature layer**, never here — see naming.md.
 
 **Rules:**
 
 - Can only import from `app` (constants, configs, utils)
 - Contains no React code
 - All API functions should be pure async functions
+- Endpoint URLs and query keys are co-located per domain — there is no central `API_ENDPOINTS` object
 
 ---
 
@@ -353,7 +358,7 @@ Business logic, ViewModels, and feature-specific components that are **shared ac
 
 **Responsibilities:**
 
-- **ViewModels**: Define ViewModels for UI representation (transformed from API response models)
+- **ViewModels**: Define feature-layer-only ViewModels — UI-state or data composed/derived in the feature, NOT a 1:1 map of an API response (those are `*Model`s at the api layer)
 - **Shared Business Logic**: Accommodate business logic that is reused across multiple pages or components
 - **Reusable Components**: Feature-specific components that can be composed in different pages
 - **Business Rules**: Implement business rules and validation logic that applies to the feature
@@ -366,14 +371,16 @@ Business logic, ViewModels, and feature-specific components that are **shared ac
 
 **ViewModel Pattern:**
 
-ViewModels represent data as used in the UI, potentially transformed from API response models:
+A `ViewModel` is a model owned by the feature layer. Mapping an API response is **not** a feature concern — the mapper at the api layer produces a `*Model`. Reach for a `ViewModel` only when:
 
-- **Twin models** (identical to response): Can be a type alias or duplicate interface
-- **Transformed models**: Map response data to UI-specific structure
+- the shape is UI-only state with no API counterpart, or
+- it composes/derives data from one or more api `*Model`s into something no single endpoint returns.
+
+If you just need an endpoint's shape, import its `*Model` from `@/apis` directly — do not wrap it in a feature ViewModel.
 
 **Encapsulation:**
 
-- Features should focus on sharing business logic primarily via **components** and **ViewModels**
+- Features should focus on sharing business logic primarily via **components** and hooks
 - If a feature needs to expose functionality, prefer exposing it through a component or hook rather than raw types/models
 
 ---
@@ -461,14 +468,14 @@ store → features (models only), app
 
 These files serve as canonical examples of each pattern. When implementing a new feature, follow these as templates:
 
-| Pattern                     | Reference File(s)                                                             |
-| --------------------------- | ----------------------------------------------------------------------------- |
-| **Feature Module**          | `src/features/food/` — ViewModels, hooks, components organized by feature     |
-| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration        |
-| **API Module**              | `src/apis/auth.api.ts` — API functions with proper request/response models    |
-| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                |
-| **Shared UI Component**     | `src/components/` — shadcn/ui-based reusable components                       |
-| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic |
-| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern    |
+| Pattern                     | Reference File(s)                                                              |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| **Feature Module**          | `src/features/food/` — hooks, components, feature-only ViewModels              |
+| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration         |
+| **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant |
+| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                 |
+| **Shared UI Component**     | `src/components/` — shadcn/ui-based reusable components                        |
+| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic  |
+| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern     |
 
 Use these as templates: examine the full folder structure, naming conventions, import order, component memoization, and state management patterns from these examples.

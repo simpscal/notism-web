@@ -155,7 +155,7 @@ sequenceDiagram
 - **Login Page** (`pages/login/login.tsx`): Initiates OAuth flow
 - **OAuth Callback Guard** (`pages/oauth-callback/guards/oauth-callback-route.guard.tsx`): Validates callback parameters
 - **OAuth Callback Page** (`pages/oauth-callback/oauth-callback.tsx`): Handles callback and token exchange
-- **OAuth API** (`apis/oauth.api.ts`): API methods for OAuth operations
+- **OAuth API** (`apis/oauth/oauth.api.ts`): API methods for OAuth operations; endpoints + query keys in `apis/oauth/oauth.constant.ts`
 - **Auth Slice** (`store/auth/auth.slice.ts`): Redux slice for authentication state
 
 ## API Endpoints

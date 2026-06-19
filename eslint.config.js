@@ -85,28 +85,33 @@ export default tseslint.config(
                     zones: [
                         {
                             target: './src/**/*',
-                            from: './src/apis/models',
+                            from: ['./src/apis/**/*.response.ts', './src/apis/**/*.request.ts'],
                             except: ['./src/apis'],
                             message:
-                                'Do not import models directly from @/apis/models/. Use viewmodels from features instead.',
+                                'Do not import raw request/response wire models from a domain file. Consume the mapped *Model (or call the api function) via the @/apis barrel instead.',
                         },
                     ],
                 },
             ],
 
-            // Boundary guard: response models live in src/apis/models and are internal
-            // to the apis layer. Outside src/apis/** every layer must consume feature
-            // viewmodels, never @/apis/models. The override below re-enables it for
-            // src/apis/**. This catches the path-alias form that import/no-restricted-paths
-            // (relative-resolution only) misses.
+            // Boundary guard: raw wire types live in src/apis/<domain>/<domain>.{response,request}.ts
+            // and are internal to the apis layer. Outside src/apis/** every layer must consume the
+            // mapped *Model from @/apis (or call the api function), never the raw *.response/*.request
+            // files. The override below re-enables imports for src/apis/**. This catches the path-alias
+            // form that import/no-restricted-paths (relative-resolution only) misses.
             'no-restricted-imports': [
                 'error',
                 {
                     patterns: [
                         {
-                            group: ['@/apis/models', '@/apis/models/*', '**/apis/models', '**/apis/models/*'],
+                            group: [
+                                '@/apis/*/*.response',
+                                '@/apis/*/*.request',
+                                '**/apis/*/*.response',
+                                '**/apis/*/*.request',
+                            ],
                             message:
-                                'Do not import response models from @/apis/models outside src/apis/**. Use viewmodels from @/features/<domain> instead.',
+                                'Do not import raw request/response wire models outside src/apis/**. Use the mapped *Model from @/apis (or call the api function) instead.',
                         },
                     ],
                 },
@@ -141,10 +146,10 @@ export default tseslint.config(
         },
     },
     {
-        // The apis layer owns the response models — mappers and service files are
-        // allowed to import from @/apis/models. MSW mocks simulate the backend wire
-        // format and must produce response-model-shaped data, so they are exempt too.
-        // The boundary only forbids leakage into the app layers outside these.
+        // The apis layer owns the wire types — mappers and api files are allowed to
+        // import from <domain>.response.ts / <domain>.request.ts. MSW mocks simulate the
+        // backend wire format and must produce response-model-shaped data, so they are
+        // exempt too. The boundary only forbids leakage into the app layers outside these.
         files: ['src/apis/**/*.{ts,tsx}', 'mocks/**/*.{ts,tsx}'],
         rules: {
             'no-restricted-imports': 'off',
