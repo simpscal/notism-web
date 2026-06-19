@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 
-import { CartItemViewModel } from '../models';
-
+import { CartItemModel } from '@/apis';
 import { useAppDispatch } from '@/core/hooks';
 import { addItem, removeItem, replaceItemCustomisations, updateItemQuantity } from '@/store/cart/cart.thunks';
 
@@ -9,7 +8,7 @@ export function useCart() {
     const dispatch = useAppDispatch();
 
     const addToCart = useCallback(
-        async (item: Omit<CartItemViewModel, 'quantity'>, quantity: number) => {
+        async (item: Omit<CartItemModel, 'quantity'>, quantity: number) => {
             await dispatch(addItem({ item, quantity })).unwrap();
         },
         [dispatch]

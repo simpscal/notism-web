@@ -3,6 +3,7 @@ import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink } from 'react-router-dom';
 
+import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
@@ -17,11 +18,10 @@ import {
 } from '@/components/dropdown-menu';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useAppSelector } from '@/core/hooks';
-import { UserProfileViewModel } from '@/features/user/models';
 import { selectCartTotalItems } from '@/store/cart';
 
 interface ClientToolbarDesktopProps {
-    user: UserProfileViewModel | null;
+    user: UserProfileModel | null;
     onLogout: () => void;
 }
 

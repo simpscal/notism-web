@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { CartEmpty, CartItem } from './components';
 
+import { CartItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
@@ -13,7 +14,6 @@ import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
 import { useAppSelector, useAppDispatch, useDebouncedCallback } from '@/core/hooks';
 import { useCart } from '@/features/cart';
-import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar } from '@/features/order';
 import { selectCartItems, selectCartIsInitialized, setItemSelection } from '@/store/cart';
@@ -30,7 +30,7 @@ function Cart() {
     const storeItems = useAppSelector(selectCartItems);
     const isInitialized = useAppSelector(selectCartIsInitialized);
 
-    const [items, setItems] = useState<CartItemViewModel[]>(storeItems);
+    const [items, setItems] = useState<CartItemModel[]>(storeItems);
     useEffect(() => {
         setItems(storeItems);
     }, [storeItems]);

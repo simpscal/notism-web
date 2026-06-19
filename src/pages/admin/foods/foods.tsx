@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
+import type { AdminFoodsModel } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
@@ -25,7 +26,6 @@ import {
     TablePagination,
     useTableSort,
 } from '@/components/table';
-import type { AdminFoodsViewModel } from '@/features/admin';
 
 const DESCRIPTION_MAX_LENGTH = 50;
 
@@ -60,7 +60,7 @@ function AdminFoods() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['admin', 'foods', { page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }] as const,
+        queryKey: ADMIN_QUERY_KEYS.foods({ page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }),
         queryFn: () =>
             adminApi.getFoods({
                 skip: (page - 1) * PAGE_SIZE,
@@ -75,8 +75,8 @@ function AdminFoods() {
     const deleteFoodMutation = useMutation({
         mutationFn: (foodId: string) => adminApi.deleteFood(foodId),
         onSuccess: (_, foodId) => {
-            queryClient.setQueryData<AdminFoodsViewModel>(
-                ['admin', 'foods', { page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }] as const,
+            queryClient.setQueryData<AdminFoodsModel>(
+                ADMIN_QUERY_KEYS.foods({ page, pageSize: PAGE_SIZE, search, sortBy, sortOrder }),
                 oldData => {
                     if (!oldData) return oldData;
 

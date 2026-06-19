@@ -4,11 +4,11 @@ import categoriesData from '../data/categories.json';
 import foodsData from '../data/foods.json';
 import { buildUrl } from '../utils';
 
-import type { CategoryResponseModel, FoodItemResponseModel, GetFoodByIdResponseModel } from '@/apis/models';
-import { API_ENDPOINTS } from '@/app/constants';
+import type { CategoryResponseModel, FoodItemResponseModel, GetFoodByIdResponseModel } from '@/apis';
+import { FOOD_ENDPOINTS } from '@/apis/food/food.constant';
 
 export const foodHandlers = [
-    http.get(buildUrl(API_ENDPOINTS.FOOD.CATEGORIES), async () => {
+    http.get(buildUrl(FOOD_ENDPOINTS.CATEGORIES), async () => {
         await delay(300);
 
         const categories: CategoryResponseModel[] = (categoriesData as { id: string; name: string }[]).map(c => ({
@@ -18,7 +18,7 @@ export const foodHandlers = [
         return HttpResponse.json(categories);
     }),
 
-    http.get(buildUrl(API_ENDPOINTS.FOOD.LIST), async ({ request }) => {
+    http.get(buildUrl(FOOD_ENDPOINTS.LIST), async ({ request }) => {
         await delay(600);
 
         const url = new URL(request.url);
@@ -56,7 +56,7 @@ export const foodHandlers = [
         });
     }),
 
-    http.get(`${buildUrl(API_ENDPOINTS.FOOD.LIST)}/:id`, async ({ params }) => {
+    http.get(`${buildUrl(FOOD_ENDPOINTS.LIST)}/:id`, async ({ params }) => {
         await delay(400);
 
         const id = params.id as string;

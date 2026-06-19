@@ -8,28 +8,34 @@ All API calls **MUST** use TanStack Query hooks (`useQuery` or `useMutation`). N
 
 Query keys are hierarchical arrays that uniquely identify cached data. Always use `as const` for type safety.
 
+Query keys live **per domain** in `apis/{domain}/{domain}.constant.ts`, exported as `{DOMAIN}_QUERY_KEYS` alongside that domain's `{DOMAIN}_ENDPOINTS`. Each api owns its own keys — no key is shared across domains, and there is no central key registry. Consumers import them from the `@/apis` barrel.
+
 #### Conventions
 
 ```typescript
-// Single entity
-const QUERY_KEY = ['user', 'profile'] as const;
+// apis/order/order.constant.ts
+export const ORDER_ENDPOINTS = {
+    LIST: 'orders',
+    DETAIL: (id: string) => `orders/${id}`,
+    HELD_REFUNDS: 'orders/held-refunds',
+} as const;
 
-// List/collection
-const QUERY_KEY_LIST = ['accounts', 'list'] as const;
-
-// Detail with parameter
-const QUERY_KEY_DETAIL = (id: string) => ['account', 'detail', id] as const;
-
-// With filters
-const QUERY_KEY_FILTERED = (filters: AccountFilters) => ['accounts', 'list', filters] as const;
+// Each query-key factory mirrors the corresponding endpoint name.
+export const ORDER_QUERY_KEYS = {
+    list: () => ['orders', 'infinite'] as const,
+    detail: (id: string) => ['orders', 'detail', id] as const,
+    heldRefunds: () => ['orders', 'held-refunds'] as const,
+};
 ```
 
 #### Best Practices
 
 - ✅ Use hierarchical structure: `['entity', 'action', ...params]`
 - ✅ Always use `as const` for type safety
-- ✅ Keep query keys in a centralized location or near the API
+- ✅ Define keys in `apis/{domain}/{domain}.constant.ts` as `{DOMAIN}_QUERY_KEYS`, co-located with `{DOMAIN}_ENDPOINTS`
+- ✅ Name each key factory after its corresponding endpoint constant (`LIST` → `list()`, `DETAIL` → `detail(id)`)
 - ✅ Use functions for dynamic keys with parameters
+- ❌ Don't define query keys inline in pages/components or in a central registry
 - ❌ Don't use random or non-deterministic values in keys
 - ❌ Don't include unnecessary data in keys
 

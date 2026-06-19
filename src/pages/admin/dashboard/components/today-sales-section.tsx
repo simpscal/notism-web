@@ -4,7 +4,7 @@ import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { formatVnd } from '@/app/utils/currency.utils';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
@@ -120,7 +120,7 @@ function TodaySalesSection() {
     const { startUtc, endUtc } = useMemo(() => getTodayWindowUtc(), []);
 
     const { data, isLoading, isError, refetch } = useQuery({
-        queryKey: ['admin', 'dashboard', 'today-sales', startUtc, endUtc] as const,
+        queryKey: ADMIN_QUERY_KEYS.dashboardTodaySales(startUtc, endUtc),
         queryFn: () => adminApi.getDashboardTodaySales({ startUtc, endUtc }),
     });
 

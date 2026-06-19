@@ -5,8 +5,8 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import AdminOrdersKanban from '../admin-orders-kanban';
 
+import type { AdminOrdersModel } from '@/apis';
 import { HIGHLIGHT_DURATION_MS } from '@/components/kanban';
-import type { AdminOrdersViewModel } from '@/features/admin';
 import { DeliveryStatusEnum } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
@@ -23,7 +23,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const emptyColumn: AdminOrdersViewModel = { items: [], totalCount: 0 };
+const emptyColumn: AdminOrdersModel = { items: [], totalCount: 0 };
 
 beforeAll(() => {
     // jsdom does not implement scrollIntoView.

@@ -35,12 +35,14 @@ bun run test         # Vitest run
 ```
 src/
   app/              # Constants, enums, i18n, utils, styles
-  apis/             # API clients + request/response DTOs
+  apis/             # API layer, one folder per domain:
+    [domain]/       #   {domain}.api.ts (fetchers), .request/.response.ts (wire types),
+                    #   .model.ts (mapped *Model), .mapper.ts, .constant.ts (ENDPOINTS + QUERY_KEYS)
   components/       # Reusable UI components (shadcn/ui)
     [feature]/      # Feature-specific components
     ui/             # Base components (button, card, dialog, etc.)
   core/             # Hooks, contexts, route guards
-  features/        # Feature business logic (ViewModels)
+  features/        # Feature business logic (feature-only ViewModels)
   layouts/          # AdminLayout, AuthLayout, ClientLayout
   pages/            # Page components + routing
   store/            # Redux slices (auth, cart, food, user)

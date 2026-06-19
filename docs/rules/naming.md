@@ -90,8 +90,10 @@ This document defines the naming conventions used throughout the React applicati
 
 **APIs**:
 
-- Pattern: `{service}.api.ts`
-- Examples: `user.api.ts`, `product.api.ts`, `auth.api.ts`
+- One folder per domain: `apis/{domain}/`
+- Files: `{domain}.api.ts`, `{domain}.request.ts`, `{domain}.response.ts`, `{domain}.model.ts`, `{domain}.mapper.ts`, `{domain}.constant.ts`, `index.ts`
+- Examples: `apis/user/user.api.ts`, `apis/order/order.constant.ts`
+- `{domain}.constant.ts` exports `{DOMAIN}_ENDPOINTS` + `{DOMAIN}_QUERY_KEYS` (UPPER_SNAKE)
 
 **Redux**:
 
@@ -582,16 +584,16 @@ export function formatYear(year: number): string {
 **Example**:
 
 ```typescript
-// apis/timeline.api.ts
+// apis/timeline/timeline.api.ts
 export const timelineApi = {
-    getPeriods: async (): Promise<PeriodViewModel[]> => {
+    getPeriods: async (): Promise<TimelinePeriodModel[]> => {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 100));
         return calculateTimelineGaps(mockPeriods);
     },
 };
 
-// apis/user.api.ts
+// apis/user/user.api.ts
 export const userApi = {
     getUsers: async (): Promise<IUser[]> => {
         // ...
@@ -610,56 +612,44 @@ export const userApi = {
 **Convention**:
 
 - **PascalCase**
-- Use descriptive suffixes to indicate model type:
-    - `ViewModel` - For data used in UI/view layer
-    - `ResponseModel` - For API response data
-    - `RequestModel` - For API request data
-- File naming: `{entity}.model.ts` (singular) or `{entity}.models.ts` (plural)
+- The suffix marks both the model's role AND which layer it lives in:
+    - `ResponseModel` — raw API response wire type. **Api layer**, in `apis/{domain}/{domain}.response.ts`. Internal — never imported outside `src/apis/**`.
+    - `RequestModel` — API request payload. **Api layer**, in `apis/{domain}/{domain}.request.ts`.
+    - `Model` — the mapped, UI-facing type produced by a mapper from a `ResponseModel`. **Api layer**, in `apis/{domain}/{domain}.model.ts`. This is what app layers consume (via the `@/apis` barrel).
+    - `ViewModel` — a model composed in the **feature layer** that is NOT mapped from an API response (UI-only state, derived/combined data). Lives in `features/{domain}/models/`. If a model is just a transform of a response, it is a `Model` at the api layer — not a `ViewModel`.
+- File naming: `{entity}.model.ts`
 
 **Example**:
 
 ```typescript
-// models/period.model.ts
-export class PeriodResponseModel {
-    id = '';
-    name = '';
-    startDate = 0;
-    endDate = 0;
-    description = '';
-    eventRelevance = 0;
-
-    constructor(data: Partial<PeriodResponseModel> = {}) {
-        Object.assign(this, data);
-    }
-}
-
-export class PeriodViewModel {
-    id = '';
-    name = '';
-    startDate = 0;
-    endDate = 0;
-    description = '';
-    eventRelevance = 0;
-    gapBefore = 0; // UI-only field
-
-    constructor(data: Partial<PeriodViewModel> = {}) {
-        Object.assign(this, data);
-    }
-}
-
-// models/user.model.ts
-export interface UserProfileViewModel {
+// apis/order/order.response.ts — raw wire type (api-internal)
+export interface OrderResponseModel {
     id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    avatarUrl: string | null;
+    status: string;
+    placedAt: string; // ISO string from the API
 }
 
-export interface UpdateProfileRequestModel {
-    firstName: string;
-    lastName: string;
-    avatarUrl: string | null;
+// apis/order/order.request.ts
+export interface CreateOrderRequestModel {
+    items: { foodId: string; quantity: number }[];
+}
+
+// apis/order/order.model.ts — mapped, UI-facing (consumed via @/apis)
+export interface OrderModel {
+    id: string;
+    status: OrderStatus;
+    placedAt: Date; // transformed from the response string
+}
+
+// apis/order/order.mapper.ts
+export function toOrder(response: OrderResponseModel): OrderModel { ... }
+
+// features/cart/models/cart-summary.model.ts — feature-layer-only ViewModel
+// (composed in the feature, not a 1:1 map of any API response)
+export interface CartSummaryViewModel {
+    itemCount: number;
+    subtotal: number;
+    estimatedDelivery: string;
 }
 ```
 

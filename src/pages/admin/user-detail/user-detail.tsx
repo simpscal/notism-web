@@ -16,7 +16,7 @@ import {
     type UserDetailFormValues,
 } from './models';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
@@ -41,7 +41,7 @@ function AdminUserDetail() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['admin', 'users', 'detail', id] as const,
+        queryKey: ADMIN_QUERY_KEYS.userDetail(id ?? ''),
         queryFn: () => adminApi.getUserById(id!),
         enabled: !!id,
     });
@@ -63,7 +63,7 @@ function AdminUserDetail() {
     const updateUserMutation = useMutation({
         mutationFn: (values: UserDetailFormValues) => adminApi.updateUser(id!, userDetailFormValuesToRequest(values)),
         onSuccess: updated => {
-            queryClient.setQueryData(['admin', 'users', 'detail', id], updated);
+            queryClient.setQueryData(ADMIN_QUERY_KEYS.userDetail(id ?? ''), updated);
             form.reset(getDefaultUserDetailFormValues(updated));
             toast.success(t('admin.user.updated'));
         },

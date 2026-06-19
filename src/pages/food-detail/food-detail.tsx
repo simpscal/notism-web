@@ -12,13 +12,13 @@ import {
     FoodDetailImageSection,
 } from './components';
 
-import { foodApi } from '@/apis';
+import { CartItemCustomisationModel, CartItemModel, FOOD_QUERY_KEYS, foodApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import Banner from '@/components/banner';
 import { Button } from '@/components/button';
-import { CartItemCustomisationViewModel, CartItemViewModel, useCart } from '@/features/cart';
+import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 
 function FoodDetail() {
@@ -34,7 +34,7 @@ function FoodDetail() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['foods', 'detail', id] as const,
+        queryKey: FOOD_QUERY_KEYS.detail(id ?? ''),
         queryFn: () => {
             if (!id) throw new Error('Food ID is required');
             return foodApi.getFoodById(id);
@@ -85,7 +85,7 @@ function FoodDetail() {
     const handleAddToCart = useCallback(async () => {
         if (!food) return;
 
-        const customisationsForCart: CartItemCustomisationViewModel[] = (food.customisations ?? [])
+        const customisationsForCart: CartItemCustomisationModel[] = (food.customisations ?? [])
             .filter(g => selections[g.id])
             .map(g => {
                 const opt = g.options.find(o => o.value === selections[g.id]);
@@ -103,7 +103,7 @@ function FoodDetail() {
                 };
             });
 
-        const cartItem: Omit<CartItemViewModel, 'quantity'> = {
+        const cartItem: Omit<CartItemModel, 'quantity'> = {
             id: food.id,
             name: food.name,
             description: food.description,

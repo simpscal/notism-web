@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import { OrderActionCard, OrderDetailError, OrderItemsCard } from './components';
 
-import { orderApi, paymentApi } from '@/apis';
+import { ORDER_QUERY_KEYS, orderApi, PAYMENT_QUERY_KEYS, paymentApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
@@ -32,7 +32,7 @@ function OrderDetail() {
         isLoading,
         isError,
     } = useQuery({
-        queryKey: ['orders', 'detail', id] as const,
+        queryKey: ORDER_QUERY_KEYS.detail(id ?? ''),
         queryFn: () => {
             if (!id) throw new Error('Order ID is required');
             return orderApi.getOrderById(id);
@@ -52,7 +52,7 @@ function OrderDetail() {
         mutationFn: (orderId: string) => orderApi.requestRefund(orderId),
         onSuccess: () => {
             toast.success(t('orderDetail.refundRequestedSuccess'));
-            queryClient.invalidateQueries({ queryKey: ['orders', 'detail', id] });
+            queryClient.invalidateQueries({ queryKey: ORDER_QUERY_KEYS.detail(id ?? '') });
         },
     });
 
@@ -66,7 +66,7 @@ function OrderDetail() {
         });
 
     const { data: bankAccount } = useQuery({
-        queryKey: ['bank-account'],
+        queryKey: PAYMENT_QUERY_KEYS.bankAccount(),
         queryFn: () => paymentApi.getBankAccount(),
         enabled: canRequestRefund,
     });

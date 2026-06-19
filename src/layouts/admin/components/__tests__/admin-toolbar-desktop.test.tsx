@@ -3,11 +3,11 @@ import { describe, expect, it, vi } from 'vitest';
 
 import AdminToolbarDesktop from '../admin-toolbar-desktop';
 
+import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { UserProfileViewModel } from '@/features/user/models';
 import { renderWithProviders } from '@/test/utils';
 
-const USER: UserProfileViewModel = {
+const USER: UserProfileModel = {
     id: '1',
     firstName: 'Tran',
     lastName: 'Minh',

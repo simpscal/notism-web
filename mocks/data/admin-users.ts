@@ -1,4 +1,4 @@
-import type { AdminUserResponseModel } from '@/apis/models';
+import type { AdminUserResponseModel } from '@/apis';
 
 export const mockAdminUsers: AdminUserResponseModel[] = [
     {

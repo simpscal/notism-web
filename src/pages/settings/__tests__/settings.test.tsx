@@ -8,9 +8,9 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 
 import { Settings } from '..';
 
+import { UserProfileModel } from '@/apis';
 import { UserRoleEnum } from '@/app/enums';
 import i18n from '@/app/i18n/i18n';
-import { UserProfileViewModel } from '@/features/user/models';
 import { store } from '@/store';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user';
@@ -32,7 +32,7 @@ function mockMatchMedia(isMobile: boolean) {
     });
 }
 
-function buildUser(role: UserRoleEnum): UserProfileViewModel {
+function buildUser(role: UserRoleEnum): UserProfileModel {
     return {
         id: '1',
         firstName: 'Mai',

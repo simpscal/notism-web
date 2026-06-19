@@ -1,14 +1,14 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { CartItemModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
-import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 
 interface PaymentOrderSummaryProps {
-    items: CartItemViewModel[];
+    items: CartItemModel[];
     totalPrice: number;
 }
 

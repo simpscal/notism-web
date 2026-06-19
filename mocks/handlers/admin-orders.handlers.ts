@@ -2,8 +2,8 @@ import { http, HttpResponse, delay } from 'msw';
 
 import { buildUrl } from '../utils';
 
-import type { AdminOrderResponseModel } from '@/apis/models';
-import { API_ENDPOINTS } from '@/app/constants';
+import type { AdminOrderResponseModel } from '@/apis';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 import { DeliveryStatusEnum } from '@/features/order';
 import { PaymentStatusEnum } from '@/features/payment';
 
@@ -469,7 +469,7 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
 ];
 
 export const adminOrdersHandlers = [
-    http.get(`${buildUrl(API_ENDPOINTS.ADMIN.ORDERS)}/table`, async ({ request }) => {
+    http.get(`${buildUrl(ADMIN_ENDPOINTS.ORDERS)}/table`, async ({ request }) => {
         await delay(500);
         const url = new URL(request.url);
         const skip = parseInt(url.searchParams.get('skip') || '0', 10);
@@ -479,7 +479,7 @@ export const adminOrdersHandlers = [
         return HttpResponse.json({ items: paginatedOrders, totalCount });
     }),
 
-    http.get(`${buildUrl(API_ENDPOINTS.ADMIN.ORDERS)}/kanban`, async ({ request }) => {
+    http.get(`${buildUrl(ADMIN_ENDPOINTS.ORDERS)}/kanban`, async ({ request }) => {
         await delay(500);
         const url = new URL(request.url);
         const status = url.searchParams.get('status') || '';
@@ -491,7 +491,7 @@ export const adminOrdersHandlers = [
         return HttpResponse.json({ items: paginatedOrders, totalCount: filteredOrders.length });
     }),
 
-    http.patch(`${buildUrl(API_ENDPOINTS.ADMIN.ORDERS)}/:id/delivery-status`, async ({ params, request }) => {
+    http.patch(`${buildUrl(ADMIN_ENDPOINTS.ORDERS)}/:id/delivery-status`, async ({ params, request }) => {
         await delay(300);
         const id = params.id as string;
         const body = (await request.json()) as { deliveryStatus: string };

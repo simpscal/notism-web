@@ -2,10 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { resetStore } from '../root.actions';
 
-import { UserProfileViewModel } from '@/features/user/models';
+import { UserProfileModel } from '@/apis';
 
 export interface IUserState {
-    user: UserProfileViewModel | null;
+    user: UserProfileModel | null;
 }
 
 const INITIAL_STATE: IUserState = {
@@ -16,11 +16,11 @@ const userSlice = createSlice({
     name: 'user',
     initialState: INITIAL_STATE,
     reducers: {
-        setUser: (state, action: PayloadAction<UserProfileViewModel>) => {
+        setUser: (state, action: PayloadAction<UserProfileModel>) => {
             state.user = action.payload;
         },
 
-        updateUser: (state, action: PayloadAction<Partial<UserProfileViewModel>>) => {
+        updateUser: (state, action: PayloadAction<Partial<UserProfileModel>>) => {
             if (state.user) {
                 state.user = {
                     ...state.user,

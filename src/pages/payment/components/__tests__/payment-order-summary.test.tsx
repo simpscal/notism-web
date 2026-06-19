@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest';
 
 import PaymentOrderSummary from '../payment-order-summary';
 
-import { CartItemViewModel } from '@/features/cart/models';
+import { CartItemModel } from '@/apis';
 import { renderWithProviders } from '@/test/utils';
 
-function makeItem(overrides: Partial<CartItemViewModel> = {}): CartItemViewModel {
+function makeItem(overrides: Partial<CartItemModel> = {}): CartItemModel {
     return {
         id: 'item-1',
         name: 'Test Food',

@@ -6,12 +6,10 @@ import { toast } from 'sonner';
 
 import BankAccountForm, { BankAccountFormValues, BankAccountFormVariant } from './bank-account-form';
 
-import { paymentApi } from '@/apis';
+import { ORDER_QUERY_KEYS, paymentApi, PAYMENT_QUERY_KEYS } from '@/apis';
 import { Button } from '@/components/button';
 import ErrorState from '@/components/error-state';
 import { Skeleton } from '@/components/skeleton';
-
-const BANK_ACCOUNT_QUERY_KEY = ['bank-account'];
 
 const COPY_PREFIX: Record<BankAccountFormVariant, string> = {
     admin: 'settings.payment',
@@ -60,7 +58,7 @@ function SettingsPaymentSection({ variant = 'admin' }: SettingsPaymentSectionPro
     const prefix = useMemo(() => COPY_PREFIX[variant], [variant]);
 
     const { data, isLoading, isError, refetch } = useQuery({
-        queryKey: BANK_ACCOUNT_QUERY_KEY,
+        queryKey: PAYMENT_QUERY_KEYS.bankAccount(),
         queryFn: () => paymentApi.getBankAccount(),
     });
 
@@ -79,8 +77,8 @@ function SettingsPaymentSection({ variant = 'admin' }: SettingsPaymentSectionPro
     const { mutate: saveBankAccount, isPending } = useMutation({
         mutationFn: (payload: BankAccountFormValues) => paymentApi.saveBankAccount(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: BANK_ACCOUNT_QUERY_KEY });
-            queryClient.invalidateQueries({ queryKey: ['orders', 'held-refunds'] });
+            queryClient.invalidateQueries({ queryKey: PAYMENT_QUERY_KEYS.bankAccount() });
+            queryClient.invalidateQueries({ queryKey: ORDER_QUERY_KEYS.heldRefunds() });
             toast.success(t(`${prefix}.saveSuccess`));
         },
     });

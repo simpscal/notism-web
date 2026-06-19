@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 import { OrdersEmpty, OrdersLoadMore } from './components';
 
-import { orderApi } from '@/apis';
+import { ORDER_QUERY_KEYS, orderApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
@@ -43,7 +43,7 @@ function Orders() {
 
     const { data, isLoading, isError, isFetchingNextPage, isFetchNextPageError, hasNextPage, fetchNextPage } =
         useInfiniteQuery({
-            queryKey: ['orders', 'infinite'] as const,
+            queryKey: ORDER_QUERY_KEYS.list(),
             queryFn: ({ pageParam = 0 }) => orderApi.getOrders({ skip: pageParam, take: PAGE_SIZE }),
             getNextPageParam: (lastPage, allPages) => {
                 const loadedCount = allPages.reduce((acc, page) => acc + page.items.length, 0);

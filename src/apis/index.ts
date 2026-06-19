@@ -1,16 +1,13 @@
 // API Client
 export * from './client';
 
-// APIs
-export * from './admin.api';
-export * from './auth.api';
-export * from './cart.api';
-export * from './food.api';
-export * from './oauth.api';
-export * from './order.api';
-export * from './payment.api';
-export * from './storage.api';
-export * from './user.api';
-
-// Models
-export * from './models';
+// Domains
+export * from './admin';
+export * from './auth';
+export * from './cart';
+export * from './food';
+export * from './oauth';
+export * from './order';
+export * from './payment';
+export * from './storage';
+export * from './user';

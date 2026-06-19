@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 
-import { adminApi } from '@/apis';
+import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
+import type { DashboardOrderStatusSummaryModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
@@ -19,9 +20,8 @@ import {
 } from '@/components/chart';
 import ErrorState from '@/components/error-state';
 import { Skeleton } from '@/components/skeleton';
-import type { DashboardOrderStatusSummaryViewModel } from '@/features/admin';
 
-type OrderStatusBucketKey = keyof DashboardOrderStatusSummaryViewModel;
+type OrderStatusBucketKey = keyof DashboardOrderStatusSummaryModel;
 
 const ORDER_STATUS_BUCKETS: readonly OrderStatusBucketKey[] = ['new', 'inProgress', 'completed'];
 
@@ -139,7 +139,7 @@ function OrderStatusSection() {
     const navigate = useNavigate();
 
     const { data, isLoading, isError, refetch } = useQuery({
-        queryKey: ['admin', 'dashboard', 'order-status-summary'] as const,
+        queryKey: ADMIN_QUERY_KEYS.dashboardOrderStatusSummary(),
         queryFn: () => adminApi.getDashboardOrderStatusSummary(),
     });
 

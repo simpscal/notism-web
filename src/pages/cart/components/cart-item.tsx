@@ -2,6 +2,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { CartItemModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
@@ -9,12 +10,11 @@ import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Checkbox } from '@/components/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { CartItemViewModel } from '@/features/cart/models';
 import { getFoodPricing } from '@/features/food';
 import { FoodImage } from '@/features/food/components';
 
 interface CartItemProps {
-    item: CartItemViewModel;
+    item: CartItemModel;
     onQuantityChange: (id: string, delta: number) => void;
     onRemove: (id: string, name: string) => void;
     onSelectionChange: (id: string, selected: boolean) => void;

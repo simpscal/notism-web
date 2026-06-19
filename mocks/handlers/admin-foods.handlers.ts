@@ -3,15 +3,11 @@ import { http, HttpResponse, delay } from 'msw';
 import foodsData from '../data/foods.json';
 import { buildUrl } from '../utils';
 
-import type {
-    AdminFoodItemResponseModel,
-    GetAdminFoodDetailResponseModel,
-    GetFoodByIdResponseModel,
-} from '@/apis/models';
-import { API_ENDPOINTS } from '@/app/constants';
+import type { AdminFoodItemResponseModel, GetAdminFoodDetailResponseModel, GetFoodByIdResponseModel } from '@/apis';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 
 export const adminFoodsHandlers = [
-    http.get(buildUrl(API_ENDPOINTS.ADMIN.FOODS), async ({ request }) => {
+    http.get(buildUrl(ADMIN_ENDPOINTS.FOODS), async ({ request }) => {
         await delay(500);
 
         const url = new URL(request.url);
@@ -83,7 +79,7 @@ export const adminFoodsHandlers = [
         return HttpResponse.json({ items, totalCount });
     }),
 
-    http.get(`${buildUrl(API_ENDPOINTS.ADMIN.FOODS)}/:id`, async ({ params }) => {
+    http.get(`${buildUrl(ADMIN_ENDPOINTS.FOODS)}/:id`, async ({ params }) => {
         await delay(400);
 
         const id = params.id as string;
@@ -132,7 +128,7 @@ export const adminFoodsHandlers = [
         return HttpResponse.json(foodDetail);
     }),
 
-    http.patch(`${buildUrl(API_ENDPOINTS.ADMIN.FOODS)}/:id`, async ({ params, request }) => {
+    http.patch(`${buildUrl(ADMIN_ENDPOINTS.FOODS)}/:id`, async ({ params, request }) => {
         await delay(300);
 
         const id = params.id as string;
@@ -191,7 +187,7 @@ export const adminFoodsHandlers = [
         return HttpResponse.json(updated);
     }),
 
-    http.delete(`${buildUrl(API_ENDPOINTS.ADMIN.FOODS)}/:id`, async () => {
+    http.delete(`${buildUrl(ADMIN_ENDPOINTS.FOODS)}/:id`, async () => {
         await delay(300);
         return new HttpResponse(null, { status: 204 });
     }),

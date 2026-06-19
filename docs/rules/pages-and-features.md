@@ -158,24 +158,25 @@ function CreateAccountModal({ isOpen, onClose }: CreateAccountModalProps) {
 export default memo(CreateAccountModal);
 ```
 
-### Feature UI Models
+### Feature ViewModels
 
-UI models represent data structures used in UI components, potentially transformed from API response models. They do not use a suffix.
+A model that is mapped/transformed from an API response is **not** a feature model — it lives in the api layer as a `*Model` (`apis/{domain}/{domain}.model.ts`) and is consumed via `@/apis`. See naming.md.
+
+The feature layer's `models/` folder holds only **ViewModels**: models composed in the feature itself — UI-only state or data derived/combined from one or more api `*Model`s — that do not map 1:1 to any API response. They use the `ViewModel` suffix.
 
 ```typescript
-// features/user/models/user.model.ts
-// UI model - can be identical to ResponseModel or transformed
-export interface UserProfile {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    avatarUrl: string | null;
+// features/cart/models/cart-summary.model.ts
+// Composed in the feature from cart + order api models — not a 1:1 API response.
+import { CartModel } from '@/apis';
+
+export interface CartSummaryViewModel {
+    itemCount: number;
+    subtotal: number;
+    estimatedDelivery: string;
 }
 
-// If identical to ResponseModel, can also be a type alias:
-// import { UserProfileResponseModel } from '@/apis';
-// export type UserProfile = UserProfileResponseModel;
+// If you just need the API shape, import the mapped *Model directly — no feature model needed:
+// import { UserProfileModel } from '@/apis';
 ```
 
 ### Reusable Business Logic Hook

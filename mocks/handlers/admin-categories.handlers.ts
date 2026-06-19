@@ -3,8 +3,8 @@ import { http, HttpResponse, delay } from 'msw';
 import categoriesData from '../data/categories.json';
 import { buildUrl } from '../utils';
 
-import type { AdminCategoryResponseModel, GetAdminCategoriesResponseModel } from '@/apis/models';
-import { API_ENDPOINTS } from '@/app/constants';
+import type { AdminCategoryResponseModel, GetAdminCategoriesResponseModel } from '@/apis';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 
 let categories: AdminCategoryResponseModel[] = JSON.parse(JSON.stringify(categoriesData));
 
@@ -13,7 +13,7 @@ function resetCategories() {
 }
 
 export const adminCategoriesHandlers = [
-    http.get(buildUrl(API_ENDPOINTS.ADMIN.CATEGORIES), async () => {
+    http.get(buildUrl(ADMIN_ENDPOINTS.CATEGORIES), async () => {
         await delay(300);
 
         const response: GetAdminCategoriesResponseModel = {
@@ -22,7 +22,7 @@ export const adminCategoriesHandlers = [
         return HttpResponse.json(response);
     }),
 
-    http.get(`${buildUrl(API_ENDPOINTS.ADMIN.CATEGORIES)}/:id`, async ({ params }) => {
+    http.get(`${buildUrl(ADMIN_ENDPOINTS.CATEGORIES)}/:id`, async ({ params }) => {
         await delay(200);
 
         const id = params.id as string;
@@ -35,7 +35,7 @@ export const adminCategoriesHandlers = [
         return HttpResponse.json(category);
     }),
 
-    http.post(buildUrl(API_ENDPOINTS.ADMIN.CATEGORIES), async ({ request }) => {
+    http.post(buildUrl(ADMIN_ENDPOINTS.CATEGORIES), async ({ request }) => {
         await delay(300);
 
         const body = (await request.json()) as { name: string };
@@ -50,7 +50,7 @@ export const adminCategoriesHandlers = [
         return HttpResponse.json(newCategory, { status: 201 });
     }),
 
-    http.patch(`${buildUrl(API_ENDPOINTS.ADMIN.CATEGORIES)}/:id`, async ({ params, request }) => {
+    http.patch(`${buildUrl(ADMIN_ENDPOINTS.CATEGORIES)}/:id`, async ({ params, request }) => {
         await delay(300);
 
         const id = params.id as string;
@@ -70,7 +70,7 @@ export const adminCategoriesHandlers = [
         return HttpResponse.json(categories[index]);
     }),
 
-    http.delete(`${buildUrl(API_ENDPOINTS.ADMIN.CATEGORIES)}/:id`, async ({ params }) => {
+    http.delete(`${buildUrl(ADMIN_ENDPOINTS.CATEGORIES)}/:id`, async ({ params }) => {
         await delay(300);
 
         const id = params.id as string;

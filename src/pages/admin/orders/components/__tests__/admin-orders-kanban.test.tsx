@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 
 import AdminOrdersKanban from '../admin-orders-kanban';
 
-import type { AdminOrderViewModel, AdminOrdersViewModel } from '@/features/admin';
+import { ADMIN_QUERY_KEYS, type AdminOrderModel, type AdminOrdersModel } from '@/apis';
 import { DeliveryStatusEnum } from '@/features/order';
 import { PaymentStatusEnum } from '@/features/payment';
 import { createTestQueryClient, renderWithProviders } from '@/test/utils';
@@ -27,7 +27,7 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 // A paid order sitting in the "placed" column
-const paidOrder: AdminOrderViewModel = {
+const paidOrder: AdminOrderModel = {
     id: 'order-paid-1',
     slugId: 'ORD-PAID-001',
     userId: 'user-1',
@@ -43,17 +43,17 @@ const paidOrder: AdminOrderViewModel = {
 };
 
 // Minimal empty response for columns we are not testing
-const emptyColumn: AdminOrdersViewModel = { items: [], totalCount: 0 };
+const emptyColumn: AdminOrdersModel = { items: [], totalCount: 0 };
 
 // The API response for the PATCH — it returns the wrong (default) paymentStatus,
 // simulating the backend bug that triggered this issue.
-const apiUpdateResponse: AdminOrderViewModel = {
+const apiUpdateResponse: AdminOrderModel = {
     ...paidOrder,
     deliveryStatus: DeliveryStatusEnum.Preparing,
     paymentStatus: PaymentStatusEnum.Unpaid, // backend returns wrong paymentStatus
 };
 
-function setupKanbanHandlers(placedItems: AdminOrderViewModel[] = [paidOrder]) {
+function setupKanbanHandlers(placedItems: AdminOrderModel[] = [paidOrder]) {
     server.use(
         http.get(KANBAN_URL, ({ request }) => {
             const url = new URL(request.url);
@@ -89,8 +89,8 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
             expect(screen.getByText('#ORD-PAID-001')).toBeInTheDocument();
         });
 
-        const sourceKey = ['admin', 'orders', 'kanban', DeliveryStatusEnum.Placed, { paymentStatus: undefined }];
-        const targetKey = ['admin', 'orders', 'kanban', DeliveryStatusEnum.Preparing, { paymentStatus: undefined }];
+        const sourceKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusEnum.Placed, { paymentStatus: undefined });
+        const targetKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusEnum.Preparing, { paymentStatus: undefined });
 
         // Seed the target column as empty so we can check it after
         queryClient.setQueryData(targetKey, {
@@ -101,7 +101,7 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
         // Simulate what the onSuccess handler does: read original from source cache, merge, update caches.
         // This verifies the fix logic directly.
         const sourceData = queryClient.getQueryData<{
-            pages: Array<{ items: AdminOrderViewModel[]; totalCount: number }>;
+            pages: Array<{ items: AdminOrderModel[]; totalCount: number }>;
         }>(sourceKey);
         const originalOrder = sourceData?.pages.flatMap(p => p.items).find(item => item.id === apiUpdateResponse.id);
 
@@ -110,7 +110,7 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
         expect(originalOrder!.paymentStatus).toBe(PaymentStatusEnum.Paid);
 
         // Apply the fix: merge original fields, only take deliveryStatus from API response
-        const mergedOrder: AdminOrderViewModel = originalOrder
+        const mergedOrder: AdminOrderModel = originalOrder
             ? { ...originalOrder, deliveryStatus: apiUpdateResponse.deliveryStatus }
             : apiUpdateResponse;
 
@@ -121,12 +121,12 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
 
     it('does not reset paymentStatus to unpaid when API response has wrong paymentStatus', () => {
         // Verify that the merge logic never propagates the wrong paymentStatus from the API response
-        const originalPaidOrder: AdminOrderViewModel = {
+        const originalPaidOrder: AdminOrderModel = {
             ...paidOrder,
             paymentStatus: PaymentStatusEnum.Paid,
         };
 
-        const buggyApiResponse: AdminOrderViewModel = {
+        const buggyApiResponse: AdminOrderModel = {
             ...originalPaidOrder,
             deliveryStatus: DeliveryStatusEnum.OnTheWay,
             paymentStatus: PaymentStatusEnum.Unpaid, // API incorrectly returns unpaid
@@ -142,7 +142,7 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
     it('falls back to the API response when the original order is not found in cache', () => {
         // If the original order is not in the source cache, we use the API response as-is.
         // The ternary mirrors the fix in admin-orders-kanban.tsx: undefined → use updatedOrder.
-        function buildMerged(original: AdminOrderViewModel | undefined, updated: AdminOrderViewModel) {
+        function buildMerged(original: AdminOrderModel | undefined, updated: AdminOrderModel) {
             return original ? { ...original, deliveryStatus: updated.deliveryStatus } : updated;
         }
 

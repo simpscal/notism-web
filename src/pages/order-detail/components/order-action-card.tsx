@@ -3,6 +3,7 @@ import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import type { RefundSummaryModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
@@ -16,7 +17,6 @@ import {
     RefundStatusPanel,
     shouldShowRefundRequest,
     type DeliveryStatusConfig,
-    type RefundSummaryViewModel,
 } from '@/features/order';
 
 const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
@@ -42,7 +42,7 @@ export interface OrderActionCardProps {
     totalAmount: number;
     paymentMethod: string;
     deliveredCompletedAt: string | null;
-    refund: RefundSummaryViewModel | null;
+    refund: RefundSummaryModel | null;
     onConfirmCancel?: () => void;
     isCancelling?: boolean;
     onConfirmRefund?: () => void;

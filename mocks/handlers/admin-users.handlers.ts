@@ -3,10 +3,10 @@ import { http, HttpResponse, delay } from 'msw';
 import { mockAdminUsers } from '../data/admin-users';
 import { buildUrl } from '../utils';
 
-import { API_ENDPOINTS } from '@/app/constants';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 
 export const adminUsersHandlers = [
-    http.get(`${buildUrl(API_ENDPOINTS.ADMIN.USERS)}/:id`, async ({ params }) => {
+    http.get(`${buildUrl(ADMIN_ENDPOINTS.USERS)}/:id`, async ({ params }) => {
         await delay(300);
         const id = params.id as string;
         const user = mockAdminUsers.find(u => u.id === id);
@@ -16,7 +16,7 @@ export const adminUsersHandlers = [
         return HttpResponse.json(user);
     }),
 
-    http.get(buildUrl(API_ENDPOINTS.ADMIN.USERS), async ({ request }) => {
+    http.get(buildUrl(ADMIN_ENDPOINTS.USERS), async ({ request }) => {
         await delay(500);
         const url = new URL(request.url);
         const skip = parseInt(url.searchParams.get('skip') || '0', 10);
@@ -28,7 +28,7 @@ export const adminUsersHandlers = [
         });
     }),
 
-    http.patch(`${buildUrl(API_ENDPOINTS.ADMIN.USERS)}/:id`, async ({ params, request }) => {
+    http.patch(`${buildUrl(ADMIN_ENDPOINTS.USERS)}/:id`, async ({ params, request }) => {
         await delay(300);
         const id = params.id as string;
         const user = mockAdminUsers.find(u => u.id === id);
@@ -51,13 +51,13 @@ export const adminUsersHandlers = [
         return HttpResponse.json(updated);
     }),
 
-    http.delete(`${buildUrl(API_ENDPOINTS.ADMIN.USERS)}/:id`, async ({ params }) => {
+    http.delete(`${buildUrl(ADMIN_ENDPOINTS.USERS)}/:id`, async ({ params }) => {
         await delay(300);
         const id = params.id as string;
         return HttpResponse.json({ message: `User ${id} deleted successfully` });
     }),
 
-    http.post(`${buildUrl(API_ENDPOINTS.ADMIN.USERS)}/:id/reset-password`, async ({ params }) => {
+    http.post(`${buildUrl(ADMIN_ENDPOINTS.USERS)}/:id/reset-password`, async ({ params }) => {
         await delay(300);
         const id = params.id as string;
         return HttpResponse.json({ message: `Password reset for user ${id}` });
