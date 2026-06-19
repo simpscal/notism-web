@@ -1,4 +1,7 @@
+import { toBankAccount } from '../user';
+
 import type {
+    BankingCheckoutModel,
     CreateOrderModel,
     HeldRefundModel,
     OrderDeliveryStatusTimingModel,
@@ -9,6 +12,7 @@ import type {
     RefundSummaryModel,
 } from './order.model';
 import type {
+    BankingCheckoutResponseModel,
     CreateOrderResponseModel,
     DeliveryStatusTimingResponseModel,
     GetOrdersResponseModel,
@@ -109,5 +113,12 @@ export function toCreateOrder(response: CreateOrderResponseModel): CreateOrderMo
         paymentMethod: response.paymentMethod,
         deliveryStatus: response.deliveryStatus,
         createdAt: response.createdAt,
+    };
+}
+
+export function toBankingCheckout(response: BankingCheckoutResponseModel): BankingCheckoutModel {
+    return {
+        checkoutId: response.checkoutId,
+        bankAccount: toBankAccount(response.bankAccount),
     };
 }

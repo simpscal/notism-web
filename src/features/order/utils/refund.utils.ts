@@ -4,8 +4,6 @@ import { RefundStatusEnum } from '../enums/refund-status.enum';
 
 const REFUND_WINDOW_MS = 24 * 60 * 60 * 1000;
 
-export { toNFormatGuid } from '@/features/payment';
-
 interface RefundRequestEligibility {
     paymentMethod: string;
     deliveryStatus: string;

@@ -6,7 +6,7 @@ import { formatVnd } from '@/app/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { buildSepayQrUrl } from '@/features/payment';
+import { buildSepayQrUrl } from '@/features/order';
 
 interface PaymentBankingQrProps {
     bankCode: string;

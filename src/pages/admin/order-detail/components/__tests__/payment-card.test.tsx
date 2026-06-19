@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import PaymentCard from '../payment-card';
 
-import { PaymentStatusEnum } from '@/features/payment';
+import { PaymentStatusEnum } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
 interface RenderOverrides {

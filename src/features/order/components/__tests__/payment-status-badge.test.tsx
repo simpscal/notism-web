@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import PaymentStatusBadge from '../payment-status-badge';
 
-import { PaymentStatusEnum } from '@/features/payment';
+import { PaymentStatusEnum } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
 describe('PaymentStatusBadge', () => {

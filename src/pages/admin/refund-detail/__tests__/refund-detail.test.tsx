@@ -7,8 +7,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
-import { RefundStatusEnum } from '@/features/order';
-import type { PaymentSharedNotification } from '@/features/payment';
+import { RefundStatusEnum, type PaymentSharedNotification } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
 const API_BASE = 'http://localhost:5000/api';
@@ -30,8 +29,8 @@ vi.mock('react-router-dom', async importOriginal => {
 // without opening a real WebSocket connection.
 let capturedOnNotification: ((payload: PaymentSharedNotification) => void) | undefined;
 
-vi.mock('@/features/payment', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/features/payment')>();
+vi.mock('@/features/order', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
         usePaymentSignalR: (options: { onNotification: (payload: PaymentSharedNotification) => void }) => {

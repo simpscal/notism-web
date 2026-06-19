@@ -4,8 +4,7 @@ import { buildUrl } from '../utils';
 
 import type { AdminOrderResponseModel } from '@/apis';
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
-import { DeliveryStatusEnum } from '@/features/order';
-import { PaymentStatusEnum } from '@/features/payment';
+import { DeliveryStatusEnum, PaymentStatusEnum } from '@/features/order';
 
 function generateMockOrders(): AdminOrderResponseModel[] {
     const orders: AdminOrderResponseModel[] = [];

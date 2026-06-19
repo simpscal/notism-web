@@ -13,8 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { OrderDeliveryStatusTimeline, OrderHeader, PaymentMethodEnum } from '@/features/order';
-import { BankingPaymentConfirmedPanel, PaymentStatusEnum } from '@/features/payment';
+import {
+    OrderDeliveryStatusTimeline,
+    OrderHeader,
+    PaymentMethodEnum,
+    BankingPaymentConfirmedPanel,
+    PaymentStatusEnum,
+} from '@/features/order';
 import { PaymentCard } from '@/pages/admin/order-detail/components';
 
 function AdminOrderDetail() {

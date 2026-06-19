@@ -9,8 +9,7 @@ import AdminOrdersTable from './components/admin-orders-table';
 import { ROUTES } from '@/app/constants';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
-import { DeliveryStatusEnum } from '@/features/order';
-import { PaymentStatusEnum } from '@/features/payment';
+import { DeliveryStatusEnum, PaymentStatusEnum } from '@/features/order';
 
 type ViewMode = 'kanban' | 'grid';
 

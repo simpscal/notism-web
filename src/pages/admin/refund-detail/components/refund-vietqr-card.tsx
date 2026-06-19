@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
-import { toNFormatGuid } from '@/features/order';
-import { buildSepayQrUrl } from '@/features/payment';
+import { toNFormatGuid, buildSepayQrUrl } from '@/features/order';
 
 interface RefundVietQrCardProps {
     refundId: string;

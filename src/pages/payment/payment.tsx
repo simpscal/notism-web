@@ -8,15 +8,21 @@ import { PaymentDeliveryForm, PaymentEmpty, PaymentMethod, PaymentOrderSummary, 
 import type { PaymentSuccessState } from './components';
 import PaymentBankingQr from './components/payment-banking-qr';
 
-import { orderApi, paymentApi, userApi, BankAccountModel, CartItemModel } from '@/apis';
+import { orderApi, userApi, BankAccountModel, CartItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
-import { PaymentNotificationType, PaymentSharedNotification, usePaymentSignalR } from '@/features/payment';
+import {
+    OrderCheckoutProgress,
+    OrderCheckoutTrustBar,
+    PaymentMethodEnum,
+    PaymentNotificationType,
+    PaymentSharedNotification,
+    usePaymentSignalR,
+} from '@/features/order';
 import {
     loadCart,
     selectCartItems,
@@ -50,7 +56,7 @@ function Payment() {
         isPending: isCreatingCheckout,
         isError: isCheckoutError,
     } = useMutation({
-        mutationFn: (data: { cartItemIds: string[]; totalAmount: number }) => paymentApi.createBankingCheckout(data),
+        mutationFn: (data: { cartItemIds: string[]; totalAmount: number }) => orderApi.createBankingCheckout(data),
         onSuccess: result => {
             setCheckoutId(result.checkoutId);
             setStoreBankAccount(result.bankAccount);

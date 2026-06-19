@@ -1,5 +1,5 @@
-import type { UserProfileModel } from './user.model';
-import type { UserProfileResponseModel } from './user.response';
+import type { BankAccountModel, UserProfileModel } from './user.model';
+import type { BankAccountResponseModel, UserProfileResponseModel } from './user.response';
 
 export function toUserProfile(response: UserProfileResponseModel): UserProfileModel {
     return {
@@ -12,5 +12,17 @@ export function toUserProfile(response: UserProfileResponseModel): UserProfileMo
         phoneNumber: response.phoneNumber,
         location: response.location,
         authType: response.authType,
+    };
+}
+
+export function toBankAccount(response: BankAccountResponseModel | null): BankAccountModel | null {
+    if (!response) {
+        return null;
+    }
+
+    return {
+        bankCode: response.bankCode,
+        accountNumber: response.accountNumber,
+        accountHolderName: response.accountHolderName,
     };
 }

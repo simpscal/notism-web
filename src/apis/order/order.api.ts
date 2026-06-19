@@ -1,9 +1,10 @@
 import { apiClient } from '../client';
 
 import { ORDER_ENDPOINTS } from './order.constant';
-import { toCreateOrder, toHeldRefund, toOrder, toOrders, toRefundSummary } from './order.mapper';
+import { toBankingCheckout, toCreateOrder, toHeldRefund, toOrder, toOrders, toRefundSummary } from './order.mapper';
 import { CreateOrderRequestModel, GetOrdersRequestModel } from './order.request';
 import {
+    BankingCheckoutResponseModel,
     CreateOrderResponseModel,
     GetOrdersResponseModel,
     HeldRefundResponseModel,
@@ -46,5 +47,10 @@ export const orderApi = {
     getHeldRefunds: async () => {
         const response = await apiClient.get<HeldRefundResponseModel[]>(ORDER_ENDPOINTS.HELD_REFUNDS);
         return response.map(toHeldRefund);
+    },
+
+    createBankingCheckout: async (data: { cartItemIds: string[]; totalAmount: number }) => {
+        const response = await apiClient.post<BankingCheckoutResponseModel>(ORDER_ENDPOINTS.BANKING_CHECKOUT, data);
+        return toBankingCheckout(response);
     },
 };

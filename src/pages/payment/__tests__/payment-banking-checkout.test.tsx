@@ -9,8 +9,8 @@ import Payment from '../payment';
 import i18n from '@/app/i18n/i18n';
 import { renderWithProviders } from '@/test/utils';
 
-vi.mock('@/features/payment', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/features/payment')>();
+vi.mock('@/features/order', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
         usePaymentSignalR: vi.fn(),
@@ -45,7 +45,7 @@ const mockCartItem = {
 };
 
 const CREATE_ORDER_URL = '*/orders';
-const BANKING_CHECKOUT_URL = '*/payments/banking/checkout';
+const BANKING_CHECKOUT_URL = '*/orders/banking/checkout';
 
 const STORE_BANK_ACCOUNT = {
     bankCode: 'VCB',

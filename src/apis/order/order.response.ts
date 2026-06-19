@@ -1,3 +1,5 @@
+import type { BankAccountResponseModel } from '../user';
+
 export interface CreateOrderResponseModel {
     orderId: string;
     slugId: string;
@@ -73,4 +75,9 @@ export interface HeldRefundResponseModel {
 export interface GetOrdersResponseModel {
     totalCount: number;
     items: OrderResponseModel[];
+}
+
+export interface BankingCheckoutResponseModel {
+    checkoutId: string;
+    bankAccount: BankAccountResponseModel | null;
 }

@@ -2,16 +2,16 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { REFUND_PAID_BANNER_DISMISSED_KEY } from '../constants';
-
-import RefundPaidBanner, { type RefundPaidBannerData } from './refund-paid-banner';
-
-import { ROUTES } from '@/app/constants';
+import { usePaymentSignalR } from '../hooks/use-payment-signalr';
 import {
     type PaidRefundNotification,
     type PaymentSharedNotification,
     PaymentNotificationType,
-    usePaymentSignalR,
-} from '@/features/payment';
+} from '../payment-signalr';
+
+import RefundPaidBanner, { type RefundPaidBannerData } from './refund-paid-banner';
+
+import { ROUTES } from '@/app/constants';
 
 function readDismissedIds(): string[] {
     try {

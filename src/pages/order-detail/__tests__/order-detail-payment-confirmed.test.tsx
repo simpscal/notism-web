@@ -11,8 +11,8 @@ import { renderWithProviders } from '@/test/utils';
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
 // Mock SignalR so tests don't attempt real WebSocket connections
-vi.mock('@/features/payment', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/features/payment')>();
+vi.mock('@/features/order', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
         usePaymentSignalR: vi.fn(),

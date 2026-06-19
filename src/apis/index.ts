@@ -8,6 +8,5 @@ export * from './cart';
 export * from './food';
 export * from './oauth';
 export * from './order';
-export * from './payment';
 export * from './storage';
 export * from './user';

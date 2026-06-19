@@ -5,6 +5,7 @@ export const ORDER_ENDPOINTS = {
     CANCEL: (id: string) => `orders/${id}/cancel`,
     REFUND: (id: string) => `orders/${id}/refund`,
     HELD_REFUNDS: 'orders/held-refunds',
+    BANKING_CHECKOUT: 'orders/banking/checkout',
 } as const;
 
 export const ORDER_QUERY_KEYS = {

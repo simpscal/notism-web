@@ -12,7 +12,7 @@ import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user';
 import { renderWithProviders } from '@/test/utils';
 
-const BANK_ACCOUNT_URL = '*/payments/bank-account';
+const BANK_ACCOUNT_URL = '*/users/bank-account';
 
 const toastSuccessMock = vi.fn();
 

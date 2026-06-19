@@ -1,3 +1,5 @@
+import type { BankAccountModel } from '../user';
+
 export interface OrderItemModel {
     id: string;
     foodId: string;
@@ -104,4 +106,9 @@ export interface CreateOrderModel {
     paymentMethod: string;
     deliveryStatus: string;
     createdAt: string;
+}
+
+export interface BankingCheckoutModel {
+    checkoutId: string;
+    bankAccount: BankAccountModel | null;
 }
