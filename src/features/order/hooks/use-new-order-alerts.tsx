@@ -15,11 +15,13 @@ export interface UseNewOrderAlertsResult {
 }
 
 /**
- * Dashboard-scoped live new-order alerts (story #274). Subscribes to the shared
- * PaymentHub channel while the admin dashboard is mounted and surfaces a distinct,
- * persistent Sonner alert per `order-placed` push — keyed by order id so concurrent
- * orders never collapse and each is individually dismissable. Unmounting the
- * dashboard tears down the subscription, so no alert appears while it is closed.
+ * Portal-wide live new-order alerts (story #274). Mounted once at the admin portal
+ * shell (`AdminLayout`), it subscribes to the shared PaymentHub channel so the live
+ * connection persists across navigation and alerts surface on every admin route. It
+ * surfaces a distinct, persistent Sonner alert per `order-placed` push — keyed by
+ * order id so concurrent orders never collapse and each is individually dismissable.
+ * The subscription is torn down only when staff leave the portal entirely (the shell
+ * unmounts), so no alert appears while the portal is closed.
  */
 export function useNewOrderAlerts(): UseNewOrderAlertsResult {
     const navigate = useNavigate();
