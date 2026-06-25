@@ -4,3 +4,4 @@ export * from './enums';
 export * from './payment-signalr';
 export * from './utils';
 export * from './hooks/use-payment-signalr';
+export * from './hooks/use-new-order-alerts';
