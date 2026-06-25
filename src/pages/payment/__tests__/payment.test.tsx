@@ -154,6 +154,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         mockUsePaymentSignalR.mockImplementation(({ onNotification }) => {
             capturedCallback = onNotification as typeof capturedCallback;
+            return { status: 'live' };
         });
 
         renderWithProviders(<Payment />);
@@ -198,6 +199,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         mockUsePaymentSignalR.mockImplementation(({ onNotification }) => {
             capturedCallback = onNotification as typeof capturedCallback;
+            return { status: 'live' };
         });
 
         renderWithProviders(<Payment />);
