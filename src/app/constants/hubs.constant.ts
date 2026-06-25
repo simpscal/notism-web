@@ -1,3 +1,3 @@
 export const HUBS = {
-    PAYMENT: '/hubs/payment',
+    NOTIFICATION: '/hubs/notification',
 } as const;

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Toaster } from '@/components/sonner';
-import type { PaymentSharedNotification } from '@/features/order';
+import type { SharedNotification } from '@/features/order';
 import { PaymentSignalRStatus } from '@/features/order';
 import { useNewOrderAlerts } from '@/features/order/hooks/use-new-order-alerts';
 import { renderWithProviders } from '@/test/utils';
@@ -15,16 +15,16 @@ vi.mock('react-router-dom', async () => {
     return { ...actual, useNavigate: () => navigateMock };
 });
 
-let capturedOnNotification: ((payload: PaymentSharedNotification) => void) | undefined;
+let capturedOnNotification: ((payload: SharedNotification) => void) | undefined;
 let mockStatus: PaymentSignalRStatus = PaymentSignalRStatus.Live;
 
-vi.mock('@/features/order/hooks/use-payment-signalr', async () => {
-    const actual = await vi.importActual<typeof import('@/features/order/hooks/use-payment-signalr')>(
-        '@/features/order/hooks/use-payment-signalr'
+vi.mock('@/features/order/hooks/use-notifications', async () => {
+    const actual = await vi.importActual<typeof import('@/features/order/hooks/use-notifications')>(
+        '@/features/order/hooks/use-notifications'
     );
     return {
         ...actual,
-        usePaymentSignalR: (options: { onNotification?: (payload: PaymentSharedNotification) => void }) => {
+        useNotifications: (options: { onNotification?: (payload: SharedNotification) => void }) => {
             capturedOnNotification = options.onNotification;
             return { status: mockStatus };
         },

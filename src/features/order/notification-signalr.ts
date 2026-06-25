@@ -57,7 +57,7 @@ export interface NewOrderNotificationPayload {
  * Discriminated union of every payload the server pushes on the single shared
  * `ReceivePaymentNotification` channel. Narrow by `type` to classify.
  */
-export type PaymentSharedNotification =
+export type SharedNotification =
     | PaymentNotificationPayload
     | RefundStatusChangedNotificationPayload
     | NewOrderNotificationPayload;
@@ -75,6 +75,6 @@ export interface PaidRefundNotification {
     sentDate: string;
 }
 
-export function createPaymentHubConnection(): HubConnection {
-    return createHubConnection(HUBS.PAYMENT);
+export function createNotificationHubConnection(): HubConnection {
+    return createHubConnection(HUBS.NOTIFICATION);
 }

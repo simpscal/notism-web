@@ -20,7 +20,7 @@ vi.mock('@/features/order', async importOriginal => {
     const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
-        usePaymentSignalR: vi.fn(),
+        useNotifications: vi.fn(),
     };
 });
 
@@ -145,14 +145,14 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('banking payment success shows success screen with Track order button', async () => {
-        const { usePaymentSignalR } = await import('@/features/order');
-        const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
+        const { useNotifications } = await import('@/features/order');
+        const mockUseNotifications = vi.mocked(useNotifications);
 
         let capturedCallback:
             | ((payload: { type: string; orderId: string; slugId: string; message: string; timestamp: string }) => void)
             | null = null;
 
-        mockUsePaymentSignalR.mockImplementation(({ onNotification }) => {
+        mockUseNotifications.mockImplementation(({ onNotification }) => {
             capturedCallback = onNotification as typeof capturedCallback;
             return { status: 'live' };
         });
@@ -190,14 +190,14 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('shows error toast when payment failure notification arrives', async () => {
-        const { usePaymentSignalR } = await import('@/features/order');
-        const mockUsePaymentSignalR = vi.mocked(usePaymentSignalR);
+        const { useNotifications } = await import('@/features/order');
+        const mockUseNotifications = vi.mocked(useNotifications);
 
         let capturedCallback:
             | ((payload: { type: string; orderId: string; slugId: string; message: string; timestamp: string }) => void)
             | null = null;
 
-        mockUsePaymentSignalR.mockImplementation(({ onNotification }) => {
+        mockUseNotifications.mockImplementation(({ onNotification }) => {
             capturedCallback = onNotification as typeof capturedCallback;
             return { status: 'live' };
         });
