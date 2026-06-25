@@ -2,7 +2,7 @@ import { HubConnectionState } from '@microsoft/signalr';
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import { usePaymentSignalR, PaymentSignalRStatus } from '../hooks/use-payment-signalr';
+import { useNotifications, PaymentSignalRStatus } from '../hooks/use-notifications';
 
 const mockStart = vi.fn().mockResolvedValue(undefined);
 const mockStop = vi.fn().mockResolvedValue(undefined);
@@ -23,8 +23,8 @@ const mockConnection = {
     state: HubConnectionState.Connected,
 };
 
-vi.mock('../payment-signalr', () => ({
-    createPaymentHubConnection: vi.fn(() => mockConnection),
+vi.mock('../notification-signalr', () => ({
+    createNotificationHubConnection: vi.fn(() => mockConnection),
 }));
 
 const flushAsync = () =>
@@ -32,7 +32,7 @@ const flushAsync = () =>
         await new Promise(resolve => setTimeout(resolve, 0));
     });
 
-describe('usePaymentSignalR', () => {
+describe('useNotifications', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         mockStart.mockResolvedValue(undefined);
@@ -42,7 +42,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('starts the connection on mount', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+        renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -52,7 +52,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('invokes SubscribeToPaymentEvents after connection starts', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+        renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -62,7 +62,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('registers the onNotification callback via connection.on', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+        renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -72,7 +72,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('stops the connection on unmount', async () => {
-        const { unmount } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+        const { unmount } = renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -87,7 +87,7 @@ describe('usePaymentSignalR', () => {
     it('does not throw when connection start fails', async () => {
         mockStart.mockRejectedValueOnce(new Error('Network error'));
 
-        expect(() => renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }))).not.toThrow();
+        expect(() => renderHook(() => useNotifications({ onNotification: vi.fn() }))).not.toThrow();
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -96,7 +96,7 @@ describe('usePaymentSignalR', () => {
 
     it('calls onNotification with payment-failure payload when ReceivePaymentNotification fires with failure type', async () => {
         const onNotification = vi.fn();
-        renderHook(() => usePaymentSignalR({ onNotification }));
+        renderHook(() => useNotifications({ onNotification }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -124,7 +124,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('does not start the connection when enabled is false', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), enabled: false }));
+        renderHook(() => useNotifications({ onNotification: vi.fn(), enabled: false }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -134,7 +134,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('starts the connection when enabled is true explicitly', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), enabled: true }));
+        renderHook(() => useNotifications({ onNotification: vi.fn(), enabled: true }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -144,7 +144,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('does not register ReceivePaymentNotification handler when enabled is false', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), enabled: false }));
+        renderHook(() => useNotifications({ onNotification: vi.fn(), enabled: false }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -155,7 +155,7 @@ describe('usePaymentSignalR', () => {
 
     it('calls onNotification with a refund-paid payload when ReceivePaymentNotification fires with refund-paid type', async () => {
         const onNotification = vi.fn();
-        renderHook(() => usePaymentSignalR({ onNotification }));
+        renderHook(() => useNotifications({ onNotification }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -186,7 +186,7 @@ describe('usePaymentSignalR', () => {
     });
 
     it('does not register a dedicated ReceiveRefundPaidNotification handler', async () => {
-        renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+        renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
@@ -198,7 +198,7 @@ describe('usePaymentSignalR', () => {
 
     it('calls onNotification with an order-placed payload when ReceivePaymentNotification fires', async () => {
         const onNotification = vi.fn();
-        renderHook(() => usePaymentSignalR({ onNotification }));
+        renderHook(() => useNotifications({ onNotification }));
 
         await flushAsync();
 
@@ -235,7 +235,7 @@ describe('usePaymentSignalR', () => {
                     })
             );
 
-            const { result } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+            const { result } = renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
             expect(result.current.status).toBe(PaymentSignalRStatus.Connecting);
 
@@ -248,7 +248,7 @@ describe('usePaymentSignalR', () => {
         it('reports live once the connection is connected', async () => {
             mockConnection.state = HubConnectionState.Connected;
 
-            const { result } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+            const { result } = renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
             await flushAsync();
 
@@ -258,7 +258,7 @@ describe('usePaymentSignalR', () => {
         it('reports disconnected when the connection fails to start', async () => {
             mockStart.mockRejectedValueOnce(new Error('Network error'));
 
-            const { result } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+            const { result } = renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
             await flushAsync();
 
@@ -266,7 +266,7 @@ describe('usePaymentSignalR', () => {
         });
 
         it('reports connecting on auto-reconnect attempt then live on reconnected', async () => {
-            const { result } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+            const { result } = renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
             await flushAsync();
 
@@ -281,7 +281,7 @@ describe('usePaymentSignalR', () => {
         });
 
         it('reports disconnected when the connection closes without recovery', async () => {
-            const { result } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn() }));
+            const { result } = renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
             await flushAsync();
 
@@ -293,7 +293,7 @@ describe('usePaymentSignalR', () => {
         });
 
         it('reports disconnected and never connects when enabled is false', async () => {
-            const { result } = renderHook(() => usePaymentSignalR({ onNotification: vi.fn(), enabled: false }));
+            const { result } = renderHook(() => useNotifications({ onNotification: vi.fn(), enabled: false }));
 
             await flushAsync();
 

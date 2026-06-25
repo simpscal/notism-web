@@ -7,7 +7,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
-import { RefundStatusEnum, type PaymentSharedNotification } from '@/features/order';
+import { RefundStatusEnum, type SharedNotification } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
 const API_BASE = 'http://localhost:5000/api';
@@ -27,13 +27,13 @@ vi.mock('react-router-dom', async importOriginal => {
 
 // Capture the page's onNotification handler so tests can push hub events
 // without opening a real WebSocket connection.
-let capturedOnNotification: ((payload: PaymentSharedNotification) => void) | undefined;
+let capturedOnNotification: ((payload: SharedNotification) => void) | undefined;
 
 vi.mock('@/features/order', async importOriginal => {
     const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
-        usePaymentSignalR: (options: { onNotification: (payload: PaymentSharedNotification) => void }) => {
+        useNotifications: (options: { onNotification: (payload: SharedNotification) => void }) => {
             capturedOnNotification = options.onNotification;
         },
     };
@@ -379,7 +379,7 @@ describe('AdminRefundDetail page', () => {
 });
 
 describe('AdminRefundDetail — live refund-status-changed updates', () => {
-    const pushNotification = async (payload: PaymentSharedNotification) => {
+    const pushNotification = async (payload: SharedNotification) => {
         const { act } = await import('@testing-library/react');
         act(() => {
             capturedOnNotification?.(payload);

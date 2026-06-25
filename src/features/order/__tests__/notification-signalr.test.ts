@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest';
 import {
     PaymentNotificationType,
     type NewOrderNotificationPayload,
-    type PaymentSharedNotification,
-} from '../payment-signalr';
+    type SharedNotification,
+} from '../notification-signalr';
 
-describe('PaymentSharedNotification narrowing', () => {
+describe('SharedNotification narrowing', () => {
     it('narrows an order-placed payload by type to NewOrderNotificationPayload', () => {
-        const notification: PaymentSharedNotification = {
+        const notification: SharedNotification = {
             type: PaymentNotificationType.OrderPlaced,
             orderId: 'order-id',
             orderNumber: 'ORD-2026-001',
@@ -35,7 +35,7 @@ describe('PaymentSharedNotification narrowing', () => {
     });
 
     it('keeps existing payment and refund payloads narrowable alongside order-placed', () => {
-        const notifications: PaymentSharedNotification[] = [
+        const notifications: SharedNotification[] = [
             {
                 type: PaymentNotificationType.Success,
                 orderId: 'order-id',

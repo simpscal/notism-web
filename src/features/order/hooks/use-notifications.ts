@@ -1,7 +1,7 @@
 import { HubConnectionState } from '@microsoft/signalr';
 import { useEffect, useRef, useState } from 'react';
 
-import { createPaymentHubConnection, type PaymentSharedNotification } from '../payment-signalr';
+import { createNotificationHubConnection, type SharedNotification } from '../notification-signalr';
 
 export const PaymentSignalRStatus = {
     Connecting: 'connecting',
@@ -12,7 +12,7 @@ export const PaymentSignalRStatus = {
 export type PaymentSignalRStatus = (typeof PaymentSignalRStatus)[keyof typeof PaymentSignalRStatus];
 
 export interface UsePaymentSignalROptions {
-    onNotification: (payload: PaymentSharedNotification) => void;
+    onNotification: (payload: SharedNotification) => void;
     enabled?: boolean;
 }
 
@@ -32,7 +32,7 @@ function mapConnectionState(state: HubConnectionState): PaymentSignalRStatus {
     }
 }
 
-export function usePaymentSignalR({
+export function useNotifications({
     onNotification,
     enabled = true,
 }: UsePaymentSignalROptions): UsePaymentSignalRResult {
@@ -47,9 +47,9 @@ export function usePaymentSignalR({
             return;
         }
 
-        const connection = createPaymentHubConnection();
+        const connection = createNotificationHubConnection();
 
-        connection.on('ReceivePaymentNotification', (payload: PaymentSharedNotification) =>
+        connection.on('ReceivePaymentNotification', (payload: SharedNotification) =>
             onNotificationRef.current(payload)
         );
 

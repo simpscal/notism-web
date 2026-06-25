@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { PaymentSignalRStatus } from '../../hooks/use-payment-signalr';
+import { PaymentSignalRStatus } from '../../hooks/use-notifications';
 import LiveFeedPill from '../live-feed-pill';
 
 import i18n from '@/app/i18n/i18n';

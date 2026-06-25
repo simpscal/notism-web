@@ -20,8 +20,8 @@ import {
     OrderCheckoutTrustBar,
     PaymentMethodEnum,
     PaymentNotificationType,
-    PaymentSharedNotification,
-    usePaymentSignalR,
+    SharedNotification,
+    useNotifications,
 } from '@/features/order';
 import {
     loadCart,
@@ -77,7 +77,7 @@ function Payment() {
     });
 
     const handlePaymentNotification = useCallback(
-        (payload: PaymentSharedNotification) => {
+        (payload: SharedNotification) => {
             if (payload.type === PaymentNotificationType.Success) {
                 setConfirmedSlugId(payload.slugId);
                 setSuccessItems([...selectedItems]);
@@ -90,7 +90,7 @@ function Payment() {
         [t, totalPrice]
     );
 
-    usePaymentSignalR({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
+    useNotifications({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
 
     const handleViewOrder = useCallback(async () => {
         if (!confirmedSlugId) return;

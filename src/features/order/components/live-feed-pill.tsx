@@ -2,7 +2,7 @@ import { WifiOff } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PaymentSignalRStatus } from '../hooks/use-payment-signalr';
+import { PaymentSignalRStatus } from '../hooks/use-notifications';
 
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
