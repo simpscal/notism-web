@@ -3,17 +3,17 @@ import { HubConnection } from '@microsoft/signalr';
 import { HUBS } from '@/app/constants/hubs.constant';
 import { createHubConnection } from '@/core/signalr';
 
-export const PaymentNotificationType = {
+export const NotificationType = {
     Success: 'payment-success',
     Failure: 'payment-failure',
     RefundStatusChanged: 'refund-status-changed',
     OrderPlaced: 'order-placed',
 } as const;
 
-export type PaymentNotificationType = (typeof PaymentNotificationType)[keyof typeof PaymentNotificationType];
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 
 export interface PaymentNotificationPayload {
-    type: typeof PaymentNotificationType.Success | typeof PaymentNotificationType.Failure;
+    type: typeof NotificationType.Success | typeof NotificationType.Failure;
     orderId: string;
     slugId: string;
     message: string;
@@ -28,7 +28,7 @@ export interface PaymentNotificationPayload {
  * `timestamp` carries the sent date). Narrow by `type`, then `status`.
  */
 export interface RefundStatusChangedNotificationPayload {
-    type: typeof PaymentNotificationType.RefundStatusChanged;
+    type: typeof NotificationType.RefundStatusChanged;
     refundId: string;
     status: string;
     timestamp: string;
@@ -44,7 +44,7 @@ export interface RefundStatusChangedNotificationPayload {
  * live-feed can render it. Narrow by `type`.
  */
 export interface NewOrderNotificationPayload {
-    type: typeof PaymentNotificationType.OrderPlaced;
+    type: typeof NotificationType.OrderPlaced;
     orderId: string;
     orderNumber: string;
     placedAt: string;

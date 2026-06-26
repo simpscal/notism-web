@@ -2,20 +2,19 @@ import { WifiOff } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PaymentSignalRStatus } from '../hooks/use-notifications';
-
 import { Button } from '@/components/button';
 import Spinner from '@/components/spinner';
+import { NotificationStatus } from '@/core/hooks';
 
 interface LiveFeedPillProps {
-    status: PaymentSignalRStatus;
+    status: NotificationStatus;
     onReconnect?: () => void;
 }
 
 function LiveFeedPill({ status, onReconnect }: LiveFeedPillProps) {
     const { t } = useTranslation();
 
-    if (status === PaymentSignalRStatus.Connecting) {
+    if (status === NotificationStatus.Connecting) {
         return (
             <span className='inline-flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1.5 text-xs font-medium text-muted-foreground'>
                 <Spinner size='xs' />
@@ -24,7 +23,7 @@ function LiveFeedPill({ status, onReconnect }: LiveFeedPillProps) {
         );
     }
 
-    if (status === PaymentSignalRStatus.Disconnected) {
+    if (status === NotificationStatus.Disconnected) {
         return (
             <span className='inline-flex items-center gap-2 rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-xs font-medium text-destructive'>
                 <WifiOff className='h-3.5 w-3.5' aria-hidden />

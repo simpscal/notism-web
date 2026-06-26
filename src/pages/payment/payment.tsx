@@ -14,15 +14,9 @@ import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
-import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import {
-    OrderCheckoutProgress,
-    OrderCheckoutTrustBar,
-    PaymentMethodEnum,
-    PaymentNotificationType,
-    SharedNotification,
-    useNotifications,
-} from '@/features/order';
+import { useAppDispatch, useAppSelector, useNotifications } from '@/core/hooks';
+import { NotificationType, type SharedNotification } from '@/core/notification-signalr';
+import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import {
     loadCart,
     selectCartItems,
@@ -78,12 +72,12 @@ function Payment() {
 
     const handlePaymentNotification = useCallback(
         (payload: SharedNotification) => {
-            if (payload.type === PaymentNotificationType.Success) {
+            if (payload.type === NotificationType.Success) {
                 setConfirmedSlugId(payload.slugId);
                 setSuccessItems([...selectedItems]);
                 setSuccessState({ method: 'banking', slugId: payload.slugId, totalPrice });
                 toast.success(t('payment.paymentConfirmed'));
-            } else if (payload.type === PaymentNotificationType.Failure) {
+            } else if (payload.type === NotificationType.Failure) {
                 toast.error(t('payment.paymentFailed'));
             }
         },

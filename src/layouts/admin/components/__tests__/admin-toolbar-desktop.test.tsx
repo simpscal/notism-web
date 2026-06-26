@@ -5,7 +5,7 @@ import AdminToolbarDesktop from '../admin-toolbar-desktop';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { PaymentSignalRStatus } from '@/features/order/hooks/use-notifications';
+import { NotificationStatus } from '@/core/hooks';
 import { renderWithProviders } from '@/test/utils';
 
 const USER: UserProfileModel = {
@@ -19,8 +19,8 @@ const USER: UserProfileModel = {
 
 function renderToolbar({
     initialPath = `/${ROUTES.ADMIN.DASHBOARD}`,
-    liveFeedStatus = PaymentSignalRStatus.Live,
-}: { initialPath?: string; liveFeedStatus?: PaymentSignalRStatus } = {}) {
+    liveFeedStatus = NotificationStatus.Live,
+}: { initialPath?: string; liveFeedStatus?: NotificationStatus } = {}) {
     const onLogout = vi.fn();
 
     renderWithProviders(<AdminToolbarDesktop user={USER} onLogout={onLogout} liveFeedStatus={liveFeedStatus} />, {
@@ -63,13 +63,13 @@ describe('AdminToolbarDesktop', () => {
     });
 
     it('renders the live new-order feed pill in the toolbar', () => {
-        renderToolbar({ liveFeedStatus: PaymentSignalRStatus.Live });
+        renderToolbar({ liveFeedStatus: NotificationStatus.Live });
 
         expect(screen.getByText('Live orders on')).toBeInTheDocument();
     });
 
     it('reflects the connecting live-feed status in the pill', () => {
-        renderToolbar({ liveFeedStatus: PaymentSignalRStatus.Connecting });
+        renderToolbar({ liveFeedStatus: NotificationStatus.Connecting });
 
         expect(screen.getByText('Connecting to live orders…')).toBeInTheDocument();
     });

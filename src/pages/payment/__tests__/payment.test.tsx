@@ -7,8 +7,8 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import Payment from '../payment';
 
 import i18n from '@/app/i18n/i18n';
+import { NotificationType } from '@/core/notification-signalr';
 import { getFoodPricing } from '@/features/food';
-import { PaymentNotificationType } from '@/features/order';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart';
 import { renderWithProviders } from '@/test/utils';
@@ -16,8 +16,8 @@ import { renderWithProviders } from '@/test/utils';
 const t = (key: string) => i18n.t(key);
 
 // Mock SignalR so tests don't attempt real WebSocket connections
-vi.mock('@/features/order', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/features/order')>();
+vi.mock('@/core/hooks/use-notifications.hook', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/core/hooks/use-notifications.hook')>();
     return {
         ...actual,
         useNotifications: vi.fn(),
@@ -145,7 +145,7 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('banking payment success shows success screen with Track order button', async () => {
-        const { useNotifications } = await import('@/features/order');
+        const { useNotifications } = await import('@/core/hooks/use-notifications.hook');
         const mockUseNotifications = vi.mocked(useNotifications);
 
         let capturedCallback:
@@ -173,7 +173,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         act(() => {
             capturedCallback!({
-                type: PaymentNotificationType.Success,
+                type: NotificationType.Success,
                 orderId: 'order-id-1',
                 slugId: 'ORD-TEST123',
                 message: 'Payment confirmed',
@@ -190,7 +190,7 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('shows error toast when payment failure notification arrives', async () => {
-        const { useNotifications } = await import('@/features/order');
+        const { useNotifications } = await import('@/core/hooks/use-notifications.hook');
         const mockUseNotifications = vi.mocked(useNotifications);
 
         let capturedCallback:
@@ -218,7 +218,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         act(() => {
             capturedCallback!({
-                type: PaymentNotificationType.Failure,
+                type: NotificationType.Failure,
                 orderId: '',
                 slugId: '',
                 message: 'Payment failed',

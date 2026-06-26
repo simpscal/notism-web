@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 
 import { createNotificationHubConnection, type SharedNotification } from '../notification-signalr';
 
-export const PaymentSignalRStatus = {
+export const NotificationStatus = {
     Connecting: 'connecting',
     Live: 'live',
     Disconnected: 'disconnected',
 } as const;
 
-export type PaymentSignalRStatus = (typeof PaymentSignalRStatus)[keyof typeof PaymentSignalRStatus];
+export type NotificationStatus = (typeof NotificationStatus)[keyof typeof NotificationStatus];
 
 export interface UsePaymentSignalROptions {
     onNotification: (payload: SharedNotification) => void;
@@ -17,18 +17,18 @@ export interface UsePaymentSignalROptions {
 }
 
 export interface UsePaymentSignalRResult {
-    status: PaymentSignalRStatus;
+    status: NotificationStatus;
 }
 
-function mapConnectionState(state: HubConnectionState): PaymentSignalRStatus {
+function mapConnectionState(state: HubConnectionState): NotificationStatus {
     switch (state) {
         case HubConnectionState.Connected:
-            return PaymentSignalRStatus.Live;
+            return NotificationStatus.Live;
         case HubConnectionState.Connecting:
         case HubConnectionState.Reconnecting:
-            return PaymentSignalRStatus.Connecting;
+            return NotificationStatus.Connecting;
         default:
-            return PaymentSignalRStatus.Disconnected;
+            return NotificationStatus.Disconnected;
     }
 }
 
@@ -36,14 +36,14 @@ export function useNotifications({
     onNotification,
     enabled = true,
 }: UsePaymentSignalROptions): UsePaymentSignalRResult {
-    const [status, setStatus] = useState<PaymentSignalRStatus>(PaymentSignalRStatus.Disconnected);
+    const [status, setStatus] = useState<NotificationStatus>(NotificationStatus.Disconnected);
 
     const onNotificationRef = useRef(onNotification);
     onNotificationRef.current = onNotification;
 
     useEffect(() => {
         if (!enabled) {
-            setStatus(PaymentSignalRStatus.Disconnected);
+            setStatus(NotificationStatus.Disconnected);
             return;
         }
 
@@ -53,11 +53,11 @@ export function useNotifications({
             onNotificationRef.current(payload)
         );
 
-        connection.onreconnecting(() => setStatus(PaymentSignalRStatus.Connecting));
-        connection.onreconnected(() => setStatus(PaymentSignalRStatus.Live));
-        connection.onclose(() => setStatus(PaymentSignalRStatus.Disconnected));
+        connection.onreconnecting(() => setStatus(NotificationStatus.Connecting));
+        connection.onreconnected(() => setStatus(NotificationStatus.Live));
+        connection.onclose(() => setStatus(NotificationStatus.Disconnected));
 
-        setStatus(PaymentSignalRStatus.Connecting);
+        setStatus(NotificationStatus.Connecting);
 
         connection
             .start()
@@ -69,7 +69,7 @@ export function useNotifications({
                     .catch(err => console.error('[SignalR] SubscribeToPaymentEvents failed:', err));
             })
             .catch(err => {
-                setStatus(PaymentSignalRStatus.Disconnected);
+                setStatus(NotificationStatus.Disconnected);
                 console.error('[SignalR] Connection failed:', err);
             });
 
