@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RefundPaidBannerStack from '../refund-paid-banner-stack';
 
 import i18n from '@/app/i18n/i18n';
-import type { SharedNotification } from '@/core/notification-signalr';
+import type { SharedNotification } from '@/app/models';
 import { renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);

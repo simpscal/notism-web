@@ -2,9 +2,9 @@ import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { SharedNotification } from '@/app/models';
 import { Toaster } from '@/components/sonner';
 import { NotificationStatus } from '@/core/hooks';
-import type { SharedNotification } from '@/core/notification-signalr';
 import { useNewOrderAlerts } from '@/features/order/hooks/use-new-order-alerts';
 import { renderWithProviders } from '@/test/utils';
 

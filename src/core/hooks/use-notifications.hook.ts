@@ -1,7 +1,9 @@
-import { HubConnectionState } from '@microsoft/signalr';
+import { HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { useEffect, useRef, useState } from 'react';
 
-import { createNotificationHubConnection, type SharedNotification } from '../notification-signalr';
+import { HUBS } from '@/app/constants/hubs.constant';
+import { type SharedNotification } from '@/app/models';
+import { tokenManagerUtils } from '@/app/utils';
 
 export const NotificationStatus = {
     Connecting: 'connecting',
@@ -47,7 +49,16 @@ export function useNotifications({
             return;
         }
 
-        const connection = createNotificationHubConnection();
+        const baseUrl = import.meta.env.VITE_API_BASE_URL as string;
+        const origin = baseUrl.replace(/\/api$/, '');
+        const url = `${origin}${HUBS.NOTIFICATION}`;
+
+        const connection = new HubConnectionBuilder()
+            .withUrl(url, {
+                accessTokenFactory: () => tokenManagerUtils.getToken() ?? '',
+            })
+            .withAutomaticReconnect()
+            .build();
 
         connection.on('ReceiveNotification', (payload: SharedNotification) => onNotificationRef.current(payload));
 

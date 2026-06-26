@@ -1,13 +1,23 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import NewOrderAlert, { type NewOrderAlertData } from '../new-order-alert';
+import NewOrderAlertToast, { type NewOrderAlertData } from '../new-order-alert-toast';
 
 import i18n from '@/app/i18n/i18n';
 import { renderWithProviders } from '@/test/utils';
 
+const dismissMock = vi.fn();
+
+vi.mock('sonner', () => ({
+    toast: {
+        dismiss: (id: string | number) => dismissMock(id),
+    },
+}));
+
 const t = (key: string) => i18n.t(key);
+
+const TOAST_ID = 'ord-8001';
 
 const ORDER: NewOrderAlertData = {
     orderId: 'ord-8001',
@@ -17,30 +27,34 @@ const ORDER: NewOrderAlertData = {
     total: '285,000 ₫',
 };
 
-describe('NewOrderAlert', () => {
+describe('NewOrderAlertToast', () => {
+    beforeEach(() => {
+        dismissMock.mockReset();
+    });
+
     it('shows the order number and the time the order was placed', () => {
-        renderWithProviders(<NewOrderAlert order={ORDER} onViewOrder={vi.fn()} onDismiss={vi.fn()} />);
+        renderWithProviders(<NewOrderAlertToast order={ORDER} toastId={TOAST_ID} onViewOrder={vi.fn()} />);
 
         expect(screen.getByText(ORDER.orderNumber)).toBeInTheDocument();
         expect(screen.getByText(new RegExp(ORDER.placedAt))).toBeInTheDocument();
         expect(screen.getByText(new RegExp(ORDER.total))).toBeInTheDocument();
     });
 
-    it('emits the order id when "View order" is clicked', async () => {
+    it('emits the order id and dismisses the toast when "View order" is clicked', async () => {
         const onViewOrder = vi.fn();
-        renderWithProviders(<NewOrderAlert order={ORDER} onViewOrder={onViewOrder} onDismiss={vi.fn()} />);
+        renderWithProviders(<NewOrderAlertToast order={ORDER} toastId={TOAST_ID} onViewOrder={onViewOrder} />);
 
         await userEvent.click(screen.getByRole('button', { name: t('admin.newOrder.viewOrder') }));
 
         expect(onViewOrder).toHaveBeenCalledWith(ORDER.orderId);
+        expect(dismissMock).toHaveBeenCalledWith(TOAST_ID);
     });
 
-    it('emits dismiss when the close button is clicked', async () => {
-        const onDismiss = vi.fn();
-        renderWithProviders(<NewOrderAlert order={ORDER} onViewOrder={vi.fn()} onDismiss={onDismiss} />);
+    it('dismisses the toast when the close button is clicked', async () => {
+        renderWithProviders(<NewOrderAlertToast order={ORDER} toastId={TOAST_ID} onViewOrder={vi.fn()} />);
 
         await userEvent.click(screen.getByRole('button', { name: t('admin.newOrder.dismiss') }));
 
-        expect(onDismiss).toHaveBeenCalledTimes(1);
+        expect(dismissMock).toHaveBeenCalledWith(TOAST_ID);
     });
 });

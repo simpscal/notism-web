@@ -10,12 +10,13 @@ import PaymentBankingQr from './components/payment-banking-qr';
 
 import { orderApi, userApi, BankAccountModel, CartItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
+import { NotificationType } from '@/app/enums';
+import { type SharedNotification } from '@/app/models';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector, useNotifications } from '@/core/hooks';
-import { NotificationType, type SharedNotification } from '@/core/notification-signalr';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import {
     loadCart,

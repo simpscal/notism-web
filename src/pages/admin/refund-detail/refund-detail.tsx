@@ -14,13 +14,14 @@ import {
 
 import { ADMIN_QUERY_KEYS, adminApi, type RefundDetailModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { NotificationType } from '@/app/enums';
+import { type SharedNotification } from '@/app/models';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
 import { useNotifications } from '@/core/hooks';
-import { NotificationType, type SharedNotification } from '@/core/notification-signalr';
 import { RefundStatusEnum } from '@/features/order';
 
 function AdminRefundDetail() {

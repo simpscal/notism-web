@@ -1,16 +1,4 @@
-import { HubConnection } from '@microsoft/signalr';
-
-import { HUBS } from '@/app/constants/hubs.constant';
-import { createHubConnection } from '@/core/signalr';
-
-export const NotificationType = {
-    Success: 'payment-success',
-    Failure: 'payment-failure',
-    RefundStatusChanged: 'refund-status-changed',
-    OrderPlaced: 'order-placed',
-} as const;
-
-export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
+import { NotificationType } from '@/app/enums';
 
 export interface PaymentNotificationPayload {
     type: typeof NotificationType.Success | typeof NotificationType.Failure;
@@ -73,8 +61,4 @@ export interface PaidRefundNotification {
     orderRef: string;
     amount: number;
     sentDate: string;
-}
-
-export function createNotificationHubConnection(): HubConnection {
-    return createHubConnection(HUBS.NOTIFICATION);
 }
