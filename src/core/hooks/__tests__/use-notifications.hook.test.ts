@@ -51,14 +51,14 @@ describe('useNotifications', () => {
         expect(mockStart).toHaveBeenCalledTimes(1);
     });
 
-    it('invokes SubscribeToPaymentEvents after connection starts', async () => {
+    it('invokes SubscribeToNotifications after connection starts', async () => {
         renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
         await act(async () => {
             await new Promise(resolve => setTimeout(resolve, 0));
         });
 
-        expect(mockInvoke).toHaveBeenCalledWith('SubscribeToPaymentEvents');
+        expect(mockInvoke).toHaveBeenCalledWith('SubscribeToNotifications');
     });
 
     it('registers the onNotification callback via connection.on', async () => {
@@ -68,7 +68,7 @@ describe('useNotifications', () => {
             await new Promise(resolve => setTimeout(resolve, 0));
         });
 
-        expect(mockOn).toHaveBeenCalledWith('ReceivePaymentNotification', expect.any(Function));
+        expect(mockOn).toHaveBeenCalledWith('ReceiveNotification', expect.any(Function));
     });
 
     it('stops the connection on unmount', async () => {
@@ -94,7 +94,7 @@ describe('useNotifications', () => {
         });
     });
 
-    it('calls onNotification with payment-failure payload when ReceivePaymentNotification fires with failure type', async () => {
+    it('calls onNotification with payment-failure payload when ReceiveNotification fires with failure type', async () => {
         const onNotification = vi.fn();
         renderHook(() => useNotifications({ onNotification }));
 
@@ -103,7 +103,7 @@ describe('useNotifications', () => {
         });
 
         const registeredHandler = mockOn.mock.calls.find(
-            (args: unknown[]) => args[0] === 'ReceivePaymentNotification'
+            (args: unknown[]) => args[0] === 'ReceiveNotification'
         )?.[1] as ((payload: unknown) => void) | undefined;
 
         expect(registeredHandler).toBeDefined();
@@ -143,7 +143,7 @@ describe('useNotifications', () => {
         expect(mockStart).toHaveBeenCalledTimes(1);
     });
 
-    it('does not register ReceivePaymentNotification handler when enabled is false', async () => {
+    it('does not register ReceiveNotification handler when enabled is false', async () => {
         renderHook(() => useNotifications({ onNotification: vi.fn(), enabled: false }));
 
         await act(async () => {
@@ -153,7 +153,7 @@ describe('useNotifications', () => {
         expect(mockOn).not.toHaveBeenCalled();
     });
 
-    it('calls onNotification with a refund-paid payload when ReceivePaymentNotification fires with refund-paid type', async () => {
+    it('calls onNotification with a refund-paid payload when ReceiveNotification fires with refund-paid type', async () => {
         const onNotification = vi.fn();
         renderHook(() => useNotifications({ onNotification }));
 
@@ -162,7 +162,7 @@ describe('useNotifications', () => {
         });
 
         const registeredHandler = mockOn.mock.calls.find(
-            (args: unknown[]) => args[0] === 'ReceivePaymentNotification'
+            (args: unknown[]) => args[0] === 'ReceiveNotification'
         )?.[1] as ((payload: unknown) => void) | undefined;
 
         expect(registeredHandler).toBeDefined();
@@ -196,14 +196,14 @@ describe('useNotifications', () => {
         expect(refundCall).toBeUndefined();
     });
 
-    it('calls onNotification with an order-placed payload when ReceivePaymentNotification fires', async () => {
+    it('calls onNotification with an order-placed payload when ReceiveNotification fires', async () => {
         const onNotification = vi.fn();
         renderHook(() => useNotifications({ onNotification }));
 
         await flushAsync();
 
         const registeredHandler = mockOn.mock.calls.find(
-            (args: unknown[]) => args[0] === 'ReceivePaymentNotification'
+            (args: unknown[]) => args[0] === 'ReceiveNotification'
         )?.[1] as ((payload: unknown) => void) | undefined;
 
         expect(registeredHandler).toBeDefined();

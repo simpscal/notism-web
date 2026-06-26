@@ -21,7 +21,7 @@ export interface PaymentNotificationPayload {
 }
 
 /**
- * Refund status-change payload on the shared `ReceivePaymentNotification` channel.
+ * Refund status-change payload on the shared `ReceiveNotification` channel.
  * Pushed to the "admins" group on every Paid/Failed transition (carries only
  * `refundId` + `status`), and to the owning customer's group on "paid" (adds
  * `orderId`/`orderRef`/`amount`/`message` so the refund-paid banner can render;
@@ -39,7 +39,7 @@ export interface RefundStatusChangedNotificationPayload {
 }
 
 /**
- * New-order payload on the shared `ReceivePaymentNotification` channel. Pushed
+ * New-order payload on the shared `ReceiveNotification` channel. Pushed
  * to the "admins" group when a customer places an order, so the dashboard
  * live-feed can render it. Narrow by `type`.
  */
@@ -55,7 +55,7 @@ export interface NewOrderNotificationPayload {
 
 /**
  * Discriminated union of every payload the server pushes on the single shared
- * `ReceivePaymentNotification` channel. Narrow by `type` to classify.
+ * `ReceiveNotification` channel. Narrow by `type` to classify.
  */
 export type SharedNotification =
     | PaymentNotificationPayload
