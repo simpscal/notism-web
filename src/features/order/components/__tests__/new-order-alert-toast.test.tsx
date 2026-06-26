@@ -40,13 +40,13 @@ describe('NewOrderAlertToast', () => {
         expect(screen.getByText(new RegExp(ORDER.total))).toBeInTheDocument();
     });
 
-    it('emits the order id and dismisses the toast when "View order" is clicked', async () => {
+    it('emits the order slug and dismisses the toast when "View order" is clicked', async () => {
         const onViewOrder = vi.fn();
         renderWithProviders(<NewOrderAlertToast order={ORDER} toastId={TOAST_ID} onViewOrder={onViewOrder} />);
 
         await userEvent.click(screen.getByRole('button', { name: t('admin.newOrder.viewOrder') }));
 
-        expect(onViewOrder).toHaveBeenCalledWith(ORDER.orderId);
+        expect(onViewOrder).toHaveBeenCalledWith(ORDER.orderNumber);
         expect(dismissMock).toHaveBeenCalledWith(TOAST_ID);
     });
 

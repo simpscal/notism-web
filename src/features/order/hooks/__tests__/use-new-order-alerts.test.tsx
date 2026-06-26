@@ -136,7 +136,7 @@ describe('useNewOrderAlerts', () => {
         expect(screen.queryByText(ORDER_ONE.orderNumber)).not.toBeInTheDocument();
     });
 
-    it('navigates to the admin order detail when an alert is acted on', async () => {
+    it('navigates to the admin order detail by slug when an alert is acted on', async () => {
         renderWithProviders(<Harness />);
 
         pushOrder(ORDER_ONE);
@@ -144,7 +144,7 @@ describe('useNewOrderAlerts', () => {
         const viewButton = await screen.findByRole('button', { name: /view order/i });
         await userEvent.click(viewButton);
 
-        expect(navigateMock).toHaveBeenCalledWith(`/admin/orders/${ORDER_ONE.orderId}`);
+        expect(navigateMock).toHaveBeenCalledWith(`/admin/orders/${ORDER_ONE.orderNumber}`);
     });
 
     it('exposes the live-feed status from the SignalR subscription', () => {

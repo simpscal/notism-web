@@ -10,7 +10,7 @@ import { Toast } from '@/components/toast';
 export interface NewOrderAlertData {
     /** Stable order id — used as the toast id so each order alert is distinct. */
     orderId: string;
-    /** Customer-facing order number shown in the alert. */
+    /** Customer-facing order number (the order slug) shown in the alert and used to open the order detail. */
     orderNumber: string;
     /** Time the order was placed, shown in the alert. */
     placedAt: string;
@@ -24,7 +24,7 @@ interface NewOrderAlertToastProps {
     order: NewOrderAlertData;
     /** Sonner toast id this card belongs to — used to dismiss it on view/close. */
     toastId: string | number;
-    onViewOrder: (orderId: string) => void;
+    onViewOrder: (slugId: string) => void;
 }
 
 /**
@@ -35,9 +35,9 @@ function NewOrderAlertToast({ order, toastId, onViewOrder }: NewOrderAlertToastP
     const { t } = useTranslation();
 
     const handleViewOrder = useCallback(() => {
-        onViewOrder(order.orderId);
+        onViewOrder(order.orderNumber);
         toast.dismiss(toastId);
-    }, [onViewOrder, order.orderId, toastId]);
+    }, [onViewOrder, order.orderNumber, toastId]);
 
     const handleDismiss = useCallback(() => toast.dismiss(toastId), [toastId]);
 
