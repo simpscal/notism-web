@@ -2,7 +2,7 @@ import { HubConnectionState } from '@microsoft/signalr';
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import { useNotifications, PaymentSignalRStatus } from '../hooks/use-notifications';
+import { useNotifications, NotificationStatus } from '../use-notifications.hook';
 
 const mockStart = vi.fn().mockResolvedValue(undefined);
 const mockStop = vi.fn().mockResolvedValue(undefined);
@@ -23,7 +23,7 @@ const mockConnection = {
     state: HubConnectionState.Connected,
 };
 
-vi.mock('../notification-signalr', () => ({
+vi.mock('../../notification-signalr', () => ({
     createNotificationHubConnection: vi.fn(() => mockConnection),
 }));
 
@@ -237,7 +237,7 @@ describe('useNotifications', () => {
 
             const { result } = renderHook(() => useNotifications({ onNotification: vi.fn() }));
 
-            expect(result.current.status).toBe(PaymentSignalRStatus.Connecting);
+            expect(result.current.status).toBe(NotificationStatus.Connecting);
 
             await act(async () => {
                 resolveStart();
@@ -252,7 +252,7 @@ describe('useNotifications', () => {
 
             await flushAsync();
 
-            expect(result.current.status).toBe(PaymentSignalRStatus.Live);
+            expect(result.current.status).toBe(NotificationStatus.Live);
         });
 
         it('reports disconnected when the connection fails to start', async () => {
@@ -262,7 +262,7 @@ describe('useNotifications', () => {
 
             await flushAsync();
 
-            expect(result.current.status).toBe(PaymentSignalRStatus.Disconnected);
+            expect(result.current.status).toBe(NotificationStatus.Disconnected);
         });
 
         it('reports connecting on auto-reconnect attempt then live on reconnected', async () => {
@@ -274,10 +274,10 @@ describe('useNotifications', () => {
             const onReconnected = mockOnreconnected.mock.calls[0]?.[0] as (() => void) | undefined;
 
             act(() => onReconnecting!());
-            expect(result.current.status).toBe(PaymentSignalRStatus.Connecting);
+            expect(result.current.status).toBe(NotificationStatus.Connecting);
 
             act(() => onReconnected!());
-            expect(result.current.status).toBe(PaymentSignalRStatus.Live);
+            expect(result.current.status).toBe(NotificationStatus.Live);
         });
 
         it('reports disconnected when the connection closes without recovery', async () => {
@@ -289,7 +289,7 @@ describe('useNotifications', () => {
 
             act(() => onClose!());
 
-            expect(result.current.status).toBe(PaymentSignalRStatus.Disconnected);
+            expect(result.current.status).toBe(NotificationStatus.Disconnected);
         });
 
         it('reports disconnected and never connects when enabled is false', async () => {
@@ -297,7 +297,7 @@ describe('useNotifications', () => {
 
             await flushAsync();
 
-            expect(result.current.status).toBe(PaymentSignalRStatus.Disconnected);
+            expect(result.current.status).toBe(NotificationStatus.Disconnected);
             expect(mockStart).not.toHaveBeenCalled();
         });
     });

@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Toaster } from '@/components/sonner';
-import type { SharedNotification } from '@/features/order';
-import { PaymentSignalRStatus } from '@/features/order';
+import { NotificationStatus } from '@/core/hooks';
+import type { SharedNotification } from '@/core/notification-signalr';
 import { useNewOrderAlerts } from '@/features/order/hooks/use-new-order-alerts';
 import { renderWithProviders } from '@/test/utils';
 
@@ -16,11 +16,11 @@ vi.mock('react-router-dom', async () => {
 });
 
 let capturedOnNotification: ((payload: SharedNotification) => void) | undefined;
-let mockStatus: PaymentSignalRStatus = PaymentSignalRStatus.Live;
+let mockStatus: NotificationStatus = NotificationStatus.Live;
 
-vi.mock('@/features/order/hooks/use-notifications', async () => {
-    const actual = await vi.importActual<typeof import('@/features/order/hooks/use-notifications')>(
-        '@/features/order/hooks/use-notifications'
+vi.mock('@/core/hooks/use-notifications.hook', async () => {
+    const actual = await vi.importActual<typeof import('@/core/hooks/use-notifications.hook')>(
+        '@/core/hooks/use-notifications.hook'
     );
     return {
         ...actual,
@@ -87,7 +87,7 @@ describe('useNewOrderAlerts', () => {
     beforeEach(() => {
         navigateMock.mockReset();
         capturedOnNotification = undefined;
-        mockStatus = PaymentSignalRStatus.Live;
+        mockStatus = NotificationStatus.Live;
     });
 
     afterEach(async () => {
@@ -148,9 +148,9 @@ describe('useNewOrderAlerts', () => {
     });
 
     it('exposes the live-feed status from the SignalR subscription', () => {
-        mockStatus = PaymentSignalRStatus.Connecting;
+        mockStatus = NotificationStatus.Connecting;
         renderWithProviders(<Harness />);
 
-        expect(screen.getByTestId('feed-status')).toHaveTextContent(PaymentSignalRStatus.Connecting);
+        expect(screen.getByTestId('feed-status')).toHaveTextContent(NotificationStatus.Connecting);
     });
 });

@@ -1,15 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-    PaymentNotificationType,
-    type NewOrderNotificationPayload,
-    type SharedNotification,
-} from '../notification-signalr';
+import { NotificationType, type NewOrderNotificationPayload, type SharedNotification } from '../notification-signalr';
 
 describe('SharedNotification narrowing', () => {
     it('narrows an order-placed payload by type to NewOrderNotificationPayload', () => {
         const notification: SharedNotification = {
-            type: PaymentNotificationType.OrderPlaced,
+            type: NotificationType.OrderPlaced,
             orderId: 'order-id',
             orderNumber: 'ORD-2026-001',
             placedAt: '2026-06-25T10:00:00.000Z',
@@ -20,7 +16,7 @@ describe('SharedNotification narrowing', () => {
 
         expect(notification.type).toBe('order-placed');
 
-        if (notification.type === PaymentNotificationType.OrderPlaced) {
+        if (notification.type === NotificationType.OrderPlaced) {
             // Within this branch the payload narrows to NewOrderNotificationPayload,
             // so the order-specific fields are accessible without a cast.
             const order: NewOrderNotificationPayload = notification;
@@ -37,20 +33,20 @@ describe('SharedNotification narrowing', () => {
     it('keeps existing payment and refund payloads narrowable alongside order-placed', () => {
         const notifications: SharedNotification[] = [
             {
-                type: PaymentNotificationType.Success,
+                type: NotificationType.Success,
                 orderId: 'order-id',
                 slugId: 'ORD-ABC123',
                 message: 'Payment succeeded',
                 timestamp: '2026-06-25T10:00:00.000Z',
             },
             {
-                type: PaymentNotificationType.RefundStatusChanged,
+                type: NotificationType.RefundStatusChanged,
                 refundId: 'refund-id',
                 status: 'paid',
                 timestamp: '2026-06-25T10:00:00.000Z',
             },
             {
-                type: PaymentNotificationType.OrderPlaced,
+                type: NotificationType.OrderPlaced,
                 orderId: 'order-id',
                 orderNumber: 'ORD-2026-002',
                 placedAt: '2026-06-25T10:00:00.000Z',
@@ -60,7 +56,7 @@ describe('SharedNotification narrowing', () => {
             },
         ];
 
-        const orderPlaced = notifications.filter(n => n.type === PaymentNotificationType.OrderPlaced);
+        const orderPlaced = notifications.filter(n => n.type === NotificationType.OrderPlaced);
 
         expect(orderPlaced).toHaveLength(1);
         expect(orderPlaced[0].orderNumber).toBe('ORD-2026-002');

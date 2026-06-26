@@ -7,7 +7,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
-import { RefundStatusEnum, type SharedNotification } from '@/features/order';
+import type { SharedNotification } from '@/core/notification-signalr';
+import { RefundStatusEnum } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 
 const API_BASE = 'http://localhost:5000/api';
@@ -29,8 +30,8 @@ vi.mock('react-router-dom', async importOriginal => {
 // without opening a real WebSocket connection.
 let capturedOnNotification: ((payload: SharedNotification) => void) | undefined;
 
-vi.mock('@/features/order', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/features/order')>();
+vi.mock('@/core/hooks/use-notifications.hook', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/core/hooks/use-notifications.hook')>();
     return {
         ...actual,
         useNotifications: (options: { onNotification: (payload: SharedNotification) => void }) => {

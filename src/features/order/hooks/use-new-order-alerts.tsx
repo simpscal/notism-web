@@ -3,15 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import NewOrderAlertToast from '../components/new-order-alert-toast';
-import { type SharedNotification, PaymentNotificationType } from '../notification-signalr';
-
-import { useNotifications, type PaymentSignalRStatus } from './use-notifications';
 
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
+import { useNotifications, type NotificationStatus } from '@/core/hooks';
+import { type SharedNotification, NotificationType } from '@/core/notification-signalr';
 
 export interface UseNewOrderAlertsResult {
-    status: PaymentSignalRStatus;
+    status: NotificationStatus;
 }
 
 /**
@@ -35,7 +34,7 @@ export function useNewOrderAlerts(): UseNewOrderAlertsResult {
 
     const handleNotification = useCallback(
         (payload: SharedNotification) => {
-            if (payload.type !== PaymentNotificationType.OrderPlaced) {
+            if (payload.type !== NotificationType.OrderPlaced) {
                 return;
             }
 

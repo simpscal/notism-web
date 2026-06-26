@@ -19,7 +19,9 @@ import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
-import { RefundStatusEnum, PaymentNotificationType, useNotifications, type SharedNotification } from '@/features/order';
+import { useNotifications } from '@/core/hooks';
+import { NotificationType, type SharedNotification } from '@/core/notification-signalr';
+import { RefundStatusEnum } from '@/features/order';
 
 function AdminRefundDetail() {
     const { t, i18n } = useTranslation();
@@ -60,7 +62,7 @@ function AdminRefundDetail() {
 
     const handleRefundNotification = useCallback(
         (payload: SharedNotification) => {
-            if (payload.type !== PaymentNotificationType.RefundStatusChanged || payload.refundId !== id) return;
+            if (payload.type !== NotificationType.RefundStatusChanged || payload.refundId !== id) return;
 
             void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
             void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refunds() });

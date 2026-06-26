@@ -18,13 +18,13 @@ import {
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
 import { useTheme } from '@/core/contexts/theme.context';
+import { NotificationStatus } from '@/core/hooks';
 import LiveFeedPill from '@/features/order/components/live-feed-pill';
-import { PaymentSignalRStatus } from '@/features/order/hooks/use-notifications';
 
 interface AdminToolbarDesktopProps {
     user: UserProfileModel | null;
     onLogout: () => void;
-    liveFeedStatus: PaymentSignalRStatus;
+    liveFeedStatus: NotificationStatus;
 }
 
 function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDesktopProps) {

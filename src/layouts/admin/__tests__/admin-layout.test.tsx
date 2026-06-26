@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AdminLayout from '../admin-layout';
 
 import { ROUTES } from '@/app/constants';
-import { PaymentSignalRStatus } from '@/features/order/hooks/use-notifications';
+import { NotificationStatus } from '@/core/hooks';
 import { renderWithProviders } from '@/test/utils';
 
 const useNewOrderAlertsMock = vi.fn();
@@ -28,7 +28,7 @@ function renderLayout({ initialPath = `/${ROUTES.ADMIN.DASHBOARD}` }: { initialP
 
 describe('AdminLayout', () => {
     beforeEach(() => {
-        useNewOrderAlertsMock.mockReturnValue({ status: PaymentSignalRStatus.Live });
+        useNewOrderAlertsMock.mockReturnValue({ status: NotificationStatus.Live });
     });
 
     afterEach(() => {
@@ -56,7 +56,7 @@ describe('AdminLayout', () => {
     });
 
     it('reflects the live-feed status from the subscription in the pill', () => {
-        useNewOrderAlertsMock.mockReturnValue({ status: PaymentSignalRStatus.Connecting });
+        useNewOrderAlertsMock.mockReturnValue({ status: NotificationStatus.Connecting });
 
         renderLayout();
 
