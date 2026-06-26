@@ -49,9 +49,7 @@ export function useNotifications({
 
         const connection = createNotificationHubConnection();
 
-        connection.on('ReceivePaymentNotification', (payload: SharedNotification) =>
-            onNotificationRef.current(payload)
-        );
+        connection.on('ReceiveNotification', (payload: SharedNotification) => onNotificationRef.current(payload));
 
         connection.onreconnecting(() => setStatus(NotificationStatus.Connecting));
         connection.onreconnected(() => setStatus(NotificationStatus.Live));
@@ -65,8 +63,8 @@ export function useNotifications({
                 setStatus(mapConnectionState(connection.state));
 
                 return connection
-                    .invoke('SubscribeToPaymentEvents')
-                    .catch(err => console.error('[SignalR] SubscribeToPaymentEvents failed:', err));
+                    .invoke('SubscribeToNotifications')
+                    .catch(err => console.error('[SignalR] SubscribeToNotifications failed:', err));
             })
             .catch(err => {
                 setStatus(NotificationStatus.Disconnected);
