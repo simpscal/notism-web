@@ -11,7 +11,6 @@ export { default as HeldRefundReminderBanner } from './held-refund-reminder-bann
 export { default as HeldRefundReminderBannerContainer } from './held-refund-reminder-banner-container';
 export { default as PaymentStatusBadge } from './payment-status-badge';
 export { default as BankingPaymentConfirmedPanel } from './banking-payment-confirmed-panel';
-export { default as NewOrderAlert } from './new-order-alert';
-export type { NewOrderAlertData } from './new-order-alert';
 export { default as NewOrderAlertToast } from './new-order-alert-toast';
+export type { NewOrderAlertData } from './new-order-alert-toast';
 export { default as LiveFeedPill } from './live-feed-pill';

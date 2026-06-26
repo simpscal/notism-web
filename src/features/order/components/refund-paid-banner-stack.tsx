@@ -6,8 +6,9 @@ import { REFUND_PAID_BANNER_DISMISSED_KEY } from '../constants';
 import RefundPaidBanner, { type RefundPaidBannerData } from './refund-paid-banner';
 
 import { ROUTES } from '@/app/constants';
+import { NotificationType } from '@/app/enums';
+import { type PaidRefundNotification, type SharedNotification } from '@/app/models';
 import { useNotifications } from '@/core/hooks';
-import { type PaidRefundNotification, type SharedNotification, NotificationType } from '@/core/notification-signalr';
 
 function readDismissedIds(): string[] {
     try {

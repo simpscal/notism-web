@@ -5,9 +5,10 @@ import { toast } from 'sonner';
 import NewOrderAlertToast from '../components/new-order-alert-toast';
 
 import { ROUTES } from '@/app/constants';
+import { NotificationType } from '@/app/enums';
+import { type SharedNotification } from '@/app/models';
 import { formatVnd } from '@/app/utils';
 import { useNotifications, type NotificationStatus } from '@/core/hooks';
-import { type SharedNotification, NotificationType } from '@/core/notification-signalr';
 
 export interface UseNewOrderAlertsResult {
     status: NotificationStatus;

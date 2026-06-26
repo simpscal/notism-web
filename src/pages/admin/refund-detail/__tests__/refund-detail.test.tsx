@@ -7,7 +7,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
-import type { SharedNotification } from '@/core/notification-signalr';
+import type { SharedNotification } from '@/app/models';
 import { RefundStatusEnum } from '@/features/order';
 import { renderWithProviders } from '@/test/utils';
 

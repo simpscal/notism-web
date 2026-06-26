@@ -6,8 +6,8 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import Payment from '../payment';
 
+import { NotificationType } from '@/app/enums';
 import i18n from '@/app/i18n/i18n';
-import { NotificationType } from '@/core/notification-signalr';
 import { getFoodPricing } from '@/features/food';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart';

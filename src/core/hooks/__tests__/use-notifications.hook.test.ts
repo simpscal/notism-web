@@ -23,9 +23,32 @@ const mockConnection = {
     state: HubConnectionState.Connected,
 };
 
-vi.mock('../../notification-signalr', () => ({
-    createNotificationHubConnection: vi.fn(() => mockConnection),
-}));
+const mockWithUrl = vi.fn();
+const mockWithAutomaticReconnect = vi.fn();
+const mockBuild = vi.fn(() => mockConnection);
+
+vi.mock('@microsoft/signalr', async () => {
+    const actual = await vi.importActual<typeof import('@microsoft/signalr')>('@microsoft/signalr');
+
+    class MockHubConnectionBuilder {
+        withUrl(...args: unknown[]) {
+            mockWithUrl(...args);
+            return this;
+        }
+        withAutomaticReconnect(...args: unknown[]) {
+            mockWithAutomaticReconnect(...args);
+            return this;
+        }
+        build() {
+            return mockBuild();
+        }
+    }
+
+    return {
+        ...actual,
+        HubConnectionBuilder: MockHubConnectionBuilder,
+    };
+});
 
 const flushAsync = () =>
     act(async () => {
@@ -299,6 +322,27 @@ describe('useNotifications', () => {
 
             expect(result.current.status).toBe(NotificationStatus.Disconnected);
             expect(mockStart).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('connection build', () => {
+        it('builds the connection against the notification hub url with the api-suffix stripped', async () => {
+            renderHook(() => useNotifications({ onNotification: vi.fn() }));
+
+            await flushAsync();
+
+            expect(mockWithUrl).toHaveBeenCalledWith(
+                'http://localhost:5000/hubs/notification',
+                expect.objectContaining({ accessTokenFactory: expect.any(Function) })
+            );
+        });
+
+        it('enables automatic reconnect', async () => {
+            renderHook(() => useNotifications({ onNotification: vi.fn() }));
+
+            await flushAsync();
+
+            expect(mockWithAutomaticReconnect).toHaveBeenCalledTimes(1);
         });
     });
 });
