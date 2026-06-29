@@ -13,7 +13,7 @@ vi.mock('@/features/order', async importOriginal => {
     const actual = await importOriginal<typeof import('@/features/order')>();
     return {
         ...actual,
-        usePaymentSignalR: vi.fn(),
+        useNotifications: vi.fn(),
     };
 });
 

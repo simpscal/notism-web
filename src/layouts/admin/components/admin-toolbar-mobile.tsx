@@ -27,13 +27,16 @@ import {
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
 import { useTheme } from '@/core/contexts/theme.context';
+import { NotificationStatus } from '@/core/hooks';
+import LiveFeedPill from '@/features/order/components/live-feed-pill';
 
 interface AdminToolbarMobileProps {
     user: UserProfileModel | null;
     onLogout: () => void;
+    liveFeedStatus: NotificationStatus;
 }
 
-function AdminToolbarMobile({ user, onLogout }: AdminToolbarMobileProps) {
+function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobileProps) {
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
 
@@ -48,6 +51,11 @@ function AdminToolbarMobile({ user, onLogout }: AdminToolbarMobileProps) {
 
     return (
         <>
+            {/* Sticky top strip — live new-order feed status (portal-shell surface, story #274) */}
+            <header className='sticky top-0 z-50 flex h-12 items-center justify-end border-b bg-background px-4 lg:hidden'>
+                <LiveFeedPill status={liveFeedStatus} />
+            </header>
+
             {/* Fixed bottom bar */}
             <div className='fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t bg-background px-2 lg:hidden'>
                 {/* Dashboard shortcut */}

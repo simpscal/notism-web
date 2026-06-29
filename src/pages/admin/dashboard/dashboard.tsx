@@ -18,13 +18,15 @@ function Dashboard() {
     return (
         <div className='mx-auto w-full max-w-7xl px-6 py-8'>
             {/* Page header */}
-            <div className='mb-8 flex items-center gap-2.5'>
-                <LayoutDashboard className='h-6 w-6 text-primary' />
-                <div>
-                    <h1 className='text-2xl font-bold text-foreground'>{t('admin.dashboard.title')}</h1>
-                    <p className='mt-0.5 text-sm text-muted-foreground'>
-                        {t('admin.dashboard.subtitle', { date: formatTodayLabel() })}
-                    </p>
+            <div className='mb-8 flex flex-wrap items-center justify-between gap-3'>
+                <div className='flex items-center gap-2.5'>
+                    <LayoutDashboard className='h-6 w-6 text-primary' />
+                    <div>
+                        <h1 className='text-2xl font-bold text-foreground'>{t('admin.dashboard.title')}</h1>
+                        <p className='mt-0.5 text-sm text-muted-foreground'>
+                            {t('admin.dashboard.subtitle', { date: formatTodayLabel() })}
+                        </p>
+                    </div>
                 </div>
             </div>
 

@@ -5,6 +5,7 @@ import AdminToolbarMobile from '../admin-toolbar-mobile';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { NotificationStatus } from '@/core/hooks';
 import { renderWithProviders } from '@/test/utils';
 
 const USER: UserProfileModel = {
@@ -16,10 +17,13 @@ const USER: UserProfileModel = {
     role: 'admin',
 };
 
-function renderToolbar({ initialPath = `/${ROUTES.ADMIN.DASHBOARD}` }: { initialPath?: string } = {}) {
+function renderToolbar({
+    initialPath = `/${ROUTES.ADMIN.DASHBOARD}`,
+    liveFeedStatus = NotificationStatus.Live,
+}: { initialPath?: string; liveFeedStatus?: NotificationStatus } = {}) {
     const onLogout = vi.fn();
 
-    renderWithProviders(<AdminToolbarMobile user={USER} onLogout={onLogout} />, {
+    renderWithProviders(<AdminToolbarMobile user={USER} onLogout={onLogout} liveFeedStatus={liveFeedStatus} />, {
         initialEntries: [initialPath],
     });
 
@@ -54,5 +58,17 @@ describe('AdminToolbarMobile', () => {
 
         const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
         expect(dashboardLink).not.toHaveAttribute('aria-current', 'page');
+    });
+
+    it('renders the live new-order feed pill in the toolbar', () => {
+        renderToolbar({ liveFeedStatus: NotificationStatus.Live });
+
+        expect(screen.getByText('Live orders on')).toBeInTheDocument();
+    });
+
+    it('reflects the disconnected live-feed status in the pill', () => {
+        renderToolbar({ liveFeedStatus: NotificationStatus.Disconnected });
+
+        expect(screen.getByText('Live orders disconnected')).toBeInTheDocument();
     });
 });

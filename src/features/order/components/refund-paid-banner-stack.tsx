@@ -2,16 +2,13 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { REFUND_PAID_BANNER_DISMISSED_KEY } from '../constants';
-import { usePaymentSignalR } from '../hooks/use-payment-signalr';
-import {
-    type PaidRefundNotification,
-    type PaymentSharedNotification,
-    PaymentNotificationType,
-} from '../payment-signalr';
 
 import RefundPaidBanner, { type RefundPaidBannerData } from './refund-paid-banner';
 
 import { ROUTES } from '@/app/constants';
+import { NotificationType } from '@/app/enums';
+import { type PaidRefundNotification, type SharedNotification } from '@/app/models';
+import { useNotifications } from '@/core/hooks';
 
 function readDismissedIds(): string[] {
     try {
@@ -49,9 +46,9 @@ function RefundPaidBannerStack() {
     }, []);
 
     const handleNotification = useCallback(
-        (payload: PaymentSharedNotification) => {
+        (payload: SharedNotification) => {
             if (
-                payload.type !== PaymentNotificationType.RefundStatusChanged ||
+                payload.type !== NotificationType.RefundStatusChanged ||
                 payload.status !== 'paid' ||
                 !payload.orderId
             ) {
@@ -68,7 +65,7 @@ function RefundPaidBannerStack() {
         [handleRefundPaid]
     );
 
-    usePaymentSignalR({ onNotification: handleNotification });
+    useNotifications({ onNotification: handleNotification });
 
     const handleOpenOrder = useCallback(
         (orderId: string) => {

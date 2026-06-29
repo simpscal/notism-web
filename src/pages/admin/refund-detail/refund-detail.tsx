@@ -14,17 +14,15 @@ import {
 
 import { ADMIN_QUERY_KEYS, adminApi, type RefundDetailModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { NotificationType } from '@/app/enums';
+import { type SharedNotification } from '@/app/models';
 import { formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
-import {
-    RefundStatusEnum,
-    PaymentNotificationType,
-    usePaymentSignalR,
-    type PaymentSharedNotification,
-} from '@/features/order';
+import { useNotifications } from '@/core/hooks';
+import { RefundStatusEnum } from '@/features/order';
 
 function AdminRefundDetail() {
     const { t, i18n } = useTranslation();
@@ -64,8 +62,8 @@ function AdminRefundDetail() {
     });
 
     const handleRefundNotification = useCallback(
-        (payload: PaymentSharedNotification) => {
-            if (payload.type !== PaymentNotificationType.RefundStatusChanged || payload.refundId !== id) return;
+        (payload: SharedNotification) => {
+            if (payload.type !== NotificationType.RefundStatusChanged || payload.refundId !== id) return;
 
             void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refundDetail(id!) });
             void queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.refunds() });
@@ -73,7 +71,7 @@ function AdminRefundDetail() {
         [id, queryClient]
     );
 
-    usePaymentSignalR({ onNotification: handleRefundNotification });
+    useNotifications({ onNotification: handleRefundNotification });
 
     const createdDate = useMemo(() => {
         if (!refund) return '';

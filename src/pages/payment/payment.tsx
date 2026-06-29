@@ -10,19 +10,14 @@ import PaymentBankingQr from './components/payment-banking-qr';
 
 import { orderApi, userApi, BankAccountModel, CartItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
+import { NotificationType } from '@/app/enums';
+import { type SharedNotification } from '@/app/models';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import Spinner from '@/components/spinner';
-import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import {
-    OrderCheckoutProgress,
-    OrderCheckoutTrustBar,
-    PaymentMethodEnum,
-    PaymentNotificationType,
-    PaymentSharedNotification,
-    usePaymentSignalR,
-} from '@/features/order';
+import { useAppDispatch, useAppSelector, useNotifications } from '@/core/hooks';
+import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import {
     loadCart,
     selectCartItems,
@@ -77,20 +72,20 @@ function Payment() {
     });
 
     const handlePaymentNotification = useCallback(
-        (payload: PaymentSharedNotification) => {
-            if (payload.type === PaymentNotificationType.Success) {
+        (payload: SharedNotification) => {
+            if (payload.type === NotificationType.Success) {
                 setConfirmedSlugId(payload.slugId);
                 setSuccessItems([...selectedItems]);
                 setSuccessState({ method: 'banking', slugId: payload.slugId, totalPrice });
                 toast.success(t('payment.paymentConfirmed'));
-            } else if (payload.type === PaymentNotificationType.Failure) {
+            } else if (payload.type === NotificationType.Failure) {
                 toast.error(t('payment.paymentFailed'));
             }
         },
         [t, totalPrice]
     );
 
-    usePaymentSignalR({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
+    useNotifications({ onNotification: handlePaymentNotification, enabled: bankingCheckout });
 
     const handleViewOrder = useCallback(async () => {
         if (!confirmedSlugId) return;

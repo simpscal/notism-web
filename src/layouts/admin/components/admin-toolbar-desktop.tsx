@@ -18,13 +18,16 @@ import {
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
 import { useTheme } from '@/core/contexts/theme.context';
+import { NotificationStatus } from '@/core/hooks';
+import LiveFeedPill from '@/features/order/components/live-feed-pill';
 
 interface AdminToolbarDesktopProps {
     user: UserProfileModel | null;
     onLogout: () => void;
+    liveFeedStatus: NotificationStatus;
 }
 
-function AdminToolbarDesktop({ user, onLogout }: AdminToolbarDesktopProps) {
+function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDesktopProps) {
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
 
@@ -88,6 +91,9 @@ function AdminToolbarDesktop({ user, onLogout }: AdminToolbarDesktopProps) {
 
                 {/* Right — controls */}
                 <div className='flex flex-1 items-center justify-end gap-2'>
+                    {/* Live new-order feed status — portal-shell surface (story #274) */}
+                    <LiveFeedPill status={liveFeedStatus} />
+
                     {/* Theme toggle */}
                     <button
                         aria-label='Toggle theme'
