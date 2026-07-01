@@ -1,17 +1,19 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Payment from '../payment';
 
+import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
 import { NotificationType } from '@/app/enums';
 import i18n from '@/app/i18n/i18n';
 import { getFoodPricing } from '@/features/food';
+import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart';
-import { renderWithProviders } from '@/test/utils';
+import { server } from '@/test/server';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string) => i18n.t(key);
 
@@ -24,20 +26,7 @@ vi.mock('@/core/hooks/use-notifications.hook', async importOriginal => {
     };
 });
 
-const BANKING_CHECKOUT_URL = '*/orders/banking/checkout';
-
-const server = setupServer(
-    http.post(BANKING_CHECKOUT_URL, () =>
-        HttpResponse.json({
-            checkoutId: '550e8400-e29b-41d4-a716-446655440000',
-            bankAccount: {
-                bankCode: 'VCB',
-                accountNumber: '1234567890',
-                accountHolderName: 'Nguyen Van A',
-            },
-        })
-    )
-);
+const BANKING_CHECKOUT_URL = buildUrl(ORDER_ENDPOINTS.BANKING_CHECKOUT);
 
 const CART_STORAGE_KEY = 'cart_items';
 
@@ -64,8 +53,22 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-// Seed Redux cart state via localStorage before each test
+// Default success handler; individual tests layer overrides on top via server.use().
 beforeEach(async () => {
+    server.use(
+        http.post(BANKING_CHECKOUT_URL, () =>
+            HttpResponse.json({
+                checkoutId: '550e8400-e29b-41d4-a716-446655440000',
+                bankAccount: {
+                    bankCode: 'VCB',
+                    accountNumber: '1234567890',
+                    accountHolderName: 'Nguyen Van A',
+                },
+            })
+        )
+    );
+
+    // Seed Redux cart state via localStorage before each test
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([MOCK_CART_ITEM]));
     await act(async () => {
         await store.dispatch(loadCart());
@@ -140,7 +143,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         // QR card should appear after auto-initiated checkout completes
         await waitFor(() => {
-            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
+            expect(getByI18nText('payment.bankTransfer.title')).toBeInTheDocument();
         });
     });
 
@@ -166,7 +169,7 @@ describe('Payment — bankingCheckout flow', () => {
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
 
         await waitFor(() => {
-            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
+            expect(getByI18nText('payment.bankTransfer.title')).toBeInTheDocument();
         });
 
         expect(capturedCallback).not.toBeNull();
@@ -183,7 +186,7 @@ describe('Payment — bankingCheckout flow', () => {
 
         // Success screen should appear with "Payment confirmed" heading
         await waitFor(() => {
-            expect(screen.getByText('Payment confirmed')).toBeInTheDocument();
+            expect(getByI18nText('payment.success.bankingTitle')).toBeInTheDocument();
         });
 
         expect(screen.getByRole('button', { name: /track order/i })).toBeInTheDocument();
@@ -211,7 +214,7 @@ describe('Payment — bankingCheckout flow', () => {
         await userEvent.click(screen.getByRole('radio', { name: /banking/i }));
 
         await waitFor(() => {
-            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
+            expect(getByI18nText('payment.bankTransfer.title')).toBeInTheDocument();
         });
 
         expect(capturedCallback).not.toBeNull();
@@ -228,9 +231,9 @@ describe('Payment — bankingCheckout flow', () => {
 
         // QR view should still be visible (no success screen)
         await waitFor(() => {
-            expect(screen.getByText('Bank transfer')).toBeInTheDocument();
+            expect(getByI18nText('payment.bankTransfer.title')).toBeInTheDocument();
         });
 
-        expect(screen.queryByText('Payment confirmed')).not.toBeInTheDocument();
+        expect(screen.queryByText(t('payment.success.bankingTitle'))).not.toBeInTheDocument();
     });
 });

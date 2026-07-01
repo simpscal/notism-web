@@ -5,8 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SettingsAppearanceSection from '../components/settings-appearance-section';
 
+import i18n from '@/app/i18n/i18n';
 import { ThemeProvider } from '@/core/contexts/theme.context';
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const successToast = vi.fn();
 
@@ -49,7 +50,7 @@ describe('SettingsAppearanceSection', () => {
         renderWithTheme(<SettingsAppearanceSection />, 'system');
 
         expect(screen.getByRole('heading', { level: 2, name: /^appearance$/i })).toBeInTheDocument();
-        expect(screen.getByText(/customize how the application looks/i)).toBeInTheDocument();
+        expect(getByI18nText('settings.appearance.subtitle')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
     });
 
@@ -72,8 +73,10 @@ describe('SettingsAppearanceSection', () => {
     it('shows the currently-applied theme helper text reflecting the live theme', () => {
         renderWithTheme(<SettingsAppearanceSection />, 'light');
 
-        const applied = screen.getByText(/currently applied/i);
-        expect(within(applied).getByText(/^light$/i)).toBeInTheDocument();
+        const applied = screen.getByText(new RegExp(i18n.t('settings.appearance.currentlyApplied')));
+        expect(
+            within(applied).getByText(new RegExp(`^${i18n.t('settings.appearance.light')}$`, 'i'))
+        ).toBeInTheDocument();
     });
 
     it('moves the selection marker but does not apply or persist the theme until saved', async () => {
@@ -91,8 +94,10 @@ describe('SettingsAppearanceSection', () => {
 
         await userEvent.click(screen.getByRole('radio', { name: /dark/i }));
 
-        const applied = screen.getByText(/currently applied/i);
-        expect(within(applied).getByText(/^light$/i)).toBeInTheDocument();
+        const applied = screen.getByText(new RegExp(i18n.t('settings.appearance.currentlyApplied')));
+        expect(
+            within(applied).getByText(new RegExp(`^${i18n.t('settings.appearance.light')}$`, 'i'))
+        ).toBeInTheDocument();
     });
 
     it('disables Save changes until a different theme is selected', async () => {

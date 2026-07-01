@@ -24,6 +24,7 @@
 
         "paths": {
             "@/test/*": ["./test/*"],
+            "@/mocks/*": ["./mocks/*"],
             "@/*": ["./src/*"],
             "@/components": ["./src/components"],
             "@/components/*": ["./src/components/*"],
@@ -39,5 +40,5 @@
             "@/contexts/*": ["./src/core/contexts/*"]
         }
     },
-    "include": ["src", "test"]
+    "include": ["src", "test", "mocks"]
 }

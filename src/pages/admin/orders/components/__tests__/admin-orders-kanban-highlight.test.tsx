@@ -1,23 +1,22 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import AdminOrdersKanban from '../admin-orders-kanban';
 
 import type { AdminOrdersModel } from '@/apis';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 import { HIGHLIGHT_DURATION_MS } from '@/components/kanban';
 import { DeliveryStatusEnum } from '@/features/order';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
 
 vi.mock('react-intersection-observer', () => ({
     useInView: () => ({ ref: vi.fn(), inView: false }),
 }));
 
-const API_BASE = 'http://localhost:5000/api';
-const KANBAN_URL = `${API_BASE}/admin/orders/kanban`;
-
-const server = setupServer();
+const KANBAN_URL = buildUrl(ADMIN_ENDPOINTS.ORDERS_KANBAN);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => server.resetHandlers());

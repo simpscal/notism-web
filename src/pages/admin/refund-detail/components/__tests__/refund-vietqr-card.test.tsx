@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import RefundVietQrCard from '../refund-vietqr-card';
 
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const REFUND_ID = '3f1a2b3c-4d5e-6f70-8192-a3b4c5d6e7f8';
 const N_FORMAT = '3f1a2b3c4d5e6f708192a3b4c5d6e7f8';
@@ -54,20 +54,20 @@ describe('RefundVietQrCard', () => {
     it('renders the waiting-for-transfer caption', () => {
         renderCard();
 
-        expect(screen.getByText('Waiting for the transfer to be sent…')).toBeInTheDocument();
+        expect(getByI18nText('admin.refundDetail.qrWaiting')).toBeInTheDocument();
     });
 
     it('renders a missing payout details state without a QR image when bank details are absent', () => {
         renderCard({ bankCode: null, accountNumber: null, accountHolderName: null });
 
         expect(screen.queryByRole('img')).not.toBeInTheDocument();
-        expect(screen.getByText('No payout account on file')).toBeInTheDocument();
+        expect(getByI18nText('admin.refundDetail.qrMissingTitle')).toBeInTheDocument();
     });
 
     it('treats empty-string bank details as missing payout details', () => {
         renderCard({ bankCode: '', accountNumber: '' });
 
         expect(screen.queryByRole('img')).not.toBeInTheDocument();
-        expect(screen.getByText('No payout account on file')).toBeInTheDocument();
+        expect(getByI18nText('admin.refundDetail.qrMissingTitle')).toBeInTheDocument();
     });
 });

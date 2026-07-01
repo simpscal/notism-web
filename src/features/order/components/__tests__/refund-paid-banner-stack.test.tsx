@@ -6,7 +6,7 @@ import RefundPaidBannerStack from '../refund-paid-banner-stack';
 
 import i18n from '@/app/i18n/i18n';
 import type { SharedNotification } from '@/app/models';
-import { renderWithProviders } from '@/test/utils';
+import { queryByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
@@ -79,7 +79,7 @@ describe('RefundPaidBannerStack', () => {
     it('renders nothing when no refund has been pushed', () => {
         renderWithProviders(<RefundPaidBannerStack />);
 
-        expect(screen.queryByText(t('order.refund.paidBanner.title'))).not.toBeInTheDocument();
+        expect(queryByI18nText('order.refund.paidBanner.title')).not.toBeInTheDocument();
     });
 
     it('shows a banner when a refund-paid event is pushed', async () => {
@@ -144,6 +144,6 @@ describe('RefundPaidBannerStack', () => {
             });
         });
 
-        expect(screen.queryByText(t('order.refund.paidBanner.title'))).not.toBeInTheDocument();
+        expect(queryByI18nText('order.refund.paidBanner.title')).not.toBeInTheDocument();
     });
 });

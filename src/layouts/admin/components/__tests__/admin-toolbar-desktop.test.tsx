@@ -6,7 +6,7 @@ import AdminToolbarDesktop from '../admin-toolbar-desktop';
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { NotificationStatus } from '@/core/hooks';
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const USER: UserProfileModel = {
     id: '1',
@@ -65,12 +65,12 @@ describe('AdminToolbarDesktop', () => {
     it('renders the live new-order feed pill in the toolbar', () => {
         renderToolbar({ liveFeedStatus: NotificationStatus.Live });
 
-        expect(screen.getByText('Live orders on')).toBeInTheDocument();
+        expect(getByI18nText('admin.newOrder.feed.live')).toBeInTheDocument();
     });
 
     it('reflects the connecting live-feed status in the pill', () => {
         renderToolbar({ liveFeedStatus: NotificationStatus.Connecting });
 
-        expect(screen.getByText('Connecting to live orders…')).toBeInTheDocument();
+        expect(getByI18nText('admin.newOrder.feed.connecting')).toBeInTheDocument();
     });
 });

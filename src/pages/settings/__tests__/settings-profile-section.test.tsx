@@ -1,19 +1,19 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SettingsProfileSection from '../components/settings-profile-section';
 
+import { USER_ENDPOINTS } from '@/apis/user/user.constant';
 import { UserRoleEnum } from '@/app/enums';
+import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
 import { setUser } from '@/store/user';
-import { renderWithProviders } from '@/test/utils';
+import { server } from '@/test/server';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
-const PROFILE_URL = '*/users/profile';
-
-const server = setupServer();
+const PROFILE_URL = buildUrl(USER_ENDPOINTS.PROFILE);
 
 const successToast = vi.fn();
 
@@ -78,7 +78,7 @@ describe('SettingsProfileSection', () => {
         await userEvent.clear(lastName);
 
         await waitFor(() => {
-            const error = screen.getByText(/last name is required/i);
+            const error = getByI18nText('auth.validation.lastNameRequired');
             expect(error).toBeInTheDocument();
             expect(error).toHaveAttribute('data-slot', 'field-error');
         });

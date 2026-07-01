@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import PaymentDeliveryForm from '../payment-delivery-form';
 
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 describe('PaymentDeliveryForm', () => {
     it('renders delivery address input form when no saved address', () => {
@@ -33,7 +33,7 @@ describe('PaymentDeliveryForm', () => {
             <PaymentDeliveryForm savedAddress='123 Nguyen Hue, District 1' totalPrice={100000} onPlaceOrder={vi.fn()} />
         );
 
-        expect(screen.getByText('Delivering to')).toBeInTheDocument();
+        expect(getByI18nText('payment.delivery.deliveringTo')).toBeInTheDocument();
         expect(screen.getByText('123 Nguyen Hue, District 1')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
         // Form inputs should not be visible initially

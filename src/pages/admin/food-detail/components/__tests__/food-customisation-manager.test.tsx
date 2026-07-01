@@ -1,19 +1,19 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import FoodCustomisationManager from '../food-customisation-manager';
 
-import { renderWithProviders } from '@/test/utils';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
-const GROUPS_URL = '*/admin/foods/food-1/customisation-groups';
-const GROUP_URL = '*/admin/foods/food-1/customisation-groups/group-1';
-const OPTIONS_URL = '*/admin/foods/food-1/customisation-groups/group-1/options';
-const OPTION_URL = '*/admin/foods/food-1/customisation-groups/group-1/options/option-1';
-
-const server = setupServer();
+const GROUPS_URL = buildUrl(ADMIN_ENDPOINTS.FOOD_CUSTOMISATION_GROUPS('food-1'));
+const GROUP_URL = buildUrl(ADMIN_ENDPOINTS.FOOD_CUSTOMISATION_GROUP('food-1', 'group-1'));
+const OPTIONS_URL = buildUrl(ADMIN_ENDPOINTS.FOOD_CUSTOMISATION_OPTIONS('food-1', 'group-1'));
+const OPTION_URL = buildUrl(ADMIN_ENDPOINTS.FOOD_CUSTOMISATION_OPTION('food-1', 'group-1', 'option-1'));
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -49,7 +49,7 @@ describe('FoodCustomisationManager', () => {
     it('renders Required badge for required groups', () => {
         renderWithProviders(<FoodCustomisationManager foodId='food-1' customisations={mockCustomisations} />);
 
-        expect(screen.getByText('Required')).toBeInTheDocument();
+        expect(getByI18nText('admin.customisationManager.required')).toBeInTheDocument();
     });
 
     it('renders surcharge for options that have one', () => {

@@ -1,18 +1,17 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, delay } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import TodaySalesSection from '../today-sales-section';
 
 import type { GetDashboardTodaySalesResponseModel } from '@/apis';
-import { renderWithProviders } from '@/test/utils';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
-const API_BASE = 'http://localhost:5000/api';
-const TODAY_SALES_URL = `${API_BASE}/admin/dashboard/today-sales`;
-
-const server = setupServer();
+const TODAY_SALES_URL = buildUrl(ADMIN_ENDPOINTS.DASHBOARD_TODAY_SALES);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => server.resetHandlers());
@@ -69,11 +68,11 @@ describe('TodaySalesSection', () => {
         });
 
         // Section heading is preserved from the merged implementation.
-        expect(screen.getByText("Today's sales")).toBeInTheDocument();
+        expect(getByI18nText('admin.dashboard.todaySales.heading')).toBeInTheDocument();
 
         // Each figure is rendered as its own gauge with a clear label.
-        expect(screen.getByText("Today's revenue")).toBeInTheDocument();
-        expect(screen.getByText("Today's orders")).toBeInTheDocument();
+        expect(getByI18nText('admin.dashboard.todaySales.revenueLabel')).toBeInTheDocument();
+        expect(getByI18nText('admin.dashboard.todaySales.ordersLabel')).toBeInTheDocument();
         expect(screen.getByText('17')).toBeInTheDocument();
 
         // Two independent single-value gauges, each on its own scale.
@@ -127,7 +126,7 @@ describe('TodaySalesSection', () => {
         renderSection();
 
         await waitFor(() => {
-            expect(screen.getByText("Couldn't load today's metrics")).toBeInTheDocument();
+            expect(getByI18nText('admin.dashboard.todaySales.errorTitle')).toBeInTheDocument();
         });
 
         // No chart is shown while the section is in its error state.
