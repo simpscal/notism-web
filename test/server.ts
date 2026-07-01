@@ -1,10 +1,6 @@
 import { setupServer } from 'msw/node';
 
-import { handlers } from '@/mocks/handlers';
-
-// Single composed entrypoint for msw/node request mocking in tests. Reuses the
-// same handlers Storybook consumes via mocks/browser.ts, instead of every test
-// file hand-rolling its own setupServer(...) instance. Tests layer per-case
-// fixtures/error responses on top via server.use(...); the shared handlers are
-// a baseline, not a replacement for per-test flexibility.
-export const server = setupServer(...handlers);
+// Standalone msw/node entrypoint for tests, decoupled from the Storybook/e2e
+// handlers in mocks/handlers|data. No default handlers: every test registers
+// its own request handlers via server.use(...).
+export const server = setupServer();
