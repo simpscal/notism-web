@@ -5,7 +5,6 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { ROUTE_COMPONENT_MAP } from '@/app/routing/route-preload-map';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import {
@@ -39,14 +38,6 @@ function ClientToolbarMobile({ user, onLogout }: ClientToolbarMobileProps) {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }, [theme, setTheme]);
 
-    // Warms the route's chunk on hover/focus so the click that follows resolves instantly.
-    const handleNavItemPreload = useCallback(
-        (path: string) => () => {
-            ROUTE_COMPONENT_MAP[path]?.preload();
-        },
-        []
-    );
-
     return (
         <>
             {/* Fixed bottom bar */}
@@ -55,8 +46,6 @@ function ClientToolbarMobile({ user, onLogout }: ClientToolbarMobileProps) {
                 <NavLink
                     to={`/${ROUTES.FOODS.LIST}`}
                     aria-label='Home'
-                    onMouseEnter={handleNavItemPreload(`/${ROUTES.FOODS.LIST}`)}
-                    onFocus={handleNavItemPreload(`/${ROUTES.FOODS.LIST}`)}
                     className={({ isActive }) =>
                         cn(
                             'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',

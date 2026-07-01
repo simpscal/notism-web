@@ -5,7 +5,6 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { ROUTE_COMPONENT_MAP } from '@/app/routing/route-preload-map';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import { Badge } from '@/components/badge';
@@ -40,14 +39,6 @@ function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDes
     const handleThemeToggle = useCallback(() => {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }, [theme, setTheme]);
-
-    // Warms the route's chunk on hover/focus so the click that follows resolves instantly.
-    const handleNavItemPreload = useCallback(
-        (path: string) => () => {
-            ROUTE_COMPONENT_MAP[path]?.preload();
-        },
-        []
-    );
 
     const navItems = [
         { label: t('nav.dashboard'), path: `/${ROUTES.ADMIN.DASHBOARD}` },
@@ -84,8 +75,6 @@ function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDes
                             key={item.path}
                             to={item.path}
                             end={false}
-                            onMouseEnter={handleNavItemPreload(item.path)}
-                            onFocus={handleNavItemPreload(item.path)}
                             className={({ isActive }) =>
                                 cn(
                                     'rounded-full px-3 py-2 text-sm font-medium transition-colors',
