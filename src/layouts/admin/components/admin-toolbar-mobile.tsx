@@ -16,6 +16,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { ROUTE_COMPONENT_MAP } from '@/app/routing/route-preload-map';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import {
@@ -49,6 +50,14 @@ function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobi
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }, [theme, setTheme]);
 
+    // Warms the route's chunk on hover/focus so the click that follows resolves instantly.
+    const handleNavItemPreload = useCallback(
+        (path: string) => () => {
+            ROUTE_COMPONENT_MAP[path]?.preload();
+        },
+        []
+    );
+
     return (
         <>
             {/* Sticky top strip — live new-order feed status (portal-shell surface, story #274) */}
@@ -62,6 +71,8 @@ function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobi
                 <NavLink
                     to={`/${ROUTES.ADMIN.DASHBOARD}`}
                     aria-label={t('nav.dashboard')}
+                    onMouseEnter={handleNavItemPreload(`/${ROUTES.ADMIN.DASHBOARD}`)}
+                    onFocus={handleNavItemPreload(`/${ROUTES.ADMIN.DASHBOARD}`)}
                     className={({ isActive }) =>
                         cn(
                             'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
@@ -77,6 +88,8 @@ function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobi
                 <NavLink
                     to={`/${ROUTES.ADMIN.ORDERS}`}
                     aria-label={t('nav.orders')}
+                    onMouseEnter={handleNavItemPreload(`/${ROUTES.ADMIN.ORDERS}`)}
+                    onFocus={handleNavItemPreload(`/${ROUTES.ADMIN.ORDERS}`)}
                     className={({ isActive }) =>
                         cn(
                             'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
@@ -92,6 +105,8 @@ function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobi
                 <NavLink
                     to={`/${ROUTES.ADMIN.REFUNDS}`}
                     aria-label={t('nav.refunds')}
+                    onMouseEnter={handleNavItemPreload(`/${ROUTES.ADMIN.REFUNDS}`)}
+                    onFocus={handleNavItemPreload(`/${ROUTES.ADMIN.REFUNDS}`)}
                     className={({ isActive }) =>
                         cn(
                             'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
@@ -107,6 +122,8 @@ function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobi
                 <NavLink
                     to={`/${ROUTES.ADMIN.FOODS}`}
                     aria-label={t('nav.foods')}
+                    onMouseEnter={handleNavItemPreload(`/${ROUTES.ADMIN.FOODS}`)}
+                    onFocus={handleNavItemPreload(`/${ROUTES.ADMIN.FOODS}`)}
                     className={({ isActive }) =>
                         cn(
                             'flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-md px-1 transition-colors',
