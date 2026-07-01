@@ -1,18 +1,20 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import Orders from '../orders';
 
+import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
 import { PAGE_SIZE } from '@/app/constants';
 import i18n from '@/app/i18n/i18n';
-import { renderWithProviders } from '@/test/utils';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { findByI18nText, getAllByI18nText, getByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
-const ORDERS_URL = 'http://localhost:5000/api/orders';
+const ORDERS_URL = buildUrl(ORDER_ENDPOINTS.LIST);
 
 // react-intersection-observer never reports inView in jsdom, so drive the
 // sentinel via a controllable flag. Default is true (simulates the sentinel
@@ -58,8 +60,6 @@ const makeOrder = (n: number) => ({
 });
 
 const makePage = (start: number, count: number) => Array.from({ length: count }, (_, i) => makeOrder(start + i));
-
-const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
@@ -131,7 +131,7 @@ describe('Orders — incremental loading', () => {
 
         renderWithProviders(<Orders />);
 
-        expect(await screen.findByText(t('orders.endOfList'))).toBeInTheDocument();
+        expect(await findByI18nText('orders.endOfList')).toBeInTheDocument();
         // One page covers everything: no spurious second request.
         expect(requestCount).toBe(1);
     });
@@ -141,7 +141,7 @@ describe('Orders — incremental loading', () => {
 
         renderWithProviders(<Orders />);
 
-        expect(await screen.findByText(t('orders.empty.title'))).toBeInTheDocument();
+        expect(await findByI18nText('orders.empty.title')).toBeInTheDocument();
     });
 
     it('shows a refund-status badge on rows that have a refund and nothing on rows without', async () => {
@@ -172,9 +172,9 @@ describe('Orders — incremental loading', () => {
         renderWithProviders(<Orders />);
 
         await screen.findByText('ORD-0000');
-        expect(screen.getByText(t('order.refund.statuses.pending'))).toBeInTheDocument();
+        expect(getByI18nText('order.refund.statuses.pending')).toBeInTheDocument();
         // Only one refund badge across the whole list (the second order has none).
-        expect(screen.getAllByText(t('order.refund.statuses.pending'))).toHaveLength(1);
+        expect(getAllByI18nText('order.refund.statuses.pending')).toHaveLength(1);
     });
 
     it('shows an error with retry when the next batch fails, and retry loads it', async () => {
@@ -206,13 +206,13 @@ describe('Orders — incremental loading', () => {
         expect(firstBatchServed).toBe(true);
 
         // Second batch fails -> inline error with retry, first batch still visible.
-        expect(await screen.findByText(t('orders.loadMoreFailed'))).toBeInTheDocument();
+        expect(await findByI18nText('orders.loadMoreFailed')).toBeInTheDocument();
         expect(screen.getByText('ORD-0000')).toBeInTheDocument();
 
         failNextBatch = false;
         await userEvent.click(screen.getByRole('button', { name: t('orders.retry') }));
 
         expect(await screen.findByText(`ORD-${String(PAGE_SIZE).padStart(4, '0')}`)).toBeInTheDocument();
-        await waitFor(() => expect(screen.queryByText(t('orders.loadMoreFailed'))).not.toBeInTheDocument());
+        await waitFor(() => expect(queryByI18nText('orders.loadMoreFailed')).not.toBeInTheDocument());
     });
 });

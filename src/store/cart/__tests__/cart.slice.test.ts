@@ -1,5 +1,4 @@
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { resetStore } from '../../root.actions';
@@ -7,10 +6,13 @@ import { setUser } from '../../user/user.slice';
 import { selectCartItems, selectSelectedCartTotalPrice } from '../cart.selectors';
 import { loadCart, updateItemQuantity } from '../cart.thunks';
 
+import { CART_ENDPOINTS } from '@/apis/cart/cart.constant';
+import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
+import { server } from '@/test/server';
 
-const CART_URL = 'http://localhost:5000/api/cart';
-const ITEM_URL = (id: string) => `${CART_URL}/items/${id}`;
+const CART_URL = buildUrl(CART_ENDPOINTS.BASE);
+const ITEM_URL = (id: string) => buildUrl(CART_ENDPOINTS.ITEM(id));
 
 const makeCartItem = (overrides?: Partial<Record<string, unknown>>) => ({
     id: 'item-1',
@@ -27,8 +29,6 @@ const makeCartItem = (overrides?: Partial<Record<string, unknown>>) => ({
     totalSurcharge: 0,
     ...overrides,
 });
-
-const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());

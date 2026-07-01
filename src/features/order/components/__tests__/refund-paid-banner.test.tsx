@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import RefundPaidBanner, { type RefundPaidBannerData } from '../refund-paid-banner';
 
 import i18n from '@/app/i18n/i18n';
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
@@ -24,7 +24,7 @@ describe('RefundPaidBanner', () => {
     it('renders the refund-sent title and the order reference', () => {
         renderBanner();
 
-        expect(screen.getByText(t('order.refund.paidBanner.title'))).toBeInTheDocument();
+        expect(getByI18nText('order.refund.paidBanner.title')).toBeInTheDocument();
         expect(screen.getByText(new RegExp(REFUND.orderRef))).toBeInTheDocument();
     });
 

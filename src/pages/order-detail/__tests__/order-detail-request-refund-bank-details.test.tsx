@@ -1,12 +1,15 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import OrderDetail from '../order-detail';
 
+import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
+import { USER_ENDPOINTS } from '@/apis/user/user.constant';
 import i18n from '@/app/i18n/i18n';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
@@ -73,13 +76,11 @@ const BANK_ACCOUNT = {
     accountHolderName: 'Test Customer',
 };
 
-const ORDER_URL = 'http://localhost:5000/api/orders/test-order-id';
-const BANK_ACCOUNT_URL = 'http://localhost:5000/api/users/bank-account';
-const REQUEST_REFUND_URL = 'http://localhost:5000/api/orders/test-order-id/refund';
+const ORDER_URL = buildUrl(ORDER_ENDPOINTS.DETAIL('test-order-id'));
+const BANK_ACCOUNT_URL = buildUrl(USER_ENDPOINTS.BANK_ACCOUNT);
+const REQUEST_REFUND_URL = buildUrl(ORDER_ENDPOINTS.REFUND('test-order-id'));
 
 let requestRefundCalled = false;
-
-const server = setupServer();
 
 beforeAll(() => server.listen());
 afterEach(() => {

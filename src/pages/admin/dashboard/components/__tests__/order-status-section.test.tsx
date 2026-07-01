@@ -1,19 +1,18 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, delay } from 'msw';
-import { setupServer } from 'msw/node';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import OrderStatusSection from '../order-status-section';
 
 import type { GetDashboardOrderStatusSummaryResponseModel } from '@/apis';
-import { renderWithProviders } from '@/test/utils';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
-const API_BASE = 'http://localhost:5000/api';
-const SUMMARY_URL = `${API_BASE}/admin/dashboard/order-status-summary`;
-
-const server = setupServer();
+const SUMMARY_URL = buildUrl(ADMIN_ENDPOINTS.DASHBOARD_ORDER_STATUS_SUMMARY);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => server.resetHandlers());
@@ -117,7 +116,7 @@ describe('OrderStatusSection', () => {
         const { container } = renderSection();
 
         await waitFor(() => {
-            expect(screen.getByText("Couldn't load order status counts")).toBeInTheDocument();
+            expect(getByI18nText('admin.dashboard.orderStatus.errorTitle')).toBeInTheDocument();
         });
 
         const retryButton = screen.getByRole('button', { name: 'Retry' });

@@ -1,13 +1,15 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Login } from '..';
 
+import { AUTH_ENDPOINTS } from '@/apis/auth/auth.constant';
 import { ROUTES } from '@/app/constants';
 import { UserRoleEnum } from '@/app/enums';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
 
 const navigateMock = vi.fn();
@@ -32,7 +34,7 @@ vi.mock('@/store/auth', async () => {
     };
 });
 
-const LOGIN_URL = 'http://localhost:5000/api/auth/login';
+const LOGIN_URL = buildUrl(AUTH_ENDPOINTS.LOGIN);
 
 const buildAuthResponse = (role: UserRoleEnum) => ({
     token: 'token-123',
@@ -45,8 +47,6 @@ const buildAuthResponse = (role: UserRoleEnum) => ({
         role,
     },
 });
-
-const server = setupServer();
 
 async function submitLogin() {
     await userEvent.type(screen.getByLabelText(/email/i), 'mai@example.com');

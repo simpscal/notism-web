@@ -1,17 +1,19 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import AdminRefundsTable from '../admin-refunds-table';
 
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 import i18n from '@/app/i18n/i18n';
-import { renderWithProviders } from '@/test/utils';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { findByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
-const REFUNDS_URL = 'http://localhost:5000/api/admin/refunds';
+const REFUNDS_URL = buildUrl(ADMIN_ENDPOINTS.REFUNDS);
 
 const makeRefund = (n: number, status: string, overrides: Record<string, unknown> = {}) => ({
     id: `refund-${n}`,
@@ -24,8 +26,6 @@ const makeRefund = (n: number, status: string, overrides: Record<string, unknown
     paidAt: null,
     ...overrides,
 });
-
-const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
@@ -74,7 +74,7 @@ describe('AdminRefundsTable', () => {
 
         renderWithProviders(<AdminRefundsTable status='paid' onRefundClick={vi.fn()} />);
 
-        expect(await screen.findByText(t('admin.refunds.empty'))).toBeInTheDocument();
+        expect(await findByI18nText('admin.refunds.empty')).toBeInTheDocument();
     });
 
     it('shows a loading skeleton while refunds load', () => {
@@ -101,13 +101,13 @@ describe('AdminRefundsTable', () => {
 
         renderWithProviders(<AdminRefundsTable onRefundClick={vi.fn()} />);
 
-        expect(await screen.findByText(t('admin.refunds.failedToLoad'))).toBeInTheDocument();
+        expect(await findByI18nText('admin.refunds.failedToLoad')).toBeInTheDocument();
 
         shouldFail = false;
         await userEvent.click(screen.getByRole('button', { name: t('common.retry') }));
 
         expect(await screen.findByText('#ORD0001')).toBeInTheDocument();
-        await waitFor(() => expect(screen.queryByText(t('admin.refunds.failedToLoad'))).not.toBeInTheDocument());
+        await waitFor(() => expect(queryByI18nText('admin.refunds.failedToLoad')).not.toBeInTheDocument());
     });
 
     it('emits onRefundClick with the refund id when the view action is pressed', async () => {

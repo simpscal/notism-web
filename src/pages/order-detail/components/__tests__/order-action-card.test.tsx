@@ -7,7 +7,7 @@ import OrderActionCard, { type OrderActionCardProps } from '../order-action-card
 import type { RefundSummaryModel } from '@/apis';
 import i18n from '@/app/i18n/i18n';
 import { DeliveryStatusEnum, PaymentMethodEnum } from '@/features/order';
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
@@ -89,19 +89,19 @@ describe('OrderActionCard — refund region', () => {
         renderCard({ refund: PENDING_REFUND, onConfirmRefund: vi.fn() });
 
         expect(screen.queryByRole('button', { name: t('orderDetail.requestRefund') })).not.toBeInTheDocument();
-        expect(screen.getByText(t('order.refund.statuses.pending'))).toBeInTheDocument();
+        expect(getByI18nText('order.refund.statuses.pending')).toBeInTheDocument();
     });
 
     it('shows a "Refund sent" panel when the refund is paid', () => {
         renderCard({ refund: PAID_REFUND, onConfirmRefund: vi.fn() });
 
-        expect(screen.getByText(t('order.refund.statuses.paid'))).toBeInTheDocument();
+        expect(getByI18nText('order.refund.statuses.paid')).toBeInTheDocument();
     });
 
     it('shows the transfer reference on the paid panel', () => {
         renderCard({ refund: PAID_REFUND, onConfirmRefund: vi.fn() });
 
         expect(screen.getByText(PAID_REFUND.transferReference!)).toBeInTheDocument();
-        expect(screen.getByText(t('orderDetail.refund.transferReference'))).toBeInTheDocument();
+        expect(getByI18nText('orderDetail.refund.transferReference')).toBeInTheDocument();
     });
 });

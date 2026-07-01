@@ -1,18 +1,20 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SettingsPayment from '../settings-payment';
 
+import { USER_ENDPOINTS } from '@/apis/user/user.constant';
 import { UserRoleEnum } from '@/app/enums';
+import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user';
-import { renderWithProviders } from '@/test/utils';
+import { server } from '@/test/server';
+import { getByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';
 
-const BANK_ACCOUNT_URL = '*/users/bank-account';
+const BANK_ACCOUNT_URL = buildUrl(USER_ENDPOINTS.BANK_ACCOUNT);
 
 const toastSuccessMock = vi.fn();
 
@@ -21,8 +23,6 @@ vi.mock('sonner', () => ({
         success: (...args: unknown[]) => toastSuccessMock(...args),
     },
 }));
-
-const server = setupServer();
 
 beforeAll(() => server.listen());
 beforeEach(() => {
@@ -76,7 +76,7 @@ describe('SettingsPayment (customer variant)', () => {
         renderWithProviders(<SettingsPayment />);
 
         await waitFor(() => {
-            expect(screen.getByText('Failed to load bank details')).toBeInTheDocument();
+            expect(getByI18nText('customer.payment.loadErrorTitle')).toBeInTheDocument();
         });
 
         await userEvent.click(screen.getByRole('button', { name: /retry/i }));
@@ -85,7 +85,7 @@ describe('SettingsPayment (customer variant)', () => {
             expect(screen.getByLabelText('Bank name')).toBeInTheDocument();
         });
 
-        expect(screen.queryByText('Failed to load bank details')).not.toBeInTheDocument();
+        expect(queryByI18nText('customer.payment.loadErrorTitle')).not.toBeInTheDocument();
     });
 
     it('renders an empty form when no bank details exist yet', async () => {
@@ -142,7 +142,7 @@ describe('SettingsPayment (customer variant)', () => {
         await userEvent.clear(bankNameInput);
 
         await waitFor(() => {
-            expect(screen.getByText('Bank name is required')).toBeInTheDocument();
+            expect(getByI18nText('customer.payment.bankNameRequired')).toBeInTheDocument();
         });
 
         expect(screen.getByRole('button', { name: /save changes/i })).toBeDisabled();

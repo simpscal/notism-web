@@ -11,6 +11,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@/test': path.resolve(__dirname, './test'),
+            '@/mocks': path.resolve(__dirname, './mocks'),
             '@': path.resolve(__dirname, './src'),
             '@/components': path.resolve(__dirname, './src/components'),
             '@/utils': path.resolve(__dirname, './src/app/utils'),

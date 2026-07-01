@@ -6,7 +6,7 @@ import AdminToolbarMobile from '../admin-toolbar-mobile';
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { NotificationStatus } from '@/core/hooks';
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const USER: UserProfileModel = {
     id: '1',
@@ -63,12 +63,12 @@ describe('AdminToolbarMobile', () => {
     it('renders the live new-order feed pill in the toolbar', () => {
         renderToolbar({ liveFeedStatus: NotificationStatus.Live });
 
-        expect(screen.getByText('Live orders on')).toBeInTheDocument();
+        expect(getByI18nText('admin.newOrder.feed.live')).toBeInTheDocument();
     });
 
     it('reflects the disconnected live-feed status in the pill', () => {
         renderToolbar({ liveFeedStatus: NotificationStatus.Disconnected });
 
-        expect(screen.getByText('Live orders disconnected')).toBeInTheDocument();
+        expect(getByI18nText('admin.newOrder.feed.disconnected')).toBeInTheDocument();
     });
 });

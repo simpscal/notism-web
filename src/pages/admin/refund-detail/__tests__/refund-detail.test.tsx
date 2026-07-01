@@ -1,21 +1,22 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 import type { SharedNotification } from '@/app/models';
 import { RefundStatusEnum } from '@/features/order';
-import { renderWithProviders } from '@/test/utils';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { findByI18nText, getByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';
 
-const API_BASE = 'http://localhost:5000/api';
 const REFUND_ID = 'rf-123';
-const DETAIL_URL = `${API_BASE}/admin/refunds/${REFUND_ID}`;
-const APPROVE_URL = `${API_BASE}/admin/refunds/${REFUND_ID}/approve`;
-const RETRY_URL = `${API_BASE}/admin/refunds/${REFUND_ID}/retry`;
+const DETAIL_URL = buildUrl(ADMIN_ENDPOINTS.REFUND_DETAIL(REFUND_ID));
+const APPROVE_URL = buildUrl(ADMIN_ENDPOINTS.REFUND_APPROVE(REFUND_ID));
+const RETRY_URL = buildUrl(ADMIN_ENDPOINTS.REFUND_RETRY(REFUND_ID));
 
 // Mock useParams to provide the id route param the page reads.
 vi.mock('react-router-dom', async importOriginal => {
@@ -39,8 +40,6 @@ vi.mock('@/core/hooks/use-notifications.hook', async importOriginal => {
         },
     };
 });
-
-const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => {
@@ -85,7 +84,7 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Failed to load refund details')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.failedToLoad')).toBeInTheDocument();
     });
 
     it('renders the summary and the approve action for a pending refund', async () => {
@@ -136,7 +135,7 @@ describe('AdminRefundDetail page', () => {
         await user.click(within(dialog).getByRole('button', { name: 'Approve' }));
 
         await waitFor(() => expect(approveSpy).toHaveBeenCalledTimes(1));
-        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'Approve refund' })).not.toBeInTheDocument();
     });
 
@@ -177,7 +176,7 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Transfer Record')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.transferRecordTitle')).toBeInTheDocument();
         expect(screen.getByText('VCB-TRF-20260613-0099431')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'Approve refund' })).not.toBeInTheDocument();
     });
@@ -192,7 +191,7 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Transfer Failed')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.failureTitle')).toBeInTheDocument();
         expect(screen.getByText(reason)).toBeInTheDocument();
     });
 
@@ -231,7 +230,7 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        await screen.findByText('Transfer in progress');
+        await findByI18nText('admin.refundDetail.processingTitle');
         expect(screen.queryByRole('button', { name: 'Retry refund' })).not.toBeInTheDocument();
     });
 
@@ -266,7 +265,7 @@ describe('AdminRefundDetail page', () => {
         await user.click(within(dialog).getByRole('button', { name: 'Retry' }));
 
         await waitFor(() => expect(retrySpy).toHaveBeenCalledTimes(1));
-        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'Retry refund' })).not.toBeInTheDocument();
     });
 
@@ -286,7 +285,7 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Scan to pay refund')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.qrTitle')).toBeInTheDocument();
         expect(screen.getByRole('img')).toBeInTheDocument();
     });
 
@@ -306,8 +305,8 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Scan to pay refund')).toBeInTheDocument();
-        expect(screen.getByText('No payout account on file')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.qrTitle')).toBeInTheDocument();
+        expect(getByI18nText('admin.refundDetail.qrMissingTitle')).toBeInTheDocument();
         expect(screen.queryByRole('img')).not.toBeInTheDocument();
     });
 
@@ -317,7 +316,7 @@ describe('AdminRefundDetail page', () => {
         renderPage();
 
         await screen.findByRole('button', { name: 'Approve refund' });
-        expect(screen.queryByText('Scan to pay refund')).not.toBeInTheDocument();
+        expect(queryByI18nText('admin.refundDetail.qrTitle')).not.toBeInTheDocument();
     });
 
     it('does not show the VietQR card for a paid refund', async () => {
@@ -335,8 +334,8 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        await screen.findByText('Transfer Record');
-        expect(screen.queryByText('Scan to pay refund')).not.toBeInTheDocument();
+        await findByI18nText('admin.refundDetail.transferRecordTitle');
+        expect(queryByI18nText('admin.refundDetail.qrTitle')).not.toBeInTheDocument();
     });
 
     it('does not show the VietQR card for a failed refund', async () => {
@@ -348,8 +347,8 @@ describe('AdminRefundDetail page', () => {
 
         renderPage();
 
-        await screen.findByText('Transfer Failed');
-        expect(screen.queryByText('Scan to pay refund')).not.toBeInTheDocument();
+        await findByI18nText('admin.refundDetail.failureTitle');
+        expect(queryByI18nText('admin.refundDetail.qrTitle')).not.toBeInTheDocument();
     });
 
     it('does not retry when the confirm dialog is cancelled', async () => {
@@ -405,7 +404,7 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument();
 
         paid = true;
         await pushNotification({
@@ -415,7 +414,7 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
             timestamp: '2026-06-13T14:27:00Z',
         });
 
-        expect(await screen.findByText('Transfer Record')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.transferRecordTitle')).toBeInTheDocument();
         expect(screen.getByText('VCB-TRF-20260613-0099431')).toBeInTheDocument();
     });
 
@@ -434,7 +433,7 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument();
 
         failed = true;
         await pushNotification({
@@ -444,7 +443,7 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
             timestamp: '2026-06-13T14:30:00Z',
         });
 
-        expect(await screen.findByText('Transfer Failed')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.failureTitle')).toBeInTheDocument();
         expect(screen.getByText(reason)).toBeInTheDocument();
     });
 
@@ -467,7 +466,7 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument();
 
         refetched = true;
         await pushNotification({
@@ -478,8 +477,8 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
         });
 
         // No refetch should be triggered, so the detail stays processing.
-        await waitFor(() => expect(screen.getByText('Transfer in progress')).toBeInTheDocument());
-        expect(screen.queryByText('Transfer Record')).not.toBeInTheDocument();
+        await waitFor(() => expect(getByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument());
+        expect(queryByI18nText('admin.refundDetail.transferRecordTitle')).not.toBeInTheDocument();
     });
 
     it('ignores a non-matching notification type', async () => {
@@ -501,7 +500,7 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
 
         renderPage();
 
-        expect(await screen.findByText('Transfer in progress')).toBeInTheDocument();
+        expect(await findByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument();
 
         refetched = true;
         await pushNotification({
@@ -512,7 +511,7 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
             timestamp: '2026-06-13T14:27:00Z',
         });
 
-        await waitFor(() => expect(screen.getByText('Transfer in progress')).toBeInTheDocument());
-        expect(screen.queryByText('Transfer Record')).not.toBeInTheDocument();
+        await waitFor(() => expect(getByI18nText('admin.refundDetail.processingTitle')).toBeInTheDocument());
+        expect(queryByI18nText('admin.refundDetail.transferRecordTitle')).not.toBeInTheDocument();
     });
 });

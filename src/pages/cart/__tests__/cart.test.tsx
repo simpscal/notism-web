@@ -1,22 +1,24 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Cart from '../cart';
 
+import { CART_ENDPOINTS } from '@/apis/cart/cart.constant';
 import i18n from '@/app/i18n/i18n';
+import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart/cart.thunks';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user/user.slice';
+import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
-const CART_URL = 'http://localhost:5000/api/cart';
-const ITEM_URL = (id: string) => `${CART_URL}/items/${id}`;
+const CART_URL = buildUrl(CART_ENDPOINTS.BASE);
+const ITEM_URL = (id: string) => buildUrl(CART_ENDPOINTS.ITEM(id));
 
 const toastError = vi.fn();
 vi.mock('sonner', () => ({
@@ -41,8 +43,6 @@ const makeCartItem = (overrides?: Partial<Record<string, unknown>>) => ({
     totalSurcharge: 0,
     ...overrides,
 });
-
-const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {

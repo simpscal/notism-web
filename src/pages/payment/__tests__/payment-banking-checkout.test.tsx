@@ -1,13 +1,15 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { delay, http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Payment from '../payment';
 
+import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
 import i18n from '@/app/i18n/i18n';
-import { renderWithProviders } from '@/test/utils';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { getByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';
 
 vi.mock('@/features/order', async importOriginal => {
     const actual = await importOriginal<typeof import('@/features/order')>();
@@ -44,8 +46,8 @@ const mockCartItem = {
     totalSurcharge: 0,
 };
 
-const CREATE_ORDER_URL = '*/orders';
-const BANKING_CHECKOUT_URL = '*/orders/banking/checkout';
+const CREATE_ORDER_URL = buildUrl(ORDER_ENDPOINTS.BASE);
+const BANKING_CHECKOUT_URL = buildUrl(ORDER_ENDPOINTS.BANKING_CHECKOUT);
 
 const STORE_BANK_ACCOUNT = {
     bankCode: 'VCB',
@@ -53,16 +55,19 @@ const STORE_BANK_ACCOUNT = {
     accountHolderName: 'Store Account',
 };
 
-const server = setupServer(
-    http.post(CREATE_ORDER_URL, () => HttpResponse.json({ slugId: 'ORD-001' }, { status: 201 })),
-    http.post(BANKING_CHECKOUT_URL, () =>
-        HttpResponse.json({ checkoutId: '550e8400-e29b-41d4-a716-446655440000', bankAccount: STORE_BANK_ACCOUNT })
-    )
-);
-
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+// Default success handlers; individual tests layer overrides on top via server.use().
+beforeEach(() => {
+    server.use(
+        http.post(CREATE_ORDER_URL, () => HttpResponse.json({ slugId: 'ORD-001' }, { status: 201 })),
+        http.post(BANKING_CHECKOUT_URL, () =>
+            HttpResponse.json({ checkoutId: '550e8400-e29b-41d4-a716-446655440000', bankAccount: STORE_BANK_ACCOUNT })
+        )
+    );
+});
 
 const t = (key: string) => i18n.t(key);
 
@@ -77,7 +82,7 @@ describe('Payment — Banking Checkout Transition', () => {
         await userEvent.click(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.bankTransfer.title'))).toBeInTheDocument();
+            expect(getByI18nText('payment.bankTransfer.title')).toBeInTheDocument();
         });
 
         expect(screen.getByText(STORE_BANK_ACCOUNT.accountNumber)).toBeInTheDocument();
@@ -108,11 +113,11 @@ describe('Payment — Banking Checkout Transition', () => {
         await userEvent.click(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.bankTransfer.notAvailableTitle'))).toBeInTheDocument();
+            expect(getByI18nText('payment.bankTransfer.notAvailableTitle')).toBeInTheDocument();
         });
 
-        expect(screen.getByText(t('payment.bankTransfer.notAvailableDescription'))).toBeInTheDocument();
-        expect(screen.queryByText(t('payment.bankTransfer.title'))).not.toBeInTheDocument();
+        expect(getByI18nText('payment.bankTransfer.notAvailableDescription')).toBeInTheDocument();
+        expect(queryByI18nText('payment.bankTransfer.title')).not.toBeInTheDocument();
     });
 
     it('shows a spinner while the checkout request is in flight', async () => {
@@ -135,8 +140,8 @@ describe('Payment — Banking Checkout Transition', () => {
             expect(container.querySelector('.animate-spin')).toBeTruthy();
         });
 
-        expect(screen.queryByText(t('payment.bankTransfer.title'))).not.toBeInTheDocument();
-        expect(screen.queryByText(t('payment.bankTransfer.notAvailableTitle'))).not.toBeInTheDocument();
+        expect(queryByI18nText('payment.bankTransfer.title')).not.toBeInTheDocument();
+        expect(queryByI18nText('payment.bankTransfer.notAvailableTitle')).not.toBeInTheDocument();
     });
 
     it('shows the error state when the checkout request fails', async () => {
@@ -153,10 +158,10 @@ describe('Payment — Banking Checkout Transition', () => {
         await userEvent.click(screen.getByRole('radio', { name: new RegExp(t('payment.banking'), 'i') }));
 
         await waitFor(() => {
-            expect(screen.getByText(t('payment.bankTransfer.loadErrorTitle'))).toBeInTheDocument();
+            expect(getByI18nText('payment.bankTransfer.loadErrorTitle')).toBeInTheDocument();
         });
 
-        expect(screen.queryByText(t('payment.bankTransfer.title'))).not.toBeInTheDocument();
+        expect(queryByI18nText('payment.bankTransfer.title')).not.toBeInTheDocument();
     });
 
     it('COD payment calls createOrder immediately without transitioning to banking checkout', async () => {
@@ -177,6 +182,6 @@ describe('Payment — Banking Checkout Transition', () => {
             expect(orderCreated).toBe(true);
         });
 
-        expect(screen.queryByText(t('payment.awaitingTransfer'))).not.toBeInTheDocument();
+        expect(queryByI18nText('payment.awaitingTransfer')).not.toBeInTheDocument();
     });
 });

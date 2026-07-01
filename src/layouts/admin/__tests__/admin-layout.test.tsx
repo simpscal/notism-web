@@ -6,7 +6,7 @@ import AdminLayout from '../admin-layout';
 
 import { ROUTES } from '@/app/constants';
 import { NotificationStatus } from '@/core/hooks';
-import { renderWithProviders } from '@/test/utils';
+import { getAllByI18nText, renderWithProviders } from '@/test/utils';
 
 const useNewOrderAlertsMock = vi.fn();
 
@@ -45,14 +45,14 @@ describe('AdminLayout', () => {
         renderLayout();
 
         // Desktop + mobile toolbars both render the pill.
-        expect(screen.getAllByText('Live orders on').length).toBeGreaterThanOrEqual(1);
+        expect(getAllByI18nText('admin.newOrder.feed.live').length).toBeGreaterThanOrEqual(1);
     });
 
     it('keeps the live-feed pill present on a non-dashboard admin route', () => {
         renderLayout({ initialPath: `/${ROUTES.ADMIN.ORDERS}` });
 
         expect(screen.getByText('orders page body')).toBeInTheDocument();
-        expect(screen.getAllByText('Live orders on').length).toBeGreaterThanOrEqual(1);
+        expect(getAllByI18nText('admin.newOrder.feed.live').length).toBeGreaterThanOrEqual(1);
     });
 
     it('reflects the live-feed status from the subscription in the pill', () => {
@@ -60,6 +60,6 @@ describe('AdminLayout', () => {
 
         renderLayout();
 
-        expect(screen.getAllByText('Connecting to live orders…').length).toBeGreaterThanOrEqual(1);
+        expect(getAllByI18nText('admin.newOrder.feed.connecting').length).toBeGreaterThanOrEqual(1);
     });
 });

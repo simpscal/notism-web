@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, RenderOptions } from '@testing-library/react';
+import { render, RenderOptions, screen } from '@testing-library/react';
 import { ReactElement, ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
@@ -8,6 +8,27 @@ import { MemoryRouter } from 'react-router-dom';
 import i18n from '@/app/i18n/i18n';
 import { ThemeProvider } from '@/core/contexts/theme.context';
 import { store } from '@/store';
+
+type I18nTextOptions = Record<string, unknown>;
+
+// Resolves the translation key through the live i18n instance before delegating to
+// Testing Library's *ByText queries, so assertions stay correct under every locale
+// instead of hardcoding the English copy.
+function getByI18nText(key: string, opts?: I18nTextOptions) {
+    return screen.getByText(i18n.t(key, opts));
+}
+
+function getAllByI18nText(key: string, opts?: I18nTextOptions) {
+    return screen.getAllByText(i18n.t(key, opts));
+}
+
+function queryByI18nText(key: string, opts?: I18nTextOptions) {
+    return screen.queryByText(i18n.t(key, opts));
+}
+
+function findByI18nText(key: string, opts?: I18nTextOptions) {
+    return screen.findByText(i18n.t(key, opts));
+}
 
 function createTestQueryClient() {
     return new QueryClient({
@@ -54,4 +75,4 @@ function renderWithProviders(
     });
 }
 
-export { createTestQueryClient, renderWithProviders };
+export { createTestQueryClient, renderWithProviders, getByI18nText, getAllByI18nText, queryByI18nText, findByI18nText };

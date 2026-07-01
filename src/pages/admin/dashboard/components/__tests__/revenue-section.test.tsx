@@ -1,18 +1,17 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, delay } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import RevenueSection from '../revenue-section';
 
 import type { GetDashboardRevenueSeriesResponseModel } from '@/apis';
-import { renderWithProviders } from '@/test/utils';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
-const API_BASE = 'http://localhost:5000/api';
-const REVENUE_SERIES_URL = `${API_BASE}/admin/dashboard/revenue-series`;
-
-const server = setupServer();
+const REVENUE_SERIES_URL = buildUrl(ADMIN_ENDPOINTS.DASHBOARD_REVENUE_SERIES);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => server.resetHandlers());
@@ -167,7 +166,7 @@ describe('RevenueSection', () => {
         renderSection();
 
         await waitFor(() => {
-            expect(screen.getByText("Couldn't load revenue over time")).toBeInTheDocument();
+            expect(getByI18nText('admin.dashboard.revenue.errorTitle')).toBeInTheDocument();
         });
 
         // No chart is shown while the section is in its error state.
@@ -177,7 +176,7 @@ describe('RevenueSection', () => {
         await userEvent.click(retryButton);
 
         await waitFor(() => {
-            expect(screen.getByText('Revenue over time')).toBeInTheDocument();
+            expect(getByI18nText('admin.dashboard.revenue.heading')).toBeInTheDocument();
         });
 
         await waitFor(() => {

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import PaymentCard from '../payment-card';
 
 import { PaymentStatusEnum } from '@/features/order';
-import { renderWithProviders } from '@/test/utils';
+import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 interface RenderOverrides {
     paymentStatus?: string;
@@ -28,7 +28,7 @@ function renderCard(overrides: RenderOverrides = {}) {
 
 /** The read-only "Current status" badge text (scoped to its row). */
 function currentBadgeText(): string {
-    const label = screen.getByText('Current status');
+    const label = getByI18nText('admin.orders.paymentStatus.currentStatus');
     const row = label.parentElement as HTMLElement;
     const badge = row.querySelector('[data-slot="badge"]') ?? row.lastElementChild;
     return badge?.textContent ?? '';
@@ -67,8 +67,8 @@ describe('PaymentCard', () => {
 
         await pickStatus(user, 'Paid');
 
-        const dialog = await screen.findByRole('dialog');
-        expect(within(dialog).getByText('Change payment status?')).toBeInTheDocument();
+        await screen.findByRole('dialog');
+        expect(getByI18nText('admin.orders.paymentStatus.dialog.title')).toBeInTheDocument();
     });
 
     it('confirms the change: calls onConfirm with the picked status', async () => {
@@ -99,7 +99,7 @@ describe('PaymentCard', () => {
     it('shows the saving label and disables the Select while pending', () => {
         renderCard({ paymentStatus: PaymentStatusEnum.Unpaid, isPending: true });
 
-        expect(screen.getByText('Saving…')).toBeInTheDocument();
+        expect(getByI18nText('admin.orders.paymentStatus.saving')).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /update payment status/i })).toBeDisabled();
     });
 

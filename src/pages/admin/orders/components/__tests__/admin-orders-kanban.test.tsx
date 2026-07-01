@@ -1,12 +1,14 @@
 import { screen, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import AdminOrdersKanban from '../admin-orders-kanban';
 
 import { ADMIN_QUERY_KEYS, type AdminOrderModel, type AdminOrdersModel } from '@/apis';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
 import { DeliveryStatusEnum, PaymentStatusEnum } from '@/features/order';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
 import { createTestQueryClient, renderWithProviders } from '@/test/utils';
 
 // react-intersection-observer reports inView in jsdom; mock to prevent
@@ -15,11 +17,8 @@ vi.mock('react-intersection-observer', () => ({
     useInView: () => ({ ref: vi.fn(), inView: false }),
 }));
 
-const API_BASE = 'http://localhost:5000/api';
-const KANBAN_URL = `${API_BASE}/admin/orders/kanban`;
-const DELIVERY_STATUS_URL = `${API_BASE}/admin/orders/:id/delivery-status`;
-
-const server = setupServer();
+const KANBAN_URL = buildUrl(ADMIN_ENDPOINTS.ORDERS_KANBAN);
+const DELIVERY_STATUS_URL = buildUrl(ADMIN_ENDPOINTS.ORDER_DELIVERY_STATUS(':id'));
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => server.resetHandlers());

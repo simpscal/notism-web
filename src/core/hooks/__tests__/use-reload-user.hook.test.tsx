@@ -1,18 +1,20 @@
 import { waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { useReloadUser } from '../use-reload-user.hook';
 
+import { AUTH_ENDPOINTS } from '@/apis/auth/auth.constant';
 import { tokenManagerUtils } from '@/app/utils';
+import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
 import { setToken } from '@/store/auth';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user/user.slice';
+import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
 
-const RELOAD_URL = 'http://localhost:5000/api/auth/reload';
+const RELOAD_URL = buildUrl(AUTH_ENDPOINTS.RELOAD);
 
 const FULL_PROFILE = {
     id: '1',
@@ -35,8 +37,6 @@ const LOGIN_USER = {
     avatarUrl: null,
     role: 'User',
 };
-
-const server = setupServer();
 
 describe('useReloadUser', () => {
     beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));

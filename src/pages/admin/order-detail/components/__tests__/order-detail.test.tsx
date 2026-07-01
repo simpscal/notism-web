@@ -1,21 +1,21 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import AdminOrderDetail from '../../order-detail';
 
 import type { AdminOrderResponseModel } from '@/apis';
-import { createTestQueryClient, renderWithProviders } from '@/test/utils';
-
-const API_BASE = 'http://localhost:5000/api';
+import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { createTestQueryClient, getByI18nText, renderWithProviders } from '@/test/utils';
 
 const ORDER_ID = 'order-1';
 const SLUG_ID = 'A1B2C3';
 
-const ORDER_DETAIL_URL = `${API_BASE}/admin/orders/${SLUG_ID}`;
-const PAYMENT_STATUS_URL = `${API_BASE}/admin/orders/:id/payment-status`;
+const ORDER_DETAIL_URL = buildUrl(ADMIN_ENDPOINTS.ORDER_DETAIL(SLUG_ID));
+const PAYMENT_STATUS_URL = buildUrl(ADMIN_ENDPOINTS.ORDER_PAYMENT_STATUS(':id'));
 
 // Mock useParams to provide the slug route param the page reads.
 vi.mock('react-router-dom', async importOriginal => {
@@ -65,8 +65,6 @@ function buildPatchResponse(paymentStatus: string): AdminOrderResponseModel {
     };
 }
 
-const server = setupServer();
-
 beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -78,7 +76,7 @@ function renderPage() {
 
 /** The read-only "Current status" badge text (scoped to its row). */
 function currentBadgeText(): string {
-    const label = screen.getByText('Current status');
+    const label = getByI18nText('admin.orders.paymentStatus.currentStatus');
     const row = label.parentElement as HTMLElement;
     const badge = row.querySelector('[data-slot="badge"]') ?? row.lastElementChild;
     return badge?.textContent ?? '';

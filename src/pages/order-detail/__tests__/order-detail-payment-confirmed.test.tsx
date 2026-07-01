@@ -1,14 +1,13 @@
 import { screen, within } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import OrderDetail from '../order-detail';
 
-import i18n from '@/app/i18n/i18n';
-import { renderWithProviders } from '@/test/utils';
-
-const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
+import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
+import { buildUrl } from '@/mocks/utils';
+import { server } from '@/test/server';
+import { findByI18nText, getByI18nText, renderWithProviders } from '@/test/utils';
 
 // Mock SignalR so tests don't attempt real WebSocket connections
 vi.mock('@/features/order', async importOriginal => {
@@ -27,6 +26,8 @@ vi.mock('react-router-dom', async importOriginal => {
         useParams: () => ({ id: 'test-order-id' }),
     };
 });
+
+const ORDER_URL = buildUrl(ORDER_ENDPOINTS.DETAIL('test-order-id'));
 
 const BASE_ORDER = {
     id: 'test-order-id',
@@ -79,17 +80,13 @@ const COD_ORDER = {
     paymentStatus: 'unpaid',
 };
 
-const server = setupServer();
-
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe('OrderDetail — payment confirmed panel', () => {
     it('shows payment confirmed panel for banking order with paid status', async () => {
-        server.use(
-            http.get('http://localhost:5000/api/orders/test-order-id', () => HttpResponse.json(PAID_BANKING_ORDER))
-        );
+        server.use(http.get(ORDER_URL, () => HttpResponse.json(PAID_BANKING_ORDER)));
 
         renderWithProviders(<OrderDetail />);
 
@@ -98,20 +95,18 @@ describe('OrderDetail — payment confirmed panel', () => {
         const confirmedPanel = panels.find(el => el.getAttribute('aria-live') === 'polite');
         expect(confirmedPanel).toBeInTheDocument();
 
-        expect(screen.getByText(t('payment.confirmedPanel.title'))).toBeInTheDocument();
+        expect(getByI18nText('payment.confirmedPanel.title')).toBeInTheDocument();
         // The slug ID badge should appear inside the confirmed panel
         expect(within(confirmedPanel!).getByText('ORD-20260601-7843')).toBeInTheDocument();
     });
 
     it('does not show payment confirmed panel for unpaid banking order', async () => {
-        server.use(
-            http.get('http://localhost:5000/api/orders/test-order-id', () => HttpResponse.json(UNPAID_BANKING_ORDER))
-        );
+        server.use(http.get(ORDER_URL, () => HttpResponse.json(UNPAID_BANKING_ORDER)));
 
         renderWithProviders(<OrderDetail />);
 
         // Wait for the order to load (order items heading should appear)
-        await screen.findByText(t('orderDetail.orderItems'));
+        await findByI18nText('orderDetail.orderItems');
 
         // No element with aria-live="polite" (the confirmed panel marker) should exist
         const statusEls = screen.queryAllByRole('status');
@@ -120,11 +115,11 @@ describe('OrderDetail — payment confirmed panel', () => {
     });
 
     it('does not show payment confirmed panel for COD order', async () => {
-        server.use(http.get('http://localhost:5000/api/orders/test-order-id', () => HttpResponse.json(COD_ORDER)));
+        server.use(http.get(ORDER_URL, () => HttpResponse.json(COD_ORDER)));
 
         renderWithProviders(<OrderDetail />);
 
-        await screen.findByText(t('orderDetail.orderItems'));
+        await findByI18nText('orderDetail.orderItems');
 
         const statusEls = screen.queryAllByRole('status');
         const confirmedPanel = statusEls.find(el => el.getAttribute('aria-live') === 'polite');
@@ -132,9 +127,7 @@ describe('OrderDetail — payment confirmed panel', () => {
     });
 
     it('displays formatted total amount inside the confirmed panel', async () => {
-        server.use(
-            http.get('http://localhost:5000/api/orders/test-order-id', () => HttpResponse.json(PAID_BANKING_ORDER))
-        );
+        server.use(http.get(ORDER_URL, () => HttpResponse.json(PAID_BANKING_ORDER)));
 
         renderWithProviders(<OrderDetail />);
 
