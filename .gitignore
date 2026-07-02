@@ -24,3 +24,6 @@ dist-ssr
 
 public/mockServiceWorker.js
 storybook-static/
+
+# Bundle analysis output (npm run analyze)
+bundle-stats.html

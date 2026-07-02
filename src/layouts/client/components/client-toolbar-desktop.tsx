@@ -5,6 +5,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
+import { useLanguageToggle } from '@/app/i18n/use-language-toggle';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import { Button } from '@/components/button';
@@ -26,9 +27,10 @@ interface ClientToolbarDesktopProps {
 }
 
 function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const cartItemCount = useAppSelector(selectCartTotalItems);
     const { theme, setTheme } = useTheme();
+    const { currentLanguage, toggleLanguage } = useLanguageToggle();
 
     const displayName = user ? getDisplayName(user) : null;
     const initials = user ? getInitials(user) : 'U';
@@ -39,12 +41,7 @@ function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }, [theme, setTheme]);
 
-    const handleLangToggle = useCallback(() => {
-        const next = i18n.language === 'en' ? 'vi' : 'en';
-        i18n.changeLanguage(next);
-    }, [i18n]);
-
-    const langLabel = i18n.language === 'en' ? 'EN' : 'VI';
+    const langLabel = currentLanguage === 'en' ? 'EN' : 'VI';
 
     const desktopNavItems = useMemo(
         () => [
@@ -107,7 +104,7 @@ function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
                     {/* Language toggle */}
                     <button
                         aria-label={`Language: ${langLabel}`}
-                        onClick={handleLangToggle}
+                        onClick={toggleLanguage}
                         className='flex h-9 items-center gap-1.5 rounded-full px-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors'
                     >
                         <Globe className='h-4 w-4' />
