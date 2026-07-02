@@ -5,8 +5,8 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import './app/assets/styles/index.css';
 import { BrowserRouter } from 'react-router-dom';
-import './app/i18n/i18n';
 
+import { i18nReady } from './app/i18n/i18n';
 import App from './app.tsx';
 import { store } from './store';
 
@@ -34,7 +34,7 @@ const queryClient = new QueryClient({
     },
 });
 
-enableMocking().then(() => {
+Promise.all([enableMocking(), i18nReady]).then(() => {
     createRoot(document.getElementById('root')!).render(
         <StrictMode>
             <Provider store={store}>
