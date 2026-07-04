@@ -14,7 +14,7 @@ const meta = {
     argTypes: {
         variant: {
             control: 'select',
-            options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+            options: ['default', 'destructive', 'outline', 'secondary', 'selected', 'ghost', 'link'],
         },
         size: {
             control: 'select',
@@ -48,6 +48,7 @@ export const Variants: Story = {
                 <Button variant='destructive'>{t('storybook.button.destructive')}</Button>
                 <Button variant='outline'>{t('storybook.button.outline')}</Button>
                 <Button variant='secondary'>{t('storybook.button.secondary')}</Button>
+                <Button variant='selected'>{t('storybook.button.selected')}</Button>
                 <Button variant='ghost'>{t('storybook.button.ghost')}</Button>
                 <Button variant='link'>{t('storybook.button.link')}</Button>
             </div>

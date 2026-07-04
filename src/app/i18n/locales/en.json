@@ -991,6 +991,7 @@
             "destructive": "Destructive",
             "outline": "Outline",
             "secondary": "Secondary",
+            "selected": "Selected",
             "ghost": "Ghost",
             "link": "Link",
             "extraSmall": "Extra Small",
