@@ -1,0 +1,1021 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import {
+    ArrowLeft,
+    ChefHat,
+    Eye,
+    ImagePlus,
+    LayoutDashboard,
+    LayoutGrid,
+    MoreVertical,
+    Plus,
+    Radio,
+    Receipt,
+    Search,
+    Trash2,
+    UtensilsCrossed,
+} from 'lucide-react';
+import React from 'react';
+
+import { cn } from '@/app/utils/index';
+import { Avatar, AvatarFallback } from '@/components/avatar';
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
+import ErrorState from '@/components/error-state';
+import { Field, FieldLabel } from '@/components/field';
+import { Input } from '@/components/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
+import Spinner from '@/components/spinner';
+import { Switch } from '@/components/switch';
+import {
+    SortableTableHead,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TablePagination,
+    TableRow,
+    useTableSort,
+} from '@/components/table';
+import { Textarea } from '@/components/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
+
+// ---------------------------------------------------------------------------
+// Implementation reference — Sprint 11 (admin menu-management restyle).
+//
+// Restyles the EXISTING admin foods + categories surfaces
+// (src/pages/admin/foods, food-detail, categories, category-detail) to
+// DESIGN_THEME.md. Business functionality is UNCHANGED — same table columns,
+// same debounced search, same one Add action per view, same single-column
+// editor fields + image upload, same delete confirm dialog. Only the visual +
+// UX treatment changes:
+//
+//   • a soft, minimal ELEVATION LADDER: a calm dark FRAME → ONE large-radius
+//     light-gray SHELL → white content panels (hairline + faint shadow) → white
+//     table containers (hairline, little/no shadow); one gentle step per level;
+//   • a REAL floating ROUNDED admin TOOLBAR pinned inside the shell (brand left,
+//     admin nav centre with the active item as a solid BLACK pill + white label,
+//     live-feed + account right) — no order sidebar; the content scrolls beneath
+//     the toolbar, and wide tables scroll horizontally in their own container;
+//   • TWO-TONE discipline: RED is reserved for PRICES only — the single loudest
+//     red per screen. Every structural primary (the one Add / Save per view) is a
+//     BLACK pill, not red; availability reads as a WORD label + status color;
+//   • admin volume stays a TABLE (theme: cards for consumers, tables for admin);
+//     the foods/categories lists are on-theme SORTABLE tables with search and
+//     exactly ONE black primary Add per view; every price is crimson;
+//   • the editor is a SINGLE-COLUMN form (max ~40rem, labels above fields) with
+//     category as FILTER CHIPS, unit as a SEGMENTED CHOICE (selected = black),
+//     the image upload beneath, and one black primary Save;
+//   • the destructive Delete never sits adjacent to the primary — in the editor
+//     it lives in a separate danger area, and it always routes through an
+//     explicit confirm dialog (theme: destructive apart + explicit confirm).
+//
+// The admin toolbar is the real portal chrome (brand + admin nav + live-feed +
+// account); only the menu-management content zone carries this sprint's work.
+//
+// Mock-only fixtures + local state. No api / model / store imports.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Domain shapes (mock only — mirrors the foods/categories table + editor
+// shapes, not the real models).
+// ---------------------------------------------------------------------------
+
+interface FoodRow {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    discountPrice: number | null;
+    category: string;
+    isAvailable: boolean;
+    stockQuantity: number;
+    quantityUnit: string;
+}
+
+interface CategoryRow {
+    id: string;
+    name: string;
+    foodCount: number;
+}
+
+const formatVnd = (amount: number) => `${amount.toLocaleString('vi-VN')} ₫`;
+
+const DESCRIPTION_MAX_LENGTH = 50;
+const truncate = (text: string) =>
+    text.length <= DESCRIPTION_MAX_LENGTH ? text : `${text.slice(0, DESCRIPTION_MAX_LENGTH)}…`;
+
+// ---------------------------------------------------------------------------
+// Fixtures — dish names + đồng prices mirror the app's menu content.
+// ---------------------------------------------------------------------------
+
+const FOODS: FoodRow[] = [
+    {
+        id: 'food-1',
+        name: 'Margherita pizza',
+        description: 'San Marzano tomato, fresh mozzarella, basil on a slow-proved base',
+        price: 145_000,
+        discountPrice: 125_000,
+        category: 'Pizza',
+        isAvailable: true,
+        stockQuantity: 24,
+        quantityUnit: 'g',
+    },
+    {
+        id: 'food-2',
+        name: 'Truffle fries',
+        description: 'Hand-cut fries, black truffle, parmesan, garlic aioli',
+        price: 85_000,
+        discountPrice: null,
+        category: 'Sides',
+        isAvailable: true,
+        stockQuantity: 60,
+        quantityUnit: 'g',
+    },
+    {
+        id: 'food-3',
+        name: 'Iced oat latte',
+        description: 'Double espresso, barista oat milk, over ice',
+        price: 45_000,
+        discountPrice: null,
+        category: 'Drinks',
+        isAvailable: true,
+        stockQuantity: 120,
+        quantityUnit: 'ml',
+    },
+    {
+        id: 'food-4',
+        name: 'Burrata & heirloom tomato',
+        description: 'Creamy burrata, heirloom tomatoes, basil oil, sourdough',
+        price: 165_000,
+        discountPrice: 149_000,
+        category: 'Starters',
+        isAvailable: false,
+        stockQuantity: 0,
+        quantityUnit: 'g',
+    },
+    {
+        id: 'food-5',
+        name: 'Tiramisu',
+        description: 'Mascarpone, espresso-soaked savoiardi, cocoa',
+        price: 75_000,
+        discountPrice: null,
+        category: 'Dessert',
+        isAvailable: true,
+        stockQuantity: 18,
+        quantityUnit: 'g',
+    },
+];
+
+const CATEGORIES: CategoryRow[] = [
+    { id: 'cat-1', name: 'Pizza', foodCount: 8 },
+    { id: 'cat-2', name: 'Starters', foodCount: 6 },
+    { id: 'cat-3', name: 'Sides', foodCount: 5 },
+    { id: 'cat-4', name: 'Drinks', foodCount: 12 },
+    { id: 'cat-5', name: 'Dessert', foodCount: 4 },
+];
+
+const CATEGORY_OPTIONS = ['Pizza', 'Starters', 'Sides', 'Drinks', 'Dessert'];
+const UNIT_OPTIONS = [
+    { value: 'g', label: 'g (gram)' },
+    { value: 'ml', label: 'ml (milliliters)' },
+];
+
+// ---------------------------------------------------------------------------
+// Ambient frame — a calm, minimal dark backdrop carrying only a faint,
+// low-contrast line-art motif. Never holds controls; always sits behind the
+// light shell as the first (softest) step of the elevation ladder.
+// ---------------------------------------------------------------------------
+
+function AmbientLineArt() {
+    return (
+        <svg
+            aria-hidden
+            className='pointer-events-none absolute inset-0 h-full w-full text-white/[0.035]'
+            preserveAspectRatio='xMidYMid slice'
+        >
+            <defs>
+                <pattern id='admin-menu-motif' width='200' height='200' patternUnits='userSpaceOnUse'>
+                    <circle cx='48' cy='48' r='28' fill='none' stroke='currentColor' strokeWidth='1.5' />
+                    <path d='M48 16v64M16 48h64' stroke='currentColor' strokeWidth='1.5' />
+                    <path
+                        d='M150 150c24 0 36-16 36-34M150 150c-22 0-36-14-36-32M150 150v38'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='1.5'
+                    />
+                </pattern>
+            </defs>
+            <rect width='100%' height='100%' fill='url(#admin-menu-motif)' />
+        </svg>
+    );
+}
+
+function AmbientFrame({ children }: { children: React.ReactNode }) {
+    return (
+        <div className='relative h-screen w-full overflow-hidden bg-[#17171b] p-3 lg:p-6'>
+            <AmbientLineArt />
+            {/* Bounded height so the shell can hold a self-scrolling content zone. */}
+            <div className='relative z-10 mx-auto flex h-full w-full max-w-7xl'>{children}</div>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Admin toolbar — the real portal chrome: a large-radius white bar that FLOATS
+// inside the shell with a margin all around, pinned to the top. Brand left,
+// admin nav centre (active = white pill + crimson icon/label), live-feed +
+// account right. No order sidebar. Stays a condensed rounded bar on mobile.
+// ---------------------------------------------------------------------------
+
+const NAV_ITEMS = [
+    { id: 'foods', label: 'Foods', icon: UtensilsCrossed },
+    { id: 'categories', label: 'Categories', icon: LayoutGrid },
+    { id: 'orders', label: 'Orders', icon: Receipt },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+] as const;
+
+type NavId = (typeof NAV_ITEMS)[number]['id'];
+
+function AdminToolbar({ active }: { active: NavId }) {
+    return (
+        <header className='flex items-center gap-2 rounded-[1.25rem] border bg-card px-2.5 py-2 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:gap-3 sm:px-3'>
+            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav pills stay black. */}
+            <div className='flex items-center gap-2 pl-1 pr-1 sm:pr-2'>
+                <span className='flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
+                    <ChefHat className='size-4' aria-hidden />
+                </span>
+                <span className='hidden text-sm font-bold tracking-tight text-primary sm:inline'>Notism Kitchen</span>
+            </div>
+
+            {/* Admin nav — centred; active item is a solid BLACK pill with a white icon + label. */}
+            <nav className='mx-auto flex items-center gap-1'>
+                {NAV_ITEMS.map(item => {
+                    const isActive = item.id === active;
+                    const Icon = item.icon;
+                    return (
+                        <span
+                            key={item.id}
+                            aria-current={isActive ? 'page' : undefined}
+                            className={[
+                                'flex items-center gap-2 rounded-full px-2.5 py-2 text-sm font-medium transition-colors sm:px-3',
+                                isActive
+                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
+                                    : 'text-muted-foreground hover:text-foreground',
+                            ].join(' ')}
+                        >
+                            <Icon className='size-4' aria-hidden />
+                            <span className='hidden lg:inline'>{item.label}</span>
+                        </span>
+                    );
+                })}
+            </nav>
+
+            {/* Right — live feed status + account. */}
+            <div className='flex items-center gap-2 pr-0.5'>
+                <span className='hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground sm:flex'>
+                    <span className='relative flex size-2'>
+                        <span className='absolute inline-flex size-full rounded-full bg-success/70 motion-safe:animate-ping' />
+                        <span className='relative inline-flex size-2 rounded-full bg-success' />
+                    </span>
+                    <Radio className='size-3.5' aria-hidden />
+                    Live feed
+                </span>
+                <Avatar className='size-9 border'>
+                    <AvatarFallback className='bg-secondary text-xs font-semibold text-foreground'>AV</AvatarFallback>
+                </Avatar>
+            </div>
+        </header>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Admin shell — the elevation ladder: dark frame → ONE large-radius light-gray
+// shell → white floating toolbar + content panels. The shell fills the viewport
+// and clips; the toolbar is pinned while the content zone scrolls within.
+// ---------------------------------------------------------------------------
+
+function AdminShell({ children, active = 'foods' }: { children: React.ReactNode; active?: NavId }) {
+    return (
+        <AmbientFrame>
+            <div className='flex min-h-0 w-full flex-col overflow-hidden rounded-[1.5rem] bg-muted shadow-[0_30px_80px_-45px_rgba(0,0,0,0.75)]'>
+                {/* Pinned floating toolbar — margin all around; sides align with the content padding. */}
+                <div className='shrink-0 px-6 pt-4 lg:px-8 lg:pt-6'>
+                    <AdminToolbar active={active} />
+                </div>
+                {/* Content zone — scrolls within the shell; the toolbar stays put. */}
+                <main className='min-h-0 flex-1 overflow-y-auto'>{children}</main>
+            </div>
+        </AmbientFrame>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Surface header — eyebrow micro-label (UPPERCASE) + one display H1 per page +
+// quiet supporting line (theme: typography hierarchy).
+// ---------------------------------------------------------------------------
+
+function SurfaceHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle: string }) {
+    return (
+        <div className='mb-6'>
+            <p className='text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground'>{eyebrow}</p>
+            <h1 className='mt-1 text-2xl font-bold tracking-tight text-foreground'>{title}</h1>
+            <p className='mt-1 text-sm text-muted-foreground'>{subtitle}</p>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Foods table — on-theme admin table. Search (left) + exactly ONE crimson
+// primary Add (right); price columns crimson; availability as a status badge;
+// row actions in a dropdown where Delete is destructive and apart from the
+// primary. Mirrors the existing foods columns + sorting.
+// ---------------------------------------------------------------------------
+
+function FoodsToolbar({ search, onSearch }: { search: string; onSearch: (v: string) => void }) {
+    return (
+        <div className='mb-4 flex flex-wrap items-center justify-between gap-3'>
+            <InputGroup className='max-w-sm flex-1'>
+                <InputGroupInput
+                    type='search'
+                    aria-label='Search foods'
+                    placeholder='Search foods'
+                    value={search}
+                    onChange={e => onSearch(e.target.value)}
+                />
+                <InputGroupAddon>
+                    <Search className='size-4' />
+                </InputGroupAddon>
+            </InputGroup>
+            {/* The single BLACK structural primary for this view (red stays on prices). */}
+            <Button className='bg-selected text-selected-foreground hover:bg-selected/90'>
+                <Plus />
+                Add food
+            </Button>
+        </div>
+    );
+}
+
+function FoodRowActions() {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant='ghost' size='icon-sm'>
+                    <MoreVertical className='size-4' />
+                    <span className='sr-only'>Open menu</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+                <DropdownMenuItem>
+                    <Eye className='size-4' />
+                    View
+                </DropdownMenuItem>
+                {/* Destructive, set apart from the primary via the menu + confirm flow. */}
+                <DropdownMenuItem variant='destructive'>
+                    <Trash2 className='size-4' />
+                    Delete
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
+function FoodsTableView({ rows }: { rows: FoodRow[] }) {
+    const { sortBy, sortOrder, handleSort } = useTableSort<string>();
+
+    return (
+        // White table container — a flat surface panel (hairline only, no shadow;
+        // soft shadow is reserved for floating chrome). Wide table scrolls
+        // horizontally inside its own container (overflow-x-auto also clips the radius).
+        <div className='overflow-x-auto rounded-[1.25rem] border bg-card'>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <SortableTableHead
+                            field='name'
+                            sortBy={sortBy}
+                            sortOrder={sortOrder}
+                            onSort={handleSort}
+                            className='min-w-[180px]'
+                        >
+                            Name
+                        </SortableTableHead>
+                        <TableHead className='min-w-[220px]'>Description</TableHead>
+                        <SortableTableHead field='price' sortBy={sortBy} sortOrder={sortOrder} onSort={handleSort}>
+                            Price
+                        </SortableTableHead>
+                        <SortableTableHead
+                            field='discountPrice'
+                            sortBy={sortBy}
+                            sortOrder={sortOrder}
+                            onSort={handleSort}
+                        >
+                            Discount
+                        </SortableTableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Availability</TableHead>
+                        <TableHead className='text-right'>Stock</TableHead>
+                        <TableHead className='w-[64px] text-right'>Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {rows.map(food => (
+                        <TableRow key={food.id}>
+                            <TableCell className='font-semibold text-foreground'>{food.name}</TableCell>
+                            <TableCell
+                                className='max-w-[240px] truncate text-muted-foreground'
+                                title={food.description}
+                            >
+                                {truncate(food.description)}
+                            </TableCell>
+                            {/* Every price is crimson (theme: price emphasis). */}
+                            <TableCell className='font-semibold text-primary'>{formatVnd(food.price)}</TableCell>
+                            <TableCell
+                                className={
+                                    food.discountPrice != null ? 'font-semibold text-primary' : 'text-muted-foreground'
+                                }
+                            >
+                                {food.discountPrice != null ? formatVnd(food.discountPrice) : '—'}
+                            </TableCell>
+                            <TableCell>
+                                <Badge variant='outline' className='rounded-full font-normal'>
+                                    {food.category}
+                                </Badge>
+                            </TableCell>
+                            <TableCell>
+                                {food.isAvailable ? (
+                                    <Badge variant='success' className='rounded-full'>
+                                        Available
+                                    </Badge>
+                                ) : (
+                                    <Badge variant='secondary' className='rounded-full'>
+                                        Sold out
+                                    </Badge>
+                                )}
+                            </TableCell>
+                            <TableCell className='text-right tabular-nums text-muted-foreground'>
+                                {food.stockQuantity} {food.quantityUnit}
+                            </TableCell>
+                            <TableCell className='text-right'>
+                                <FoodRowActions />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Categories table — the simpler admin table (Name + count + actions). Same
+// toolbar grammar: search + one crimson primary Add.
+// ---------------------------------------------------------------------------
+
+function CategoriesTableView({ rows }: { rows: CategoryRow[] }) {
+    return (
+        <div className='overflow-x-auto rounded-[1.25rem] border bg-card'>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className='min-w-[220px]'>Name</TableHead>
+                        <TableHead>Dishes</TableHead>
+                        <TableHead className='w-[64px] text-right'>Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {rows.map(category => (
+                        <TableRow key={category.id}>
+                            <TableCell className='font-semibold text-foreground'>{category.name}</TableCell>
+                            <TableCell className='text-muted-foreground'>{category.foodCount} dishes</TableCell>
+                            <TableCell className='text-right'>
+                                <FoodRowActions />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Delete confirm dialog — the explicit confirm every destructive action routes
+// through. Cancel (idle) and Delete (destructive) are the footer pair; the
+// destructive action is never adjacent to a page primary (theme).
+// ---------------------------------------------------------------------------
+
+function DeleteConfirmDialog({
+    open,
+    onOpenChange,
+    itemName,
+    kind,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    itemName: string;
+    kind: string;
+}) {
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Delete {kind}</DialogTitle>
+                    <DialogDescription>
+                        Delete “{itemName}”? This can’t be undone — it’s removed from the menu right away.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button variant='outline' onClick={() => onOpenChange(false)}>
+                        Keep it
+                    </Button>
+                    <Button variant='destructive' onClick={() => onOpenChange(false)}>
+                        <Trash2 />
+                        Delete {kind}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Food editor — SINGLE-COLUMN form (max ~40rem, labels above fields), image
+// upload beneath, one crimson primary Save. The destructive Delete lives in a
+// separate danger area, apart from the primary, and opens the confirm dialog.
+// ---------------------------------------------------------------------------
+
+function ImageTile({ label, onRemove }: { label: string; onRemove?: () => void }) {
+    return (
+        <div className='group relative flex aspect-square items-center justify-center overflow-hidden rounded-xl border bg-muted text-muted-foreground'>
+            <UtensilsCrossed className='size-7' aria-hidden />
+            <span className='sr-only'>{label}</span>
+            {onRemove && (
+                <Button
+                    type='button'
+                    variant='destructive'
+                    size='icon-sm'
+                    className='absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100'
+                    onClick={onRemove}
+                    aria-label={`Remove ${label}`}
+                >
+                    <Trash2 className='size-4' />
+                </Button>
+            )}
+        </div>
+    );
+}
+
+function FoodEditorView({ mode }: { mode: 'create' | 'edit' }) {
+    const isCreate = mode === 'create';
+    const [available, setAvailable] = React.useState(true);
+    const [category, setCategory] = React.useState(isCreate ? '' : 'Pizza');
+    const [unit, setUnit] = React.useState('g');
+    const [images, setImages] = React.useState(isCreate ? [] : ['Margherita pizza 1', 'Margherita pizza 2']);
+    const [deleteOpen, setDeleteOpen] = React.useState(false);
+
+    return (
+        <div className='mx-auto max-w-2xl'>
+            <Button variant='ghost' className='mb-6 -ml-2'>
+                <ArrowLeft />
+                Back to foods
+            </Button>
+
+            <SurfaceHeader
+                eyebrow={isCreate ? 'NEW DISH' : 'EDIT DISH'}
+                title={isCreate ? 'Add a food' : 'Margherita pizza'}
+                subtitle='Name it, price it, and add a photo so it looks great on the menu.'
+            />
+
+            {/* Single-column form, max ~40rem, labels above fields. */}
+            <Card className='rounded-[1.25rem] shadow-none'>
+                <CardHeader>
+                    <CardTitle>Details</CardTitle>
+                    <CardDescription>The essentials diners see on the menu.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form className='space-y-6' onSubmit={e => e.preventDefault()}>
+                        <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <Input
+                                defaultValue={isCreate ? '' : 'Margherita pizza'}
+                                placeholder='e.g. Margherita pizza'
+                            />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel>Description</FieldLabel>
+                            <Textarea
+                                rows={3}
+                                defaultValue={
+                                    isCreate ? '' : 'San Marzano tomato, fresh mozzarella, basil on a slow-proved base'
+                                }
+                                placeholder='Tell diners what makes it good'
+                            />
+                        </Field>
+
+                        <div className='grid gap-6 sm:grid-cols-2'>
+                            <Field>
+                                <FieldLabel>Price</FieldLabel>
+                                <Input type='number' min={0} step={1000} defaultValue={isCreate ? '' : 145000} />
+                            </Field>
+                            <Field>
+                                <FieldLabel>Discount price</FieldLabel>
+                                <Input
+                                    type='number'
+                                    min={0}
+                                    step={1000}
+                                    defaultValue={isCreate ? '' : 125000}
+                                    placeholder='Optional'
+                                />
+                            </Field>
+                        </div>
+
+                        {/* Category — Filter Chips (choose one from many); selected = black pill. */}
+                        <Field>
+                            <FieldLabel>Category</FieldLabel>
+                            <div className='flex flex-wrap gap-2'>
+                                {CATEGORY_OPTIONS.map(option => {
+                                    const selected = category === option;
+                                    return (
+                                        <Button
+                                            key={option}
+                                            type='button'
+                                            size='sm'
+                                            variant={selected ? undefined : 'outline'}
+                                            className={cn(
+                                                selected && 'bg-selected text-selected-foreground hover:bg-selected/90',
+                                                'rounded-full'
+                                            )}
+                                            aria-pressed={selected}
+                                            onClick={() => setCategory(option)}
+                                        >
+                                            {option}
+                                        </Button>
+                                    );
+                                })}
+                            </div>
+                        </Field>
+
+                        {/* Quantity unit — Segmented Choice (single-select); active = black. */}
+                        <Field>
+                            <FieldLabel>Quantity unit</FieldLabel>
+                            <ToggleGroup
+                                type='single'
+                                variant='outline'
+                                value={unit}
+                                onValueChange={value => value && setUnit(value)}
+                                className='w-full max-w-xs'
+                            >
+                                {UNIT_OPTIONS.map(option => (
+                                    <ToggleGroupItem key={option.value} value={option.value} className='flex-1'>
+                                        {option.label}
+                                    </ToggleGroupItem>
+                                ))}
+                            </ToggleGroup>
+                        </Field>
+
+                        <div className='grid gap-6 sm:grid-cols-2'>
+                            <Field>
+                                <FieldLabel>Available</FieldLabel>
+                                <div className='w-fit'>
+                                    <Switch checked={available} onCheckedChange={setAvailable} />
+                                </div>
+                            </Field>
+                            <Field>
+                                <FieldLabel>Stock quantity</FieldLabel>
+                                <Input type='number' min={0} defaultValue={isCreate ? '' : 24} />
+                            </Field>
+                        </div>
+
+                        {/* One BLACK structural primary for the editor (red stays on prices). */}
+                        <div>
+                            <Button className='bg-selected text-selected-foreground hover:bg-selected/90' type='submit'>
+                                {isCreate ? 'Add food' : 'Save changes'}
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
+
+            {/* Image upload — beneath the form in the single column. */}
+            <Card className='mt-6 rounded-[1.25rem] shadow-none'>
+                <CardHeader>
+                    <CardTitle>Photos</CardTitle>
+                    <CardDescription>A top-down shot makes the dish the hero on the menu.</CardDescription>
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                    {images.length > 0 ? (
+                        <div className='grid grid-cols-2 gap-4 sm:grid-cols-3'>
+                            {images.map((label, index) => (
+                                <ImageTile
+                                    key={label}
+                                    label={label}
+                                    onRemove={() => setImages(prev => prev.filter((_, i) => i !== index))}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <p className='text-sm text-muted-foreground'>No photos yet — add one so diners can see it.</p>
+                    )}
+                    <Button type='button' variant='outline'>
+                        <ImagePlus />
+                        Upload image
+                    </Button>
+                </CardContent>
+            </Card>
+
+            {/* Danger area — destructive set APART from the primary; opens confirm (edit only). */}
+            {!isCreate && (
+                <Card className='mt-6 rounded-[1.25rem] border-destructive/30 shadow-none'>
+                    <CardHeader>
+                        <CardTitle className='text-base'>Danger zone</CardTitle>
+                        <CardDescription>Removing a dish takes it off the menu for good.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button type='button' variant='destructive' onClick={() => setDeleteOpen(true)}>
+                            <Trash2 />
+                            Delete food
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+
+            <DeleteConfirmDialog
+                open={deleteOpen}
+                onOpenChange={setDeleteOpen}
+                itemName='Margherita pizza'
+                kind='food'
+            />
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Foods list page — search + table + pagination, wired for local interaction so
+// the search filters and the delete confirm opens from a row.
+// ---------------------------------------------------------------------------
+
+function FoodsListPage() {
+    const [search, setSearch] = React.useState('');
+    const filtered = FOODS.filter(f => f.name.toLowerCase().includes(search.trim().toLowerCase()));
+
+    return (
+        <div className='p-6 lg:p-8'>
+            <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
+            <FoodsToolbar search={search} onSearch={setSearch} />
+            {filtered.length > 0 ? (
+                <>
+                    <FoodsTableView rows={filtered} />
+                    <div className='mt-4'>
+                        <TablePagination page={1} totalPages={3} onPageChange={() => undefined} />
+                    </div>
+                </>
+            ) : (
+                <div className='rounded-[1.25rem] border border-dashed bg-muted/10 py-16'>
+                    <div className='mx-auto flex max-w-sm flex-col items-center text-center'>
+                        <span className='mb-4 flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+                            <ChefHat className='size-5' aria-hidden />
+                        </span>
+                        <p className='text-sm font-medium text-foreground'>No foods match “{search}”</p>
+                        <p className='mt-1 text-sm text-muted-foreground'>Try another name, or add a new dish.</p>
+                        <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-4'>
+                            <Plus />
+                            Add food
+                        </Button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Categories list page.
+// ---------------------------------------------------------------------------
+
+function CategoriesListPage() {
+    const [search, setSearch] = React.useState('');
+    const filtered = CATEGORIES.filter(c => c.name.toLowerCase().includes(search.trim().toLowerCase()));
+
+    return (
+        <div className='p-6 lg:p-8'>
+            <SurfaceHeader eyebrow='MENU' title='Categories' subtitle='Group dishes so the menu is easy to browse.' />
+            <div className='mb-4 flex flex-wrap items-center justify-between gap-3'>
+                <InputGroup className='max-w-sm flex-1'>
+                    <InputGroupInput
+                        type='search'
+                        aria-label='Search categories'
+                        placeholder='Search categories'
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                    />
+                    <InputGroupAddon>
+                        <Search className='size-4' />
+                    </InputGroupAddon>
+                </InputGroup>
+                <Button className='bg-selected text-selected-foreground hover:bg-selected/90'>
+                    <Plus />
+                    Add category
+                </Button>
+            </div>
+            {filtered.length > 0 ? (
+                <CategoriesTableView rows={filtered} />
+            ) : (
+                <div className='rounded-[1.25rem] border border-dashed bg-muted/10 py-16'>
+                    <div className='mx-auto flex max-w-sm flex-col items-center text-center'>
+                        <span className='mb-4 flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+                            <LayoutGrid className='size-5' aria-hidden />
+                        </span>
+                        <p className='text-sm font-medium text-foreground'>No categories match “{search}”</p>
+                        <p className='mt-1 text-sm text-muted-foreground'>Try another name, or add a new one.</p>
+                        <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-4'>
+                            <Plus />
+                            Add category
+                        </Button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Meta + Stories
+// ---------------------------------------------------------------------------
+
+const meta = {
+    title: 'Surfaces/Sprint 11/Admin Menu Management',
+    parameters: {
+        layout: 'fullscreen',
+    },
+    tags: ['autodocs'],
+} satisfies Meta<{ variant: string }>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+/**
+ * Foods table (default) — the foods list restyled on-theme: eyebrow + display
+ * H1, a search field and exactly ONE crimson primary Add, a sortable admin
+ * table with crimson prices and a status badge for availability, and per-row
+ * actions where Delete is destructive and apart from the primary.
+ */
+export const FoodsTable: Story = {
+    name: 'Foods Table (Default)',
+    render: () => (
+        <AdminShell>
+            <FoodsListPage />
+        </AdminShell>
+    ),
+};
+
+/**
+ * Foods empty — search matches nothing: an illustration + a single Add CTA, no
+ * dead end (theme: empty/onboarding).
+ */
+export const FoodsEmpty: Story = {
+    name: 'Foods Table (Empty)',
+    render: () => (
+        <AdminShell>
+            <div className='p-6 lg:p-8'>
+                <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
+                <FoodsToolbar search='pho' onSearch={() => undefined} />
+                <div className='rounded-[1.25rem] border border-dashed bg-muted/10 py-16'>
+                    <div className='mx-auto flex max-w-sm flex-col items-center text-center'>
+                        <span className='mb-4 flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+                            <ChefHat className='size-5' aria-hidden />
+                        </span>
+                        <p className='text-sm font-medium text-foreground'>No foods match “pho”</p>
+                        <p className='mt-1 text-sm text-muted-foreground'>Try another name, or add a new dish.</p>
+                        <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-4'>
+                            <Plus />
+                            Add food
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </AdminShell>
+    ),
+};
+
+/**
+ * Foods loading — the list is fetching; a centered spinner holds the content
+ * zone while the shell chrome stays put.
+ */
+export const FoodsLoading: Story = {
+    name: 'Foods Table (Loading)',
+    render: () => (
+        <AdminShell>
+            <div className='p-6 lg:p-8'>
+                <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
+                <div className='flex min-h-[360px] items-center justify-center rounded-[1.25rem] border bg-card'>
+                    <Spinner size='lg' />
+                </div>
+            </div>
+        </AdminShell>
+    ),
+};
+
+/**
+ * Foods error — the list failed to load; the on-theme error state says what to
+ * do next rather than only what failed (theme: voice).
+ */
+export const FoodsError: Story = {
+    name: 'Foods Table (Error)',
+    render: () => (
+        <AdminShell>
+            <div className='p-6 lg:p-8'>
+                <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
+                <div className='flex min-h-[360px] items-center justify-center rounded-[1.25rem] border bg-card'>
+                    <ErrorState
+                        title='Couldn’t load foods'
+                        description='Check your connection and try again in a moment.'
+                        iconSize='sm'
+                        action={<Button variant='outline'>Try again</Button>}
+                    />
+                </div>
+            </div>
+        </AdminShell>
+    ),
+};
+
+/**
+ * Food editor (add) — the single-column create form: labels above fields, image
+ * upload beneath, one crimson primary Add. No danger zone in create mode.
+ */
+export const FoodEditorAdd: Story = {
+    name: 'Food Editor Form (Add)',
+    render: () => (
+        <AdminShell>
+            <div className='p-6 lg:p-8'>
+                <FoodEditorView mode='create' />
+            </div>
+        </AdminShell>
+    ),
+};
+
+/**
+ * Food editor (edit) — the single-column edit form with existing values +
+ * photos, one crimson primary Save, and a separate danger area for the
+ * destructive Delete (apart from the primary, routes through confirm).
+ */
+export const FoodEditorEdit: Story = {
+    name: 'Food Editor Form (Edit)',
+    render: () => (
+        <AdminShell>
+            <div className='p-6 lg:p-8'>
+                <FoodEditorView mode='edit' />
+            </div>
+        </AdminShell>
+    ),
+};
+
+/**
+ * Categories table — the categories list restyled on-theme: same toolbar
+ * grammar (search + one crimson Add) and the simpler admin table.
+ */
+export const CategoriesTable: Story = {
+    name: 'Categories Table',
+    render: () => (
+        <AdminShell active='categories'>
+            <CategoriesListPage />
+        </AdminShell>
+    ),
+};
+
+/**
+ * Delete confirm — the explicit confirm dialog every destructive action routes
+ * through. Keep it (idle) and Delete (destructive) are the footer pair; the
+ * destructive button is never adjacent to a page primary.
+ */
+export const DeleteConfirm: Story = {
+    name: 'Delete Confirm Dialog',
+    render: () => {
+        function DeleteConfirmHarness() {
+            const [open, setOpen] = React.useState(true);
+            return (
+                <AdminShell>
+                    <div className='p-6 lg:p-8'>
+                        <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
+                        <FoodsToolbar search='' onSearch={() => undefined} />
+                        <FoodsTableView rows={FOODS} />
+                        {!open && (
+                            <div className='mt-4'>
+                                <Button variant='outline' onClick={() => setOpen(true)}>
+                                    <Trash2 />
+                                    Reopen delete confirm
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                    <DeleteConfirmDialog open={open} onOpenChange={setOpen} itemName='Margherita pizza' kind='food' />
+                </AdminShell>
+            );
+        }
+        return <DeleteConfirmHarness />;
+    },
+};

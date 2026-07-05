@@ -1,0 +1,573 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import {
+    Banknote,
+    ChefHat,
+    CreditCard,
+    Flame,
+    IceCreamCone,
+    Leaf,
+    MapPin,
+    Search,
+    ShieldCheck,
+    ShoppingBag,
+    Tag,
+    UtensilsCrossed,
+    Wine,
+    X,
+} from 'lucide-react';
+import React from 'react';
+
+import { formatVnd } from '@/app/utils';
+import { Button } from '@/components/button';
+import { Input } from '@/components/input';
+import { Label } from '@/components/label';
+import { Textarea } from '@/components/textarea';
+
+// ---------------------------------------------------------------------------
+// Surface: Checkout (/payment) — CONFORMED to DESIGN_THEME.md (the concrete
+// meal-ordering design language). Business behaviour is UNCHANGED from
+// src/pages/payment: same fields (delivery address + optional notes), same two
+// payment methods (cash on delivery, bank transfer w/ QR), same order summary +
+// running total, same "place order" action. Only the VISUALS/UX are conformed.
+//
+// Theme conformance (see §-references in DESIGN_THEME.md):
+//   • Two-tone hierarchy (§1, §2): BLACK for structural/selection controls,
+//     RED (accent-primary) for commerce — prices + the single irreversible CTA.
+//   • Payment method = Segmented Choice (§5): a row of single-select pills,
+//     active = solid BLACK fill, idle = white + hairline, hover = border darken.
+//     Crimson is deliberately NOT used for selection.
+//   • Order review = Summary Panel pattern (§5): line items → dashed divider →
+//     promo-code row (Promo/Tag Pill) → discount/delivery breakdown → bold RED
+//     total → RED Final CTA pinned at the bottom.
+//   • Final/Checkout CTA (§5): full-width RED pill, white bold text, NO split —
+//     it is the ONE loudest red action on the surface (the place-order step).
+//   • Layout (§6): single-column form, max ~40rem, labels ABOVE fields, never
+//     multi-column.
+//   • Spacing & Shape (§4): 8px grid, 20–24px card radius, one soft shadow on
+//     floating panels only; dashed border reserved for the summary divider.
+//   • States (§8): validation error says what to do NEXT; free delivery is
+//     GREEN (success), never red; discounts are red and prefixed with "-".
+//   • Chrome (§6): the shared floating rounded toolbar (brand left, category nav
+//     centre, search + Cart right); the checkout progress remains a labelled
+//     placeholder (this sprint only conforms the form body).
+//
+// Self-contained: @/components/* + mock-only fixtures. No api / store / model /
+// page imports.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Domain shapes (mock only — mirrors the payment surface's cart-item shape)
+// ---------------------------------------------------------------------------
+
+interface CheckoutLine {
+    id: string;
+    name: string;
+    quantity: number;
+    /** Unit price after any discount, in VND. */
+    unitPrice: number;
+    /** Per-unit customisation surcharge, in VND. */
+    surcharge?: number;
+    /** e.g. "Large, Extra cheese". */
+    customisationLabel?: string;
+}
+
+type PaymentMethod = 'cod' | 'banking';
+
+// ---------------------------------------------------------------------------
+// Fixtures — realistic VND order, matching the payment surface's summary shape.
+// ---------------------------------------------------------------------------
+
+const ORDER_LINES: CheckoutLine[] = [
+    {
+        id: 'line-1',
+        name: 'Signature beef pho',
+        quantity: 2,
+        unitPrice: 89000,
+        surcharge: 15000,
+        customisationLabel: 'Large, Extra brisket',
+    },
+    {
+        id: 'line-2',
+        name: 'Crispy spring rolls',
+        quantity: 1,
+        unitPrice: 65000,
+        customisationLabel: 'Set of 6',
+    },
+    {
+        id: 'line-3',
+        name: 'Vietnamese iced coffee',
+        quantity: 2,
+        unitPrice: 39000,
+    },
+];
+
+const lineTotal = (line: CheckoutLine) => (line.unitPrice + (line.surcharge ?? 0)) * line.quantity;
+
+const PROMO = { code: 'PHO10', rate: 0.1 };
+const SUBTOTAL = ORDER_LINES.reduce((sum, line) => sum + lineTotal(line), 0);
+const DISCOUNT = Math.round(SUBTOTAL * PROMO.rate);
+const ORDER_TOTAL = SUBTOTAL - DISCOUNT;
+const ORDER_COUNT = ORDER_LINES.reduce((sum, line) => sum + line.quantity, 0);
+
+const SAVED_ADDRESS = '42 Nguyen Hue Blvd, District 1, Ho Chi Minh City';
+
+const BANK_ACCOUNT = {
+    bank: 'Vietcombank',
+    account: '0071000512345',
+    reference: 'ORD20260704A19',
+};
+
+// ---------------------------------------------------------------------------
+// Eyebrow — UPPERCASE micro-label above a group (§3 Label/Eyebrow: 11–12px,
+// medium, +0.08em tracking).
+// ---------------------------------------------------------------------------
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+    return (
+        <span className='text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground'>{children}</span>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Payment method — Segmented Choice (§5): a row of single-select pills. Active =
+// solid BLACK fill (selected token); idle = white + hairline, hover darkens the
+// border. Crimson is intentionally absent — selection is black, price/CTA are red.
+// ---------------------------------------------------------------------------
+
+interface MethodPillProps {
+    selected: boolean;
+    icon: React.ReactNode;
+    title: string;
+    hint: string;
+    onSelect: () => void;
+}
+
+function MethodPill({ selected, icon, title, hint, onSelect }: MethodPillProps) {
+    return (
+        <button
+            type='button'
+            role='radio'
+            aria-checked={selected}
+            onClick={onSelect}
+            className={[
+                'flex flex-1 items-center gap-3 rounded-full border px-5 py-3 text-left transition-colors duration-200',
+                'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                selected
+                    ? 'border-selected bg-selected text-selected-foreground'
+                    : 'border-border bg-background text-foreground hover:border-foreground/40',
+            ].join(' ')}
+        >
+            <span
+                className={[
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+                    selected ? 'bg-selected-foreground/15 text-selected-foreground' : 'bg-muted text-foreground',
+                ].join(' ')}
+            >
+                {icon}
+            </span>
+            <span className='flex min-w-0 flex-col leading-tight'>
+                <span className='text-sm font-semibold'>{title}</span>
+                <span className={selected ? 'text-xs text-selected-foreground/70' : 'text-xs text-muted-foreground'}>
+                    {hint}
+                </span>
+            </span>
+        </button>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Promo/Tag Pill (§5) — small rounded tag with icon + code + dismiss "×", used
+// for the applied promo code inside the Summary Panel.
+// ---------------------------------------------------------------------------
+
+function PromoPill({ code }: { code: string }) {
+    return (
+        <span className='inline-flex items-center gap-1.5 rounded-full bg-selected px-3 py-1.5 text-xs font-semibold text-selected-foreground'>
+            <Tag className='h-3.5 w-3.5' />
+            {code}
+            <button
+                type='button'
+                aria-label={`Remove promo code ${code}`}
+                className='flex h-4 w-4 items-center justify-center rounded-full text-selected-foreground/70 transition-colors hover:text-selected-foreground'
+            >
+                <X className='h-3 w-3' />
+            </button>
+        </span>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Order review — Summary Panel pattern (§5): line items → dashed divider →
+// promo-code row → discount/delivery breakdown → bold RED total. Every price is
+// red (§3); the discount is negative-red, delivery is GREEN "Free" (§8).
+// ---------------------------------------------------------------------------
+
+function SummaryPanel({ lines }: { lines: CheckoutLine[] }) {
+    return (
+        <section className='space-y-3'>
+            <div className='flex items-baseline justify-between'>
+                <Eyebrow>Your order</Eyebrow>
+                <span className='text-xs text-muted-foreground'>{ORDER_COUNT} items</span>
+            </div>
+
+            <div className='rounded-[1.25rem] border border-border bg-background p-5'>
+                {/* Line items */}
+                <ul className='space-y-3'>
+                    {lines.map(line => (
+                        <li key={line.id} className='flex items-start justify-between gap-4'>
+                            <div className='min-w-0'>
+                                <p className='text-sm font-semibold text-foreground'>{line.name}</p>
+                                {line.customisationLabel && (
+                                    <p className='text-xs text-muted-foreground'>{line.customisationLabel}</p>
+                                )}
+                                <p className='text-xs text-muted-foreground'>&times; {line.quantity}</p>
+                            </div>
+                            <span className='shrink-0 text-sm font-bold text-primary'>
+                                {formatVnd(lineTotal(line))}
+                            </span>
+                        </li>
+                    ))}
+                </ul>
+
+                {/* Dashed divider (§4: reserved meaning) */}
+                <div className='my-4 border-t border-dashed border-border' />
+
+                {/* Promo-code row — Promo/Tag Pill */}
+                <div className='flex items-center justify-between'>
+                    <Eyebrow>Promocode</Eyebrow>
+                    <PromoPill code={PROMO.code} />
+                </div>
+
+                {/* Breakdown — plain rows */}
+                <dl className='mt-4 space-y-2 text-sm'>
+                    <div className='flex items-center justify-between'>
+                        <dt className='text-muted-foreground'>Subtotal</dt>
+                        <dd className='font-medium text-foreground'>{formatVnd(SUBTOTAL)}</dd>
+                    </div>
+                    <div className='flex items-center justify-between'>
+                        <dt className='text-muted-foreground'>Discount</dt>
+                        <dd className='font-semibold text-primary'>-{formatVnd(DISCOUNT)}</dd>
+                    </div>
+                    <div className='flex items-center justify-between'>
+                        <dt className='text-muted-foreground'>Delivery</dt>
+                        <dd className='font-semibold text-success'>Free</dd>
+                    </div>
+                </dl>
+
+                {/* Bold RED total */}
+                <div className='mt-4 flex items-baseline justify-between border-t border-border pt-4'>
+                    <Eyebrow>Total</Eyebrow>
+                    <span className='text-2xl font-black tracking-tight text-primary'>{formatVnd(ORDER_TOTAL)}</span>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Bank transfer QR — shown when the Banking method is chosen (mirrors the
+// payment surface's banking-QR panel: bank / account / amount + auto-confirm).
+// ---------------------------------------------------------------------------
+
+function BankTransferPanel() {
+    return (
+        <div className='space-y-5 rounded-[1.25rem] border border-border bg-background p-5'>
+            <div className='flex flex-col items-center gap-3'>
+                <div className='flex h-44 w-44 items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/40'>
+                    <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                        qr code
+                    </span>
+                </div>
+                <p className='text-xs text-muted-foreground'>Scan with your banking app to pay</p>
+            </div>
+            <div className='space-y-2 rounded-2xl bg-muted/50 px-4 py-3 text-sm'>
+                <div className='flex justify-between'>
+                    <span className='text-muted-foreground'>Bank</span>
+                    <span className='font-medium text-foreground'>{BANK_ACCOUNT.bank}</span>
+                </div>
+                <div className='flex justify-between'>
+                    <span className='text-muted-foreground'>Account</span>
+                    <span className='font-mono font-medium text-foreground'>{BANK_ACCOUNT.account}</span>
+                </div>
+                <div className='flex justify-between'>
+                    <span className='text-muted-foreground'>Amount</span>
+                    <span className='font-bold text-primary'>{formatVnd(ORDER_TOTAL)}</span>
+                </div>
+            </div>
+            <div className='flex items-center gap-2 rounded-full bg-muted/50 px-4 py-2 text-xs text-muted-foreground'>
+                <ShieldCheck className='h-3.5 w-3.5 shrink-0' />
+                We confirm your order automatically once the transfer lands.
+            </div>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Final CTA (§5) — full-width RED pill, white bold, NO split. Pinned to the
+// bottom of the shell so the single irreversible place-order step is always
+// reachable. This is the ONE loudest red action on the surface.
+// ---------------------------------------------------------------------------
+
+function FinalCta({ method, onPlaceOrder }: { method: PaymentMethod; onPlaceOrder: () => void }) {
+    return (
+        <div className='shrink-0 border-t border-border/70 bg-card/95 px-4 py-4 backdrop-blur sm:px-6'>
+            <div className='mx-auto max-w-[40rem]'>
+                <Button size='lg' className='h-12 w-full rounded-full text-base font-semibold' onClick={onPlaceOrder}>
+                    {method === 'banking' ? "I've transferred — place order" : 'Place order'}
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Floating rounded toolbar — the shared top-nav chrome (§6): a large-radius bar
+// floating inside the shell. Brand left, category nav centre (active = white
+// pill + red icon/label), search + red Cart pill right.
+// ---------------------------------------------------------------------------
+
+const NAV_ITEMS = [
+    { label: 'Main Dishes', icon: UtensilsCrossed, active: true },
+    { label: 'Vegan', icon: Leaf, active: false },
+    { label: 'Street Food', icon: Flame, active: false },
+    { label: 'Desserts', icon: IceCreamCone, active: false },
+    { label: 'Drinks', icon: Wine, active: false },
+] as const;
+
+function Toolbar() {
+    return (
+        <header className='shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
+            <div className='flex items-center justify-between gap-2 rounded-[1.5rem] border border-border/70 bg-card px-3 py-2 shadow-sm sm:px-4 sm:py-2.5'>
+                {/* Brand */}
+                <div className='flex items-center gap-2 pl-1'>
+                    <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
+                        <ChefHat className='h-4 w-4' />
+                    </span>
+                    <span className='text-lg font-black tracking-tight text-primary'>Notism</span>
+                </div>
+
+                {/* Category nav — centre; collapses on smaller widths */}
+                <nav className='hidden items-center gap-1 lg:flex'>
+                    {NAV_ITEMS.map(({ label, icon: Icon, active }) => (
+                        <span
+                            key={label}
+                            aria-current={active ? 'page' : undefined}
+                            className={[
+                                'flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-colors',
+                                active
+                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
+                                    : 'text-muted-foreground hover:text-foreground',
+                            ].join(' ')}
+                        >
+                            <Icon className='h-4 w-4' />
+                            {label}
+                        </span>
+                    ))}
+                </nav>
+
+                {/* Search + Cart pill (brand red — the toolbar's cart CTA) */}
+                <div className='flex items-center gap-2'>
+                    <span className='flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-background text-foreground'>
+                        <Search className='h-4 w-4' />
+                    </span>
+                    <Button size='lg' className='rounded-full px-5'>
+                        <ShoppingBag className='h-4 w-4' />
+                        Cart
+                    </Button>
+                </div>
+            </div>
+        </header>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Existing chrome — the checkout progress is unchanged this sprint, so it renders
+// as a labelled, muted placeholder (theme placeholder convention).
+// ---------------------------------------------------------------------------
+
+function CheckoutProgressPlaceholder() {
+    return (
+        <div className='flex h-12 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/30'>
+            <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                checkout progress placeholder
+            </span>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Checkout shell — dark ambient frame behind a light rounded shell; the form is
+// a SINGLE COLUMN, max ~40rem, labels above fields (§4, §6).
+// ---------------------------------------------------------------------------
+
+interface CheckoutSurfaceProps {
+    initialMethod?: PaymentMethod;
+    /** Pre-fill the delivery address; empty string simulates a fresh field. */
+    initialAddress?: string;
+    /** Force the validation-error state (empty-address guidance) on first paint. */
+    initialError?: boolean;
+}
+
+function CheckoutSurface({
+    initialMethod = 'cod',
+    initialAddress = SAVED_ADDRESS,
+    initialError = false,
+}: CheckoutSurfaceProps) {
+    const [method, setMethod] = React.useState<PaymentMethod>(initialMethod);
+    const [address, setAddress] = React.useState(initialAddress);
+    const [notes, setNotes] = React.useState('');
+    const [error, setError] = React.useState(initialError);
+
+    const handlePlaceOrder = () => {
+        if (address.trim() === '') {
+            setError(true);
+            return;
+        }
+        setError(false);
+    };
+
+    return (
+        // Level 1 — dark ambient frame. Decorative backdrop; the shell floats above.
+        <div className='flex min-h-screen flex-col bg-frame p-2 sm:p-4'>
+            {/* Level 2 — ONE large-radius light shell; fills the viewport and is the
+                single scroll container (toolbar pinned top, Final CTA pinned bottom). */}
+            <div className='mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-[1.75rem] bg-muted/60'>
+                <Toolbar />
+
+                {/* Scroll region — only the single-column content scrolls here. */}
+                <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-6 sm:px-4'>
+                    <div className='mx-auto max-w-[40rem] pt-4 sm:pt-5'>
+                        {/* Level 3 — white form panel: hairline + one soft shadow. */}
+                        <div className='space-y-8 rounded-[1.5rem] border border-border/70 bg-background p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:p-7'>
+                            <CheckoutProgressPlaceholder />
+
+                            <header className='space-y-1'>
+                                <Eyebrow>Checkout</Eyebrow>
+                                <h1 className='text-3xl font-black tracking-tight text-foreground'>Almost there</h1>
+                                <p className='text-sm text-muted-foreground'>
+                                    Review your order, tell us where to bring it, and place your order.
+                                </p>
+                            </header>
+
+                            {/* Delivery — single column, labels ABOVE each field */}
+                            <section className='space-y-4'>
+                                <Eyebrow>Delivery</Eyebrow>
+                                <div className='space-y-2'>
+                                    <Label htmlFor='checkout-address'>
+                                        <MapPin className='h-3.5 w-3.5' />
+                                        Delivery address
+                                    </Label>
+                                    <Input
+                                        id='checkout-address'
+                                        value={address}
+                                        onChange={e => setAddress(e.target.value)}
+                                        aria-invalid={error || undefined}
+                                        placeholder='Street, district, city'
+                                    />
+                                    {error && (
+                                        <p className='text-sm font-medium text-destructive'>
+                                            Add a delivery address so we know where to bring your order.
+                                        </p>
+                                    )}
+                                </div>
+                                <div className='space-y-2'>
+                                    <Label htmlFor='checkout-notes'>
+                                        Delivery notes{' '}
+                                        <span className='text-xs font-normal text-muted-foreground'>(optional)</span>
+                                    </Label>
+                                    <Textarea
+                                        id='checkout-notes'
+                                        value={notes}
+                                        onChange={e => setNotes(e.target.value)}
+                                        rows={3}
+                                        placeholder='Gate code, landmark, or anything the driver should know'
+                                    />
+                                </div>
+                            </section>
+
+                            {/* Payment method — Segmented Choice (black selection pills) */}
+                            <section className='space-y-3'>
+                                <Eyebrow>Payment</Eyebrow>
+                                <div
+                                    role='radiogroup'
+                                    aria-label='Payment method'
+                                    className='flex flex-col gap-3 sm:flex-row'
+                                >
+                                    <MethodPill
+                                        selected={method === 'cod'}
+                                        icon={<Banknote className='h-4 w-4' />}
+                                        title='Cash on delivery'
+                                        hint='Pay when it arrives'
+                                        onSelect={() => setMethod('cod')}
+                                    />
+                                    <MethodPill
+                                        selected={method === 'banking'}
+                                        icon={<CreditCard className='h-4 w-4' />}
+                                        title='Bank transfer'
+                                        hint='Scan & pay now'
+                                        onSelect={() => setMethod('banking')}
+                                    />
+                                </div>
+                                {method === 'banking' && <BankTransferPanel />}
+                            </section>
+
+                            {/* Order review — Summary Panel pattern */}
+                            <SummaryPanel lines={ORDER_LINES} />
+                        </div>
+                    </div>
+                </div>
+
+                <FinalCta method={method} onPlaceOrder={handlePlaceOrder} />
+            </div>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Meta + Stories
+// ---------------------------------------------------------------------------
+
+const meta = {
+    title: 'Surfaces/Sprint 11/Checkout',
+    parameters: {
+        layout: 'fullscreen',
+    },
+    tags: ['autodocs'],
+} satisfies Meta<{ variant: string }>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+/**
+ * Default — a calm single-column checkout (max ~40rem, labels above fields). The
+ * order review follows the Summary Panel pattern (line items → dashed divider →
+ * promo pill → breakdown → bold RED total); the ONE loudest red action is the
+ * full-width "Place order" pill pinned at the bottom. Cash on delivery is the
+ * chosen payment method (solid-black Segmented Choice pill).
+ */
+export const Default: Story = {
+    name: 'Default — Single-Column Checkout (COD)',
+    render: () => <CheckoutSurface initialMethod='cod' />,
+};
+
+/**
+ * Payment method selected — the customer picked Bank transfer: the Segmented
+ * Choice toggles to that pill (still exactly one selected, black fill) and the
+ * QR / account panel appears with the amount in red. The full-width red CTA
+ * updates to confirm the transfer.
+ */
+export const BankTransferSelected: Story = {
+    name: 'Selected — Bank Transfer Method (QR)',
+    render: () => <CheckoutSurface initialMethod='banking' />,
+};
+
+/**
+ * Validation error — the delivery address is empty on Place order. The message
+ * says what to do NEXT ("Add a delivery address so we know where to bring your
+ * order."), not just that a field is invalid; the field is flagged and the
+ * red CTA stays available to retry.
+ */
+export const ValidationError: Story = {
+    name: 'Error — Empty Address, Next-Step Guidance',
+    render: () => <CheckoutSurface initialMethod='cod' initialAddress='' initialError />,
+};
