@@ -15,12 +15,13 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { cn } from '@/app/utils/index';
 import { Badge } from '@/components/badge';
 import Banner from '@/components/banner';
 import { Button } from '@/components/button';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Separator } from '@/components/separator';
 import { Skeleton } from '@/components/skeleton';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 // ---------------------------------------------------------------------------
 // Surface — DishDetail (/foods/:id), styled to DESIGN_THEME.md.
@@ -34,21 +35,24 @@ import { Skeleton } from '@/components/skeleton';
 //     SHELL → white content PANEL (hairline + faint shadow) → white cards /
 //     tiles (hairline, little to no shadow). One gentle step per level; no
 //     heavy rings or shadows.
-//   • Floating toolbar — a large-radius rounded bar floats inside the shell
-//     with margin all around: brand left, nav centre (active = white pill with
-//     a crimson icon + label), search + the single crimson Cart pill right.
-//     Pinned above the scroll zone; condensed (never full-bleed) on mobile.
+//   • Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
+//     large-radius rounded bar that floats inside the shell with margin all
+//     around. Brand left, nav centre (the active tab is a real navigation
+//     selection via NavBarItem's aria-current — a white pill with a crimson
+//     icon + label, never a Button in a selected style), search + the Cart
+//     action right. Pinned above the scroll zone; condensed on mobile.
 //   • Scrolling — the shell fills the viewport; only the content zone scrolls
 //     within it; the toolbar stays pinned. No double scrollbars.
 //   • Item detail — one large dish image is the single focus, one
 //     display-weight title, an always-visible Add control. Options sit under
-//     UPPERCASE eyebrow labels: SIZE is a Segmented Choice pill row (white +
-//     hairline idle, solid BLACK selected, one per row); BUILD YOUR MEAL is an
-//     Icon Toggle Grid of square tiles with a black-circle checkmark badge when
-//     selected. Quantity uses circular −/+ steppers. The dish price is the one
+//     UPPERCASE eyebrow labels: SIZE is a single-select ToggleGroup (segmented
+//     variant) — a muted track whose chosen pill fills BLACK, never a Button in
+//     a selected style; BUILD YOUR MEAL is an Icon Toggle Grid of square tiles
+//     with a black-circle checkmark badge when selected (native radiogroup, no
+//     Button component). Quantity uses circular −/+ steppers. The dish price is the one
 //     loudest CRIMSON element; Add to order is the BLACK split-pill (price left |
-//     divider | label right) — never red. The crimson Cart pill is the
-//     order-level action for the viewport.
+//     divider | label right) — never red. The Cart action lives in the NavBar's
+//     actions slot for the viewport.
 //
 // Story-only: mock fixtures + a local interaction harness. No api / model /
 // state / feature imports; composed only from @/components/*.
@@ -198,43 +202,36 @@ function AmbientFrame({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Floating toolbar — a large-radius rounded bar floating inside the shell with
-// margin all around (white, hairline, faint shadow). Brand left, nav centre
-// (active = white pill + crimson icon/label), search + crimson Cart pill right.
-// Pinned above the scroll zone; condensed on mobile (nav collapses, never
-// full-bleed).
+// Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
+// large-radius rounded white bar that FLOATS inside the shell (the shell padding
+// gives it margin on all sides; never edge-to-edge). Brand slot left · nav-items
+// region center (the active tab is a real navigation selection — a white pill w/
+// crimson icon+label via NavBarItem's aria-current, never a Button in a selected
+// style) · actions slot right (search + the Cart action). Nav collapses on
+// mobile; the bar stays a floating pill (never full-bleed).
 // ---------------------------------------------------------------------------
 
 function ShellTopbar({ activeNav = 'main' }: { activeNav?: string }) {
     return (
         <div className='shrink-0 p-3 sm:p-4'>
-            <header className='flex items-center gap-3 rounded-[1.75rem] bg-card px-3 py-2.5 shadow-sm ring-1 ring-border/60 sm:px-4'>
-                <span className='px-1 text-lg font-bold tracking-tight text-primary'>Notism</span>
+            <NavBar variant='consumer'>
+                <NavBarBrand>
+                    <span className='px-1 text-lg font-bold tracking-tight text-primary'>Notism</span>
+                </NavBarBrand>
 
-                <nav className='mx-auto hidden items-center gap-1 lg:flex'>
+                <NavBarNav className='hidden flex-1 justify-center lg:flex'>
                     {NAV_ITEMS.map(item => {
                         const Icon = item.icon;
-                        const active = item.key === activeNav;
                         return (
-                            <button
-                                key={item.key}
-                                type='button'
-                                aria-current={active ? 'page' : undefined}
-                                className={[
-                                    'inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
-                                    active
-                                        ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                        : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground',
-                                ].join(' ')}
-                            >
+                            <NavBarItem key={item.key} active={item.key === activeNav}>
                                 <Icon className='size-4' aria-hidden />
                                 {item.label}
-                            </button>
+                            </NavBarItem>
                         );
                     })}
-                </nav>
+                </NavBarNav>
 
-                <div className='ml-auto flex items-center gap-2 lg:ml-0'>
+                <NavBarActions>
                     <button
                         type='button'
                         aria-label='Search the menu'
@@ -242,13 +239,13 @@ function ShellTopbar({ activeNav = 'main' }: { activeNav?: string }) {
                     >
                         <Search className='size-4' aria-hidden />
                     </button>
-                    {/* Cart pill — brand red (the toolbar's cart CTA). */}
+                    {/* Cart pill — the toolbar's cart action (an action Button, not a selected-state control). */}
                     <Button className='rounded-full px-4'>
                         <ShoppingBag className='size-4' aria-hidden />
                         Cart
                     </Button>
-                </div>
-            </header>
+                </NavBarActions>
+            </NavBar>
         </div>
     );
 }
@@ -318,46 +315,31 @@ interface OptionGroupProps {
 }
 
 // ---------------------------------------------------------------------------
-// Segmented Choice (§5) — SIZE row of single-select pills. Idle = white +
-// hairline; selected = solid black fill. Exactly one selected per row.
+// Segmented Choice (§5) — SIZE as a single-select ToggleGroup (segmented
+// variant): a muted rounded track whose chosen pill fills solid black
+// (data-[state=on] → bg-selected). Exactly one selected per row, expressed as a
+// real toggle selection — never a Button in a "selected" style. Guarding the
+// empty value keeps the required size from clearing on a re-click.
 // ---------------------------------------------------------------------------
 
 function SegmentedChoice({ group, selected, onSelect }: OptionGroupProps) {
     return (
         <div className='space-y-3'>
             <GroupHeader group={group} />
-            <div className='flex flex-wrap gap-2' role='radiogroup' aria-label={group.label}>
-                {group.options.map(opt => {
-                    const isSelected = selected === opt.value;
-                    return (
-                        <Button
-                            key={opt.value}
-                            type='button'
-                            role='radio'
-                            aria-checked={isSelected}
-                            variant={isSelected ? undefined : 'outline'}
-                            className={cn(
-                                isSelected && 'bg-selected text-selected-foreground hover:bg-selected/90',
-                                'h-11 rounded-full px-5'
-                            )}
-                            onClick={() => onSelect?.(group.id, opt.value)}
-                        >
-                            <span className='font-medium'>{opt.label}</span>
-                            {opt.surcharge ? (
-                                <span
-                                    className={
-                                        isSelected
-                                            ? 'text-xs text-selected-foreground/70'
-                                            : 'text-xs text-muted-foreground'
-                                    }
-                                >
-                                    +{formatVnd(opt.surcharge)}
-                                </span>
-                            ) : null}
-                        </Button>
-                    );
-                })}
-            </div>
+            <ToggleGroup
+                type='single'
+                variant='segmented'
+                value={selected ?? ''}
+                onValueChange={value => value && onSelect?.(group.id, value)}
+                aria-label={group.label}
+            >
+                {group.options.map(opt => (
+                    <ToggleGroupItem key={opt.value} value={opt.value} className='h-11 gap-1.5 px-5'>
+                        <span className='font-medium'>{opt.label}</span>
+                        {opt.surcharge ? <span className='text-xs opacity-70'>+{formatVnd(opt.surcharge)}</span> : null}
+                    </ToggleGroupItem>
+                ))}
+            </ToggleGroup>
         </div>
     );
 }
@@ -769,8 +751,8 @@ type Story = StoryObj<typeof meta>;
  * display-weight title, a crimson price, and both option groups under their
  * UPPERCASE eyebrow labels (SIZE, BUILD YOUR MEAL). Nothing is selected yet, so
  * the always-visible black Add control is gated on the required Size (hint
- * shown). Idle pills are white + hairline; the floating toolbar is pinned above
- * the scrolling content panel.
+ * shown). The SIZE segmented ToggleGroup sits idle in its muted track; the
+ * floating NavBar is pinned above the scrolling content panel.
  */
 export const Default: Story = {
     name: 'Default — Dish With Grouped Options',
@@ -778,7 +760,7 @@ export const Default: Story = {
 };
 
 /**
- * Partial — a size is chosen (one black selected pill in the row) and the
+ * Partial — a size is chosen (the segmented ToggleGroup fills that pill black) and the
  * quantity has been stepped to 2 via the circular −/+ steppers. The crimson
  * price and the Add total reflect the surcharge × quantity, and the Add control
  * is now enabled.
@@ -800,8 +782,8 @@ export const AddedToOrder: Story = {
 };
 
 /**
- * Interactive — drive the whole flow: pick a size and meal (pills toggle black),
- * step the quantity, then Add to order to see the feedback banner animate in.
+ * Interactive — drive the whole flow: pick a size (segmented ToggleGroup) and a
+ * meal tile, step the quantity, then Add to order to see the feedback banner animate in.
  */
 export const Interactive: Story = {
     name: 'Interactive — Customise & Add',

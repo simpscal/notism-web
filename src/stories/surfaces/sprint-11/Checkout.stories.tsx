@@ -17,10 +17,12 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { formatVnd } from '@/app/utils';
+import { cn, formatVnd } from '@/app/utils';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Label } from '@/components/label';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
+import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Textarea } from '@/components/textarea';
 
 // ---------------------------------------------------------------------------
@@ -33,23 +35,26 @@ import { Textarea } from '@/components/textarea';
 // Theme conformance (see §-references in DESIGN_THEME.md):
 //   • Two-tone hierarchy (§1, §2): BLACK for structural/selection controls,
 //     RED (accent-primary) for commerce — prices + the single irreversible CTA.
-//   • Payment method = Segmented Choice (§5): a row of single-select pills,
-//     active = solid BLACK fill, idle = white + hairline, hover = border darken.
-//     Crimson is deliberately NOT used for selection.
+//   • Payment method = single-select RadioGroup (§5): a vertical list of option
+//     rows (radio dot + icon + title + hint); the chosen row is highlighted with
+//     a BLACK hairline + tinted fill. Selection is a real radio group — never a
+//     Button in a "selected" style. Crimson is reserved for prices + the CTA.
 //   • Order review = Summary Panel pattern (§5): line items → dashed divider →
 //     promo-code row (Promo/Tag Pill) → discount/delivery breakdown → bold RED
 //     total → RED Final CTA pinned at the bottom.
 //   • Final/Checkout CTA (§5): full-width RED pill, white bold text, NO split —
-//     it is the ONE loudest red action on the surface (the place-order step).
+//     it is the ONE loudest red action on the surface (the place-order step). The
+//     only Button on the surface is this commit action (+ the toolbar Cart).
 //   • Layout (§6): single-column form, max ~40rem, labels ABOVE fields, never
 //     multi-column.
 //   • Spacing & Shape (§4): 8px grid, 20–24px card radius, one soft shadow on
 //     floating panels only; dashed border reserved for the summary divider.
 //   • States (§8): validation error says what to do NEXT; free delivery is
 //     GREEN (success), never red; discounts are red and prefixed with "-".
-//   • Chrome (§6): the shared floating rounded toolbar (brand left, category nav
-//     centre, search + Cart right); the checkout progress remains a labelled
-//     placeholder (this sprint only conforms the form body).
+//   • Chrome (§6): the shared domain-blind NavBar (consumer variant) as the
+//     floating rounded toolbar (brand left, category nav centre via aria-current,
+//     search + Cart right); the checkout progress remains a labelled placeholder
+//     (this sprint only conforms the form body).
 //
 // Self-contained: @/components/* + mock-only fixtures. No api / store / model /
 // page imports.
@@ -129,49 +134,44 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Payment method — Segmented Choice (§5): a row of single-select pills. Active =
-// solid BLACK fill (selected token); idle = white + hairline, hover darkens the
-// border. Crimson is intentionally absent — selection is black, price/CTA are red.
+// Payment method — a single-select RadioGroup (§5): a vertical list of option
+// rows. Selection is a real radio group (RadioGroupItem), never a Button in a
+// "selected" style. The chosen row is highlighted with a BLACK hairline + a faint
+// tinted fill; crimson stays reserved for prices + the CTA.
 // ---------------------------------------------------------------------------
 
-interface MethodPillProps {
+interface PaymentOptionProps {
+    value: PaymentMethod;
     selected: boolean;
     icon: React.ReactNode;
     title: string;
     hint: string;
-    onSelect: () => void;
 }
 
-function MethodPill({ selected, icon, title, hint, onSelect }: MethodPillProps) {
+function PaymentOption({ value, selected, icon, title, hint }: PaymentOptionProps) {
+    const id = `checkout-pay-${value}`;
     return (
-        <button
-            type='button'
-            role='radio'
-            aria-checked={selected}
-            onClick={onSelect}
-            className={[
-                'flex flex-1 items-center gap-3 rounded-full border px-5 py-3 text-left transition-colors duration-200',
-                'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
-                selected
-                    ? 'border-selected bg-selected text-selected-foreground'
-                    : 'border-border bg-background text-foreground hover:border-foreground/40',
-            ].join(' ')}
+        <Label
+            htmlFor={id}
+            className={cn(
+                'flex cursor-pointer items-center gap-3 rounded-[1.25rem] border px-5 py-4 transition-colors',
+                selected ? 'border-foreground bg-muted/40' : 'border-border bg-background hover:border-foreground/40'
+            )}
         >
+            <RadioGroupItem id={id} value={value} />
             <span
-                className={[
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
-                    selected ? 'bg-selected-foreground/15 text-selected-foreground' : 'bg-muted text-foreground',
-                ].join(' ')}
+                className={cn(
+                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+                    selected ? 'bg-selected text-selected-foreground' : 'bg-muted text-foreground'
+                )}
             >
                 {icon}
             </span>
-            <span className='flex min-w-0 flex-col leading-tight'>
-                <span className='text-sm font-semibold'>{title}</span>
-                <span className={selected ? 'text-xs text-selected-foreground/70' : 'text-xs text-muted-foreground'}>
-                    {hint}
-                </span>
+            <span className='flex min-w-0 flex-col gap-0.5 leading-tight'>
+                <span className='text-sm font-semibold text-foreground'>{title}</span>
+                <span className='text-xs font-normal text-muted-foreground'>{hint}</span>
             </span>
-        </button>
+        </Label>
     );
 }
 
@@ -321,9 +321,11 @@ function FinalCta({ method, onPlaceOrder }: { method: PaymentMethod; onPlaceOrde
 }
 
 // ---------------------------------------------------------------------------
-// Floating rounded toolbar — the shared top-nav chrome (§6): a large-radius bar
-// floating inside the shell. Brand left, category nav centre (active = white
-// pill + red icon/label), search + red Cart pill right.
+// Floating rounded toolbar — the shared, domain-blind NavBar (consumer variant):
+// a large-radius rounded bar floating inside the shell (§6). Brand slot left ·
+// nav-items region centre (the active tab is a real navigation selection via
+// NavBarItem's aria-current — a white pill w/ crimson icon+label, never a Button
+// in a "selected" style) · actions slot right (search + the black Cart pill).
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS = [
@@ -336,37 +338,25 @@ const NAV_ITEMS = [
 
 function Toolbar() {
     return (
-        <header className='shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
-            <div className='flex items-center justify-between gap-2 rounded-[1.5rem] border border-border/70 bg-card px-3 py-2 shadow-sm sm:px-4 sm:py-2.5'>
-                {/* Brand */}
-                <div className='flex items-center gap-2 pl-1'>
+        <div className='shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
+            <NavBar variant='consumer'>
+                <NavBarBrand>
                     <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
                         <ChefHat className='h-4 w-4' />
                     </span>
                     <span className='text-lg font-black tracking-tight text-primary'>Notism</span>
-                </div>
+                </NavBarBrand>
 
-                {/* Category nav — centre; collapses on smaller widths */}
-                <nav className='hidden items-center gap-1 lg:flex'>
+                <NavBarNav className='hidden flex-1 justify-center lg:flex'>
                     {NAV_ITEMS.map(({ label, icon: Icon, active }) => (
-                        <span
-                            key={label}
-                            aria-current={active ? 'page' : undefined}
-                            className={[
-                                'flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-colors',
-                                active
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:text-foreground',
-                            ].join(' ')}
-                        >
+                        <NavBarItem key={label} active={active}>
                             <Icon className='h-4 w-4' />
                             {label}
-                        </span>
+                        </NavBarItem>
                     ))}
-                </nav>
+                </NavBarNav>
 
-                {/* Search + Cart pill (brand red — the toolbar's cart CTA) */}
-                <div className='flex items-center gap-2'>
+                <NavBarActions>
                     <span className='flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-background text-foreground'>
                         <Search className='h-4 w-4' />
                     </span>
@@ -374,9 +364,9 @@ function Toolbar() {
                         <ShoppingBag className='h-4 w-4' />
                         Cart
                     </Button>
-                </div>
-            </div>
-        </header>
+                </NavBarActions>
+            </NavBar>
+        </div>
     );
 }
 
@@ -485,29 +475,30 @@ function CheckoutSurface({
                                 </div>
                             </section>
 
-                            {/* Payment method — Segmented Choice (black selection pills) */}
+                            {/* Payment method — single-select RadioGroup (vertical rows) */}
                             <section className='space-y-3'>
                                 <Eyebrow>Payment</Eyebrow>
-                                <div
-                                    role='radiogroup'
+                                <RadioGroup
+                                    value={method}
+                                    onValueChange={value => setMethod(value as PaymentMethod)}
                                     aria-label='Payment method'
-                                    className='flex flex-col gap-3 sm:flex-row'
+                                    className='gap-3'
                                 >
-                                    <MethodPill
+                                    <PaymentOption
+                                        value='cod'
                                         selected={method === 'cod'}
                                         icon={<Banknote className='h-4 w-4' />}
                                         title='Cash on delivery'
                                         hint='Pay when it arrives'
-                                        onSelect={() => setMethod('cod')}
                                     />
-                                    <MethodPill
+                                    <PaymentOption
+                                        value='banking'
                                         selected={method === 'banking'}
                                         icon={<CreditCard className='h-4 w-4' />}
                                         title='Bank transfer'
                                         hint='Scan & pay now'
-                                        onSelect={() => setMethod('banking')}
                                     />
-                                </div>
+                                </RadioGroup>
                                 {method === 'banking' && <BankTransferPanel />}
                             </section>
 

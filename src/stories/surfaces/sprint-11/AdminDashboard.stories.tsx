@@ -1,18 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import {
-    AlertCircle,
-    ChefHat,
-    ClipboardList,
-    LayoutDashboard,
-    Menu,
-    RefreshCw,
-    UtensilsCrossed,
-    Users,
-} from 'lucide-react';
+import { AlertCircle, LayoutDashboard, RefreshCw } from 'lucide-react';
 import React from 'react';
 
 import { cn } from '@/app/utils/tailwind.utils';
-import { Avatar, AvatarFallback } from '@/components/avatar';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import ErrorState from '@/components/error-state';
@@ -32,10 +22,10 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //       dark ambient frame → large-radius light-gray shell → white content
 //       panel (hairline + faint shadow) → white metric cards (hairline,
 //       little/no shadow). No heavy rings or drop shadows.
-//   • The admin nav is the REAL reference-style floating toolbar: a large-
-//     radius rounded bar floating inside the shell with margin all around —
-//     brand left, admin nav centre (active = white pill + crimson icon/label),
-//     live-feed + account right. It stays pinned while the body scrolls.
+//   • The admin nav is NOT this surface's concern — it is owned by the
+//     AdminAppShell surface (shared NavBar variant="admin"). This dashboard is
+//     a page body rendered inside that shell, so the nav region here is a
+//     labeled, muted sticky placeholder, not a re-implemented bar.
 //   • Metric clusters render as on-theme cards — large rounding (rounded-3xl),
 //     clear eyebrow → heading → body hierarchy, comfortable density.
 //   • Price emphasis is crimson (theme: "every price and running total is
@@ -142,86 +132,24 @@ const STATUS_META: Record<OrderStatusKey, { label: string; color: string; blurb:
 };
 
 // ---------------------------------------------------------------------------
-// Floating admin toolbar — the REAL reference-style bar (not a placeholder).
-// A large-radius rounded bar floating inside the shell with margin all around:
-// brand left, admin nav centre (active = white pill + crimson icon/label on a
-// recessed track), live-feed + account right. On mobile it condenses to a
-// rounded floating bar (brand + menu + account) — never full-bleed.
+// Admin nav placeholder — the admin chrome is NOT this surface's concern. The
+// portal-wide top nav is owned by the AdminAppShell surface, where it is the
+// shared, domain-blind NavBar (variant="admin"). This dashboard is a PAGE body
+// rendered inside that shell, so the nav region here is a labeled, muted
+// placeholder (sticky, dashed hairline, mono uppercase label) rather than a
+// re-implemented bar — mirroring the placeholder rule and keeping a single
+// source of truth for the admin nav in AdminAppShell.stories.tsx.
 // ---------------------------------------------------------------------------
 
-type AdminNavKey = 'dashboard' | 'orders' | 'menu' | 'customers';
-
-const ADMIN_NAV: readonly { key: AdminNavKey; label: string; icon: typeof LayoutDashboard }[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { key: 'orders', label: 'Orders', icon: ClipboardList },
-    { key: 'menu', label: 'Menu', icon: UtensilsCrossed },
-    { key: 'customers', label: 'Customers', icon: Users },
-];
-
-function LiveFeedPill() {
+function AdminNavPlaceholder() {
     return (
-        <span className='inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs font-medium text-foreground'>
-            <span className='relative flex h-2 w-2' aria-hidden>
-                <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-[oklch(0.7_0.15_160)] opacity-60' />
-                <span className='relative inline-flex h-2 w-2 rounded-full bg-[oklch(0.62_0.16_160)]' />
+        <div
+            className='sticky top-0 z-30 flex h-14 shrink-0 items-center rounded-3xl border border-dashed border-border bg-card/60 px-4'
+            aria-hidden
+        >
+            <span className='font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground'>
+                Admin nav placeholder — NavBar variant=&quot;admin&quot; (AdminAppShell)
             </span>
-            <span className='hidden sm:inline'>Live feed</span>
-        </span>
-    );
-}
-
-function AdminToolbar({ active = 'dashboard' }: { active?: AdminNavKey }) {
-    return (
-        <div className='flex items-center justify-between gap-3 rounded-3xl border bg-card px-3 py-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:px-4'>
-            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav/structure stay black */}
-            <div className='flex items-center gap-2'>
-                <span className='flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground'>
-                    <ChefHat className='h-5 w-5' aria-hidden />
-                </span>
-                <span className='text-lg font-bold tracking-tight text-primary'>Notism</span>
-                <span className='hidden text-xs font-medium text-muted-foreground sm:inline'>Admin</span>
-            </div>
-
-            {/* Centre nav — recessed track; active = solid black pill + white label (theme §5) */}
-            <nav aria-label='Admin' className='hidden items-center gap-1 rounded-full bg-muted p-1 lg:flex'>
-                {ADMIN_NAV.map(item => {
-                    const Icon = item.icon;
-                    const isActive = item.key === active;
-                    return (
-                        <button
-                            key={item.key}
-                            type='button'
-                            aria-current={isActive ? 'page' : undefined}
-                            className={cn(
-                                'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                                isActive
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:bg-background hover:text-foreground'
-                            )}
-                        >
-                            <Icon className={cn('h-4 w-4', isActive ? 'text-primary' : 'text-muted-foreground')} />
-                            {item.label}
-                        </button>
-                    );
-                })}
-            </nav>
-
-            {/* Right — condensed nav trigger (mobile), live feed + account */}
-            <div className='flex items-center gap-2'>
-                <button
-                    type='button'
-                    aria-label='Open navigation'
-                    className='inline-flex h-9 w-9 items-center justify-center rounded-full border bg-card text-foreground transition-colors hover:bg-muted lg:hidden'
-                >
-                    <Menu className='h-4 w-4' aria-hidden />
-                </button>
-                <LiveFeedPill />
-                <Avatar className='h-9 w-9 border'>
-                    <AvatarFallback className='bg-foreground/10 text-xs font-semibold text-foreground'>
-                        AD
-                    </AvatarFallback>
-                </Avatar>
-            </div>
         </div>
     );
 }
@@ -442,7 +370,7 @@ function RevenueCluster() {
             type='single'
             value={granularity}
             onValueChange={value => value && setGranularity(value as Granularity)}
-            variant='outline'
+            variant='segmented'
             size='sm'
             aria-label='Revenue granularity'
             className='self-start sm:self-auto'
@@ -523,21 +451,21 @@ function ClusterError({ title, description }: { title: string; description: stri
 //
 //   dark ambient frame (fills the viewport)
 //     → large-radius light-gray shell (fills the frame, flex column)
-//        → floating white toolbar (pinned, margin all around)
+//        → sticky admin-nav placeholder (pinned, margin all around)
 //        → scrollable body: white content panel (hairline + faint shadow)
 //           → white metric cards (hairline, no shadow)
 //
 // The shell fills the viewport; only the body scrolls (single scrollbar); the
-// toolbar stays pinned. Sizing uses min-h / flex, never fixed heights.
+// nav region stays pinned. Sizing uses min-h / flex, never fixed heights.
 // ---------------------------------------------------------------------------
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='flex h-screen w-full flex-col bg-[oklch(0.22_0.01_60)] p-3 sm:p-5'>
             <div className='mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-[2rem] bg-muted'>
-                {/* Floating admin toolbar — pinned, margin all around */}
+                {/* Admin nav — owned by AdminAppShell; a muted sticky placeholder here */}
                 <div className='shrink-0 p-3 sm:p-4'>
-                    <AdminToolbar active='dashboard' />
+                    <AdminNavPlaceholder />
                 </div>
 
                 {/* Scrollable body — the only scroll region */}
@@ -582,7 +510,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — the full dashboard on-theme: the floating admin toolbar pinned above
+ * Default — the full dashboard on-theme: the sticky admin-nav placeholder pinned above
  * a scrollable body, today's-sales metric cards (revenue in crimson), the
  * status-bearing "orders by status" cluster (each state carries a consistent
  * colour AND a word label), and revenue-over-time with a word-based granularity

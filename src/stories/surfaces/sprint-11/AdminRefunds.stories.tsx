@@ -6,14 +6,8 @@ import {
     Clock,
     Copy,
     Eye,
-    LayoutDashboard,
-    Package,
     QrCode,
-    Receipt,
     RotateCcw,
-    Tags,
-    UtensilsCrossed,
-    Users,
     type LucideIcon,
 } from 'lucide-react';
 import React from 'react';
@@ -36,12 +30,17 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 // DESIGN_THEME.md. Behaviour is unchanged from src/pages/admin/refunds/ and
 // src/pages/admin/refund-detail/ — same statuses, tabs, cards and confirm flow.
 //
+// The admin top nav is owned by the AdminAppShell (which carries the shared
+// NavBar variant="admin"), so it is a labelled sticky placeholder here rather
+// than a re-implemented bar — consistent with sibling AdminOrderDetail.
+//
 // Design-system conformance (DESIGN_THEME.md):
 //   • Two-tone: RED (`primary`) is reserved for REFUND AMOUNTS / PRICES only —
-//     it is the one loudest thing per screen. Every structural action (nav
-//     pills, filter chips, Approve / Retry, dialog confirm) is BLACK
-//     (`selected` token). Status is a WORD label + one consistent colour per
-//     state — never red, never colour alone.
+//     it is the one loudest thing per screen. Every structural action (filter
+//     tabs, Approve / Retry, dialog confirm) is BLACK (`selected` token).
+//     The refund-status filter is a real selection — Tabs with aria-current,
+//     never a Button in a selected style. Status is a WORD label + one
+//     consistent colour per state — never red, never colour alone.
 //   • Named components: Filter Chips group the list by status; Summary / VietQR
 //     / Transfer render as white cards; the refund summary follows the Summary
 //     Panel pattern (rows → dashed divider → bold total); order refs render as
@@ -233,31 +232,35 @@ function StatusBadge({ status }: { status: RefundStatus }) {
 }
 
 // ---------------------------------------------------------------------------
-// Frame + shell + toolbar — dark ambient frame → light-grey shell → white
-// floating surfaces, one gentle step per level. The admin toolbar is a real
-// reference-style floating rounded bar (brand left, centred nav with a BLACK
-// active pill, live feed + account right), pinned while the content scrolls.
+// Nav placeholder — the admin top nav is owned by the AdminAppShell (which
+// carries the shared NavBar variant="admin"); this surface does not re-implement
+// it. It renders as a labelled, muted, dashed sticky bar pinned at the top of
+// the shell — consistent with sibling AdminOrderDetail.
 // ---------------------------------------------------------------------------
 
-interface AdminNavItem {
-    key: string;
-    label: string;
-    icon: LucideIcon;
+function NavPlaceholder() {
+    return (
+        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-5 sm:pt-5'>
+            <div className='bg-card/60 flex h-14 items-center justify-center rounded-full border border-dashed border-border'>
+                <span className='text-muted-foreground/60 font-mono text-[10px] uppercase tracking-widest'>
+                    admin top nav placeholder
+                </span>
+            </div>
+        </div>
+    );
 }
 
-const NAV_ITEMS: AdminNavItem[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { key: 'orders', label: 'Orders', icon: Package },
-    { key: 'refunds', label: 'Refunds', icon: Receipt },
-    { key: 'foods', label: 'Foods', icon: UtensilsCrossed },
-    { key: 'categories', label: 'Categories', icon: Tags },
-    { key: 'users', label: 'Users', icon: Users },
-];
+// ---------------------------------------------------------------------------
+// Shell — dark ambient frame → ONE large-radius light-grey shell filling the
+// viewport → white floating surfaces, one gentle step per level. The nav
+// placeholder is pinned at the top; only the refunds content scrolls beneath it
+// (single scroll region, no double scrollbars).
+// ---------------------------------------------------------------------------
 
-// Dark ambient backdrop with a faint decorative motif — never carries content.
-function AmbientFrame({ children }: { children: React.ReactNode }) {
+function AdminShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='bg-frame relative flex h-screen w-full flex-col overflow-hidden'>
+            {/* Decorative dot-grid motif — very low contrast, never interactive */}
             <div
                 aria-hidden
                 className='pointer-events-none absolute inset-0 opacity-[0.05]'
@@ -266,100 +269,19 @@ function AmbientFrame({ children }: { children: React.ReactNode }) {
                     backgroundSize: '26px 26px',
                 }}
             />
-            {children}
-        </div>
-    );
-}
 
-// Right-hand live new-order feed pill — green = positive/live signal (§8).
-function LiveFeedPill() {
-    return (
-        <span className='border-success/30 bg-success/10 text-success hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium md:inline-flex'>
-            <span className='relative flex h-2 w-2'>
-                <span className='bg-success/60 absolute inline-flex h-full w-full animate-ping rounded-full' />
-                <span className='bg-success relative inline-flex h-2 w-2 rounded-full' />
-            </span>
-            Live orders on
-        </span>
-    );
-}
-
-// Nav control — active = solid BLACK pill, white text + icon (§5 Navigation
-// Tabs); idle = muted text, hover darkens toward ink. Icon-only below lg.
-function NavItem({ item, active }: { item: AdminNavItem; active: boolean }) {
-    const Icon = item.icon;
-    return (
-        <button
-            type='button'
-            aria-current={active ? 'page' : undefined}
-            className={cn(
-                'inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-colors',
-                active
-                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                    : 'text-muted-foreground hover:text-foreground'
-            )}
-        >
-            <Icon className='h-4 w-4' aria-hidden />
-            <span className='hidden lg:inline'>{item.label}</span>
-        </button>
-    );
-}
-
-// The floating rounded admin toolbar — white, large-radius, one soft shadow.
-function AdminToolbar() {
-    return (
-        <div
-            className={cn(
-                'bg-card/90 flex items-center gap-2 rounded-[1.5rem] border border-border px-2.5 py-2 backdrop-blur sm:px-4',
-                SOFT_SHADOW
-            )}
-        >
-            {/* Brand — wordmark carries the accent RED as identity (theme §2); active nav item = red highlight, Cart/actions stay black */}
-            <div className='flex items-center gap-2 pr-1 pl-1 sm:pr-3'>
-                <span className='text-primary text-lg font-semibold tracking-tight'>Notism</span>
-                <span className='bg-secondary text-secondary-foreground hidden rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase sm:inline'>
-                    Admin
-                </span>
-            </div>
-
-            {/* Nav — centred, scrollable if it overflows on narrow widths */}
-            <nav className='flex min-w-0 flex-1 items-center justify-center gap-0.5 overflow-x-auto'>
-                {NAV_ITEMS.map(item => (
-                    <NavItem key={item.key} item={item} active={item.key === 'refunds'} />
-                ))}
-            </nav>
-
-            {/* Live feed + account */}
-            <div className='flex items-center gap-2 pl-1 sm:pl-3'>
-                <LiveFeedPill />
-                <span className='bg-foreground text-background flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold'>
-                    TM
-                </span>
-            </div>
-        </div>
-    );
-}
-
-// Shell — light-grey surface that fills the viewport; the toolbar is pinned and
-// only `children` scroll beneath it (single scroll region, no clipping).
-function AdminShell({ children }: { children: React.ReactNode }) {
-    return (
-        <AmbientFrame>
             <div
                 className={cn(
                     'bg-muted relative z-10 mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col overflow-hidden rounded-[2rem] ring-1 ring-black/5 sm:m-4',
                     SOFT_SHADOW
                 )}
             >
-                {/* Floating toolbar — margin all around, pinned above the scroll area */}
-                <div className='shrink-0 px-3 pt-3 sm:px-5 sm:pt-5'>
-                    <AdminToolbar />
-                </div>
+                <NavPlaceholder />
 
                 {/* Only the refunds content scrolls */}
                 <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
             </div>
-        </AmbientFrame>
+        </div>
     );
 }
 

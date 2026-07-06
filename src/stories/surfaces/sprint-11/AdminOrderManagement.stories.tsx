@@ -1,28 +1,32 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
-    BarChart3,
     CheckCircle2,
-    ChefHat,
     Eye,
     Grid3x3,
+    LayoutDashboard,
     LayoutGrid,
     MoreVertical,
     Package,
     Radio,
+    Receipt,
     Search,
     StickyNote,
+    Tags,
     Truck,
-    UsersRound,
+    Users,
     UtensilsCrossed,
+    type LucideIcon,
 } from 'lucide-react';
 import React from 'react';
 
 import { Avatar, AvatarFallback } from '@/components/avatar';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 import Kanban, { type KanbanColumn } from '@/components/kanban';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import Spinner from '@/components/spinner';
 import {
     SortableTableHead,
@@ -301,38 +305,34 @@ function OrderCard({ order }: { order: OrderRow }) {
 }
 
 // ---------------------------------------------------------------------------
-// Board header — page title + the two on-theme single-select controls:
-// payment-status Filter Chips and view-toggle Segmented Choice (DESIGN_THEME
-// §5). Both are BLACK single-select controls — active = solid black fill, white
-// text (never crimson: red is reserved for price). Exactly one selection each.
+// Board header — page title + the two on-theme single-select controls, both the
+// shared segmented ToggleGroup: the payment-status filter and the view toggle.
+// Neither uses a Button to signal the active choice — the active segment is the
+// ink fill (bg-selected) the segmented variant provides, keeping crimson
+// reserved for price. Exactly one selection each (deselect is guarded away).
 // ---------------------------------------------------------------------------
 
 type ViewMode = 'kanban' | 'grid';
 
-/** Filter Chips — pill row, ~36px height, single-select, active = solid black. */
-function PaymentFilterChips({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) {
+/**
+ * Payment-status filter — shared ToggleGroup, segmented variant. Single-select,
+ * active segment = ink fill; no Button carries the selected state.
+ */
+function PaymentFilterToggle({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) {
     return (
-        <div role='radiogroup' aria-label='Filter by payment status' className='flex flex-wrap items-center gap-2'>
-            {PAYMENT_FILTER_OPTIONS.map(option => {
-                const active = value === option.value;
-                return (
-                    <button
-                        key={option.value}
-                        type='button'
-                        role='radio'
-                        aria-checked={active}
-                        onClick={() => onValueChange(option.value)}
-                        className={`inline-flex h-9 items-center rounded-full border px-4 text-sm font-semibold transition-colors ${
-                            active
-                                ? 'border-transparent bg-selected text-selected-foreground hover:bg-selected/90'
-                                : 'border-border bg-card text-muted-foreground hover:border-foreground/40 hover:text-foreground'
-                        }`}
-                    >
-                        {option.label}
-                    </button>
-                );
-            })}
-        </div>
+        <ToggleGroup
+            type='single'
+            value={value}
+            onValueChange={next => next && onValueChange(next)}
+            variant='segmented'
+            aria-label='Filter by payment status'
+        >
+            {PAYMENT_FILTER_OPTIONS.map(option => (
+                <ToggleGroupItem key={option.value} value={option.value} className='h-9 px-4 text-sm font-semibold'>
+                    {option.label}
+                </ToggleGroupItem>
+            ))}
+        </ToggleGroup>
     );
 }
 
@@ -358,28 +358,25 @@ function BoardHeader({
             </div>
 
             <div className='flex flex-wrap items-center gap-3'>
-                <PaymentFilterChips value={paymentFilter} onValueChange={onPaymentFilterChange} />
+                <PaymentFilterToggle value={paymentFilter} onValueChange={onPaymentFilterChange} />
 
-                {/* View toggle — Segmented Choice: one pill container, active segment = black fill. */}
+                {/* View toggle — same shared segmented ToggleGroup, active segment = ink fill. */}
                 <ToggleGroup
                     type='single'
                     value={viewMode}
                     onValueChange={value => value && onViewModeChange(value as ViewMode)}
-                    className='gap-1 rounded-full bg-secondary p-1'
+                    variant='segmented'
+                    aria-label='Switch board view'
                 >
                     <ToggleGroupItem
                         value='kanban'
                         aria-label='Kanban view'
-                        className='h-8 gap-1.5 rounded-full! px-3.5 text-muted-foreground data-[state=on]:shadow-sm'
+                        className='h-9 gap-1.5 px-3.5 font-semibold'
                     >
                         <LayoutGrid className='h-4 w-4' aria-hidden />
                         Board
                     </ToggleGroupItem>
-                    <ToggleGroupItem
-                        value='grid'
-                        aria-label='Table view'
-                        className='h-8 gap-1.5 rounded-full! px-3.5 text-muted-foreground data-[state=on]:shadow-sm'
-                    >
+                    <ToggleGroupItem value='grid' aria-label='Table view' className='h-9 gap-1.5 px-3.5 font-semibold'>
                         <Grid3x3 className='h-4 w-4' aria-hidden />
                         Table
                     </ToggleGroupItem>
@@ -527,65 +524,63 @@ function OrdersKanbanView({ orders }: { orders: OrderRow[] }) {
 }
 
 // ---------------------------------------------------------------------------
-// Floating admin toolbar — the real, reference-style chrome (not a placeholder):
-// a large-radius rounded bar floating INSIDE the shell with margin all around,
-// light/white over the gray shell. Brand left · admin nav centre · live-feed +
-// account right. The active nav item is a solid black pill with white text (§5),
-// keeping red reserved for price. On mobile the bar stays rounded and floating
-// (never full-bleed); nav condenses to icons.
+// Admin toolbar — the shared, domain-blind NavBar (variant="admin"), matching
+// sibling AdminAppShell.stories.tsx: brand + Admin badge (left) · admin nav
+// (centre, NavBarNav/NavBarItem — the active route is a real navigation
+// selection via aria-current, rendered as the variant's ink active pill, never
+// a Button in a selected style) · live-feed indicator + account (right). Given
+// the floating-shell aesthetic, the bar is composed rounded/floating over the
+// gray shell via additive className; its selection + colour roles are the
+// component's own. Red stays reserved for price.
 // ---------------------------------------------------------------------------
 
-const ADMIN_NAV: { key: string; label: string; icon: typeof Package; active?: boolean }[] = [
-    { key: 'orders', label: 'Orders', icon: Package, active: true },
-    { key: 'menu', label: 'Menu', icon: UtensilsCrossed },
-    { key: 'customers', label: 'Customers', icon: UsersRound },
-    { key: 'analytics', label: 'Analytics', icon: BarChart3 },
+const ADMIN_NAV: { key: string; label: string; icon: LucideIcon }[] = [
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { key: 'orders', label: 'Orders', icon: Package },
+    { key: 'refunds', label: 'Refunds', icon: Receipt },
+    { key: 'foods', label: 'Foods', icon: UtensilsCrossed },
+    { key: 'categories', label: 'Categories', icon: Tags },
+    { key: 'users', label: 'Users', icon: Users },
 ];
 
-function AdminToolbar() {
+function AdminToolbar({ activePage = 'orders' }: { activePage?: string }) {
     return (
-        <nav className='flex shrink-0 items-center justify-between gap-3 rounded-full border border-border/60 bg-card px-3 py-2 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:px-4'>
-            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav pills stay black. */}
-            <div className='flex items-center gap-2 pl-1 pr-2'>
-                <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
-                    <ChefHat className='h-4 w-4' aria-hidden />
-                </span>
-                <span className='hidden text-base font-bold tracking-tight text-primary sm:inline'>Notism</span>
-            </div>
+        <NavBar
+            variant='admin'
+            className='h-16 shrink-0 rounded-full border-b-0 px-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:px-4'
+        >
+            {/* Left — brand + Admin badge */}
+            <NavBarBrand className='pl-1'>
+                <span className='text-lg font-semibold tracking-tight text-primary'>Notism</span>
+                <Badge variant='secondary' className='px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wide'>
+                    Admin
+                </Badge>
+            </NavBarBrand>
 
-            {/* Admin nav — centre; active = solid black pill + white icon/label (§5). */}
-            <div className='flex items-center gap-1'>
+            {/* Centre — admin nav; active route = ink pill via aria-current, never a Button */}
+            <NavBarNav className='flex-1 justify-center'>
                 {ADMIN_NAV.map(item => {
                     const Icon = item.icon;
                     return (
-                        <button
-                            key={item.key}
-                            type='button'
-                            aria-current={item.active ? 'page' : undefined}
-                            className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
-                                item.active
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:text-foreground'
-                            }`}
-                        >
+                        <NavBarItem key={item.key} active={item.key === activePage}>
                             <Icon className='h-4 w-4' aria-hidden />
                             <span className='hidden lg:inline'>{item.label}</span>
-                        </button>
+                        </NavBarItem>
                     );
                 })}
-            </div>
+            </NavBarNav>
 
-            {/* Live-feed + account — right. */}
-            <div className='flex items-center gap-2 pr-1'>
-                <span className='hidden items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground sm:inline-flex'>
-                    <Radio className='h-3.5 w-3.5 text-success' aria-hidden />
-                    Live feed
+            {/* Right — live feed + account */}
+            <NavBarActions className='gap-3'>
+                <span className='hidden items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success sm:inline-flex'>
+                    <Radio className='h-3.5 w-3.5' aria-hidden />
+                    Live orders on
                 </span>
                 <Avatar className='h-8 w-8 border border-border/60'>
                     <AvatarFallback className='bg-secondary text-xs font-semibold text-foreground'>AD</AvatarFallback>
                 </Avatar>
-            </div>
-        </nav>
+            </NavBarActions>
+        </NavBar>
     );
 }
 
