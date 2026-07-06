@@ -24,6 +24,7 @@ function ToggleGroup({
             data-size={size}
             className={cn(
                 'group/toggle-group flex w-fit items-center rounded-md data-[variant=outline]:shadow-xs',
+                variant === 'segmented' && 'gap-1 rounded-full bg-muted p-1',
                 className
             )}
             {...props}
@@ -41,18 +42,22 @@ function ToggleGroupItem({
     ...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> & VariantProps<typeof toggleVariants>) {
     const context = React.useContext(ToggleGroupContext);
+    const resolvedVariant = context.variant || variant;
 
     return (
         <ToggleGroupPrimitive.Item
             data-slot='toggle-group-item'
-            data-variant={context.variant || variant}
+            data-variant={resolvedVariant}
             data-size={context.size || size}
             className={cn(
                 toggleVariants({
-                    variant: context.variant || variant,
+                    variant: resolvedVariant,
                     size: context.size || size,
                 }),
-                'min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l',
+                'min-w-0 flex-1 shrink-0 shadow-none focus:z-10 focus-visible:z-10',
+                resolvedVariant === 'segmented'
+                    ? 'rounded-full'
+                    : 'rounded-none first:rounded-l-md last:rounded-r-md data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l',
                 className
             )}
             {...props}

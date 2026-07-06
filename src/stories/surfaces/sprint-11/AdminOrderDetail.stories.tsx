@@ -2,30 +2,26 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
     AlertTriangle,
     ArrowLeft,
-    BarChart3,
-    BookOpen,
+    CheckCircle2,
     Check,
-    LayoutDashboard,
     Loader2,
     Package,
-    ReceiptText,
-    Radio,
     StickyNote,
-    Users,
+    Truck,
     UtensilsCrossed,
     Wallet,
+    type LucideIcon,
 } from 'lucide-react';
 import React from 'react';
 
-import { cn } from '@/app/utils/index';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
+import Timeline from '@/components/timeline';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 // ---------------------------------------------------------------------------
 // Surface: AdminOrderDetail (route /admin/orders/:slugId) — RESTYLE ONLY.
@@ -34,34 +30,27 @@ import Spinner from '@/components/spinner';
 // (order items, running total, payment method + notes, payment details, the
 // payment-status update action) and the same flow (back-to-orders link → order
 // header → delivery timeline → items + summary + payment detail cards, with the
-// status-update panel in the right rail). Only the VISUALS + UX are brought
-// on-theme per DESIGN_THEME.md:
+// status-update panel in the right rail). Only the VISUALS + UX are on-theme:
 //
 //   • Cards — items + payment details render as on-theme white cards on the
 //     light shell, large-radius, with an eyebrow micro-label + heading + quiet
-//     body hierarchy (max 3 levels). Order lines carry a circular thumbnail.
+//     body hierarchy. Order lines carry a circular thumbnail.
 //   • Two-tone hierarchy — RED is reserved for money: every line price and the
-//     running total, and that is the ONE loudest red on the screen. The
-//     status-update commit ("Save status" + the dialog's Confirm) is a BLACK
-//     structural primary — no commerce lives here, so it never goes red. The
-//     status <Select> is a quiet white selection control; "Back to orders" is a
-//     ghost; the confirm dialog is a ≤2-field edit. No red CTA competes with price.
+//     running total, the ONE loudest red on the screen. The status-update commit
+//     ("Save status" + the dialog's Confirm) is a BLACK structural primary — no
+//     commerce lives here, so it never goes red.
 //   • Status roles — payment + delivery status show as WORD labels with one
 //     consistent colour each (Badge variants), never colour alone.
 //
-// Shell + chrome (per the reference design):
-//   • Elevation — soft, minimal, one gentle step per level: dark ambient frame →
-//     ONE large-radius light-gray shell → white cards (hairline, faint shadow) →
-//     muted insets. No heavy rings or drop shadows.
-//   • Admin toolbar — a real large-radius rounded bar FLOATING inside the shell
-//     with margin all around: brand left, admin nav centre (active = white pill +
-//     crimson icon/label), live-feed + account right. It stays pinned; the
-//     order-detail content scrolls beneath it inside the shell (no double
-//     scrollbars). On mobile it condenses to a rounded floating bar, never
-//     full-bleed.
-//
-// The delivery-status timeline is the one shell region this sprint does not
-// touch → labelled muted placeholder block.
+// This regeneration adopts the shared kit for three regions:
+//   • Delivery / audit progression → the shared <Timeline> component (no bespoke
+//     step markup). Steps are derived from the order's delivery status.
+//   • Payment-status setter → the shared <ToggleGroup variant="segmented"> as the
+//     single-select control. No Button carries a selected state anywhere on the
+//     surface; the sole selection affordance is the segmented group's own on-state.
+//   • Admin top nav → this surface is a PAGE rendered inside the admin app shell
+//     (AdminAppShell owns the shared NavBar variant="admin"), so the top nav is a
+//     labelled sticky placeholder here rather than a re-implemented bar.
 //
 // Mock-only fixtures; no api/model/state imports. Composed from @/components/*.
 // ---------------------------------------------------------------------------
@@ -86,6 +75,7 @@ interface OrderLine {
 interface OrderDetail {
     slugId: string;
     createdAt: string;
+    createdAtIso: string;
     totalAmount: number;
     paymentMethod: 'cashOnDelivery' | 'banking';
     paymentStatus: PaymentStatus;
@@ -104,6 +94,7 @@ const formatVnd = (amount: number) => `${amount.toLocaleString('vi-VN')} ₫`;
 const ORDER: OrderDetail = {
     slugId: 'ORD-20260704-1042',
     createdAt: '4 July 2026, 12:04',
+    createdAtIso: '2026-07-04T12:04:00',
     totalAmount: 385000,
     paymentMethod: 'banking',
     paymentStatus: 'paid',
@@ -188,6 +179,42 @@ const PAYMENT_METHOD_LABEL: Record<OrderDetail['paymentMethod'], string> = {
 };
 
 // ---------------------------------------------------------------------------
+// Delivery / audit progression — derived into the shared Timeline's item shape.
+// The ordered sequence of delivery states, each with an icon and a description;
+// steps before the current state read as completed (with a timestamp), the
+// current state reads as in-progress, later states stay muted.
+// ---------------------------------------------------------------------------
+
+const DELIVERY_SEQUENCE: { key: DeliveryStatus; icon: LucideIcon; description: string; offsetMinutes: number }[] = [
+    { key: 'orderPlaced', icon: Package, description: 'Order received and confirmed', offsetMinutes: 0 },
+    { key: 'preparing', icon: UtensilsCrossed, description: 'Kitchen is preparing the items', offsetMinutes: 6 },
+    { key: 'onTheWay', icon: Truck, description: 'Rider is heading to the address', offsetMinutes: 24 },
+    { key: 'delivered', icon: CheckCircle2, description: 'Handed to the customer', offsetMinutes: 41 },
+];
+
+function addMinutesIso(iso: string, minutes: number) {
+    const base = new Date(iso);
+    base.setMinutes(base.getMinutes() + minutes);
+    return base.toISOString();
+}
+
+function buildDeliveryTimeline(order: OrderDetail) {
+    const currentIndex = DELIVERY_SEQUENCE.findIndex(step => step.key === order.deliveryStatus);
+    return DELIVERY_SEQUENCE.map((step, index) => {
+        const isCompleted = index < currentIndex;
+        const isCurrent = index === currentIndex;
+        return {
+            title: DELIVERY_LABEL[step.key],
+            description: step.description,
+            icon: step.icon,
+            isCompleted,
+            isCurrent,
+            completedAt: isCompleted ? addMinutesIso(order.createdAtIso, step.offsetMinutes) : null,
+        };
+    });
+}
+
+// ---------------------------------------------------------------------------
 // Eyebrow micro-label — UPPERCASE, letter-spaced, muted (theme treatment).
 // ---------------------------------------------------------------------------
 
@@ -198,20 +225,19 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Placeholder — unchanged shell regions this sprint does not touch.
+// Placeholder — unchanged shell regions this sprint does not touch. The nav
+// variant is a sticky, dashed, pinned bar (the admin top nav is owned by the
+// AdminAppShell, not re-implemented here).
 // ---------------------------------------------------------------------------
 
-function PlaceholderBlock({ label, className }: { label: string; className?: string }) {
+function NavPlaceholder() {
     return (
-        <div
-            className={[
-                'flex items-center justify-center rounded-xl border border-dashed bg-muted/20',
-                className ?? 'h-24',
-            ].join(' ')}
-        >
-            <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
-                {label} placeholder
-            </span>
+        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
+            <div className='flex h-14 items-center justify-center rounded-full border border-dashed border-border bg-card/60'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
+                    admin top nav placeholder
+                </span>
+            </div>
         </div>
     );
 }
@@ -237,6 +263,25 @@ function OrderHeader({ order }: { order: OrderDetail }) {
                 </div>
             </div>
         </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Delivery progression card — the audit progression rendered by the shared
+// Timeline component (adopted in place of the previous bespoke placeholder).
+// ---------------------------------------------------------------------------
+
+function DeliveryTimelineCard({ order }: { order: OrderDetail }) {
+    return (
+        <Card>
+            <CardHeader>
+                <Eyebrow>Progress</Eyebrow>
+                <CardTitle className='text-lg'>Delivery status</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Timeline items={buildDeliveryTimeline(order)} />
+            </CardContent>
+        </Card>
     );
 }
 
@@ -354,10 +399,11 @@ function PaymentDetailsCard({ order }: { order: OrderDetail }) {
 }
 
 // ---------------------------------------------------------------------------
-// Payment-status panel — the RIGHT RAIL. Holds the view's single crimson
-// order-level action ("Save status"). The <Select> is a black selection
-// control; the confirm dialog is a ≤2-field edit (theme: dialog for small
-// edits, one crimson primary per viewport, destructive kept apart).
+// Payment-status panel — the RIGHT RAIL. The single-select control is the shared
+// ToggleGroup (segmented): its own on-state is the only selected affordance. The
+// commit ("Save status") is a black structural primary action (NOT a selection
+// indicator); the confirm dialog is a ≤2-field edit (theme: dialog for small
+// edits, one primary per viewport).
 // ---------------------------------------------------------------------------
 
 function PaymentStatusPanel({
@@ -396,32 +442,27 @@ function PaymentStatusPanel({
 
                 <div className='space-y-1.5'>
                     <Eyebrow>Set status</Eyebrow>
-                    <Select
+                    {/* Single-select control → shared segmented ToggleGroup. The on-state
+                        is the sole selection affordance; no Button carries selection. */}
+                    <ToggleGroup
+                        type='single'
+                        variant='segmented'
                         value={selected}
-                        onValueChange={value => setSelected(value as PaymentStatus)}
+                        onValueChange={value => value && setSelected(value as PaymentStatus)}
                         disabled={isPending}
+                        aria-label='Set payment status'
+                        className='w-full'
                     >
-                        <SelectTrigger className='w-full' aria-label='Set payment status'>
-                            {isPending ? (
-                                <span className='flex items-center gap-2 text-muted-foreground'>
-                                    <Spinner size='sm' />
-                                    Saving…
-                                </span>
-                            ) : (
-                                <SelectValue />
-                            )}
-                        </SelectTrigger>
-                        <SelectContent>
-                            {PAYMENT_STATUS_OPTIONS.map(option => (
-                                <SelectItem key={option.key} value={option.key}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                        {PAYMENT_STATUS_OPTIONS.map(option => (
+                            <ToggleGroupItem key={option.key} value={option.key} aria-label={option.label}>
+                                {option.label}
+                            </ToggleGroupItem>
+                        ))}
+                    </ToggleGroup>
                 </div>
 
-                {/* Black structural primary — status is not commerce, so never red. */}
+                {/* Black structural primary — status is not commerce, so never red.
+                    This is an ACTION button, not a selected-state control. */}
                 <Button
                     className='bg-selected text-selected-foreground hover:bg-selected/90 w-full'
                     disabled={!dirty || isPending}
@@ -470,94 +511,17 @@ function PaymentStatusPanel({
 }
 
 // ---------------------------------------------------------------------------
-// Admin toolbar — a real large-radius rounded bar FLOATING inside the shell with
-// margin all around (per the reference design): brand left, admin nav centre
-// (active = white pill + crimson icon/label), live-feed + account right. Light /
-// white, hairline + faint shadow — one gentle elevation step above the shell. It
-// is pinned (shrink-0) while the content scrolls beneath it. On mobile it
-// condenses (labels + wordmark drop) but stays a rounded floating bar.
-// ---------------------------------------------------------------------------
-
-const ADMIN_NAV: { key: string; label: string; icon: typeof LayoutDashboard; active?: boolean }[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { key: 'orders', label: 'Orders', icon: ReceiptText, active: true },
-    { key: 'menu', label: 'Menu', icon: BookOpen },
-    { key: 'customers', label: 'Customers', icon: Users },
-    { key: 'reports', label: 'Reports', icon: BarChart3 },
-];
-
-function AdminToolbar() {
-    return (
-        <div className='shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
-            <nav className='flex items-center justify-between gap-2 rounded-full border bg-card p-1.5 shadow-sm sm:gap-3 sm:p-2'>
-                {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav pills stay black */}
-                <div className='flex items-center gap-2 pl-1.5 sm:pl-2'>
-                    <span className='flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
-                        <UtensilsCrossed className='size-4' aria-hidden />
-                    </span>
-                    <span className='hidden text-sm font-bold tracking-tight text-primary sm:inline'>
-                        Notism <span className='font-medium text-muted-foreground'>Admin</span>
-                    </span>
-                </div>
-
-                {/* Admin nav — centre; active = white pill + red icon/label (the one toolbar highlight) */}
-                <div className='flex items-center gap-0.5 sm:gap-1'>
-                    {ADMIN_NAV.map(item => {
-                        const Icon = item.icon;
-                        return (
-                            <span
-                                key={item.key}
-                                aria-current={item.active ? 'page' : undefined}
-                                className={cn(
-                                    'flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-3',
-                                    item.active
-                                        ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                )}
-                            >
-                                <Icon className='size-4' aria-hidden />
-                                <span className='hidden lg:inline'>{item.label}</span>
-                            </span>
-                        );
-                    })}
-                </div>
-
-                {/* Live-feed + account — right */}
-                <div className='flex items-center gap-1.5 pr-0.5 sm:gap-2'>
-                    <span className='hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground sm:flex'>
-                        <span className='relative flex size-2'>
-                            <span className='absolute inline-flex size-full animate-ping rounded-full bg-success/60' />
-                            <span className='relative inline-flex size-2 rounded-full bg-success' />
-                        </span>
-                        Live feed
-                    </span>
-                    <Radio className='size-5 text-muted-foreground sm:hidden' aria-hidden />
-                    <Avatar className='size-8'>
-                        <AvatarImage
-                            src='https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&q=80'
-                            alt=''
-                            referrerPolicy='no-referrer'
-                        />
-                        <AvatarFallback>AD</AvatarFallback>
-                    </Avatar>
-                </div>
-            </nav>
-        </div>
-    );
-}
-
-// ---------------------------------------------------------------------------
 // Surface shell — dark ambient frame → ONE large-radius light-gray shell filling
-// the viewport → white cards. The toolbar is pinned at the top of the shell; the
-// order-detail body scrolls beneath it in a single scroll region (no double
-// scrollbars). min-h / flex over fixed heights.
+// the viewport → white cards. The admin top nav (owned by AdminAppShell) is a
+// pinned placeholder at the top of the shell; the order-detail body scrolls
+// beneath it in a single scroll region (no double scrollbars).
 // ---------------------------------------------------------------------------
 
 function AdminOrderDetailSurface({ body }: { body: React.ReactNode }) {
     return (
         <div className='flex h-screen flex-col bg-frame p-2 sm:p-4'>
             <div className='mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] bg-muted'>
-                <AdminToolbar />
+                <NavPlaceholder />
 
                 <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-6 pt-4 sm:px-6 sm:pb-8 sm:pt-6'>
                     <div className='mx-auto w-full max-w-5xl'>{body}</div>
@@ -588,9 +552,7 @@ function OrderDetailBody({
 
                 <div className='grid gap-6 lg:grid-cols-3'>
                     <div className='space-y-6 lg:col-span-2'>
-                        {/* Delivery timeline — unchanged region → placeholder */}
-                        <PlaceholderBlock label='delivery-status timeline' className='h-28' />
-
+                        <DeliveryTimelineCard order={order} />
                         <OrderItemsCard order={order} />
                         <PaymentDetailsCard order={order} />
                     </div>
@@ -621,10 +583,10 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Default — a paid order rendered on-theme: order header with the running total
- * in crimson, order items as a card (circular thumbnails, line prices crimson),
- * the payment-details card, and the right-rail payment-status panel whose "Save
- * status" is the single crimson order-level action. Payment + delivery status
- * show as word labels with a consistent colour.
+ * in crimson, the shared Timeline showing the delivery progression (Order placed
+ * completed, Preparing in progress), order items as a card (line prices crimson),
+ * the payment-details card, and the right-rail payment-status panel. The status
+ * setter is a segmented ToggleGroup; "Save status" is the single black action.
  */
 export const Default: Story = {
     name: 'Default — Paid Order, Items + Payment',
@@ -633,8 +595,8 @@ export const Default: Story = {
 
 /**
  * Partial — an unpaid cash-on-delivery order: no payment-details card yet, the
- * status badge reads "Unpaid" (secondary), and the right-rail panel is ready to
- * mark it paid. "Save status" stays the one crimson action for the view.
+ * status badge reads "Unpaid" (secondary), the Timeline sits at "Order placed",
+ * and the right-rail segmented control is ready to mark it paid.
  */
 export const Unpaid: Story = {
     name: 'Partial — Unpaid Order (No Payment Details Yet)',
@@ -642,9 +604,9 @@ export const Unpaid: Story = {
 };
 
 /**
- * Success — the status-update action in flight: the select shows "Saving…" and
- * the crimson primary reads "Saving status" while the mutation runs (mirrors the
- * page's isPaymentStatusPending state).
+ * Success — the status-update action in flight: the segmented control is disabled
+ * and the black primary reads "Saving status" while the mutation runs (mirrors
+ * the page's isPaymentStatusPending state).
  */
 export const Saving: Story = {
     name: 'Success — Status Update In Progress',
@@ -652,9 +614,9 @@ export const Saving: Story = {
 };
 
 /**
- * Interactive — pick a new payment status, then Save: the confirm dialog (a
- * ≤2-field edit) opens before the change is applied, matching the page's
- * confirm-before-update flow. Confirming logs the chosen status.
+ * Interactive — pick a new payment status on the segmented control, then Save:
+ * the confirm dialog (a ≤2-field edit) opens before the change is applied,
+ * matching the page's confirm-before-update flow. Confirming applies the status.
  */
 export const Interactive: Story = {
     name: 'Interactive — Update Payment Status (Confirm)',
@@ -727,7 +689,7 @@ export const ErrorState: Story = {
 
 /**
  * Empty — an order with no line items (an edge state): the items card shows a
- * quiet empty message while the summary + payment panel still render.
+ * quiet empty message while the Timeline, summary + payment panel still render.
  */
 export const Empty: Story = {
     name: 'Empty — Order With No Items',

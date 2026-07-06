@@ -49,6 +49,23 @@ export const SingleSelect: Story = {
     ),
 };
 
+export const Segmented: Story = {
+    args: { type: 'single' },
+    render: () => (
+        <ToggleGroup type='single' variant='segmented' defaultValue='month'>
+            <ToggleGroupItem value='day' aria-label='Day'>
+                Day
+            </ToggleGroupItem>
+            <ToggleGroupItem value='week' aria-label='Week'>
+                Week
+            </ToggleGroupItem>
+            <ToggleGroupItem value='month' aria-label='Month'>
+                Month
+            </ToggleGroupItem>
+        </ToggleGroup>
+    ),
+};
+
 export const Outline: Story = {
     args: { type: 'multiple' },
     render: () => (

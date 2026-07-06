@@ -13,41 +13,37 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
+import { Avatar, AvatarFallback } from '@/components/avatar';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import Spinner from '@/components/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
 
 // ---------------------------------------------------------------------------
 // Surface — AdminAppShell (Sprint 11), route: wraps all /admin routes.
 //
-// RESTYLE ONLY. Business functionality is unchanged from src/layouts/admin/ —
-// same nav model (Dashboard, Orders, Refunds, Foods, Categories, Users), same
-// portal-wide live new-order feed indicator in the toolbar, same table-oriented
-// content region, NO order sidebar (admin, not consumer). What changes is the
-// VISUAL LANGUAGE — a soft, minimal elevation matched to the reference:
+// The admin chrome is unified on the shared, domain-blind NavBar
+// (variant="admin"): a bordered ink-active bar carrying the brand, the admin
+// nav, and the portal-wide live new-order feed + account controls. Navigation
+// selection is a real navigation selection — NavBarItem's aria-current, an ink
+// pill for the current route — never a Button in a selected style. No filter or
+// segmented control lives in this shell, so the audit for selected-state
+// Buttons resolves to nav selection alone.
 //
-//   • Elevation — one gentle step per level: a dark ambient frame → a large-radius
-//     light shell → a white content panel (hairline) → white cards / table
-//     container (hairline). A single soft shadow rides the floating panels only;
-//     no heavy rings.
-//   • Floating toolbar — the admin top nav is a large-radius rounded bar that
-//     FLOATS inside the shell with margin all around (never edge-to-edge),
-//     white. Brand left; admin nav centre; live new-order feed + account right.
-//     The ACTIVE nav item is a solid black pill with white text + a leading icon
-//     (theme §5); idle items stay quiet and darken on hover. This surface owns
-//     the canonical admin toolbar. On mobile it stays a condensed floating bar.
-//   • Scrolling — the shell fills the viewport; the table content zone scrolls
-//     independently while the toolbar stays pinned; no double page scrollbars.
-//   • Color roles — crimson reserved for prices/totals + urgency (the live feed);
-//     one loudest red per screen. Active nav is black, not red. Status is shown
-//     in words + a consistent colour, never colour alone.
+// Elevation (derived from the codebase's shell language, mirrored from the
+// consumer shell): a dark charcoal ambient frame (decorative line-art, never
+// interactive) sits behind ONE large-radius light-gray shell; the shell pins
+// the NavBar above an independently scrolling white content panel that holds a
+// table-oriented working zone. NO order sidebar — this is admin, not consumer.
+//
+// Color roles: crimson reserved for prices/totals + urgency (the live feed);
+// active nav is ink (bg-selected), not red; status is shown in words + a
+// consistent colour, never colour alone.
 //
 // Mock-only fixtures; no api / model / store / i18n / layout-source imports.
-// The shell chrome is re-composed inline from @/components/* (mirroring the
-// Sprint-8 AdminLiveOrderFeed story convention) so the story is self-contained.
-// The admin PAGE body is a labelled, table-oriented placeholder content region —
-// pages are not part of this restyle.
+// The admin PAGE body is a table-oriented placeholder content region — pages
+// are not part of this restyle.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -73,10 +69,9 @@ const NAV_ITEMS: AdminNavItem[] = [
 const MOBILE_NAV_ITEMS: AdminNavItem[] = NAV_ITEMS.slice(0, 4);
 
 // ---------------------------------------------------------------------------
-// Live new-order feed pill — the portal-wide element from story #274, kept in
-// the restyled top-bar so it stays visible on every admin route. Restyled to
-// the theme's fully-rounded, hairline chip language (idle = muted hairline,
-// live = success, disconnected = destructive).
+// Live new-order feed pill — the portal-wide element kept in the top-bar so it
+// stays visible on every admin route. Fully-rounded, hairline chip language
+// (idle = muted hairline, live = success, disconnected = destructive).
 // ---------------------------------------------------------------------------
 
 type FeedStatus = 'connecting' | 'live' | 'disconnected';
@@ -122,16 +117,15 @@ function LiveFeedPill({ status, onReconnect }: { status: FeedStatus; onReconnect
 }
 
 // ---------------------------------------------------------------------------
-// Shell — the layered elevation base per DESIGN_THEME.md:
-//   dark charcoal ambient frame (subtle low-contrast line-art motif, decorative,
-//   never interactive, behind everything) → large-radius light-gray shell (soft
-//   shadow) → white content panel → white table container. Content lives on the
-//   raised light shell, never on the raw dark frame. The light shell fills the
-//   frame and lays out a pinned toolbar above an independently scrolling content
-//   zone (theme: Layout Patterns / Spacing & Density / Iconography & Imagery).
+// Shell — the layered elevation base: a dark charcoal ambient frame (subtle
+// low-contrast dot-grid motif, decorative, never interactive, behind
+// everything) → a large-radius light-gray shell (one soft shadow) → a white
+// content panel (hairline). The light shell fills the frame and lays out the
+// pinned NavBar above an independently scrolling content zone. Content lives on
+// the raised light shell, never on the raw dark frame.
 // ---------------------------------------------------------------------------
 
-// One soft shadow, reserved for floating panels only (theme §4). No heavy rings.
+// One soft shadow, reserved for the floating shell only. No heavy rings.
 const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -148,7 +142,8 @@ function Shell({ children }: { children: React.ReactNode }) {
             />
 
             {/* Light shell — large radius; raised over the dark ambient frame, holds a
-                pinned toolbar over an independently scrolling content zone. */}
+                pinned NavBar over an independently scrolling content zone. The rounded
+                overflow clips the flat NavBar's top corners to the shell radius. */}
             <div
                 className={[
                     'relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[2rem] bg-muted',
@@ -162,39 +157,16 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Nav item — icon + label pill on the floating toolbar (theme §5 Navigation
-// Tabs). Active = solid black pill, white text, leading icon; idle = quiet
-// control that darkens on hover. Crimson stays reserved for prices + urgency.
+// Desktop toolbar — the shared, domain-blind NavBar (admin variant): a flat
+// bordered bar pinned at the top of the shell. Brand + Admin badge (left, via
+// NavBarBrand) · admin nav (centre, via NavBarNav/NavBarItem — the active route
+// is a real navigation selection expressed by aria-current, rendered as the ink
+// active pill the admin variant provides, never a Button in a selected style) ·
+// live-feed indicator + account controls (right, via NavBarActions). Stays
+// pinned above the scrolling content zone.
 // ---------------------------------------------------------------------------
 
-function NavItem({ item, active, onSelect }: { item: AdminNavItem; active: boolean; onSelect?: () => void }) {
-    const Icon = item.icon;
-    return (
-        <button
-            type='button'
-            aria-current={active ? 'page' : undefined}
-            onClick={onSelect}
-            className={[
-                'inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
-                active
-                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                    : 'text-muted-foreground hover:bg-background/70 hover:text-foreground',
-            ].join(' ')}
-        >
-            <Icon className='h-4 w-4' aria-hidden />
-            {item.label}
-        </button>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// Desktop toolbar — a large-radius rounded bar floating inside the shell with
-// margin all around (never edge-to-edge). Brand + Admin badge (left), icon+label
-// nav (centre), live-feed indicator + circular controls (right). Stays pinned
-// above the scrolling content zone. This is the canonical admin toolbar.
-// ---------------------------------------------------------------------------
-
-function DesktopTopBar({
+function AdminTopBar({
     activePage,
     onNavigate,
     feedStatus,
@@ -206,64 +178,58 @@ function DesktopTopBar({
     onReconnect?: () => void;
 }) {
     return (
-        <header
-            className={[
-                'z-30 m-3 mb-1.5 hidden h-16 shrink-0 items-center rounded-[1.5rem] border border-border/60 bg-background px-4 lg:flex',
-                SOFT_SHADOW,
-            ].join(' ')}
-        >
+        <NavBar variant='admin' className='z-30 hidden h-16 shrink-0 px-4 lg:flex'>
             {/* Left — brand */}
-            <div className='flex flex-1 items-center gap-2 pl-1'>
+            <NavBarBrand className='pl-1'>
                 <span className='text-lg font-semibold tracking-tight text-primary'>Notism</span>
                 <Badge variant='secondary' className='px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wide'>
                     Admin
                 </Badge>
-            </div>
+            </NavBarBrand>
 
-            {/* Centre — nav (idle quiet; active = solid black pill + white text) */}
-            <nav className='flex items-center gap-1 rounded-full bg-muted/60 p-1'>
-                {NAV_ITEMS.map(item => (
-                    <NavItem
-                        key={item.key}
-                        item={item}
-                        active={item.key === activePage}
-                        onSelect={() => onNavigate?.(item.key)}
-                    />
-                ))}
-            </nav>
+            {/* Centre — admin nav (idle quiet; active route = ink pill via aria-current) */}
+            <NavBarNav className='flex-1 justify-center'>
+                {NAV_ITEMS.map(item => {
+                    const Icon = item.icon;
+                    return (
+                        <NavBarItem
+                            key={item.key}
+                            active={item.key === activePage}
+                            onClick={() => onNavigate?.(item.key)}
+                        >
+                            <Icon className='size-4' aria-hidden />
+                            {item.label}
+                        </NavBarItem>
+                    );
+                })}
+            </NavBarNav>
 
             {/* Right — live feed + controls */}
-            <div className='flex flex-1 items-center justify-end gap-3'>
+            <NavBarActions className='gap-3'>
                 <LiveFeedPill status={feedStatus} onReconnect={onReconnect} />
-                <button
-                    aria-label='Toggle theme'
-                    className='flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
-                >
-                    <Moon className='h-4 w-4' />
-                </button>
-                <div className='flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-xs font-semibold text-background'>
-                    TM
-                </div>
-            </div>
-        </header>
+                <Button variant='ghost' size='icon-sm' aria-label='Toggle theme'>
+                    <Moon />
+                </Button>
+                <Avatar className='size-9'>
+                    <AvatarFallback className='bg-selected text-xs font-semibold text-selected-foreground'>
+                        TM
+                    </AvatarFallback>
+                </Avatar>
+            </NavBarActions>
+        </NavBar>
     );
 }
 
 // ---------------------------------------------------------------------------
-// Mobile chrome — a condensed floating rounded toolbar (brand + live-feed
-// indicator, kept visible on every route) pinned at top, and a floating rounded
-// bottom bar of icon+label nav shortcuts + avatar. Both float with margin, never
-// full-bleed. Active shortcut takes the crimson accent.
+// Mobile chrome — a condensed top strip (brand + live-feed indicator, kept
+// visible on every route) pinned at top, and a bottom bar of icon+label nav
+// shortcuts + avatar. Both flat within the shell. The active shortcut is a real
+// navigation selection (aria-current) with the ink accent.
 // ---------------------------------------------------------------------------
 
 function MobileTopStrip({ feedStatus }: { feedStatus: FeedStatus }) {
     return (
-        <header
-            className={[
-                'z-30 m-2 mb-1 flex h-14 shrink-0 items-center justify-between rounded-[1.25rem] border border-border/60 bg-background px-4 lg:hidden',
-                SOFT_SHADOW,
-            ].join(' ')}
-        >
+        <header className='z-30 flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4 lg:hidden'>
             <div className='flex items-center gap-2'>
                 <span className='text-base font-semibold tracking-tight text-primary'>Notism</span>
                 <Badge variant='secondary' className='px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wide'>
@@ -277,12 +243,7 @@ function MobileTopStrip({ feedStatus }: { feedStatus: FeedStatus }) {
 
 function MobileBottomBar({ activePage, onNavigate }: { activePage: string; onNavigate?: (key: string) => void }) {
     return (
-        <div
-            className={[
-                'z-30 m-2 mt-1 flex h-16 shrink-0 items-center justify-around rounded-[1.25rem] border border-border/60 bg-background px-2 lg:hidden',
-                SOFT_SHADOW,
-            ].join(' ')}
-        >
+        <div className='z-30 flex h-16 shrink-0 items-center justify-around border-t border-border bg-card px-2 lg:hidden'>
             {MOBILE_NAV_ITEMS.map(item => {
                 const Icon = item.icon;
                 const active = item.key === activePage;
@@ -300,7 +261,7 @@ function MobileBottomBar({ activePage, onNavigate }: { activePage: string; onNav
                         <span
                             className={[
                                 'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-                                active ? 'bg-background text-primary shadow-sm ring-1 ring-black/5' : '',
+                                active ? 'bg-selected text-selected-foreground' : '',
                             ].join(' ')}
                         >
                             <Icon className='h-5 w-5' aria-hidden />
@@ -310,7 +271,7 @@ function MobileBottomBar({ activePage, onNavigate }: { activePage: string; onNav
                 );
             })}
             <div className='flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 px-2'>
-                <span className='flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-[10px] font-semibold text-background'>
+                <span className='flex h-8 w-8 items-center justify-center rounded-full bg-selected text-[10px] font-semibold text-selected-foreground'>
                     TM
                 </span>
                 <span className='text-[10px] font-medium text-muted-foreground'>You</span>
@@ -323,8 +284,8 @@ function MobileBottomBar({ activePage, onNavigate }: { activePage: string; onNav
 // Content region — table-oriented working zone (Admin orders pattern: status
 // column present, sortable by state + time). NO order sidebar. This stands in
 // for the admin page bodies that the shell wraps; it is the placeholder content
-// region asked for by the requirement, rendered table-shaped so the shell reads
-// as a real admin working surface. Prices/total are crimson per theme.
+// region rendered table-shaped so the shell reads as a real admin working
+// surface. Prices/total are crimson per the shell's colour roles.
 // ---------------------------------------------------------------------------
 
 interface AdminOrderRow {
@@ -379,8 +340,8 @@ const ORDER_ROWS: AdminOrderRow[] = [
     },
 ];
 
-// Status = word + one consistent colour (theme §8), drawn only from the palette's
-// semantic tokens (warning / info / success / ink). Crimson is never a status.
+// Status = word + one consistent colour, drawn only from the palette's semantic
+// tokens (warning / info / success / ink). Crimson is never a status.
 const STATE_META: Record<AdminOrderRow['state'], { label: string; dot: string; text: string }> = {
     pending: { label: 'Pending', dot: 'bg-warning', text: 'text-warning' },
     preparing: { label: 'Preparing', dot: 'bg-info', text: 'text-info' },
@@ -430,7 +391,7 @@ function OrdersContentRegion({ rows = ORDER_ROWS }: { rows?: AdminOrderRow[] }) 
                 </div>
             </div>
 
-            {/* Orders table — white container, hairline, little/no shadow (level 3) */}
+            {/* Orders table — white container, hairline, little/no shadow */}
             <div className='rounded-2xl border bg-card p-1.5'>
                 {rows.length === 0 ? (
                     <div className='flex h-[280px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed bg-muted/20 text-center'>
@@ -461,7 +422,7 @@ function OrdersContentRegion({ rows = ORDER_ROWS }: { rows?: AdminOrderRow[] }) 
                                     <TableCell className='text-foreground'>{row.customer}</TableCell>
                                     <TableCell className='text-muted-foreground'>{row.placedAt}</TableCell>
                                     <TableCell className='text-right text-muted-foreground'>{row.items}</TableCell>
-                                    {/* Price emphasis — crimson per theme */}
+                                    {/* Price emphasis — crimson */}
                                     <TableCell className='text-right font-semibold text-primary'>{row.total}</TableCell>
                                     <TableCell>
                                         <OrderStateBadge state={row.state} />
@@ -478,10 +439,11 @@ function OrdersContentRegion({ rows = ORDER_ROWS }: { rows?: AdminOrderRow[] }) 
 
 // ---------------------------------------------------------------------------
 // The shell — a large-radius light-gray shell fills the viewport and pins the
-// floating toolbar above an independently scrolling content zone; the white
-// content panel holds the table. Desktop and mobile chrome are both composed
-// here so the responsive behaviour is real (Storybook viewport drives the
-// breakpoint). No page-level scrollbar — only the content zone scrolls.
+// NavBar (desktop) / condensed strips (mobile) above an independently scrolling
+// content zone; the white content panel holds the table. Desktop and mobile
+// chrome are both composed here so the responsive behaviour is real (Storybook
+// viewport drives the breakpoint). No page-level scrollbar — only the content
+// zone scrolls.
 // ---------------------------------------------------------------------------
 
 function AdminAppShell({
@@ -499,13 +461,13 @@ function AdminAppShell({
 
     return (
         <Shell>
-            {/* Pinned toolbars — outside the scroll zone */}
-            <DesktopTopBar activePage={page} onNavigate={setPage} feedStatus={feedStatus} onReconnect={onReconnect} />
+            {/* Pinned chrome — outside the scroll zone */}
+            <AdminTopBar activePage={page} onNavigate={setPage} feedStatus={feedStatus} onReconnect={onReconnect} />
             <MobileTopStrip feedStatus={feedStatus} />
 
             {/* Independently scrolling content zone */}
-            <main className='min-h-0 flex-1 overflow-y-auto px-3 pb-3 sm:px-4 lg:pt-1.5'>
-                {/* White content panel — hairline only, no shadow (level 3) */}
+            <main className='min-h-0 flex-1 overflow-y-auto p-3 sm:p-4'>
+                {/* White content panel — hairline only, no shadow */}
                 <div className='rounded-[1.5rem] border border-border/60 bg-background p-4 sm:p-6'>
                     <OrdersContentRegion rows={rows} />
                 </div>
@@ -532,12 +494,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — the restyled admin shell on desktop: a dark ambient frame (decorative
- * line-art motif) sits behind a light shell that holds a white floating rounded
- * toolbar pinned above an independently scrolling white content panel. The toolbar
- * nav pairs an icon with a label per item; the active item (Orders) is a solid
- * black pill with white text. The live new-order feed indicator rides the toolbar,
- * and the content region is table-oriented with a status column — no order sidebar.
+ * Default — the admin shell on desktop: a dark ambient frame (decorative
+ * line-art) sits behind a light shell that pins the shared NavBar (admin
+ * variant) above an independently scrolling white content panel. The nav pairs
+ * an icon with a label per item; the active route (Orders) is the ink active
+ * pill expressed via aria-current — a real navigation selection, not a Button.
+ * The live new-order feed indicator rides the NavBar, and the content region is
+ * table-oriented with a status column — no order sidebar.
  */
 export const Default: Story = {
     name: 'Default — Desktop Admin Shell (Orders active)',
@@ -546,8 +509,8 @@ export const Default: Story = {
 
 /**
  * Live feed present — the same shell with the Dashboard nav item active,
- * underlining that the live new-order feed pill rides the shell across every
- * admin route while the black active pill moves to whichever nav item is active.
+ * underlining that the live new-order feed pill rides the NavBar across every
+ * admin route while the ink active pill moves to whichever nav item is current.
  */
 export const LiveFeedPresent: Story = {
     name: 'Default — Live Feed Present (Dashboard active)',
@@ -556,7 +519,7 @@ export const LiveFeedPresent: Story = {
 
 /**
  * Loading — the shell has mounted and is establishing the live-orders
- * subscription; the top-bar feed pill shows "Connecting…". The rest of the shell
+ * subscription; the NavBar feed pill shows "Connecting…". The rest of the shell
  * (nav + table content region) is fully usable.
  */
 export const Loading: Story = {
@@ -585,10 +548,10 @@ export const Empty: Story = {
 };
 
 /**
- * Mobile — the shell condenses to a sticky top strip (brand + live-feed pill,
- * kept visible) and a fixed bottom nav of icon+label shortcuts with a solid black
- * badge on the active item. The table content region remains the working layout;
- * still no order sidebar.
+ * Mobile — the shell condenses to a top strip (brand + live-feed pill, kept
+ * visible) and a bottom nav of icon+label shortcuts with an ink badge on the
+ * active item (aria-current). The table content region remains the working
+ * layout; still no order sidebar.
  */
 export const Mobile: Story = {
     name: 'Mobile — Condensed Admin Shell',

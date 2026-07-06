@@ -17,6 +17,7 @@ import React from 'react';
 
 import { Avatar, AvatarFallback } from '@/components/avatar';
 import { Button } from '@/components/button';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { ScrollArea } from '@/components/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/sheet';
 
@@ -377,11 +378,13 @@ function CartPill({ count }: { count: number }) {
 }
 
 // ---------------------------------------------------------------------------
-// Floating toolbar — a large-radius rounded, white bar that FLOATS inside the
-// shell (the shell padding gives it margin on all sides; never edge-to-edge).
-// Brand left · nav center (active = white pill w/ crimson icon+label, idle
-// quiet) · actions right (search + preserved controls + crimson Cart pill). On
-// mobile it condenses to brand + a crimson order button (still a floating bar).
+// Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
+// large-radius rounded white bar that FLOATS inside the shell (the shell padding
+// gives it margin on all sides; never edge-to-edge). Brand slot left · nav-items
+// region center (the active tab is a real navigation selection — a white pill w/
+// crimson icon+label via NavBarItem's aria-current, never a Button in a selected
+// style) · actions slot right (search + preserved controls + black Cart pill).
+// On mobile it condenses to brand + the order button (still a floating bar).
 // ---------------------------------------------------------------------------
 
 function ShellTopbar({
@@ -394,33 +397,24 @@ function ShellTopbar({
     orderButton?: React.ReactNode;
 }) {
     return (
-        <header className='flex h-16 shrink-0 items-center gap-3 rounded-[1.5rem] border border-border bg-card px-3 shadow-sm lg:rounded-full lg:px-4'>
-            <span className='shrink-0 pl-1 text-lg font-extrabold tracking-tight text-primary lg:pl-2'>Notism</span>
+        <NavBar variant='consumer' className='shrink-0'>
+            <NavBarBrand>
+                <span className='pl-1 text-lg font-extrabold tracking-tight text-primary lg:pl-2'>Notism</span>
+            </NavBarBrand>
 
-            <nav className='hidden flex-1 items-center justify-center gap-1 lg:flex'>
+            <NavBarNav className='hidden flex-1 justify-center lg:flex'>
                 {NAV_ITEMS.map(item => {
                     const Icon = item.icon;
-                    const active = item.key === activeNav;
                     return (
-                        <button
-                            key={item.key}
-                            type='button'
-                            aria-current={active ? 'page' : undefined}
-                            className={[
-                                'inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                                active
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'border border-border bg-card text-muted-foreground hover:border-foreground/20 hover:text-foreground',
-                            ].join(' ')}
-                        >
+                        <NavBarItem key={item.key} active={item.key === activeNav}>
                             <Icon className='size-4' aria-hidden />
                             {item.label}
-                        </button>
+                        </NavBarItem>
                     );
                 })}
-            </nav>
+            </NavBarNav>
 
-            <div className='ml-auto flex items-center gap-1 lg:gap-2'>
+            <NavBarActions>
                 <button
                     type='button'
                     aria-label='Search'
@@ -449,13 +443,13 @@ function ShellTopbar({
                     </AvatarFallback>
                 </Avatar>
 
-                {/* Desktop = brand-red Cart pill (the toolbar's cart CTA); mobile = order button drawer trigger. */}
+                {/* Desktop = black Cart pill (the toolbar's cart CTA); mobile = order button drawer trigger. */}
                 <div className='hidden lg:block'>
                     <CartPill count={orderCount(lines)} />
                 </div>
                 <div className='lg:hidden'>{orderButton}</div>
-            </div>
-        </header>
+            </NavBarActions>
+        </NavBar>
     );
 }
 

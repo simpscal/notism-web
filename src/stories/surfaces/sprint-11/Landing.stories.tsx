@@ -18,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Separator } from '@/components/separator';
 
 // ---------------------------------------------------------------------------
@@ -131,45 +132,35 @@ function Panel({ className = '', children }: { className?: string; children: Rea
 }
 
 // ---------------------------------------------------------------------------
-// Top nav — a floating, large-radius rounded toolbar that hovers inside the
-// shell with margin all around (never full-bleed), light/white with a hairline
-// and a faint shadow. Brand left, nav centered, auth actions right. The active
-// nav item is a solid black pill (theme §5: active nav = black bg / white text).
-// Auth actions stay idle (ghost / black), NOT red: the page's single red
-// primary is the hero CTA. It
-// stays pinned as the page scrolls, keeping its floating gap even when stuck.
+// Top nav — the shared consumer NavBar so the landing chrome matches the rest of
+// the client. It floats inside the shell with margin all around (never
+// full-bleed) and stays pinned as the page scrolls. Brand slot (left), a
+// single-select nav region (center), and a trailing actions slot (right). The
+// current nav item is expressed as a real navigation selection via NavBarItem
+// `active` (aria-current) — never a Button in a selected style. Auth actions stay
+// idle (ghost / black), NOT red: the page's single red primary is the hero CTA.
 // ---------------------------------------------------------------------------
 
 function TopNav() {
     return (
         <div className='sticky top-3 z-30 px-4 pt-4 sm:px-6'>
-            <header className='mx-auto flex h-16 max-w-6xl items-center gap-4 rounded-full border border-border/70 bg-card/90 pl-5 pr-3 shadow-sm backdrop-blur-md'>
-                <div className='flex items-center gap-2'>
+            <NavBar variant='consumer' className='mx-auto max-w-6xl bg-card/90 backdrop-blur-md'>
+                <NavBarBrand>
                     <span className='flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
                         <UtensilsCrossed className='size-4' />
                     </span>
                     <span className='text-lg font-semibold tracking-tight text-primary'>Notism</span>
-                </div>
+                </NavBarBrand>
 
-                <nav className='hidden flex-1 items-center justify-center gap-1 md:flex'>
+                <NavBarNav className='hidden flex-1 justify-center md:flex'>
                     {NAV_LINKS.map((label, i) => (
-                        <a
-                            key={label}
-                            href='#'
-                            aria-current={i === 0 ? 'page' : undefined}
-                            className={[
-                                'rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
-                                i === 0
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-                            ].join(' ')}
-                        >
-                            {label}
-                        </a>
+                        <NavBarItem key={label} asChild active={i === 0}>
+                            <a href='#'>{label}</a>
+                        </NavBarItem>
                     ))}
-                </nav>
+                </NavBarNav>
 
-                <div className='ml-auto flex items-center gap-2 md:ml-0'>
+                <NavBarActions>
                     <Button
                         variant='ghost'
                         size='icon-sm'
@@ -187,8 +178,8 @@ function TopNav() {
                     >
                         Sign up
                     </Button>
-                </div>
-            </header>
+                </NavBarActions>
+            </NavBar>
         </div>
     );
 }
@@ -613,20 +604,22 @@ function LandingMobile() {
     return (
         <AmbientShell mobile>
             <div className='flex min-h-screen flex-col'>
-                {/* Floating rounded condensed toolbar — never full-bleed on mobile. */}
+                {/* Floating condensed consumer NavBar — never full-bleed on mobile. */}
                 <div className='sticky top-2 z-30 px-3 pt-3'>
-                    <div className='mx-auto flex h-14 items-center justify-between rounded-full border border-border/70 bg-card/90 px-3 shadow-sm backdrop-blur'>
-                        <div className='flex items-center gap-2'>
+                    <NavBar variant='consumer' className='mx-auto h-14 bg-card/90 backdrop-blur'>
+                        <NavBarBrand>
                             <span className='flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground'>
                                 <UtensilsCrossed className='size-3.5' />
                             </span>
                             <span className='text-base font-semibold tracking-tight text-primary'>Notism</span>
-                        </div>
-                        <span className='inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground'>
-                            <Clock3 className='size-3.5' />
-                            Open now
-                        </span>
-                    </div>
+                        </NavBarBrand>
+                        <NavBarActions>
+                            <span className='inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground'>
+                                <Clock3 className='size-3.5' />
+                                Open now
+                            </span>
+                        </NavBarActions>
+                    </NavBar>
                 </div>
 
                 <main className='flex-1'>

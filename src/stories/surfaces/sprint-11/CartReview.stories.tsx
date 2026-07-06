@@ -32,6 +32,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/card';
 import { Checkbox } from '@/components/checkbox';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Toaster } from '@/components/sonner';
 
 // ---------------------------------------------------------------------------
@@ -48,10 +49,12 @@ import { Toaster } from '@/components/sonner';
 //   • Elevation — soft and minimal, one gentle step per level: dark ambient
 //     frame → ONE large-radius light-gray shell → white panels (hairline,
 //     faint shadow) → white line cards (hairline, no shadow). No heavy rings.
-//   • Toolbar — a real floating rounded bar pinned to the top of the shell
-//     (margin all around, never full-bleed): brand left, icon+label nav in the
-//     centre (active = white pill + crimson icon/label), search + crimson Cart
-//     pill right. Condenses on mobile, staying a rounded floating bar.
+//   • Toolbar — the shared domain-blind NavBar (consumer variant): a real
+//     floating rounded bar pinned to the top of the shell (margin all around,
+//     never full-bleed): brand left, icon+label nav in the centre (active = a
+//     real navigation selection via NavBarItem's aria-current — a white pill +
+//     crimson icon/label, never a Button in a selected style), search + crimson
+//     Cart pill right. Condenses on mobile, staying a rounded floating bar.
 //   • Scrolling — the shell fills the viewport; the toolbar is pinned and the
 //     cart body scrolls within the shell (single scrollbar, no clipping).
 //   • Color roles — every line price and the running total read in CRIMSON;
@@ -166,9 +169,13 @@ function AppShell({ cartCount, children }: { cartCount: number; children: React.
 }
 
 // ---------------------------------------------------------------------------
-// Floating rounded toolbar — pinned inside the shell with margin all around
-// (never full-bleed). Brand left, icon+label nav centre (active = white pill +
-// crimson icon/label), search + crimson Cart pill right. Condenses on mobile.
+// Floating rounded toolbar — the shared domain-blind NavBar (consumer variant):
+// a large-radius rounded bar that FLOATS inside the shell (margin all around via
+// the wrapper padding; never full-bleed). Brand slot left · nav-items region
+// centre (the active tab is a real navigation selection — a white pill + crimson
+// icon/label via NavBarItem's aria-current, never a Button in a selected style) ·
+// actions slot right (search + crimson Cart pill). Condenses on mobile, staying a
+// rounded floating bar.
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS = [
@@ -178,63 +185,49 @@ const NAV_ITEMS = [
     { label: 'Help', icon: LifeBuoy, active: false },
 ];
 
-function NavItem({ icon: Icon, label, active }: { icon: typeof Heart; label: string; active: boolean }) {
-    return (
-        <button
-            type='button'
-            aria-current={active ? 'page' : undefined}
-            className={
-                'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ' +
-                (active
-                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                    : 'text-foreground/55 hover:text-foreground')
-            }
-        >
-            <Icon className='size-4' aria-hidden />
-            {label}
-        </button>
-    );
-}
-
 function Toolbar({ cartCount }: { cartCount: number }) {
     return (
-        <header className='z-40 m-3 shrink-0 sm:m-4'>
-            <div className='flex items-center gap-3 rounded-[1.75rem] border bg-background/95 px-3 py-2.5 shadow-sm backdrop-blur sm:px-4'>
-                {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav/Cart pills stay black. */}
-                <div className='flex items-center gap-2 pl-1 pr-1 sm:pr-2'>
-                    <span className='flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground'>
-                        <Soup className='size-5' aria-hidden />
+        <NavBar variant='consumer' className='z-40 m-3 shrink-0 gap-3 bg-card/95 backdrop-blur sm:m-4'>
+            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav/Cart pills stay black. */}
+            <NavBarBrand className='pl-1 pr-1 sm:pr-2'>
+                <span className='flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground'>
+                    <Soup className='size-5' aria-hidden />
+                </span>
+                <span className='hidden text-lg font-black tracking-tight text-primary sm:inline'>Notism</span>
+            </NavBarBrand>
+
+            {/* Nav — centre, desktop only. Active item = a real navigation selection. */}
+            <NavBarNav className='mx-auto hidden lg:flex'>
+                {NAV_ITEMS.map(item => {
+                    const Icon = item.icon;
+                    return (
+                        <NavBarItem key={item.label} active={item.active} className='font-semibold'>
+                            <Icon className='size-4' aria-hidden />
+                            {item.label}
+                        </NavBarItem>
+                    );
+                })}
+            </NavBarNav>
+
+            {/* Search + Cart pill (brand red — the toolbar's cart CTA) — right. */}
+            <NavBarActions>
+                <Button
+                    variant='ghost'
+                    size='icon'
+                    className='text-foreground/70 hover:text-foreground'
+                    aria-label='Search the menu'
+                >
+                    <Search className='size-5' />
+                </Button>
+                <Button className='rounded-full px-4' aria-label={`Cart, ${cartCount} items`}>
+                    <ShoppingBag className='size-4' />
+                    <span className='hidden sm:inline'>Cart</span>
+                    <span className='inline-flex min-w-5 items-center justify-center rounded-full bg-primary-foreground/20 px-1.5 text-xs font-bold tabular-nums'>
+                        {cartCount}
                     </span>
-                    <span className='hidden text-lg font-black tracking-tight text-primary sm:inline'>Notism</span>
-                </div>
-
-                {/* Nav — centre, desktop only. */}
-                <nav className='mx-auto hidden items-center gap-1 lg:flex'>
-                    {NAV_ITEMS.map(item => (
-                        <NavItem key={item.label} icon={item.icon} label={item.label} active={item.active} />
-                    ))}
-                </nav>
-
-                {/* Search + Cart pill (brand red — the toolbar's cart CTA) — right. */}
-                <div className='ml-auto flex items-center gap-2 lg:ml-0'>
-                    <Button
-                        variant='ghost'
-                        size='icon'
-                        className='text-foreground/70 hover:text-foreground'
-                        aria-label='Search the menu'
-                    >
-                        <Search className='size-5' />
-                    </Button>
-                    <Button className='rounded-full px-4' aria-label={`Cart, ${cartCount} items`}>
-                        <ShoppingBag className='size-4' />
-                        <span className='hidden sm:inline'>Cart</span>
-                        <span className='inline-flex min-w-5 items-center justify-center rounded-full bg-primary-foreground/20 px-1.5 text-xs font-bold tabular-nums'>
-                            {cartCount}
-                        </span>
-                    </Button>
-                </div>
-            </div>
-        </header>
+                </Button>
+            </NavBarActions>
+        </NavBar>
     );
 }
 

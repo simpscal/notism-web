@@ -3,9 +3,6 @@ import {
     ArrowLeft,
     Check,
     ChefHat,
-    ClipboardList,
-    Clock,
-    Heart,
     Home,
     Landmark,
     Package,
@@ -13,7 +10,6 @@ import {
     ShoppingBag,
     StickyNote,
     Truck,
-    UtensilsCrossed,
     type LucideIcon,
 } from 'lucide-react';
 import React from 'react';
@@ -24,48 +20,44 @@ import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import ErrorState from '@/components/error-state';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
+import Timeline from '@/components/timeline';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 // ---------------------------------------------------------------------------
 // Surface: OrderTracking (customer single-order tracking, /orders/:slugId).
-// Restyle of src/pages/order-detail to DESIGN_THEME.md — SAME functionality,
-// states, data and flow as the live page (status timeline, order lines,
-// cancel + refund-request with explicit confirm). Visuals + UX only.
+// Restyle of src/pages/order-detail — SAME functionality, states, data and flow
+// as the live page (status progression, order lines, cancel + refund-request
+// with explicit confirm). Visuals + UX only.
 //
-// On-theme moves per DESIGN_THEME.md:
+// Design language (derived from the codebase's Sprint 11 stories + shared kit —
+// no DESIGN_THEME.md present):
 //   • Soft, minimal elevation: dark ambient frame → ONE large-radius light-gray
 //     shell → white content cards (hairline + faint shadow). One gentle step per
 //     level; no heavy rings or shadows. Content never sits on the raw dark frame.
-//   • A real FLOATING rounded toolbar (not a placeholder): a large-radius white
-//     bar floating inside the shell with margin all around — brand left, nav
-//     centre (active = white pill + crimson icon/label), search + crimson Cart
-//     pill right; pinned above the scroll region, condensed (never full-bleed)
-//     on mobile.
-//   • The shell fills the viewport; tracking content scrolls within the shell
-//     while the toolbar stays pinned — no double scrollbars.
-//   • Delivery status as a TIMELINE, every state labelled in WORDS with a
-//     consistent status color drawn from the app's semantic status tokens
-//     (info / warning / success + neutral ink) — never color alone (icon + word
-//     + tone). Status color is reserved for status; crimson is NOT used here.
-//   • Order lines are List Rows (§5): CIRCULAR thumbnail + name + gray meta +
-//     RED price. Red stays the commerce/price tone; the TOTAL price in the
-//     Summary Panel is the single LOUDEST red on the surface — the only large,
-//     bold red number.
-//   • Summary Panel (§5) for the order/total block: meta → dashed divider →
-//     subtotal + red `-`-prefixed discount + green "Free" delivery → bold red
-//     total → primary CTA pinned. The order-level primary ("Order more") is
-//     BLACK/structural, never red — red is reserved for the price.
+//   • The top nav is the shared, domain-blind NavBar (consumer variant) — a
+//     floating rounded bar pinned inside the shell, consistent with the Consumer
+//     App Shell. The active tab is a REAL navigation selection (NavBarItem
+//     aria-current — white pill + primary accent), never a Button in a selected
+//     style.
+//   • Delivery progression is the shared Timeline primitive (placed → preparing →
+//     on the way → delivered): each state is labelled in WORDS with a timestamp,
+//     the current step accented, upcoming steps quiet — never colour alone.
+//   • Order lines are List Rows: CIRCULAR thumbnail + name + gray meta + RED
+//     price. Red stays the commerce/price tone; the TOTAL in the Summary Panel is
+//     the single loudest red — the only large, bold red number.
+//   • Summary Panel for the order/total block: meta → dashed divider → subtotal +
+//     red `-`-prefixed discount + green "Free" delivery → bold red total → primary
+//     CTA pinned. The order-level primary ("Order more") is BLACK/structural.
 //   • Destructive (Cancel order) + secondary (Request refund) sit APART in a
-//     separate "Manage this order" zone, never adjacent to the primary, each
-//     gated behind an explicit CONFIRM dialog.
-//   • Soft elevation only: one soft shadow on the floating shell + Summary
-//     Panel; other cards are hairline-bordered. Heavy, consistent rounding
-//     (cards 24px, pills full); roomy density; eyebrow micro-labels UPPERCASE.
+//     separate "Manage this order" zone, never adjacent to the primary, each gated
+//     behind an explicit CONFIRM dialog.
 //
 // Composed ONLY from @/components/* + mock fixtures. No api/model/state/feature
-// imports; every region the requirement does NOT touch (top nav, checkout
-// trust/progress bar) is a labelled muted placeholder.
+// imports; every region the requirement does NOT touch (checkout trust/progress
+// bar) is a labelled muted placeholder.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -112,74 +104,50 @@ interface OrderFixture {
 const formatVnd = (amount: number) => amount.toLocaleString('en-US') + ' ₫';
 
 // ---------------------------------------------------------------------------
-// Status model — one consistent color per delivery state (status role only).
-// Words + icon + tone together carry the state; crimson stays reserved for
-// price/primary, black for selection, so status gets its own dedicated palette.
+// Status model — one word + icon per delivery state. The summary Status badge
+// draws its tone from the app's semantic status tokens (info / warning /
+// success + neutral ink); every state also carries a WORD label so status is
+// never conveyed by colour alone.
 // ---------------------------------------------------------------------------
 
 interface StatusMeta {
     key: DeliveryStatusKey;
     label: string;
     icon: LucideIcon;
-    /** Solid tone for the reached timeline node + accent. */
-    dot: string;
-    /** Soft chip tone for the status badge. */
+    /** Soft chip tone for the summary status badge. */
     badge: string;
-    ring: string;
 }
 
-// Status palette is drawn from the app's semantic status tokens (info / warning /
-// success + neutral ink) — reserved for STATUS only. Crimson (`primary`) is never
-// used here; every state also carries a WORD label, so status is never conveyed by
-// colour alone.
 const DELIVERY_STEPS: StatusMeta[] = [
     {
         key: 'orderPlaced',
         label: 'Order placed',
         icon: ShoppingBag,
-        dot: 'bg-foreground text-background',
         badge: 'border-border bg-muted text-foreground',
-        ring: 'ring-foreground/15',
     },
     {
         key: 'preparing',
         label: 'Preparing',
         icon: ChefHat,
-        dot: 'bg-warning text-white',
         badge: 'border-warning/25 bg-warning/10 text-warning',
-        ring: 'ring-warning/25',
     },
     {
         key: 'onTheWay',
         label: 'On the way',
         icon: Truck,
-        dot: 'bg-info text-white',
         badge: 'border-info/25 bg-info/10 text-info',
-        ring: 'ring-info/25',
     },
     {
         key: 'delivered',
         label: 'Delivered',
         icon: Check,
-        dot: 'bg-success text-white',
         badge: 'border-success/25 bg-success/10 text-success',
-        ring: 'ring-success/25',
     },
 ];
 
 const statusIndex = (key: DeliveryStatusKey) => DELIVERY_STEPS.findIndex(s => s.key === key);
 const statusMeta = (key: DeliveryStatusKey) => DELIVERY_STEPS[statusIndex(key)];
 const canCancel = (key: DeliveryStatusKey) => key === 'orderPlaced' || key === 'preparing';
-
-const formatStamp = (iso?: string) =>
-    iso
-        ? new Date(iso).toLocaleString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-          })
-        : null;
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -259,65 +227,48 @@ const ORDER_DELIVERED: OrderFixture = {
 };
 
 // ---------------------------------------------------------------------------
-// Floating rounded toolbar — the real top nav (replaces the old placeholder).
-// A large-radius white bar that FLOATS inside the shell with margin all around:
-// brand left, nav centre (active = white pill + crimson icon/label), search +
-// crimson Cart pill right. On mobile the centre nav condenses away but the bar
-// stays rounded and inset — never full-bleed.
+// Floating top nav — the shared, domain-blind NavBar (consumer variant): a
+// large-radius rounded bar that floats inside the shell (the shell padding gives
+// it margin all around). Brand slot left · nav-items region center (the active
+// tab is a real navigation selection via NavBarItem aria-current, never a Button
+// in a selected style) · actions slot right (search + a Cart CTA). Consistent
+// with the Consumer App Shell topbar.
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS: { key: string; label: string; icon: LucideIcon; active?: boolean }[] = [
     { key: 'home', label: 'Home', icon: Home },
-    { key: 'menu', label: 'Menu', icon: UtensilsCrossed },
-    { key: 'orders', label: 'Orders', icon: ClipboardList, active: true },
-    { key: 'favorites', label: 'Favourites', icon: Heart },
+    { key: 'orders', label: 'Orders', icon: ShoppingBag, active: true },
 ];
 
 function Toolbar() {
     return (
-        <div className='flex items-center justify-between gap-3 rounded-full border border-border/60 bg-card py-2 pl-4 pr-2 shadow-sm sm:pl-5'>
-            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav pills stay black */}
-            <div className='flex shrink-0 items-center gap-2'>
-                <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
-                    <UtensilsCrossed className='h-4 w-4' aria-hidden />
-                </span>
-                <span className='text-lg font-black tracking-tight text-primary'>Notism</span>
-            </div>
+        <NavBar variant='consumer' className='shrink-0'>
+            <NavBarBrand>
+                <span className='pl-1 text-lg font-extrabold tracking-tight text-primary lg:pl-2'>Notism</span>
+            </NavBarBrand>
 
-            {/* Nav — centre; active = white pill + red icon/label (the one toolbar highlight). */}
-            <nav className='hidden items-center gap-1 md:flex'>
+            <NavBarNav className='hidden flex-1 justify-center md:flex'>
                 {NAV_ITEMS.map(item => {
                     const Icon = item.icon;
                     return (
-                        <span
-                            key={item.key}
-                            aria-current={item.active ? 'page' : undefined}
-                            className={[
-                                'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                                item.active
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:text-foreground',
-                            ].join(' ')}
-                        >
-                            <Icon className='h-4 w-4' aria-hidden />
+                        <NavBarItem key={item.key} active={item.active}>
+                            <Icon className='size-4' aria-hidden />
                             {item.label}
-                        </span>
+                        </NavBarItem>
                     );
                 })}
-            </nav>
+            </NavBarNav>
 
-            {/* Right — search + Cart pill (brand red — the toolbar's cart CTA). */}
-            <div className='flex shrink-0 items-center gap-1.5'>
-                <Button variant='ghost' size='icon' className='rounded-full text-muted-foreground'>
-                    <Search className='h-4 w-4' aria-hidden />
-                    <span className='sr-only'>Search</span>
+            <NavBarActions>
+                <Button variant='ghost' size='icon-sm' className='text-muted-foreground' aria-label='Search'>
+                    <Search className='size-4' aria-hidden />
                 </Button>
                 <Button className='rounded-full'>
-                    <ShoppingBag className='h-4 w-4' aria-hidden />
+                    <ShoppingBag className='size-4' aria-hidden />
                     Cart
                 </Button>
-            </div>
-        </div>
+            </NavBarActions>
+        </NavBar>
     );
 }
 
@@ -364,13 +315,22 @@ function StatusBadge({ status }: { status: DeliveryStatusKey }) {
 }
 
 // ---------------------------------------------------------------------------
-// Delivery status timeline — redesigned. One consistent color per state; every
-// state labelled in words with a timestamp; the current step is emphasised with
-// a pulsing ring; future steps are quiet/muted. Never color alone.
+// Delivery status — the shared Timeline primitive renders the status
+// progression (placed → preparing → on the way → delivered). Reached states are
+// accented with a timestamp, the current step highlighted, upcoming steps quiet
+// ("Up next"). Words + icon + timestamp carry the state — never colour alone.
 // ---------------------------------------------------------------------------
 
 function StatusTimeline({ status, timing }: { status: DeliveryStatusKey; timing: OrderFixture['timing'] }) {
     const current = statusIndex(status);
+    const items = DELIVERY_STEPS.map((step, index) => ({
+        title: step.label,
+        icon: step.icon,
+        isCompleted: index < current,
+        isCurrent: index === current,
+        completedAt: timing[step.key] ?? null,
+        description: index > current ? 'Up next' : undefined,
+    }));
 
     return (
         <Card className='rounded-3xl border-border shadow-none'>
@@ -379,75 +339,7 @@ function StatusTimeline({ status, timing }: { status: DeliveryStatusKey; timing:
                 <CardDescription>Track exactly where your order is right now.</CardDescription>
             </CardHeader>
             <CardContent>
-                <ol className='relative'>
-                    {DELIVERY_STEPS.map((step, index) => {
-                        const Icon = step.icon;
-                        const isDone = index < current;
-                        const isCurrent = index === current;
-                        const isReached = index <= current;
-                        const isLast = index === DELIVERY_STEPS.length - 1;
-                        const stamp = formatStamp(timing[step.key]);
-
-                        return (
-                            <li key={step.key} className='flex items-start gap-4'>
-                                <div className='flex flex-col items-center'>
-                                    <span
-                                        className={[
-                                            'flex h-11 w-11 items-center justify-center rounded-full transition-colors',
-                                            isReached
-                                                ? step.dot
-                                                : 'border border-dashed border-border bg-muted text-muted-foreground/60',
-                                            isCurrent ? `ring-4 ${step.ring} ring-offset-2 ring-offset-card` : '',
-                                        ].join(' ')}
-                                    >
-                                        {isDone ? (
-                                            <Check className='h-5 w-5' aria-hidden />
-                                        ) : (
-                                            <Icon className='h-5 w-5' aria-hidden />
-                                        )}
-                                    </span>
-                                    {!isLast && (
-                                        <span
-                                            className={`my-1 h-12 w-0.5 rounded-full ${
-                                                index < current ? 'bg-foreground/20' : 'bg-border'
-                                            }`}
-                                        />
-                                    )}
-                                </div>
-
-                                <div className='flex-1 pb-6 pt-1.5'>
-                                    <div className='flex flex-wrap items-center gap-2'>
-                                        <span
-                                            className={`font-semibold ${
-                                                isReached ? 'text-foreground' : 'text-muted-foreground/70'
-                                            }`}
-                                        >
-                                            {step.label}
-                                        </span>
-                                        {isCurrent && (
-                                            <Badge
-                                                variant='outline'
-                                                className={`rounded-full px-2 py-0 text-[10px] ${step.badge}`}
-                                            >
-                                                Now
-                                            </Badge>
-                                        )}
-                                    </div>
-                                    {stamp ? (
-                                        <div className='mt-1 text-sm text-muted-foreground'>{stamp}</div>
-                                    ) : isCurrent ? (
-                                        <div className='mt-1 flex items-center gap-1.5 text-sm text-muted-foreground'>
-                                            <Clock className='h-4 w-4' aria-hidden />
-                                            In progress
-                                        </div>
-                                    ) : (
-                                        <div className='mt-1 text-sm text-muted-foreground/60'>Up next</div>
-                                    )}
-                                </div>
-                            </li>
-                        );
-                    })}
-                </ol>
+                <Timeline items={items} />
             </CardContent>
         </Card>
     );
@@ -468,7 +360,7 @@ function OrderLinesCard({ order }: { order: OrderFixture }) {
                 </CardDescription>
             </CardHeader>
             <CardContent className='space-y-4'>
-                {/* List Row (§5): circular thumb + name + gray meta + red price, one row. */}
+                {/* List Row: circular thumb + name + gray meta + red price, one row. */}
                 <ul className='space-y-2'>
                     {order.lines.map(line => {
                         const hasSaving = line.originalPrice != null && line.originalPrice > line.unitPrice;
@@ -477,7 +369,7 @@ function OrderLinesCard({ order }: { order: OrderFixture }) {
                                 key={line.id}
                                 className='flex items-center gap-4 rounded-2xl border border-border px-3 py-3'
                             >
-                                {/* Circular thumbnail — theme signature for order-line imagery. */}
+                                {/* Circular thumbnail — signature for order-line imagery. */}
                                 <Avatar className='h-14 w-14 shrink-0'>
                                     <AvatarImage src={line.imageUrl} alt={line.name} className='object-cover' />
                                     <AvatarFallback className='bg-muted text-muted-foreground'>
@@ -577,10 +469,10 @@ function RefundPanel({ refund }: { refund: RefundSummary }) {
 // ---------------------------------------------------------------------------
 // Action rail — the persistent order summary + actions.
 //
-// Action hierarchy (theme): ONE crimson order-level primary ("Order more") at
-// the top; the destructive Cancel + secondary Request refund sit APART in a
-// separate "Manage this order" zone below a divider — never adjacent to the
-// primary — and each opens an explicit CONFIRM dialog.
+// Action hierarchy: ONE crimson order-level primary ("Order more") at the top;
+// the destructive Cancel + secondary Request refund sit APART in a separate
+// "Manage this order" zone below a divider — never adjacent to the primary — and
+// each opens an explicit CONFIRM dialog.
 // ---------------------------------------------------------------------------
 
 type OpenDialog = 'none' | 'cancel' | 'refund';
@@ -595,13 +487,13 @@ function ActionRail({ order }: { order: OrderFixture }) {
         order.status === 'delivered' && order.paymentMethod === 'Banking' && !order.refund && !refundRequested;
     const close = () => setOpen('none');
 
-    // Summary Panel breakdown (§5) — subtotal reads pre-discount so the saving
-    // shows as a red, `-`-prefixed row; delivery is free (positive → not red).
+    // Summary Panel breakdown — subtotal reads pre-discount so the saving shows
+    // as a red, `-`-prefixed row; delivery is free (positive → not red).
     const subtotal = order.lines.reduce((sum, line) => sum + (line.originalPrice ?? line.unitPrice) * line.quantity, 0);
     const discount = subtotal - order.totalAmount;
 
     return (
-        // The only FLOATING panel on the surface → the single soft shadow (§4).
+        // The only FLOATING panel on the surface → the single soft shadow.
         <Card className='sticky top-2 rounded-3xl border-border shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
             <CardHeader>
                 <CardTitle className='text-lg'>Order summary</CardTitle>
@@ -644,13 +536,13 @@ function ActionRail({ order }: { order: OrderFixture }) {
                         {discount > 0 && (
                             <div className='flex items-center justify-between'>
                                 <span className='text-muted-foreground'>Discount</span>
-                                {/* Negative value → red, `-`-prefixed (§8). */}
+                                {/* Negative value → red, `-`-prefixed. */}
                                 <span className='font-medium text-primary'>-{formatVnd(discount)}</span>
                             </div>
                         )}
                         <div className='flex items-center justify-between'>
                             <span className='text-muted-foreground'>Delivery</span>
-                            {/* Free / positive → success, never red (§8). */}
+                            {/* Free / positive → success, never red. */}
                             <span className='font-medium text-success'>Free</span>
                         </div>
                     </div>
@@ -883,9 +775,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — mid-timeline. The order is "On the way": earlier states are done
- * (checked, in their consistent tone), the current step pulses, and the next
- * step is quiet. Order lines carry circular thumbnails; the total is crimson.
+ * Default — mid-timeline. The order is "On the way": earlier states are complete
+ * (accented, timestamped), the current step is highlighted, and the next step is
+ * quiet ("Up next"). Order lines carry circular thumbnails; the total is crimson.
  * While in progress the order can still be cancelled (destructive, held apart).
  */
 export const Default: Story = {
@@ -904,9 +796,9 @@ export const Preparing: Story = {
 };
 
 /**
- * Success — delivered. Every timeline state is complete in its consistent color,
- * cancel is no longer offered, and (bank-paid) a Request refund action appears in
- * the Manage zone — apart from the primary, gated behind an explicit confirm.
+ * Success — delivered. Every timeline state is complete, cancel is no longer
+ * offered, and (bank-paid) a Request refund action appears in the Manage zone —
+ * apart from the primary, gated behind an explicit confirm.
  */
 export const Delivered: Story = {
     name: 'Success — Delivered (Refund Available)',
@@ -915,36 +807,30 @@ export const Delivered: Story = {
 
 /**
  * Confirm — the destructive Cancel and secondary Request refund each require an
- * explicit confirm dialog before anything happens. Open "Cancel order" on the
- * in-progress order, or switch to the delivered order to open "Request refund";
- * both dialogs keep the safe choice as the muted option and the committing action
- * distinct (destructive / primary).
+ * explicit confirm dialog before anything happens. The story control is a
+ * single-select ToggleGroup (a real selection primitive, never a Button in a
+ * selected style): pick the in-progress order to open "Cancel order", or the
+ * delivered order to open "Request refund". Both dialogs keep the safe choice as
+ * the muted option and the committing action distinct (destructive / primary).
  */
 export const CancelRefundConfirm: Story = {
     name: 'Confirm — Cancel / Request Refund (Explicit Confirm)',
     render: () => {
         function Harness() {
             const [which, setWhich] = React.useState<'cancel' | 'refund'>('cancel');
+            const handleSelect = (value: string) => {
+                if (value) setWhich(value as 'cancel' | 'refund');
+            };
             return (
                 <div>
-                    <div className='mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 pt-4'>
-                        <span className='mr-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
+                    <div className='mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 pt-4'>
+                        <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/50'>
                             story controls
                         </span>
-                        <Button
-                            size='sm'
-                            variant={which === 'cancel' ? 'default' : 'outline'}
-                            onClick={() => setWhich('cancel')}
-                        >
-                            Cancellable order
-                        </Button>
-                        <Button
-                            size='sm'
-                            variant={which === 'refund' ? 'default' : 'outline'}
-                            onClick={() => setWhich('refund')}
-                        >
-                            Refundable order
-                        </Button>
+                        <ToggleGroup type='single' variant='segmented' value={which} onValueChange={handleSelect}>
+                            <ToggleGroupItem value='cancel'>Cancellable order</ToggleGroupItem>
+                            <ToggleGroupItem value='refund'>Refundable order</ToggleGroupItem>
+                        </ToggleGroup>
                     </div>
                     <OrderTrackingSurface key={which} order={which === 'cancel' ? ORDER_ON_THE_WAY : ORDER_DELIVERED} />
                 </div>

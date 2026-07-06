@@ -1,21 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import {
-    ArrowUpDown,
-    CupSoda,
-    IceCreamCone,
-    Plus,
-    Salad,
-    Sandwich,
-    Search,
-    ShoppingBag,
-    UtensilsCrossed,
-} from 'lucide-react';
+import { ArrowUpDown, Plus, UtensilsCrossed } from 'lucide-react';
 import React from 'react';
 
-import { cn } from '@/app/utils/index';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Input } from '@/components/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
@@ -30,28 +18,27 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //   • Menu / list  → image-forward CARD GRID (not a table); each card is filled
 //     by the dish photo, carries its name + a CRIMSON price, and is a SINGLE tap
 //     target (theme: "Cards, not tables; image-forward; one clear tap target").
-//   • Category filter → a single HORIZONTAL PILL ROW with exactly ONE pill
-//     selected; it scrolls horizontally, never wraps into a block (theme:
+//   • Category filter → a real SELECTION PRIMITIVE, never a Button in a selected
+//     style: the shared `ToggleGroup variant="segmented"` (single-select). It
+//     sits on a muted track, exactly ONE item is on (solid black = selection),
+//     and it scrolls horizontally, never wrapping into a block (theme:
 //     "Horizontal pill row … horizontal scroll, never wrap").
 //   • Colour roles (two-tone) → CRIMSON is reserved for PRICES + discounts only
 //     on this browsing surface (there is no final CTA here, so nothing else
-//     competes as the loudest red); the selected pill, the active nav pill, the
-//     Cart pill and the item-level add affordance are all solid BLACK (structural
-//     / selection / control); idle pills are white with a hairline (secondary).
-//     The brand mark + wordmark carry the accent RED as identity (theme §2), kept
-//     quiet in weight so they never compete as an action.
+//     competes as the loudest red); the selected segment and the item-level add
+//     affordance are solid BLACK (structural / selection / control); idle
+//     segments are quiet on the muted track (secondary).
 //
 // Elevation — soft + minimal, one gentle step per level (no heavy rings /
 // shadows): dark ambient frame → one large-radius LIGHT-GRAY shell (soft
 // shadow) → a WHITE content panel (large radius, hairline, faint shadow) →
 // WHITE cards (hairline, little / no shadow).
 //
-// Chrome: a real, on-theme FLOATING ROUNDED TOOLBAR is pinned at the top of the
-// shell (margin all around, never edge-to-edge) — brand left, category-nav
-// centre with the active item as a solid-black pill (white icon / label), search
-// + a black Cart pill right; it condenses (not full-bleed) on mobile. The shell
-// fills the viewport and the menu content zone scrolls within it, so the toolbar
-// stays pinned with no double scrollbars.
+// Chrome: the top nav is owned by the CONSUMER APP SHELL (see the Consumer App
+// Shell surface, which renders the shared `NavBar variant="consumer"`). This
+// surface only redesigns the MENU CONTENT ZONE, so the toolbar appears here as a
+// pinned, muted NAV PLACEHOLDER (dashed) — never reimplemented per-surface. The
+// shell fills the viewport and the menu content zone scrolls within it.
 //
 // Mock-only fixtures — no api / model / state / feature imports; self-contained.
 // ---------------------------------------------------------------------------
@@ -85,7 +72,7 @@ function formatVnd(amount: number): string {
 // ---------------------------------------------------------------------------
 
 // 'Combos' has no dishes yet — used to drive the empty-filter edge with a real,
-// selected pill.
+// selected segment.
 const CATEGORIES = ['Rice', 'Noodles', 'Grilled', 'Sides', 'Drinks', 'Desserts', 'Combos'] as const;
 
 const DISHES: Dish[] = [
@@ -320,12 +307,14 @@ function DishCard({ dish, onSelect }: { dish: Dish; onSelect?: (dish: Dish) => v
 }
 
 // ---------------------------------------------------------------------------
-// Category pill row — single horizontal row, exactly ONE selected, horizontal
-// scroll (never wraps). Idle pill = white + hairline (secondary); selected pill
-// = solid black (selection / control). Mirrors the live single-select filter.
+// Category filter — the shared `ToggleGroup variant="segmented"` (single-select).
+// A real selection primitive: the group sits on a muted track, exactly ONE item
+// is on (aria + data-[state=on] → solid black = selection, never a Button in a
+// selected style), and it scrolls horizontally, never wrapping into a block.
+// Mirrors the live single-select filter.
 // ---------------------------------------------------------------------------
 
-function CategoryPillRow({
+function CategoryFilter({
     selected,
     onSelect,
 }: {
@@ -336,16 +325,13 @@ function CategoryPillRow({
         <div className='min-w-0 flex-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
             <ToggleGroup
                 type='single'
+                variant='segmented'
                 value={selected ?? 'all'}
                 onValueChange={value => onSelect(value === 'all' || value === '' ? null : value)}
                 aria-label='Menu categories'
-                className='w-max flex-nowrap justify-start gap-2'
+                className='w-max flex-nowrap'
             >
-                <ToggleGroupItem
-                    value='all'
-                    aria-label='All dishes'
-                    className='bg-background text-foreground data-[state=on]:border-selected data-[state=on]:bg-selected data-[state=on]:text-selected-foreground h-9 flex-none shrink-0 rounded-full border px-4 text-sm font-medium transition-colors data-[state=off]:hover:border-foreground/30'
-                >
+                <ToggleGroupItem value='all' aria-label='All dishes' className='h-9 flex-none px-4 text-sm font-medium'>
                     All
                 </ToggleGroupItem>
                 {CATEGORIES.map(category => (
@@ -353,7 +339,7 @@ function CategoryPillRow({
                         key={category}
                         value={category}
                         aria-label={category}
-                        className='bg-background text-foreground data-[state=on]:border-selected data-[state=on]:bg-selected data-[state=on]:text-selected-foreground h-9 flex-none shrink-0 rounded-full border px-4 text-sm font-medium transition-colors data-[state=off]:hover:border-foreground/30'
+                        className='h-9 flex-none px-4 text-sm font-medium'
                     >
                         {category}
                     </ToggleGroupItem>
@@ -408,94 +394,26 @@ function MenuEmpty({ onClearFilters }: { onClearFilters: () => void }) {
 }
 
 // ---------------------------------------------------------------------------
-// Floating rounded toolbar — the real, on-theme top chrome (replaces the former
-// placeholder nav). A large-radius WHITE bar that FLOATS inside the shell with
-// margin on every side (never edge-to-edge): brand left, nav centre with the
-// active item as a solid-BLACK pill (white icon / label), search + a black Cart
-// pill right. On mobile it condenses (brand + search + Cart) but stays a rounded
-// floating bar, never full-bleed.
+// Top nav placeholder — the top nav belongs to the CONSUMER APP SHELL (which
+// renders the shared `NavBar variant="consumer"`). This surface only redesigns
+// the menu content zone, so the toolbar is a pinned, muted placeholder here
+// (dashed, mono label) — never reimplemented per-surface.
 // ---------------------------------------------------------------------------
 
-const NAV_ITEMS = [
-    { id: 'main', label: 'Main dishes', icon: UtensilsCrossed },
-    { id: 'vegan', label: 'Vegan', icon: Salad },
-    { id: 'street', label: 'Street food', icon: Sandwich },
-    { id: 'desserts', label: 'Desserts', icon: IceCreamCone },
-    { id: 'drinks', label: 'Drinks', icon: CupSoda },
-] as const;
-
-function Toolbar({ activeNav = 'main', cartCount = 3 }: { activeNav?: string; cartCount?: number }) {
+function TopNavPlaceholder() {
     return (
-        <header className='bg-background z-20 m-3 flex shrink-0 items-center gap-2 rounded-full border border-black/[0.05] p-1.5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:m-4 sm:gap-3 sm:p-2'>
-            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav/Cart pills stay black */}
-            <div className='flex shrink-0 items-center gap-2 pl-2 pr-1 sm:pl-3'>
-                <span className='bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full'>
-                    <UtensilsCrossed className='h-4 w-4' aria-hidden />
-                </span>
-                <span className='hidden text-base font-bold tracking-tight text-primary sm:block'>Notism</span>
-            </div>
-
-            {/* Centre nav — active item is a solid-black pill with white icon + label (theme §5) */}
-            <nav aria-label='Menu sections' className='mx-auto hidden items-center gap-0.5 md:flex'>
-                {NAV_ITEMS.map(item => {
-                    const isActive = item.id === activeNav;
-                    return (
-                        <button
-                            key={item.id}
-                            type='button'
-                            aria-current={isActive ? 'page' : undefined}
-                            className={cn(
-                                'flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors lg:px-4',
-                                isActive
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:text-foreground'
-                            )}
-                        >
-                            <item.icon
-                                className={cn(
-                                    'h-4 w-4',
-                                    isActive ? 'text-selected-foreground' : 'text-muted-foreground'
-                                )}
-                            />
-                            {item.label}
-                        </button>
-                    );
-                })}
-            </nav>
-
-            {/* Right — search + crimson Cart pill */}
-            <div className='ml-auto flex shrink-0 items-center gap-2 md:ml-0'>
-                <div className='relative hidden lg:block'>
-                    <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-                    <Input
-                        type='search'
-                        aria-label='Search the menu'
-                        placeholder='Search dishes'
-                        className='h-9 w-44 rounded-full border-transparent bg-muted pl-9'
-                    />
-                </div>
-                <Button
-                    variant='ghost'
-                    size='icon'
-                    aria-label='Search the menu'
-                    className='rounded-full text-muted-foreground lg:hidden'
-                >
-                    <Search className='h-4 w-4' />
-                </Button>
-                <Button className='relative rounded-full pl-3.5 pr-4'>
-                    <ShoppingBag className='h-4 w-4' />
-                    <span className='hidden sm:inline'>Cart</span>
-                    <span className='ml-0.5 rounded-full bg-white/20 px-1.5 text-xs font-semibold'>{cartCount}</span>
-                </Button>
-            </div>
-        </header>
+        <div className='sticky top-0 z-20 m-3 flex h-14 shrink-0 items-center justify-center rounded-full border border-dashed border-muted-foreground/30 bg-background/60 sm:m-4'>
+            <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
+                consumer top nav placeholder
+            </span>
+        </div>
     );
 }
 
 // ---------------------------------------------------------------------------
 // Menu content — the implemented surface, on a WHITE content panel: a sticky
-// header (title + pill row + sort + result count) over the image-forward card
-// grid (or the empty state).
+// header (title + category filter + sort + result count) over the image-forward
+// card grid (or the empty state).
 // ---------------------------------------------------------------------------
 
 function MenuContent({
@@ -513,7 +431,7 @@ function MenuContent({
 
     return (
         <div className='bg-background rounded-3xl border border-black/[0.05] shadow-sm'>
-            {/* Sticky header — theme §6 section header: title left, single utility (sort) right, pill row below */}
+            {/* Sticky header — theme §6 section header: title left, single utility (sort) right, filter below */}
             <div className='bg-background/95 sticky top-0 z-10 rounded-t-3xl border-b border-border/60 px-4 pb-3 pt-4 backdrop-blur sm:px-6 sm:pt-5'>
                 <div className='mb-4 flex items-center justify-between gap-3'>
                     <div className='flex items-baseline gap-2'>
@@ -526,7 +444,7 @@ function MenuContent({
                         <SortControl value={sortBy} onChange={onSortChange} />
                     </div>
                 </div>
-                <CategoryPillRow selected={selectedCategory} onSelect={onCategoryChange} />
+                <CategoryFilter selected={selectedCategory} onSelect={onCategoryChange} />
             </div>
 
             <div className='px-4 py-5 sm:px-6 sm:py-6'>
@@ -546,7 +464,7 @@ function MenuContent({
 
 // ---------------------------------------------------------------------------
 // App shell — dark ambient frame → one large-radius LIGHT-GRAY shell (soft
-// shadow). The shell fills the viewport as a flex column: the floating toolbar
+// shadow). The shell fills the viewport as a flex column: the nav placeholder
 // is pinned at the top and the menu content zone scrolls beneath it, so there
 // is a single scroll region and no clipping.
 // ---------------------------------------------------------------------------
@@ -561,7 +479,7 @@ function MenuShell({ children }: { children: React.ReactNode }) {
             }}
         >
             <div className='bg-muted mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-[2rem] shadow-[0_24px_70px_-32px_rgba(0,0,0,0.7)]'>
-                <Toolbar />
+                <TopNavPlaceholder />
                 <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-1 sm:px-4 sm:pb-5 lg:px-5'>{children}</div>
             </div>
         </div>
@@ -569,8 +487,8 @@ function MenuShell({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Interactive harness — live pill + sort so the grid updates on change, keeping
-// one clear tap target per card.
+// Interactive harness — live category filter + sort so the grid updates on
+// change, keeping one clear tap target per card.
 // ---------------------------------------------------------------------------
 
 function MenuHarness({ initialCategory = null }: { initialCategory?: string | null }) {
@@ -605,8 +523,8 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Default — the full menu on desktop: an image-forward card grid on the light
- * shell, with the "All" pill selected in the horizontal pill row and prices in
- * crimson. Each card is a single tap target.
+ * shell, with the "All" segment selected in the segmented category filter and
+ * prices in crimson. Each card is a single tap target.
  */
 export const Default: Story = {
     name: 'Default — Image-Forward Card Grid',
@@ -623,12 +541,12 @@ export const Default: Story = {
 };
 
 /**
- * Partial — a category is selected (Grilled): exactly one pill is solid black in
- * the row and the grid is filtered to that category, one clear tap target per
- * card retained.
+ * Partial — a category is selected (Grilled): exactly one segment is solid black
+ * in the segmented filter and the grid is filtered to that category, one clear
+ * tap target per card retained.
  */
 export const CategorySelected: Story = {
-    name: 'Partial — Category Filtered (One Pill Selected)',
+    name: 'Partial — Category Filtered (One Segment Selected)',
     render: () => (
         <MenuShell>
             <MenuContent
@@ -643,8 +561,8 @@ export const CategorySelected: Story = {
 
 /**
  * Empty — no dishes match the selected filter (the "Combos" category has none
- * yet, its pill still selected). The grid gives way to an illustration + exactly
- * one CTA to clear the filter and return to the full menu — no dead end.
+ * yet, its segment still selected). The grid gives way to an illustration +
+ * exactly one CTA to clear the filter and return to the full menu — no dead end.
  */
 export const Empty: Story = {
     name: 'Empty — No Dishes Match Filter (One CTA)',
@@ -661,8 +579,8 @@ export const Empty: Story = {
 };
 
 /**
- * Interactive — change the category pill or the sort and watch the card grid
- * update while every card keeps its single tap target.
+ * Interactive — change the segmented category filter or the sort and watch the
+ * card grid update while every card keeps its single tap target.
  */
 export const Interactive: Story = {
     name: 'Interactive — Filter & Sort',
