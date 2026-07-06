@@ -1,51 +1,65 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
     Beef,
+    CheckCircle2,
     ChevronRight,
-    CircleDot,
     ClipboardList,
     CookingPot,
-    CheckCircle2,
     CupSoda,
-    Heart,
-    LayoutGrid,
-    LifeBuoy,
+    Home,
     Package,
     Pizza,
     Salad,
-    Sandwich,
     Search,
     ShoppingBag,
     Soup,
     StickyNote,
     Truck,
-    UtensilsCrossed,
     XCircle,
     type LucideIcon,
 } from 'lucide-react';
 import * as React from 'react';
 
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Separator } from '@/components/separator';
 import Spinner from '@/components/spinner';
+import Timeline from '@/components/timeline';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 // ---------------------------------------------------------------------------
-// Order history (customer /orders) — conformed to DESIGN_THEME.md.
+// Surface: OrderHistory (customer /orders) — theme-wide kit pass.
 //
-// Business behaviour is UNCHANGED (same order fields, four+ delivery statuses,
-// infinite-scroll load-more, single-CTA empty state). Only the visuals conform:
+// SAME business behaviour as before (past orders, four+ delivery statuses,
+// infinite-scroll load-more, single-CTA empty state). This pass adopts the
+// shared kit for three regions that were previously bespoke:
 //
-//   • Two-tone: the order TOTAL is the only red on the screen (theme: red =
-//     commerce/price). Nav chrome is monochrome black/white, status is colour-
-//     coded but NEVER red — so no red competes with the price.
-//   • List Row (§5): each order is a rounded card = circular thumb + order id
-//     (bold heading) + meta + red total, one tap target for the whole card.
-//   • Type (§3): order id = bold heading; total = accent-primary bold.
-//   • Shape (§4): card radius 22px, circular 56–64px thumbs, soft shadow on the
-//     floating shell/panel only, cards flat.
-//   • States (§8): hover darkens the card; empty = exactly one CTA; load-more
-//     on scroll preserved.
+//   • Top nav → the shared, domain-blind NavBar (consumer variant): a floating
+//     rounded bar pinned inside the shell. The active tab ("Orders") is a REAL
+//     navigation selection (NavBarItem aria-current — white pill + primary
+//     accent), never a Button in a selected style. (Consistent with the Consumer
+//     App Shell + Order Tracking toolbars.)
+//   • Status filter → a single-select ToggleGroup (variant="segmented"): the
+//     "choose one from many" filter row (All / In progress / Delivered /
+//     Cancelled) is the kit's selection primitive, not a row of selected-state
+//     Buttons.
+//   • Per-order delivery progression → the shared Timeline primitive. Each order
+//     card carries the placed → preparing → on the way → delivered progression
+//     (reached steps accented + timestamped, the current step highlighted,
+//     upcoming steps quiet) — the chronological progression that was previously
+//     collapsed into a single flat status pill in a Card/Separator row.
+//
+// Theme (DESIGN_THEME.md applied):
+//   • Two-tone: the order TOTAL is the loudest red on the screen (red = price).
+//     Nav chrome + selection are ink; status is colour-coded but never red.
+//   • List Row (§5): each order = circular thumb + order id (bold heading) + meta
+//     + red total, one tap target opening the order.
+//   • Shape (§4): large card radius, circular 56–64px thumbs, soft shadow on the
+//     floating shell/panel only; cards flat.
+//   • States (§8): hover darkens the card; empty = exactly one CTA; load-more on
+//     scroll preserved.
 //
 // Mock-only fixtures — no api/model/state imports.
 // ---------------------------------------------------------------------------
@@ -53,6 +67,7 @@ import Spinner from '@/components/spinner';
 const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 
 type DeliveryStatus = 'orderPlaced' | 'preparing' | 'onTheWay' | 'delivered' | 'cancelled';
+type ProgressKey = 'orderPlaced' | 'preparing' | 'onTheWay' | 'delivered';
 
 interface OrderCardData {
     /** Customer-facing order id — the card heading. */
@@ -67,73 +82,52 @@ interface OrderCardData {
     itemCount: number;
     hasSurcharges?: boolean;
     deliveryNotes?: string;
+    /** Timestamps for each reached delivery step — drives the per-order Timeline. */
+    timing: Partial<Record<ProgressKey, string>>;
 }
 
 // ---------------------------------------------------------------------------
-// Floating rounded toolbar — the global nav shell region. A white bar floating
-// inside the light shell: brand left, nav centre (active = solid black pill,
-// §5), search + Cart pill right. Deliberately monochrome so red stays reserved
-// for the order total.
+// Floating top nav — the shared, domain-blind NavBar (consumer variant). Brand
+// left · nav-items region center (the active tab is a real navigation selection
+// via NavBarItem aria-current, never a Button in a selected style) · actions
+// right (search + a Cart CTA). Deliberately monochrome so red stays reserved for
+// the order total.
 // ---------------------------------------------------------------------------
 
-interface NavItem {
-    label: string;
-    icon: LucideIcon;
-    active?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-    { label: 'Menu', icon: LayoutGrid },
-    { label: 'Orders', icon: ClipboardList, active: true },
-    { label: 'Favorites', icon: Heart },
-    { label: 'Help', icon: LifeBuoy },
+const NAV_ITEMS: { key: string; label: string; icon: LucideIcon; active?: boolean }[] = [
+    { key: 'home', label: 'Home', icon: Home },
+    { key: 'orders', label: 'Orders', icon: ClipboardList, active: true },
 ];
-
-function NavPill({ item }: { item: NavItem }) {
-    const Icon = item.icon;
-    if (item.active) {
-        return (
-            <span className='inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background'>
-                <Icon className='h-4 w-4' aria-hidden />
-                {item.label}
-            </span>
-        );
-    }
-    return (
-        <span className='inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground'>
-            <Icon className='h-4 w-4' aria-hidden />
-            {item.label}
-        </span>
-    );
-}
 
 function Toolbar() {
     return (
-        <nav className='flex shrink-0 items-center justify-between gap-3 rounded-[1.5rem] border border-border/60 bg-background px-3 py-2 sm:px-4'>
-            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); kept quiet in weight so the price red still reads loudest */}
-            <div className='flex items-center gap-2 pl-1'>
-                <UtensilsCrossed className='h-5 w-5 text-primary' aria-hidden />
-                <span className='text-lg font-bold tracking-tight text-primary'>Notism</span>
-            </div>
+        <NavBar variant='consumer' className='shrink-0'>
+            <NavBarBrand>
+                <span className='pl-1 text-lg font-extrabold tracking-tight text-primary lg:pl-2'>Notism</span>
+            </NavBarBrand>
 
-            {/* Centre nav — active takes a solid black pill (§5) */}
-            <div className='hidden items-center gap-1 md:flex'>
-                {NAV_ITEMS.map(item => (
-                    <NavPill key={item.label} item={item} />
-                ))}
-            </div>
+            <NavBarNav className='hidden flex-1 justify-center md:flex'>
+                {NAV_ITEMS.map(item => {
+                    const Icon = item.icon;
+                    return (
+                        <NavBarItem key={item.key} active={item.active}>
+                            <Icon className='size-4' aria-hidden />
+                            {item.label}
+                        </NavBarItem>
+                    );
+                })}
+            </NavBarNav>
 
-            {/* Search + Cart — Cart is a structural nav action, so black (§ two-tone) */}
-            <div className='flex items-center gap-2'>
-                <Button variant='ghost' size='icon-sm' aria-label='Search orders'>
-                    <Search className='h-4 w-4' aria-hidden />
+            <NavBarActions>
+                <Button variant='ghost' size='icon-sm' className='text-muted-foreground' aria-label='Search orders'>
+                    <Search className='size-4' aria-hidden />
                 </Button>
-                <Button className='rounded-full px-4'>
-                    <ShoppingBag className='h-4 w-4' aria-hidden />
+                <Button className='rounded-full'>
+                    <ShoppingBag className='size-4' aria-hidden />
                     Cart
                 </Button>
-            </div>
-        </nav>
+            </NavBarActions>
+        </NavBar>
     );
 }
 
@@ -157,70 +151,87 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Status roles — one consistent colour per delivery state (theme: status colour
-// only for status; never colour alone → every pill carries the word + an icon).
+// Status model — one word + icon + consistent tone per delivery state (status is
+// never conveyed by colour alone → every badge carries the word + an icon).
 // Never crimson: crimson is reserved for the order total. Cancelled reads as a
-// neutral zinc pill, not red.
+// neutral pill, not red.
 // ---------------------------------------------------------------------------
 
-interface StatusRole {
+interface StatusMeta {
     label: string;
     icon: LucideIcon;
-    chip: string;
-    dot: string;
+    /** Soft chip tone for the status badge. */
+    badge: string;
 }
 
-const STATUS_ROLES: Record<DeliveryStatus, StatusRole> = {
-    orderPlaced: {
-        label: 'Order placed',
-        icon: CircleDot,
-        chip: 'border-slate-200 bg-slate-100 text-slate-700',
-        dot: 'bg-slate-500',
-    },
-    preparing: {
-        label: 'Preparing',
-        icon: CookingPot,
-        chip: 'border-amber-200 bg-amber-100 text-amber-800',
-        dot: 'bg-amber-500',
-    },
-    onTheWay: {
-        label: 'On the way',
-        icon: Truck,
-        chip: 'border-sky-200 bg-sky-100 text-sky-800',
-        dot: 'bg-sky-500',
-    },
-    delivered: {
-        label: 'Delivered',
-        icon: CheckCircle2,
-        chip: 'border-emerald-200 bg-emerald-100 text-emerald-800',
-        dot: 'bg-emerald-600',
-    },
-    cancelled: {
-        label: 'Cancelled',
-        icon: XCircle,
-        chip: 'border-zinc-200 bg-zinc-100 text-zinc-600',
-        dot: 'bg-zinc-400',
-    },
+const STATUS_META: Record<DeliveryStatus, StatusMeta> = {
+    orderPlaced: { label: 'Order placed', icon: ClipboardList, badge: 'border-border bg-muted text-foreground' },
+    preparing: { label: 'Preparing', icon: CookingPot, badge: 'border-warning/25 bg-warning/10 text-warning' },
+    onTheWay: { label: 'On the way', icon: Truck, badge: 'border-info/25 bg-info/10 text-info' },
+    delivered: { label: 'Delivered', icon: CheckCircle2, badge: 'border-success/25 bg-success/10 text-success' },
+    cancelled: { label: 'Cancelled', icon: XCircle, badge: 'border-border bg-muted text-muted-foreground' },
 };
 
-function StatusPill({ status }: { status: DeliveryStatus }) {
-    const role = STATUS_ROLES[status];
-    const Icon = role.icon;
+function StatusBadge({ status }: { status: DeliveryStatus }) {
+    const meta = STATUS_META[status];
+    const Icon = meta.icon;
     return (
-        <span
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${role.chip}`}
-        >
-            <span className={`h-1.5 w-1.5 rounded-full ${role.dot}`} aria-hidden />
+        <Badge variant='outline' className={`shrink-0 gap-1.5 rounded-full px-2.5 py-1 ${meta.badge}`}>
             <Icon className='h-3.5 w-3.5' aria-hidden />
-            {role.label}
-        </span>
+            {meta.label}
+        </Badge>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Per-order delivery progression — the shared Timeline primitive. The four
+// delivery steps (placed → preparing → on the way → delivered): reached steps
+// are accented + timestamped, the current step highlighted, upcoming steps quiet
+// ("Up next"). Cancelled orders show only the steps that were reached before
+// cancellation; unreached steps stay quiet.
+// ---------------------------------------------------------------------------
+
+const PROGRESS_STEPS: { key: ProgressKey; label: string; icon: LucideIcon }[] = [
+    { key: 'orderPlaced', label: 'Order placed', icon: ClipboardList },
+    { key: 'preparing', label: 'Preparing', icon: CookingPot },
+    { key: 'onTheWay', label: 'On the way', icon: Truck },
+    { key: 'delivered', label: 'Delivered', icon: CheckCircle2 },
+];
+
+function buildTimelineItems(order: OrderCardData) {
+    const isCancelled = order.deliveryStatus === 'cancelled';
+    const current = isCancelled ? -1 : PROGRESS_STEPS.findIndex(s => s.key === order.deliveryStatus);
+    return PROGRESS_STEPS.map((step, index) => ({
+        title: step.label,
+        icon: step.icon,
+        isCompleted: isCancelled ? Boolean(order.timing[step.key]) : index < current,
+        isCurrent: index === current,
+        completedAt: order.timing[step.key] ?? null,
+        description: !isCancelled && index > current ? 'Up next' : undefined,
+    }));
+}
+
+function DeliveryProgress({ order }: { order: OrderCardData }) {
+    return (
+        <div className='rounded-2xl border border-border/70 bg-muted/30 p-4'>
+            <p className='mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground'>
+                Delivery progress
+            </p>
+            <Timeline items={buildTimelineItems(order)} />
+            {order.deliveryStatus === 'cancelled' && (
+                <p className='mt-1 flex items-center gap-1.5 text-sm text-muted-foreground'>
+                    <XCircle className='h-3.5 w-3.5 shrink-0' aria-hidden />
+                    This order was cancelled before delivery.
+                </p>
+            )}
+        </div>
     );
 }
 
 // ---------------------------------------------------------------------------
 // Fixtures — mixed statuses; ids/dates mirror the app's ORD-YYYYMMDD-NNNN +
-// VND-total conventions. Each order carries a representative dish icon for its
-// circular thumbnail.
+// VND-total conventions. Each order carries a representative dish icon and the
+// timestamps of every delivery step it has reached.
 // ---------------------------------------------------------------------------
 
 const ORDERS: OrderCardData[] = [
@@ -232,6 +243,11 @@ const ORDERS: OrderCardData[] = [
         deliveryStatus: 'onTheWay',
         itemCount: 3,
         deliveryNotes: 'Leave at the door, please — flat 4B.',
+        timing: {
+            orderPlaced: '2026-07-03T12:04:00',
+            preparing: '2026-07-03T12:12:00',
+            onTheWay: '2026-07-03T12:38:00',
+        },
     },
     {
         slugId: 'ORD-20260702-0988',
@@ -240,6 +256,10 @@ const ORDERS: OrderCardData[] = [
         thumb: Soup,
         deliveryStatus: 'preparing',
         itemCount: 1,
+        timing: {
+            orderPlaced: '2026-07-02T19:20:00',
+            preparing: '2026-07-02T19:27:00',
+        },
     },
     {
         slugId: 'ORD-20260701-0951',
@@ -249,14 +269,12 @@ const ORDERS: OrderCardData[] = [
         deliveryStatus: 'delivered',
         itemCount: 5,
         hasSurcharges: true,
-    },
-    {
-        slugId: 'ORD-20260630-0902',
-        createdAt: '2026-06-30T11:15:00',
-        total: '148,000 ₫',
-        thumb: Sandwich,
-        deliveryStatus: 'orderPlaced',
-        itemCount: 2,
+        timing: {
+            orderPlaced: '2026-07-01T13:47:00',
+            preparing: '2026-07-01T13:55:00',
+            onTheWay: '2026-07-01T14:18:00',
+            delivered: '2026-07-01T14:43:00',
+        },
     },
     {
         slugId: 'ORD-20260628-0844',
@@ -266,6 +284,10 @@ const ORDERS: OrderCardData[] = [
         deliveryStatus: 'cancelled',
         itemCount: 2,
         deliveryNotes: 'Extra napkins and a spare set of chopsticks.',
+        timing: {
+            orderPlaced: '2026-06-28T20:02:00',
+            preparing: '2026-06-28T20:09:00',
+        },
     },
     {
         slugId: 'ORD-20260626-0790',
@@ -274,6 +296,12 @@ const ORDERS: OrderCardData[] = [
         thumb: CupSoda,
         deliveryStatus: 'delivered',
         itemCount: 1,
+        timing: {
+            orderPlaced: '2026-06-26T18:31:00',
+            preparing: '2026-06-26T18:36:00',
+            onTheWay: '2026-06-26T18:54:00',
+            delivered: '2026-06-26T19:11:00',
+        },
     },
 ];
 
@@ -288,10 +316,54 @@ function formatDate(iso: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Status filter — a single-select ToggleGroup (variant="segmented"): the kit's
+// "choose one from many" selection primitive, NOT a row of selected-state
+// Buttons. Selecting a status narrows the list.
+// ---------------------------------------------------------------------------
+
+type FilterKey = 'all' | 'active' | 'delivered' | 'cancelled';
+
+const FILTERS: { key: FilterKey; label: string }[] = [
+    { key: 'all', label: 'All' },
+    { key: 'active', label: 'In progress' },
+    { key: 'delivered', label: 'Delivered' },
+    { key: 'cancelled', label: 'Cancelled' },
+];
+
+const ACTIVE_STATUSES: DeliveryStatus[] = ['orderPlaced', 'preparing', 'onTheWay'];
+
+function matchesFilter(order: OrderCardData, filter: FilterKey): boolean {
+    if (filter === 'all') return true;
+    if (filter === 'active') return ACTIVE_STATUSES.includes(order.deliveryStatus);
+    return order.deliveryStatus === filter;
+}
+
+function StatusFilter({ value, onChange }: { value: FilterKey; onChange: (value: FilterKey) => void }) {
+    return (
+        <ToggleGroup
+            type='single'
+            variant='segmented'
+            value={value}
+            onValueChange={next => {
+                if (next) onChange(next as FilterKey);
+            }}
+            className='w-full max-w-full flex-wrap justify-start sm:w-auto'
+            aria-label='Filter orders by status'
+        >
+            {FILTERS.map(filter => (
+                <ToggleGroupItem key={filter.key} value={filter.key} className='px-4'>
+                    {filter.label}
+                </ToggleGroupItem>
+            ))}
+        </ToggleGroup>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Order card — a List Row (§5): circular thumb + order id (bold heading) + meta
-// + red total, all inside one rounded card that is a single tap target opening
-// the order. The chevron is a visual affordance, not a second target. Flat card;
-// hover darkens the surface + border (§8), no layout motion.
+// + red total, inside one rounded card that is a single tap target opening the
+// order. The delivery progression is the shared Timeline, shown beside the meta
+// on desktop and stacked on mobile. Flat card; hover darkens surface + border.
 // ---------------------------------------------------------------------------
 
 function OrderCard({ order, onOpen }: { order: OrderCardData; onOpen: (slugId: string) => void }) {
@@ -310,52 +382,60 @@ function OrderCard({ order, onOpen }: { order: OrderCardData; onOpen: (slugId: s
             aria-label={`Open order ${order.slugId}`}
             onClick={handleOpen}
             onKeyDown={handleKeyDown}
-            className='group cursor-pointer flex-row items-start gap-4 rounded-[22px] border-border/70 p-4 shadow-none transition-colors outline-none hover:border-primary/30 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-5'
+            className='group cursor-pointer gap-0 rounded-[22px] border-border/70 p-4 shadow-none transition-colors outline-none hover:border-primary/30 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:p-5'
         >
-            {/* Circular thumbnail (§5) */}
-            <div className='flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-muted text-foreground/70 transition-colors group-hover:bg-background sm:h-16 sm:w-16'>
-                <Thumb className='h-6 w-6 sm:h-7 sm:w-7' aria-hidden />
-            </div>
-
-            {/* Body */}
-            <div className='flex min-w-0 flex-1 flex-col gap-2'>
-                <div className='flex items-start justify-between gap-3'>
-                    <div className='min-w-0'>
-                        <h3 className='truncate text-xl font-bold tracking-tight text-foreground'>{order.slugId}</h3>
-                        <p className='mt-0.5 text-xs text-muted-foreground'>{formatDate(order.createdAt)}</p>
+            <div className='grid gap-4 md:grid-cols-[minmax(0,1fr)_18rem] md:gap-6'>
+                {/* Left column — the List Row: thumb + heading + meta + red total. */}
+                <div className='flex items-start gap-4'>
+                    <div className='flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-muted text-foreground/70 transition-colors group-hover:bg-background sm:h-16 sm:w-16'>
+                        <Thumb className='h-6 w-6 sm:h-7 sm:w-7' aria-hidden />
                     </div>
-                    <StatusPill status={order.deliveryStatus} />
-                </div>
 
-                <p className='text-sm text-muted-foreground'>
-                    {order.itemCount} {order.itemCount === 1 ? 'item' : 'items'}
-                    {order.hasSurcharges ? ' · Includes customisation surcharges' : ''}
-                </p>
+                    <div className='flex min-w-0 flex-1 flex-col gap-2'>
+                        <div className='flex items-start justify-between gap-3'>
+                            <div className='min-w-0'>
+                                <h3 className='truncate text-xl font-bold tracking-tight text-foreground'>
+                                    {order.slugId}
+                                </h3>
+                                <p className='mt-0.5 text-xs text-muted-foreground'>{formatDate(order.createdAt)}</p>
+                            </div>
+                            <StatusBadge status={order.deliveryStatus} />
+                        </div>
 
-                {order.deliveryNotes && (
-                    <div className='flex items-start gap-1.5 text-sm text-muted-foreground'>
-                        <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0' aria-hidden />
-                        <span>{order.deliveryNotes}</span>
-                    </div>
-                )}
-
-                <Separator className='my-1' />
-
-                <div className='flex items-end justify-between'>
-                    <div className='space-y-0.5'>
-                        <p className='text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground'>
-                            Total
+                        <p className='text-sm text-muted-foreground'>
+                            {order.itemCount} {order.itemCount === 1 ? 'item' : 'items'}
+                            {order.hasSurcharges ? ' · Includes customisation surcharges' : ''}
                         </p>
-                        <p className='text-xl font-bold tracking-tight text-primary'>{order.total}</p>
+
+                        {order.deliveryNotes && (
+                            <div className='flex items-start gap-1.5 text-sm text-muted-foreground'>
+                                <StickyNote className='mt-0.5 h-3.5 w-3.5 shrink-0' aria-hidden />
+                                <span>{order.deliveryNotes}</span>
+                            </div>
+                        )}
+
+                        <Separator className='my-1' />
+
+                        <div className='flex items-end justify-between'>
+                            <div className='space-y-0.5'>
+                                <p className='text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground'>
+                                    Total
+                                </p>
+                                <p className='text-xl font-bold tracking-tight text-primary'>{order.total}</p>
+                            </div>
+                            <span className='inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground'>
+                                View order
+                                <ChevronRight
+                                    className='h-4 w-4 transition-transform group-hover:translate-x-0.5'
+                                    aria-hidden
+                                />
+                            </span>
+                        </div>
                     </div>
-                    <span className='inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground'>
-                        View order
-                        <ChevronRight
-                            className='h-4 w-4 transition-transform group-hover:translate-x-0.5'
-                            aria-hidden
-                        />
-                    </span>
                 </div>
+
+                {/* Right column — the shared Timeline: this order's delivery progression. */}
+                <DeliveryProgress order={order} />
             </div>
         </Card>
     );
@@ -388,47 +468,82 @@ function LoadMore({ state }: { state: LoadMoreState }) {
 }
 
 // ---------------------------------------------------------------------------
+// Filtered-empty — a filter matched nothing. A quiet in-list message (no dead
+// end); the filter can be cleared without leaving the page.
+// ---------------------------------------------------------------------------
+
+function NoMatches({ label }: { label: string }) {
+    return (
+        <div className='flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 px-6 py-14 text-center'>
+            <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted'>
+                <Package className='h-7 w-7 text-muted-foreground' aria-hidden />
+            </div>
+            <p className='text-base font-semibold text-foreground'>No {label.toLowerCase()} orders</p>
+            <p className='mt-1 max-w-xs text-sm text-muted-foreground'>
+                Try a different filter to see more of your order history.
+            </p>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Order-history body — the white content panel: hairline + soft shadow, one
-// gentle step above the light shell. The header is pinned; the card list scrolls
-// within the shell beneath it (load-more on scroll preserved, single scroll
-// region).
+// gentle step above the light shell. Header + status filter are pinned; the card
+// list scrolls within the shell beneath them (load-more on scroll preserved,
+// single scroll region).
 // ---------------------------------------------------------------------------
 
 function OrderHistoryPage({
     orders,
     loadMore,
-    count,
+    initialFilter = 'all',
 }: {
     orders: OrderCardData[];
     loadMore: LoadMoreState;
-    count: number;
+    initialFilter?: FilterKey;
 }) {
+    const [filter, setFilter] = React.useState<FilterKey>(initialFilter);
     const noOp = () => undefined;
+
+    const visible = orders.filter(order => matchesFilter(order, filter));
+    const activeFilter = FILTERS.find(f => f.key === filter);
+
     return (
         <Shell>
             <div
                 className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-border/70 bg-background ${SOFT_SHADOW}`}
             >
-                {/* Pinned panel header */}
+                {/* Pinned panel header + status filter */}
                 <header className='shrink-0 border-b border-border/60 px-5 pt-6 pb-5 sm:px-8'>
                     <div className='flex items-center gap-3'>
                         <h1 className='text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>My orders</h1>
-                        {count > 0 && (
+                        {orders.length > 0 && (
                             <span className='rounded-full bg-muted px-3 py-0.5 text-sm font-semibold text-muted-foreground'>
-                                {count} {count === 1 ? 'order' : 'orders'}
+                                {orders.length} {orders.length === 1 ? 'order' : 'orders'}
                             </span>
                         )}
                     </div>
-                    <p className='mt-2 text-sm text-muted-foreground'>Find and reopen any past order.</p>
+                    <p className='mt-2 text-sm text-muted-foreground'>
+                        Track a delivery in progress or reopen any past order.
+                    </p>
+                    <div className='mt-4'>
+                        <StatusFilter value={filter} onChange={setFilter} />
+                    </div>
                 </header>
 
                 {/* Scrolling card list — the only scroll region in the shell */}
                 <div className='min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-8 sm:px-6'>
-                    <div className='mx-auto w-full max-w-2xl space-y-4'>
-                        {orders.map(order => (
-                            <OrderCard key={order.slugId} order={order} onOpen={noOp} />
-                        ))}
-                        <LoadMore state={loadMore} />
+                    <div className='mx-auto w-full max-w-3xl space-y-4'>
+                        {visible.length > 0 ? (
+                            <>
+                                {visible.map(order => (
+                                    <OrderCard key={order.slugId} order={order} onOpen={noOp} />
+                                ))}
+                                <LoadMore state={loadMore} />
+                            </>
+                        ) : (
+                            <NoMatches label={activeFilter?.label ?? 'matching'} />
+                        )}
                     </div>
                 </div>
             </div>
@@ -437,9 +552,9 @@ function OrderHistoryPage({
 }
 
 // ---------------------------------------------------------------------------
-// Empty state — illustration + exactly ONE CTA (theme: no dead ends). The CTA
-// leads back to the menu; it is a structural primary action (not a final/
-// irreversible step), so it is black, not red.
+// Empty state — illustration + exactly ONE CTA (no dead ends). The CTA leads
+// back to the menu; it is a structural primary action (not a final/irreversible
+// step), so it is ink, not red.
 // ---------------------------------------------------------------------------
 
 function OrderHistoryEmpty() {
@@ -450,7 +565,9 @@ function OrderHistoryEmpty() {
             >
                 <header className='shrink-0 border-b border-border/60 px-5 pt-6 pb-5 sm:px-8'>
                     <h1 className='text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>My orders</h1>
-                    <p className='mt-2 text-sm text-muted-foreground'>Find and reopen any past order.</p>
+                    <p className='mt-2 text-sm text-muted-foreground'>
+                        Track a delivery in progress or reopen any past order.
+                    </p>
                 </header>
 
                 <div className='flex min-h-0 flex-1 flex-col items-center justify-center px-6 py-16 text-center'>
@@ -490,13 +607,25 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Default — a list of past orders with MIXED statuses. Each order is a List Row
- * card: circular dish thumb, order id as a bold heading, total in crimson (the
- * only red on the screen), delivery status in words + icon + a consistent per-
- * state colour. The whole card is one tap target that opens the order.
+ * card (circular dish thumb, order id as a bold heading, total in crimson) beside
+ * the shared Timeline showing that order's delivery progression. The status
+ * filter above the list is a single-select segmented ToggleGroup. The whole card
+ * is one tap target that opens the order.
  */
 export const Default: Story = {
-    name: 'Default — Order Cards (Mixed Statuses)',
-    render: () => <OrderHistoryPage orders={ORDERS} loadMore='idle' count={ORDERS.length} />,
+    name: 'Default — Orders With Delivery Timeline',
+    render: () => <OrderHistoryPage orders={ORDERS} loadMore='idle' />,
+};
+
+/**
+ * Partial — a status filter is applied. The segmented ToggleGroup narrows the
+ * history to in-progress orders; each still shows its live delivery progression
+ * on the shared Timeline. Selecting another chip re-filters without leaving the
+ * page.
+ */
+export const Filtered: Story = {
+    name: 'Partial — Filtered To In Progress',
+    render: () => <OrderHistoryPage orders={ORDERS} loadMore='idle' initialFilter='active' />,
 };
 
 /**
@@ -506,12 +635,12 @@ export const Default: Story = {
  */
 export const LoadingMore: Story = {
     name: 'Loading — Loading More On Scroll',
-    render: () => <OrderHistoryPage orders={ORDERS} loadMore='loading' count={24} />,
+    render: () => <OrderHistoryPage orders={ORDERS} loadMore='loading' />,
 };
 
 /**
- * Empty — no orders yet. An illustration and a single, unambiguous black CTA
- * lead back to the menu (theme: exactly one call to action, no dead ends).
+ * Empty — no orders yet. An illustration and a single, unambiguous ink CTA lead
+ * back to the menu (exactly one call to action, no dead ends).
  */
 export const Empty: Story = {
     name: 'Empty — No Orders Yet (Single CTA)',

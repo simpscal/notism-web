@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ArrowLeft, ChefHat, LayoutDashboard, MoreVertical, Package, Radio, Search, Trash2, Users } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Search, Trash2 } from 'lucide-react';
 import React from 'react';
 
-import { Avatar, AvatarFallback } from '@/components/avatar';
+import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
@@ -33,20 +33,34 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //   • /admin/users — users list: on-theme sortable table + search + pagination
 //     + per-row destructive delete (behind a dropdown, apart from any primary).
 //   • /admin/users/:id — user editor: single-column form, labels above fields,
-//     role as a Segmented Choice pill control (single-select, active = black
-//     fill), a BLACK structural Save primary, and a destructive Delete set apart.
+//     role as a Segmented Choice control (single-select, active = black fill),
+//     a BLACK structural Save primary, and a destructive Delete set apart.
 //   • Delete confirm — explicit confirm dialog; the one irreversible red action.
 //
+// Chrome ownership (delta): this surface is an admin PAGE BODY rendered inside
+// the AdminAppShell, which owns the real chrome via the shared NavBar
+// variant="admin". So the top nav here is a labelled, muted, dashed sticky
+// placeholder — never a re-implemented bar — consistent with sibling
+// AdminAppShell / AdminRefunds.
+//
+// Selection controls (delta): a single-select (the editor's Role choice) is a
+// real selection, expressed with ToggleGroup variant="segmented" (active =
+// `selected` ink fill), NEVER a Button in a selected style. Buttons are reserved
+// for row/structural actions only (row delete, Save, destructive Delete).
+//
 // Two-tone hierarchy (§1): black = primary structural actions (Save, active
-// role chip); this surface carries no prices, so red is reserved for urgency —
-// destructive delete only. Elevation (§4): dark ambient frame → one large-radius
-// light shell → white content/table containers (hairline), a single soft shadow
-// on floating chrome (toolbar, dialog) only, one gentle step per level.
-// Layout (§6): admin sortable table + search + pagination; single-column editor
-// with labels above fields. States (§8): hover darkens, disabled reads as
-// ink-tertiary on bg-subtle, destructive stays apart behind an explicit confirm.
+// segmented choice); this surface carries no prices, so red is reserved for
+// urgency — destructive delete only. Elevation (§4): dark ambient frame → one
+// large-radius light shell → white content/table containers (hairline), a single
+// soft shadow on floating chrome only, one gentle step per level. Layout (§6):
+// admin sortable table + search + pagination; single-column editor with labels
+// above fields. States (§8): hover darkens, disabled reads as ink-tertiary on
+// bg-subtle, destructive stays apart behind an explicit confirm.
 // Mock-only fixtures; no api / model / store / page imports.
 // ---------------------------------------------------------------------------
+
+// One soft shadow, floating surfaces only (§4 elevation).
+const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 
 // ---------------------------------------------------------------------------
 // Domain shape (mock only — mirrors the users surface data, not the real model)
@@ -122,82 +136,53 @@ const USERS: AdminUser[] = [
 const CURRENT_USER_ID = 'usr-1001';
 
 // ---------------------------------------------------------------------------
-// Floating admin toolbar — reference-style chrome (not a placeholder): a
-// large-radius rounded bar floating INSIDE the shell, white over the light-gray
-// shell, one single soft shadow (floating chrome). Brand left · admin nav centre
-// (active = solid black pill + white icon/label, §5 Navigation Tabs) ·
-// live-feed + account right. No order sidebar for admin. Condensed on mobile,
-// never full-bleed.
+// Nav placeholder — the admin top nav is owned by the AdminAppShell (which
+// carries the shared NavBar variant="admin"); this page body does not
+// re-implement it. It renders as a labelled, muted, dashed sticky bar pinned at
+// the top of the shell — consistent with sibling AdminRefunds / AdminOrderDetail.
 // ---------------------------------------------------------------------------
 
-const ADMIN_NAV: { key: string; label: string; icon: typeof Users; active?: boolean }[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { key: 'orders', label: 'Orders', icon: Package },
-    { key: 'users', label: 'Users', icon: Users, active: true },
-];
-
-function AdminToolbar() {
+function NavPlaceholder() {
     return (
-        <nav className='flex shrink-0 items-center justify-between gap-3 rounded-full border border-border/60 bg-card px-3 py-2 shadow-sm sm:px-4'>
-            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav pills stay black. */}
-            <div className='flex items-center gap-2 pl-1 pr-2'>
-                <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
-                    <ChefHat className='h-4 w-4' aria-hidden />
+        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-5 sm:pt-5'>
+            <div className='flex h-14 items-center justify-center rounded-full border border-dashed border-border bg-card/60'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
+                    admin top nav placeholder
                 </span>
-                <span className='hidden text-base font-bold tracking-tight text-primary sm:inline'>Notism</span>
             </div>
-
-            {/* Admin nav — centre; active = solid black pill + white icon/label (§5). */}
-            <div className='flex items-center gap-1'>
-                {ADMIN_NAV.map(item => {
-                    const Icon = item.icon;
-                    return (
-                        <button
-                            key={item.key}
-                            type='button'
-                            aria-current={item.active ? 'page' : undefined}
-                            className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
-                                item.active
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:text-foreground'
-                            }`}
-                        >
-                            <Icon className='h-4 w-4' aria-hidden />
-                            <span className='hidden lg:inline'>{item.label}</span>
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* Live-feed + account — right. */}
-            <div className='flex items-center gap-2 pr-1'>
-                <span className='hidden items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground sm:inline-flex'>
-                    <Radio className='h-3.5 w-3.5 text-success' aria-hidden />
-                    Live feed
-                </span>
-                <Avatar className='h-8 w-8 border border-border/60'>
-                    <AvatarFallback className='bg-secondary text-xs font-semibold text-foreground'>MN</AvatarFallback>
-                </Avatar>
-            </div>
-        </nav>
+        </div>
     );
 }
 
 // ---------------------------------------------------------------------------
-// Shell — soft, minimal elevation, one gentle step per level (no heavy
-// rings/shadows): dark ambient frame → one large-radius light-gray shell →
-// white content panels (hairline) → white table container (hairline). The shell
-// fills the viewport; the floating toolbar stays pinned while the body scrolls
-// independently within it. min-h / flex throughout — no fixed heights.
+// Shell — dark ambient frame → ONE large-radius light-gray shell filling the
+// viewport → white content panels, one gentle step per level. The nav
+// placeholder is pinned at the top; only the page content scrolls beneath it
+// (single scroll region, no double scrollbars).
 // ---------------------------------------------------------------------------
 
 function AdminShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='flex h-screen flex-col bg-frame p-3 sm:p-5'>
-            {/* Light-gray shell — the one large rounded surface holding chrome + content. */}
-            <div className='mx-auto flex min-h-0 w-full max-w-[1320px] flex-1 flex-col gap-3 rounded-[2rem] bg-secondary p-3 sm:gap-4 sm:p-4'>
-                <AdminToolbar />
-                {/* Content zone — scrolls within the shell; toolbar stays pinned. */}
+        <div className='relative flex h-screen w-full flex-col overflow-hidden bg-frame'>
+            {/* Decorative dot-grid motif — very low contrast, never interactive */}
+            <div
+                aria-hidden
+                className='pointer-events-none absolute inset-0 opacity-[0.05]'
+                style={{
+                    backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.9) 1px, transparent 0)',
+                    backgroundSize: '26px 26px',
+                }}
+            />
+
+            <div
+                className={cn(
+                    'relative z-10 mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col overflow-hidden rounded-[2rem] bg-muted ring-1 ring-black/5 sm:m-4',
+                    SOFT_SHADOW
+                )}
+            >
+                <NavPlaceholder />
+
+                {/* Only the page content scrolls */}
                 <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
             </div>
         </div>
@@ -237,136 +222,140 @@ function UsersListSurface({
     const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     return (
-        // White content panel — hairline; one gentle step above the light shell.
-        <div className='rounded-[1.75rem] border border-border/60 bg-card p-5 shadow-sm sm:p-6'>
-            <div>
-                <h1 className='text-2xl font-bold tracking-tight text-foreground'>User management</h1>
-                <p className='mt-1 text-sm text-muted-foreground'>
-                    View and manage staff and customer accounts across the restaurant.
-                </p>
-            </div>
+        <div className='px-3 py-6 sm:px-5'>
+            {/* White content panel — hairline; one gentle step above the light shell. */}
+            <div className={cn('rounded-[1.75rem] border border-border/60 bg-card p-5 sm:p-6', SOFT_SHADOW)}>
+                <div>
+                    <h1 className='text-2xl font-bold tracking-tight text-foreground'>User management</h1>
+                    <p className='mt-1 text-sm text-muted-foreground'>
+                        View and manage staff and customer accounts across the restaurant.
+                    </p>
+                </div>
 
-            {/* Search — one rounded input, fully on-theme. */}
-            <div className='mb-4 mt-6 max-w-md'>
-                <InputGroup>
-                    <InputGroupInput
-                        type='text'
-                        placeholder='Search by name, email or location'
-                        value={search}
-                        onChange={e => {
-                            setSearch(e.target.value);
-                            setPage(1);
-                        }}
-                    />
-                    <InputGroupAddon>
-                        <Search />
-                    </InputGroupAddon>
-                </InputGroup>
-            </div>
+                {/* Search — one rounded input, fully on-theme. */}
+                <div className='mb-4 mt-6 max-w-md'>
+                    <InputGroup>
+                        <InputGroupInput
+                            type='text'
+                            placeholder='Search by name, email or location'
+                            value={search}
+                            onChange={e => {
+                                setSearch(e.target.value);
+                                setPage(1);
+                            }}
+                        />
+                        <InputGroupAddon>
+                            <Search />
+                        </InputGroupAddon>
+                    </InputGroup>
+                </div>
 
-            {/* Users table — white container, hairline, little/no shadow; the
-                wide table scrolls horizontally within its own container. */}
-            <div className='overflow-hidden rounded-2xl border border-border/70 bg-card'>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <SortableTableHead
-                                field='firstName'
-                                sortBy={sortBy}
-                                sortOrder={sortOrder}
-                                onSort={handleSort}
-                                className='min-w-[120px]'
-                            >
-                                First name
-                            </SortableTableHead>
-                            <SortableTableHead
-                                field='lastName'
-                                sortBy={sortBy}
-                                sortOrder={sortOrder}
-                                onSort={handleSort}
-                                className='min-w-[120px]'
-                            >
-                                Last name
-                            </SortableTableHead>
-                            <SortableTableHead
-                                field='email'
-                                sortBy={sortBy}
-                                sortOrder={sortOrder}
-                                onSort={handleSort}
-                                className='min-w-[200px]'
-                            >
-                                Email
-                            </SortableTableHead>
-                            <TableHead className='min-w-[140px]'>Phone number</TableHead>
-                            <TableHead className='min-w-[150px]'>Location</TableHead>
-                            <SortableTableHead
-                                field='role'
-                                sortBy={sortBy}
-                                sortOrder={sortOrder}
-                                onSort={handleSort}
-                                className='min-w-[100px]'
-                            >
-                                Role
-                            </SortableTableHead>
-                            <TableHead className='min-w-[80px] text-right'>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {pageItems.length > 0 ? (
-                            pageItems.map(user => (
-                                <TableRow key={user.id}>
-                                    <TableCell className='font-medium'>
-                                        <span className='text-foreground underline-offset-4 hover:underline'>
-                                            {user.firstName}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell>{user.lastName}</TableCell>
-                                    <TableCell className='text-muted-foreground'>{user.email}</TableCell>
-                                    <TableCell className='text-muted-foreground'>{user.phoneNumber ?? '-'}</TableCell>
-                                    <TableCell className='text-muted-foreground'>{user.location ?? '-'}</TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={user.role === 'admin' ? 'secondary' : 'outline'}
-                                            className='capitalize'
-                                        >
-                                            {user.role}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className='text-right'>
-                                        {user.id !== CURRENT_USER_ID ? (
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant='ghost' size='icon-sm' className='h-8 w-8'>
-                                                        <MoreVertical className='h-4 w-4' />
-                                                        <span className='sr-only'>Open menu</span>
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align='end'>
-                                                    <DropdownMenuItem
-                                                        variant='destructive'
-                                                        onClick={() => onRequestDelete?.(user)}
-                                                    >
-                                                        <Trash2 className='h-4 w-4' />
-                                                        Delete
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        ) : (
-                                            <span className='text-muted-foreground'>-</span>
-                                        )}
+                {/* Users table — white container, hairline, little/no shadow; the
+                    wide table scrolls horizontally within its own container. */}
+                <div className='overflow-hidden rounded-2xl border border-border/70 bg-card'>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <SortableTableHead
+                                    field='firstName'
+                                    sortBy={sortBy}
+                                    sortOrder={sortOrder}
+                                    onSort={handleSort}
+                                    className='min-w-[120px]'
+                                >
+                                    First name
+                                </SortableTableHead>
+                                <SortableTableHead
+                                    field='lastName'
+                                    sortBy={sortBy}
+                                    sortOrder={sortOrder}
+                                    onSort={handleSort}
+                                    className='min-w-[120px]'
+                                >
+                                    Last name
+                                </SortableTableHead>
+                                <SortableTableHead
+                                    field='email'
+                                    sortBy={sortBy}
+                                    sortOrder={sortOrder}
+                                    onSort={handleSort}
+                                    className='min-w-[200px]'
+                                >
+                                    Email
+                                </SortableTableHead>
+                                <TableHead className='min-w-[140px]'>Phone number</TableHead>
+                                <TableHead className='min-w-[150px]'>Location</TableHead>
+                                <SortableTableHead
+                                    field='role'
+                                    sortBy={sortBy}
+                                    sortOrder={sortOrder}
+                                    onSort={handleSort}
+                                    className='min-w-[100px]'
+                                >
+                                    Role
+                                </SortableTableHead>
+                                <TableHead className='min-w-[80px] text-right'>Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {pageItems.length > 0 ? (
+                                pageItems.map(user => (
+                                    <TableRow key={user.id}>
+                                        <TableCell className='font-medium'>
+                                            <span className='text-foreground underline-offset-4 hover:underline'>
+                                                {user.firstName}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell>{user.lastName}</TableCell>
+                                        <TableCell className='text-muted-foreground'>{user.email}</TableCell>
+                                        <TableCell className='text-muted-foreground'>
+                                            {user.phoneNumber ?? '-'}
+                                        </TableCell>
+                                        <TableCell className='text-muted-foreground'>{user.location ?? '-'}</TableCell>
+                                        <TableCell>
+                                            <Badge
+                                                variant={user.role === 'admin' ? 'secondary' : 'outline'}
+                                                className='capitalize'
+                                            >
+                                                {user.role}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className='text-right'>
+                                            {user.id !== CURRENT_USER_ID ? (
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant='ghost' size='icon-sm' className='h-8 w-8'>
+                                                            <MoreVertical className='h-4 w-4' />
+                                                            <span className='sr-only'>Open menu</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align='end'>
+                                                        <DropdownMenuItem
+                                                            variant='destructive'
+                                                            onClick={() => onRequestDelete?.(user)}
+                                                        >
+                                                            <Trash2 className='h-4 w-4' />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            ) : (
+                                                <span className='text-muted-foreground'>-</span>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={7} className='py-16 text-center text-muted-foreground'>
+                                        No users match your search.
                                     </TableCell>
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={7} className='py-16 text-center text-muted-foreground'>
-                                    No users match your search.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-                <TablePagination page={page} totalPages={totalPages} onPageChange={setPage} />
+                            )}
+                        </TableBody>
+                    </Table>
+                    <TablePagination page={page} totalPages={totalPages} onPageChange={setPage} />
+                </div>
             </div>
         </div>
     );
@@ -374,9 +363,10 @@ function UsersListSurface({
 
 // ---------------------------------------------------------------------------
 // User editor surface — single-column form, labels above fields, role as a
-// Segmented Choice pill control (single-select, active = solid black fill).
-// Save is the single BLACK structural primary; Delete is destructive and set
-// apart from it (theme §8: never adjacent, always confirmed).
+// Segmented Choice control (ToggleGroup variant="segmented", single-select,
+// active = solid `selected` ink fill — a real selection, never a Button in a
+// selected style). Save is the single BLACK structural primary; Delete is
+// destructive and set apart from it (theme §8: never adjacent, always confirmed).
 // ---------------------------------------------------------------------------
 
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
@@ -398,82 +388,85 @@ function UserEditorSurface({
 
     return (
         // Single column, max ~36rem (theme: form/checkout pattern).
-        <div className='mx-auto max-w-xl py-1'>
-            <Button variant='ghost' className='mb-4 -ml-2'>
-                <ArrowLeft className='h-4 w-4' />
-                Back to users
-            </Button>
+        <div className='px-3 py-6 sm:px-5'>
+            <div className='mx-auto max-w-xl'>
+                <Button variant='ghost' className='mb-4 -ml-2'>
+                    <ArrowLeft className='h-4 w-4' />
+                    Back to users
+                </Button>
 
-            <Card className='rounded-[1.75rem] border-border/60 shadow-sm'>
-                <CardHeader>
-                    <CardTitle className='text-xl'>{`${user.firstName} ${user.lastName}`}</CardTitle>
-                    <CardDescription>View account information and set this member's role.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form className='space-y-6' onSubmit={e => e.preventDefault()}>
-                        {/* Read-only account facts, quiet body rows. */}
-                        <div className='space-y-2'>
-                            {[
-                                { label: 'First name', value: user.firstName },
-                                { label: 'Last name', value: user.lastName },
-                                { label: 'Email', value: user.email },
-                                { label: 'Phone number', value: user.phoneNumber ?? '-' },
-                                { label: 'Location', value: user.location ?? '-' },
-                            ].map((row, i, arr) => (
-                                <React.Fragment key={row.label}>
-                                    <div className='flex justify-between gap-4 text-sm'>
-                                        <span className='text-muted-foreground'>{row.label}</span>
-                                        <span className='font-medium text-foreground'>{row.value}</span>
-                                    </div>
-                                    {i < arr.length - 1 && <Separator />}
-                                </React.Fragment>
-                            ))}
-                        </div>
-
-                        {/* Role — Segmented Choice, label above; active = solid black fill. */}
-                        <Field data-invalid={roleError ? true : undefined}>
-                            <FieldLabel htmlFor='role-toggle'>Role</FieldLabel>
-                            <ToggleGroup
-                                id='role-toggle'
-                                type='single'
-                                value={role}
-                                onValueChange={val => val && setRole(val as Role)}
-                                className='w-full gap-2'
-                            >
-                                {ROLE_OPTIONS.map(opt => (
-                                    <ToggleGroupItem
-                                        key={opt.value}
-                                        value={opt.value}
-                                        aria-label={opt.label}
-                                        className='flex-1 rounded-full border border-border px-5 first:rounded-l-full last:rounded-r-full data-[state=off]:bg-card'
-                                    >
-                                        {opt.label}
-                                    </ToggleGroupItem>
+                <Card className={cn('rounded-[1.75rem] border-border/60', SOFT_SHADOW)}>
+                    <CardHeader>
+                        <CardTitle className='text-xl'>{`${user.firstName} ${user.lastName}`}</CardTitle>
+                        <CardDescription>View account information and set this member's role.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form className='space-y-6' onSubmit={e => e.preventDefault()}>
+                            {/* Read-only account facts, quiet body rows. */}
+                            <div className='space-y-2'>
+                                {[
+                                    { label: 'First name', value: user.firstName },
+                                    { label: 'Last name', value: user.lastName },
+                                    { label: 'Email', value: user.email },
+                                    { label: 'Phone number', value: user.phoneNumber ?? '-' },
+                                    { label: 'Location', value: user.location ?? '-' },
+                                ].map((row, i, arr) => (
+                                    <React.Fragment key={row.label}>
+                                        <div className='flex justify-between gap-4 text-sm'>
+                                            <span className='text-muted-foreground'>{row.label}</span>
+                                            <span className='font-medium text-foreground'>{row.value}</span>
+                                        </div>
+                                        {i < arr.length - 1 && <Separator />}
+                                    </React.Fragment>
                                 ))}
-                            </ToggleGroup>
-                            <FieldDescription>Admins can manage orders, menu and other accounts.</FieldDescription>
-                            {roleError && <FieldError>{roleError}</FieldError>}
-                        </Field>
+                            </div>
 
-                        <div className='text-sm text-muted-foreground'>Created {user.createdAt}</div>
+                            {/* Role — Segmented Choice; label above; active = solid `selected` ink fill. */}
+                            <Field data-invalid={roleError ? true : undefined}>
+                                <FieldLabel htmlFor='role-toggle'>Role</FieldLabel>
+                                <ToggleGroup
+                                    id='role-toggle'
+                                    variant='segmented'
+                                    type='single'
+                                    value={role}
+                                    onValueChange={val => val && setRole(val as Role)}
+                                    className='w-full'
+                                >
+                                    {ROLE_OPTIONS.map(opt => (
+                                        <ToggleGroupItem
+                                            key={opt.value}
+                                            value={opt.value}
+                                            aria-label={opt.label}
+                                            className='flex-1 px-5'
+                                        >
+                                            {opt.label}
+                                        </ToggleGroupItem>
+                                    ))}
+                                </ToggleGroup>
+                                <FieldDescription>Admins can manage orders, menu and other accounts.</FieldDescription>
+                                {roleError && <FieldError>{roleError}</FieldError>}
+                            </Field>
 
-                        {/* Action hierarchy: one BLACK structural primary; destructive set apart. */}
-                        <div className='flex items-center justify-between gap-4 pt-2'>
-                            <Button
-                                type='submit'
-                                disabled={!isDirty}
-                                className='bg-selected text-selected-foreground hover:bg-selected/90 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100'
-                            >
-                                Save changes
-                            </Button>
-                            <Button type='button' variant='destructive' onClick={() => onRequestDelete?.(user)}>
-                                <Trash2 className='h-4 w-4' />
-                                Delete user
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
+                            <div className='text-sm text-muted-foreground'>Created {user.createdAt}</div>
+
+                            {/* Action hierarchy: one BLACK structural primary; destructive set apart. */}
+                            <div className='flex items-center justify-between gap-4 pt-2'>
+                                <Button
+                                    type='submit'
+                                    disabled={!isDirty}
+                                    className='bg-selected text-selected-foreground hover:bg-selected/90 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100'
+                                >
+                                    Save changes
+                                </Button>
+                                <Button type='button' variant='destructive' onClick={() => onRequestDelete?.(user)}>
+                                    <Trash2 className='h-4 w-4' />
+                                    Delete user
+                                </Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
@@ -571,7 +564,7 @@ type Story = StoryObj<typeof meta>;
  * Users table — the default list: on-theme sortable table with search and
  * pagination. Sort by first/last name, email or role; each non-self row exposes
  * a delete action behind a dropdown, set apart from any primary and opening a
- * confirm dialog.
+ * confirm dialog. The admin top nav is the shell-owned placeholder.
  */
 export const UsersTable: Story = {
     name: 'Users Table — Default',
@@ -595,8 +588,15 @@ export const UsersTableLoading: Story = {
     name: 'Users Table — Loading',
     render: () => (
         <AdminShell>
-            <div className='flex min-h-[60vh] w-full items-center justify-center rounded-[1.75rem] border border-border/60 bg-card shadow-sm'>
-                <Spinner size='lg' />
+            <div className='px-3 py-6 sm:px-5'>
+                <div
+                    className={cn(
+                        'flex min-h-[60vh] w-full items-center justify-center rounded-[1.75rem] border border-border/60 bg-card',
+                        SOFT_SHADOW
+                    )}
+                >
+                    <Spinner size='lg' />
+                </div>
             </div>
         </AdminShell>
     ),
@@ -610,12 +610,19 @@ export const UsersTableError: Story = {
     name: 'Users Table — Error',
     render: () => (
         <AdminShell>
-            <div className='flex min-h-[60vh] w-full items-center justify-center rounded-[1.75rem] border border-border/60 bg-card px-6 shadow-sm'>
-                <ErrorState
-                    title='Failed to load users'
-                    description='Something went wrong. Please try again in a moment.'
-                    iconSize='sm'
-                />
+            <div className='px-3 py-6 sm:px-5'>
+                <div
+                    className={cn(
+                        'flex min-h-[60vh] w-full items-center justify-center rounded-[1.75rem] border border-border/60 bg-card px-6',
+                        SOFT_SHADOW
+                    )}
+                >
+                    <ErrorState
+                        title='Failed to load users'
+                        description='Something went wrong. Please try again in a moment.'
+                        iconSize='sm'
+                    />
+                </div>
             </div>
         </AdminShell>
     ),
@@ -623,9 +630,9 @@ export const UsersTableError: Story = {
 
 /**
  * User editor — the single-column edit form: labels above fields, account facts
- * as quiet rows, role as a Segmented Choice pill control (active = solid black
- * fill). Save is the single BLACK structural primary; Delete user is destructive
- * and set apart.
+ * as quiet rows, role as a Segmented Choice (ToggleGroup variant="segmented",
+ * active = solid ink fill). Save is the single BLACK structural primary; Delete
+ * user is destructive and set apart.
  */
 export const UserEditor: Story = {
     name: 'User Editor — Form',

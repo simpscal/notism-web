@@ -27,42 +27,48 @@ import { Card } from '@/components/card';
 import ErrorState from '@/components/error-state';
 import { Field, FieldDescription, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Separator } from '@/components/separator';
 import { Skeleton } from '@/components/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/tabs';
 
 // ---------------------------------------------------------------------------
-// Surface: Account settings (route /settings/*) — RESTYLE to DESIGN_THEME.md.
+// Surface: Account settings (route /account) — RESTYLE to the theme.
 //
 // Business behaviour is UNCHANGED from src/pages/settings/*. This story mirrors
-// the same three tabbed sections (profile, appearance, payment — customer bank
-// account), the same fields, the same flow (persistent section rail + one
+// the same three sections (profile, appearance, payment — customer bank
+// account), the same fields, the same flow (persistent section switcher + one
 // content pane), and the same states (default / loading / error / success). It
 // only changes the VISUALS + UX to the theme:
 //
 //   • Elevation — soft + minimal, one gentle step per level: dark ambient frame
 //     → ONE large-radius light-gray shell → white settings panel (hairline,
-//     faint shadow) → white cards + section-rail (hairline, little/no shadow).
+//     faint shadow) → white cards + section rail (hairline, little/no shadow).
 //     No heavy rings or drop shadows; whitespace separates before a border does.
-//   • Toolbar — a real floating, large-radius rounded app bar sits INSIDE the
-//     shell with margin all around: brand left, nav centre (active = white pill
-//     + black icon/label), search + a black Cart pill right. On mobile it stays
-//     a rounded floating bar (condensed), never full-bleed.
+//   • Toolbar — the shared, domain-blind NavBar (consumer variant): a floating,
+//     large-radius rounded app bar that sits INSIDE the shell with margin all
+//     around — brand left, nav centre (active = a real navigation selection via
+//     NavBarItem's aria-current, never a Button styled selected), search + a
+//     black Cart pill right. On mobile it stays a rounded floating bar.
+//   • Section switcher — a REAL selection primitive (Tabs, orientation vertical):
+//     the vertical rail is a role=tablist whose active trigger takes aria-selected
+//     + a white pill (data-[state=active]). Never a Button styled as selected.
 //   • Scrolling — the shell fills the viewport; the toolbar is pinned; only the
 //     settings content pane scrolls within the shell (min-h/flex, no fixed
 //     heights, no double scrollbars).
 //   • Forms — single column, max ~40rem, labels ABOVE fields, roomy 8px-grid
-//     density, heavy consistent rounding (radius 20–24). Never multi-column.
+//     density, heavy consistent rounding. Never multi-column.
 //   • Two-tone — Save is the primary STRUCTURAL action, so it is a BLACK pill
 //     (there is no commerce / final-payment step here, so no red appears on this
 //     surface). Idle secondaries (Cancel, Change, Retry, Remove) are white pills
 //     with a hairline; disabled reads ink-tertiary text on bg-subtle. The
 //     appearance theme picker is a Segmented Choice whose chosen pill is BLACK
-//     fill (selection control).
+//     fill (a real single-select, not a styled Button).
 //
 // Self-contained: mock-only fixtures, no i18n / api / store / model imports.
 // Only the settings surface is fully implemented; the surrounding app is the
-// real floating toolbar (an unchanged shell region, rendered on-theme).
+// shared NavBar (an unchanged shell region, rendered on-theme).
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -216,7 +222,7 @@ const THEME_OPTIONS: { value: ThemeValue; label: string; description: string; Pr
 ];
 
 // ===========================================================================
-// TAB PANES — each mirrors a source section, restyled to the theme
+// SECTION PANES — each mirrors a source section, restyled to the theme
 // ===========================================================================
 
 // ---- Profile ---------------------------------------------------------------
@@ -352,8 +358,9 @@ function AppearancePane() {
                         </p>
                     </div>
 
-                    {/* Segmented Choice (§5) — a single-select pill row; the chosen pill
-                        reads BLACK fill (theme: black = selected). No crimson here. */}
+                    {/* Segmented Choice — a single-select pill row (RadioGroup, a real
+                        selection primitive); the chosen pill reads BLACK fill (theme:
+                        black = selected). No crimson here. */}
                     <RadioGroup
                         value={selected}
                         onValueChange={value => setSelected(value as ThemeValue)}
@@ -550,7 +557,7 @@ function PaymentSuccessPane() {
                     Cancel
                 </Button>
                 {/* Save is idle (no unsaved changes) — mirrors the disabled-until-dirty
-                    source. Disabled reads ink-tertiary text on bg-subtle (§8). */}
+                    source. Disabled reads ink-tertiary text on bg-subtle. */}
                 <Button
                     type='button'
                     disabled
@@ -564,12 +571,13 @@ function PaymentSuccessPane() {
 }
 
 // ===========================================================================
-// APP SHELL — dark ambient frame → light-gray shell → floating toolbar +
+// APP SHELL — dark ambient frame → light-gray shell → floating shared NavBar +
 // scrollable white settings panel
 // ===========================================================================
 
 // The centre nav mirrors the app's real top-level destinations; Account is the
-// active branch that owns Settings. Unchanged by this sprint — rendered on-theme.
+// active branch that owns Settings. Unchanged by this sprint — rendered on-theme
+// through the shared NavBar (consumer variant).
 const TOOLBAR_NAV: { id: string; label: string; icon: LucideIcon }[] = [
     { id: 'menu', label: 'Menu', icon: LayoutGrid },
     { id: 'orders', label: 'Orders', icon: ReceiptText },
@@ -580,77 +588,68 @@ const TOOLBAR_NAV: { id: string; label: string; icon: LucideIcon }[] = [
 const ACTIVE_NAV = 'account';
 
 /**
- * Floating rounded toolbar — the real reference app bar. Large-radius, light,
- * floats inside the shell with margin all around: brand left, nav centre
- * (active = white pill + black icon/label), search + a black Cart pill right.
- * On mobile it stays rounded and condensed, never full-bleed.
+ * Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
+ * large-radius rounded bar that FLOATS inside the shell (the shell padding gives
+ * it margin on all sides; never edge-to-edge). Brand slot left · nav-items region
+ * centre (the active tab is a real navigation selection — NavBarItem's
+ * aria-current promotes it to a white pill, never a Button styled selected) ·
+ * actions slot right (search + a black Cart pill).
  */
 function AppToolbar() {
     return (
-        <header className='shrink-0'>
-            <div className='flex h-16 items-center gap-3 rounded-[1.5rem] border border-border/60 bg-muted/50 px-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:px-4'>
-                {/* Brand */}
-                <a
-                    href='#'
-                    className='flex items-center gap-2 rounded-full px-1.5 py-1 font-bold tracking-tight text-foreground'
+        <NavBar variant='consumer' className='shrink-0 bg-muted/50 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
+            <NavBarBrand>
+                <span className='flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm'>
+                    <UtensilsCrossed className='h-4 w-4' aria-hidden />
+                </span>
+                <span className='hidden pl-0.5 text-base font-bold tracking-tight text-primary sm:inline'>Notism</span>
+            </NavBarBrand>
+
+            <NavBarNav className='mx-auto hidden md:flex'>
+                {TOOLBAR_NAV.map(item => {
+                    const Icon = item.icon;
+                    return (
+                        <NavBarItem key={item.id} active={item.id === ACTIVE_NAV}>
+                            <Icon className='h-4 w-4' aria-hidden />
+                            {item.label}
+                        </NavBarItem>
+                    );
+                })}
+            </NavBarNav>
+
+            <NavBarActions>
+                <Button
+                    type='button'
+                    variant='outline'
+                    size='icon'
+                    aria-label='Search'
+                    className='rounded-full border-border/70 bg-background'
                 >
-                    <span className='flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm'>
-                        <UtensilsCrossed className='h-4 w-4' aria-hidden />
-                    </span>
-                    <span className='hidden text-base text-primary sm:inline'>Notism</span>
-                </a>
-
-                {/* Centre nav — active takes a white pill + black icon/label */}
-                <nav className='mx-auto hidden items-center gap-1 md:flex'>
-                    {TOOLBAR_NAV.map(item => {
-                        const Icon = item.icon;
-                        const isActive = item.id === ACTIVE_NAV;
-                        return (
-                            <a
-                                key={item.id}
-                                href='#'
-                                aria-current={isActive ? 'page' : undefined}
-                                className={[
-                                    'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                                    isActive
-                                        ? 'bg-background text-foreground shadow-sm'
-                                        : 'text-muted-foreground hover:text-foreground',
-                                ].join(' ')}
-                            >
-                                <Icon className='h-4 w-4' aria-hidden />
-                                {item.label}
-                            </a>
-                        );
-                    })}
-                </nav>
-
-                {/* Trailing — search + the brand-red Cart pill */}
-                <div className='ml-auto flex items-center gap-2 md:ml-0'>
-                    <Button
-                        type='button'
-                        variant='outline'
-                        size='icon'
-                        aria-label='Search'
-                        className='rounded-full border-border/70 bg-background'
-                    >
-                        <Search className='h-4 w-4' />
-                    </Button>
-                    <Button type='button' className='rounded-full px-4'>
-                        <ShoppingBag className='h-4 w-4' />
-                        Cart
-                    </Button>
-                </div>
-            </div>
-        </header>
+                    <Search className='h-4 w-4' />
+                </Button>
+                <Button type='button' className='rounded-full px-4'>
+                    <ShoppingBag className='h-4 w-4' />
+                    Cart
+                </Button>
+            </NavBarActions>
+        </NavBar>
     );
 }
 
 /**
  * The on-theme app shell: a dark ambient frame (decorative line-art, behind
  * everything) → ONE large-radius light-gray shell that fills the viewport. The
- * toolbar is pinned; only the content region scrolls (flex + min-h-0).
+ * toolbar is pinned; only the content region scrolls (flex + min-h-0). The
+ * settings section switcher is a real Tabs primitive (vertical orientation): the
+ * rail is its tablist, the pane its active tabpanel.
  */
-function AppShell({ active, children }: { active: SectionId; children: React.ReactNode }) {
+function SettingsShell({
+    defaultSection = 'profile',
+    paymentPane,
+}: {
+    defaultSection?: SectionId;
+    paymentPane?: React.ReactNode;
+}) {
     return (
         <div className='relative flex h-screen w-full flex-col bg-[#17140f] p-3 sm:p-5'>
             {/* Decorative low-contrast line-art motif — behind the shell, never interactive. */}
@@ -678,40 +677,48 @@ function AppShell({ active, children }: { active: SectionId; children: React.Rea
 
                         {/* White settings panel — hairline + faint shadow (one gentle step). */}
                         <Card className='overflow-hidden rounded-[1.5rem] border-border/70 p-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
-                            <div className='grid grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]'>
-                                {/* Section rail — reference panel language: faint rail, active =
-                                    white pill + hairline + soft shadow + black icon/label. */}
-                                <nav className='flex flex-col gap-1 border-b border-border/70 bg-muted/40 p-3 md:border-b-0 md:border-r'>
-                                    <span className='px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground'>
+                            {/* Section switcher = a real Tabs selection primitive (vertical
+                                rail). Active trigger takes aria-selected + a white pill via
+                                data-[state=active]; never a Button styled as selected. */}
+                            <Tabs
+                                defaultValue={defaultSection}
+                                orientation='vertical'
+                                className='grid grid-cols-1 gap-0 md:grid-cols-[15rem_minmax(0,1fr)]'
+                            >
+                                <div className='border-b border-border/70 bg-muted/40 p-3 md:border-b-0 md:border-r'>
+                                    <span className='block px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground'>
                                         Sections
                                     </span>
-                                    {SECTIONS.map(section => {
-                                        const Icon = section.icon;
-                                        const isActive = section.id === active;
-                                        return (
-                                            <button
-                                                key={section.id}
-                                                type='button'
-                                                aria-current={isActive ? 'page' : undefined}
-                                                className={[
-                                                    'inline-flex items-center gap-2.5 rounded-full px-3.5 py-2.5 text-sm font-medium transition-colors',
-                                                    isActive
-                                                        ? 'border border-border/70 bg-background text-foreground shadow-sm'
-                                                        : 'text-muted-foreground hover:text-foreground',
-                                                ].join(' ')}
-                                            >
-                                                <Icon className='h-4 w-4' aria-hidden />
-                                                {section.label}
-                                            </button>
-                                        );
-                                    })}
-                                </nav>
+                                    <TabsList className='flex h-auto w-full flex-col items-stretch gap-1 rounded-none bg-transparent p-0'>
+                                        {SECTIONS.map(section => {
+                                            const Icon = section.icon;
+                                            return (
+                                                <TabsTrigger
+                                                    key={section.id}
+                                                    value={section.id}
+                                                    className='h-auto justify-start gap-2.5 rounded-full border-transparent px-3.5 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-border/70 data-[state=active]:text-foreground'
+                                                >
+                                                    <Icon className='h-4 w-4' aria-hidden />
+                                                    {section.label}
+                                                </TabsTrigger>
+                                            );
+                                        })}
+                                    </TabsList>
+                                </div>
 
                                 {/* Content pane — single focused column, max ~40rem forms. */}
                                 <div className='min-w-0 bg-background'>
-                                    <div className='mx-auto max-w-[40rem]'>{children}</div>
+                                    <div className='mx-auto max-w-[40rem]'>
+                                        <TabsContent value='profile'>
+                                            <ProfilePane />
+                                        </TabsContent>
+                                        <TabsContent value='appearance'>
+                                            <AppearancePane />
+                                        </TabsContent>
+                                        <TabsContent value='payment'>{paymentPane ?? <PaymentPane />}</TabsContent>
+                                    </div>
                                 </div>
-                            </div>
+                            </Tabs>
                         </Card>
                     </div>
                 </div>
@@ -736,44 +743,34 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Profile tab (default) — single-column form, labels above fields, the avatar
+ * Profile section (default) — single-column form, labels above fields, the avatar
  * group's Change/Remove as idle white pills, and one black "Save changes"
- * primary in the footer. "Remove" stays up in the avatar group, apart from Save.
+ * primary in the footer. The vertical section switcher is a real Tabs primitive;
+ * Profile is the selected tab (aria-selected + white pill).
  */
 export const Profile: Story = {
     name: 'Profile — Default',
-    render: () => (
-        <AppShell active='profile'>
-            <ProfilePane />
-        </AppShell>
-    ),
+    render: () => <SettingsShell defaultSection='profile' />,
 };
 
 /**
- * Appearance tab — a Segmented Choice theme picker under an UPPERCASE eyebrow.
- * The chosen pill reads black fill (selection control); the single primary
- * action, "Save changes", is a black pill.
+ * Appearance section — a Segmented Choice theme picker (RadioGroup) under an
+ * UPPERCASE eyebrow. The chosen pill reads black fill; the single primary action,
+ * "Save changes", is a black pill.
  */
 export const Appearance: Story = {
     name: 'Appearance — Theme Picker',
-    render: () => (
-        <AppShell active='appearance'>
-            <AppearancePane />
-        </AppShell>
-    ),
+    render: () => <SettingsShell defaultSection='appearance' />,
 };
 
 /**
- * Payment tab (default) — the customer bank-account form: single column, labels
- * above fields with hints, Cancel as a white pill and one black "Save changes".
+ * Payment section (default) — the customer bank-account form: single column,
+ * labels above fields with hints, Cancel as a white pill and one black
+ * "Save changes".
  */
 export const Payment: Story = {
     name: 'Payment — Bank Account',
-    render: () => (
-        <AppShell active='payment'>
-            <PaymentPane />
-        </AppShell>
-    ),
+    render: () => <SettingsShell defaultSection='payment' />,
 };
 
 /**
@@ -783,11 +780,7 @@ export const Payment: Story = {
  */
 export const PaymentLoading: Story = {
     name: 'Payment — Loading',
-    render: () => (
-        <AppShell active='payment'>
-            <PaymentLoadingPane />
-        </AppShell>
-    ),
+    render: () => <SettingsShell defaultSection='payment' paymentPane={<PaymentLoadingPane />} />,
 };
 
 /**
@@ -796,11 +789,7 @@ export const PaymentLoading: Story = {
  */
 export const PaymentError: Story = {
     name: 'Payment — Load Error',
-    render: () => (
-        <AppShell active='payment'>
-            <PaymentErrorPane />
-        </AppShell>
-    ),
+    render: () => <SettingsShell defaultSection='payment' paymentPane={<PaymentErrorPane />} />,
 };
 
 /**
@@ -810,9 +799,5 @@ export const PaymentError: Story = {
  */
 export const PaymentSuccess: Story = {
     name: 'Payment — Saved',
-    render: () => (
-        <AppShell active='payment'>
-            <PaymentSuccessPane />
-        </AppShell>
-    ),
+    render: () => <SettingsShell defaultSection='payment' paymentPane={<PaymentSuccessPane />} />,
 };
