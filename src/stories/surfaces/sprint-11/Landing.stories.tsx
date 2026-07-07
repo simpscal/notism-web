@@ -172,10 +172,7 @@ function TopNav() {
                     <Button variant='ghost' size='sm' className='hidden rounded-full sm:inline-flex'>
                         Log in
                     </Button>
-                    <Button
-                        size='sm'
-                        className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'
-                    >
+                    <Button size='sm' className='rounded-full'>
                         Sign up
                     </Button>
                 </NavBarActions>
@@ -467,10 +464,7 @@ function FinalCta() {
                             </p>
                         </div>
                         <div className='flex flex-col gap-3 sm:flex-row'>
-                            <Button
-                                size='lg'
-                                className='bg-selected text-selected-foreground hover:bg-selected/90 h-12 rounded-full px-7 text-base'
-                            >
+                            <Button size='lg' className='h-12 rounded-full px-7 text-base'>
                                 Sign up
                             </Button>
                             <Button
@@ -527,10 +521,7 @@ function MobileBottomBar() {
             <div className='mx-auto flex h-14 items-center justify-between rounded-full border border-border/70 bg-card/90 pl-4 pr-2 shadow-sm backdrop-blur'>
                 <span className='text-base font-semibold tracking-tight text-primary'>Notism</span>
                 <div className='flex items-center gap-2'>
-                    <Button
-                        size='sm'
-                        className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'
-                    >
+                    <Button size='sm' className='rounded-full'>
                         Log in
                     </Button>
                     <button

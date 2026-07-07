@@ -559,10 +559,7 @@ function ActionRail({ order }: { order: OrderFixture }) {
             <CardContent className='space-y-3 pt-0'>
                 {/* Order-level primary — structural (black), NOT commerce red: red stays
                     reserved for the total price on this surface. */}
-                <Button
-                    size='lg'
-                    className='bg-selected text-selected-foreground hover:bg-selected/90 w-full rounded-full'
-                >
+                <Button size='lg' className='w-full rounded-full'>
                     <ShoppingBag className='h-4 w-4' />
                     Order more
                 </Button>
@@ -651,7 +648,7 @@ function ActionRail({ order }: { order: OrderFixture }) {
                                     Not now
                                 </Button>
                                 <Button
-                                    className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'
+                                    className='rounded-full'
                                     onClick={() => {
                                         setRefundRequested(true);
                                         close();
@@ -674,10 +671,7 @@ function ActionRail({ order }: { order: OrderFixture }) {
                                 <Button variant='outline' className='rounded-full' onClick={close}>
                                     Not now
                                 </Button>
-                                <Button
-                                    className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'
-                                    onClick={close}
-                                >
+                                <Button className='rounded-full' onClick={close}>
                                     <Landmark className='h-4 w-4' />
                                     Add bank details
                                 </Button>
@@ -867,7 +861,7 @@ export const Error: Story = {
                 title="We couldn't find that order"
                 description='The order may have been removed, or the link is out of date. Head back to your orders to try again.'
                 action={
-                    <Button className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'>
+                    <Button className='rounded-full'>
                         <ArrowLeft className='h-4 w-4' />
                         Back to orders
                     </Button>

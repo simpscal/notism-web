@@ -463,11 +463,7 @@ function PaymentStatusPanel({
 
                 {/* Black structural primary — status is not commerce, so never red.
                     This is an ACTION button, not a selected-state control. */}
-                <Button
-                    className='bg-selected text-selected-foreground hover:bg-selected/90 w-full'
-                    disabled={!dirty || isPending}
-                    onClick={() => setConfirming(true)}
-                >
+                <Button className='w-full' disabled={!dirty || isPending} onClick={() => setConfirming(true)}>
                     {isPending ? (
                         <>
                             <Loader2 className='size-4 animate-spin' aria-hidden />
@@ -495,7 +491,6 @@ function PaymentStatusPanel({
                             Cancel
                         </Button>
                         <Button
-                            className='bg-selected text-selected-foreground hover:bg-selected/90'
                             onClick={() => {
                                 onConfirm?.(selected);
                                 setConfirming(false);
@@ -676,7 +671,7 @@ export const ErrorState: Story = {
                                 Something went wrong fetching the order. Go back and open it again.
                             </p>
                         </div>
-                        <Button className='bg-selected text-selected-foreground hover:bg-selected/90'>
+                        <Button>
                             <ArrowLeft className='size-4' aria-hidden />
                             Back to orders
                         </Button>

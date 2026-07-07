@@ -273,7 +273,7 @@ function FoodsToolbar({ search, onSearch }: { search: string; onSearch: (v: stri
                 </InputGroupAddon>
             </InputGroup>
             {/* The single BLACK structural primary for this view (red stays on prices). */}
-            <Button className='bg-selected text-selected-foreground hover:bg-selected/90'>
+            <Button>
                 <Plus />
                 Add food
             </Button>
@@ -616,9 +616,7 @@ function FoodEditorView({ mode }: { mode: 'create' | 'edit' }) {
 
                         {/* One BLACK structural primary for the editor (red stays on prices). */}
                         <div>
-                            <Button className='bg-selected text-selected-foreground hover:bg-selected/90' type='submit'>
-                                {isCreate ? 'Add food' : 'Save changes'}
-                            </Button>
+                            <Button type='submit'>{isCreate ? 'Add food' : 'Save changes'}</Button>
                         </div>
                     </form>
                 </CardContent>
@@ -705,7 +703,7 @@ function FoodsListPage() {
                         </span>
                         <p className='text-sm font-medium text-foreground'>No foods match “{search}”</p>
                         <p className='mt-1 text-sm text-muted-foreground'>Try another name, or add a new dish.</p>
-                        <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-4'>
+                        <Button className='mt-4'>
                             <Plus />
                             Add food
                         </Button>
@@ -740,7 +738,7 @@ function CategoriesListPage() {
                         <Search className='size-4' />
                     </InputGroupAddon>
                 </InputGroup>
-                <Button className='bg-selected text-selected-foreground hover:bg-selected/90'>
+                <Button>
                     <Plus />
                     Add category
                 </Button>
@@ -755,7 +753,7 @@ function CategoriesListPage() {
                         </span>
                         <p className='text-sm font-medium text-foreground'>No categories match “{search}”</p>
                         <p className='mt-1 text-sm text-muted-foreground'>Try another name, or add a new one.</p>
-                        <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-4'>
+                        <Button className='mt-4'>
                             <Plus />
                             Add category
                         </Button>
@@ -815,7 +813,7 @@ export const FoodsEmpty: Story = {
                         </span>
                         <p className='text-sm font-medium text-foreground'>No foods match “pho”</p>
                         <p className='mt-1 text-sm text-muted-foreground'>Try another name, or add a new dish.</p>
-                        <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-4'>
+                        <Button className='mt-4'>
                             <Plus />
                             Add food
                         </Button>

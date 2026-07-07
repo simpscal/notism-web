@@ -181,21 +181,13 @@ function OrderLineRow({ line }: { line: OrderLine }) {
                 {line.note && <p className='mt-0.5 text-xs text-muted-foreground'>{line.note}</p>}
                 <div className='mt-2 flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
-                        <Button
-                            className='bg-selected text-selected-foreground hover:bg-selected/90'
-                            size='icon-xs'
-                            aria-label={`Decrease ${line.name}`}
-                        >
+                        <Button size='icon-xs' aria-label={`Decrease ${line.name}`}>
                             <Minus />
                         </Button>
                         <span className='min-w-4 text-center text-sm font-medium tabular-nums text-foreground'>
                             {line.quantity}
                         </span>
-                        <Button
-                            className='bg-selected text-selected-foreground hover:bg-selected/90'
-                            size='icon-xs'
-                            aria-label={`Increase ${line.name}`}
-                        >
+                        <Button size='icon-xs' aria-label={`Increase ${line.name}`}>
                             <Plus />
                         </Button>
                     </div>
@@ -244,9 +236,7 @@ function OrderPanelBody({ lines }: { lines: OrderLine[] }) {
                 <p className='mt-1 max-w-[15rem] text-sm text-muted-foreground'>
                     Add a dish from the menu and it will show up here.
                 </p>
-                <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-5 rounded-full'>
-                    Browse the menu
-                </Button>
+                <Button className='mt-5 rounded-full'>Browse the menu</Button>
             </div>
         );
     }

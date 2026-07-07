@@ -656,11 +656,7 @@ function ActionPanel({
                     <p className='text-muted-foreground text-sm'>
                         Approving generates a VietQR so you can pay the customer.
                     </p>
-                    <Button
-                        size='lg'
-                        className='bg-selected text-selected-foreground hover:bg-selected/90 w-full'
-                        onClick={onApprove}
-                    >
+                    <Button size='lg' className='w-full' onClick={onApprove}>
                         Approve refund
                     </Button>
                 </CardContent>
@@ -694,11 +690,7 @@ function ActionPanel({
                     <p className='text-muted-foreground text-sm'>
                         Fix the account details with the customer, then retry the payout.
                     </p>
-                    <Button
-                        size='lg'
-                        className='bg-selected text-selected-foreground hover:bg-selected/90 w-full'
-                        onClick={onRetry}
-                    >
+                    <Button size='lg' className='w-full' onClick={onRetry}>
                         <RotateCcw className='h-4 w-4' />
                         Retry refund
                     </Button>
@@ -780,12 +772,7 @@ function RefundDetailSurface({ refund, openConfirm = false }: { refund: RefundDe
                         <Button variant='outline' onClick={() => setConfirmOpen(false)}>
                             Cancel
                         </Button>
-                        <Button
-                            className='bg-selected text-selected-foreground hover:bg-selected/90'
-                            onClick={() => setConfirmOpen(false)}
-                        >
-                            Approve refund
-                        </Button>
+                        <Button onClick={() => setConfirmOpen(false)}>Approve refund</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -806,12 +793,7 @@ function RefundDetailSurface({ refund, openConfirm = false }: { refund: RefundDe
                         <Button variant='outline' onClick={() => setRetryOpen(false)}>
                             Cancel
                         </Button>
-                        <Button
-                            className='bg-selected text-selected-foreground hover:bg-selected/90'
-                            onClick={() => setRetryOpen(false)}
-                        >
-                            Retry refund
-                        </Button>
+                        <Button onClick={() => setRetryOpen(false)}>Retry refund</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -596,7 +596,7 @@ function DishContent({
                                 Add-feedback settles in 150–250ms ease-out. */}
                             <Button
                                 type='button'
-                                className='bg-selected text-selected-foreground hover:bg-selected/90 h-14 flex-1 gap-0 rounded-full p-0 text-base transition-transform motion-safe:duration-200 motion-safe:ease-out motion-safe:active:scale-[0.98]'
+                                className='h-14 flex-1 gap-0 rounded-full p-0 text-base transition-transform motion-safe:duration-200 motion-safe:ease-out motion-safe:active:scale-[0.98]'
                                 disabled={!dish.isAvailable || !requiredMet}
                                 onClick={onAdd}
                             >
@@ -721,7 +721,7 @@ function DishDetailError() {
                     <p className='mt-2 text-sm text-muted-foreground'>
                         Something went wrong on our end. Head back to the menu and try again.
                     </p>
-                    <Button className='bg-selected text-selected-foreground hover:bg-selected/90 mt-6 rounded-full'>
+                    <Button className='mt-6 rounded-full'>
                         <UtensilsCrossed className='h-4 w-4' />
                         Back to menu
                     </Button>

@@ -386,9 +386,7 @@ function MenuEmpty({ onClearFilters }: { onClearFilters: () => void }) {
             <p className='mb-6 max-w-sm text-sm text-muted-foreground'>
                 Nothing here right now — clear the filter to browse the full menu.
             </p>
-            <Button className='bg-selected text-selected-foreground hover:bg-selected/90' onClick={onClearFilters}>
-                Show all dishes
-            </Button>
+            <Button onClick={onClearFilters}>Show all dishes</Button>
         </div>
     );
 }

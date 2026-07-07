@@ -325,10 +325,7 @@ function ProfilePane() {
                 <Button type='button' variant='outline' className='rounded-full'>
                     Cancel
                 </Button>
-                <Button
-                    type='submit'
-                    className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'
-                >
+                <Button type='submit' className='rounded-full'>
                     Save changes
                 </Button>
             </PaneFooter>
@@ -405,10 +402,7 @@ function AppearancePane() {
             </div>
 
             <PaneFooter>
-                <Button
-                    type='button'
-                    className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'
-                >
+                <Button type='button' className='rounded-full'>
                     Save changes
                 </Button>
             </PaneFooter>
@@ -460,10 +454,7 @@ function PaymentPane() {
                 <Button type='button' variant='outline' className='rounded-full'>
                     Cancel
                 </Button>
-                <Button
-                    type='submit'
-                    className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full'
-                >
+                <Button type='submit' className='rounded-full'>
                     Save changes
                 </Button>
             </PaneFooter>
@@ -561,7 +552,7 @@ function PaymentSuccessPane() {
                 <Button
                     type='button'
                     disabled
-                    className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100'
+                    className='rounded-full disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100'
                 >
                     Save changes
                 </Button>

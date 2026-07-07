@@ -281,7 +281,7 @@ function QuantityStepper({
             <Button
                 variant='outline'
                 size='icon-sm'
-                className='border-border bg-background text-foreground hover:bg-foreground hover:text-background'
+                className='border-border bg-background text-foreground'
                 aria-label='Decrease quantity'
                 onClick={onDecrement}
             >
@@ -291,7 +291,7 @@ function QuantityStepper({
             <Button
                 variant='outline'
                 size='icon-sm'
-                className='border-border bg-background text-foreground hover:bg-foreground hover:text-background'
+                className='border-border bg-background text-foreground'
                 aria-label='Increase quantity'
                 disabled={atMax}
                 onClick={onIncrement}
@@ -569,10 +569,7 @@ function EmptyCart() {
             <p className='mb-8 max-w-sm text-muted-foreground'>
                 Nothing here yet. Browse the menu and add something you will love.
             </p>
-            <Button
-                size='lg'
-                className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full text-base'
-            >
+            <Button size='lg' className='rounded-full text-base'>
                 Browse the menu
                 <ArrowRight className='h-4 w-4' />
             </Button>

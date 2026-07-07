@@ -454,7 +454,7 @@ function UserEditorSurface({
                                 <Button
                                     type='submit'
                                     disabled={!isDirty}
-                                    className='bg-selected text-selected-foreground hover:bg-selected/90 disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100'
+                                    className='disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100'
                                 >
                                     Save changes
                                 </Button>

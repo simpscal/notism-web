@@ -214,10 +214,7 @@ function PasswordField({
  *  commerce/final CTAs elsewhere and never appears here. */
 function PrimaryAction({ children }: { children: React.ReactNode }) {
     return (
-        <Button
-            type='button'
-            className='bg-selected text-selected-foreground hover:bg-selected/90 h-11 w-full rounded-full text-sm font-semibold'
-        >
+        <Button type='button' className='h-11 w-full rounded-full text-sm font-semibold'>
             {children}
         </Button>
     );

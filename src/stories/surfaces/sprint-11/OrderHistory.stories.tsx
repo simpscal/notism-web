@@ -578,10 +578,7 @@ function OrderHistoryEmpty() {
                     <p className='mb-6 max-w-xs text-sm text-muted-foreground'>
                         Start shopping to see your orders here.
                     </p>
-                    <Button
-                        size='lg'
-                        className='bg-selected text-selected-foreground hover:bg-selected/90 rounded-full px-8'
-                    >
+                    <Button size='lg' className='rounded-full px-8'>
                         Browse menu
                     </Button>
                 </div>
