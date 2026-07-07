@@ -29,11 +29,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/sheet
 // (Home, Orders), same brand, same controls (search, language, theme, account),
 // same cart/order contents. Only the visual + UX treatment changes:
 //
-//   • dark ambient FRAME (charcoal + decorative line-art motif, no controls)
-//     sits behind ONE large rounded light-gray SHELL that floats over it;
+//   • dark ambient FRAME (charcoal, no controls) sits behind ONE large rounded
+//     light-gray SHELL that floats over it;
 //   • a FLOATING rounded toolbar sits inside the shell with margin on all sides
 //     (brand left · nav-tab pill row center where the active item is a BLACK pill
-//     with a white icon+label · actions right: search + a black Cart pill);
+//     with a white icon+label · actions right: search + a crimson Cart pill);
 //   • two-tone hierarchy: BLACK carries every structural/contextual action (nav
 //     tabs, quantity steppers, Cart pill); CRIMSON is reserved for prices and the
 //     SINGLE final commit — the order sidebar's Confirm CTA is the only loud red;
@@ -115,35 +115,10 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Ambient frame — the dark charcoal backdrop with a low-contrast, purely
-// decorative line-art motif. Never carries controls or content; always sits
-// BEHIND the light shell. Fixed to the viewport height so the shell can fill it
-// and its inner zones scroll independently (no page scroll).
+// Ambient frame — the dark charcoal backdrop. Never carries controls or content;
+// always sits BEHIND the light shell. Fixed to the viewport height so the shell
+// can fill it and its inner zones scroll independently (no page scroll).
 // ---------------------------------------------------------------------------
-
-function AmbientLineArt() {
-    return (
-        <svg
-            aria-hidden
-            className='pointer-events-none absolute inset-0 h-full w-full text-white/[0.05]'
-            preserveAspectRatio='xMidYMid slice'
-        >
-            <defs>
-                <pattern id='consumer-shell-motif' width='180' height='180' patternUnits='userSpaceOnUse'>
-                    <circle cx='40' cy='40' r='26' fill='none' stroke='currentColor' strokeWidth='1.5' />
-                    <path d='M40 14v52M14 40h52' stroke='currentColor' strokeWidth='1.5' />
-                    <path
-                        d='M120 120c22 0 34-14 34-32M120 120c-20 0-34-12-34-30M120 120v34'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='1.5'
-                    />
-                </pattern>
-            </defs>
-            <rect width='100%' height='100%' fill='url(#consumer-shell-motif)' />
-        </svg>
-    );
-}
 
 function AmbientFrame({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
@@ -152,7 +127,6 @@ function AmbientFrame({ children, className }: { children: React.ReactNode; clas
                 .filter(Boolean)
                 .join(' ')}
         >
-            <AmbientLineArt />
             <div className='relative z-10 flex min-h-0 w-full flex-1 items-stretch'>{children}</div>
         </div>
     );
@@ -343,10 +317,9 @@ function ContentZonePlaceholder() {
 }
 
 // ---------------------------------------------------------------------------
-// Cart pill — a BLACK structural affordance on the right of the toolbar (theme:
-// cart access = structural, so it shares the black nav language; the only allowed
-// red here is the small cart-count badge per §2). On desktop it anchors the
-// persistent order sidebar; on mobile the order button (below) plays that role.
+// Cart pill — a brand crimson affordance on the right of the toolbar. On desktop
+// it anchors the persistent order sidebar; on mobile the order button (below)
+// plays that role.
 // ---------------------------------------------------------------------------
 
 function CartPill({ count }: { count: number }) {
@@ -373,7 +346,7 @@ function CartPill({ count }: { count: number }) {
 // gives it margin on all sides; never edge-to-edge). Brand slot left · nav-items
 // region center (the active tab is a real navigation selection — a white pill w/
 // crimson icon+label via NavBarItem's aria-current, never a Button in a selected
-// style) · actions slot right (search + preserved controls + black Cart pill).
+// style) · actions slot right (search + preserved controls + crimson Cart pill).
 // On mobile it condenses to brand + the order button (still a floating bar).
 // ---------------------------------------------------------------------------
 
@@ -433,7 +406,7 @@ function ShellTopbar({
                     </AvatarFallback>
                 </Avatar>
 
-                {/* Desktop = black Cart pill (the toolbar's cart CTA); mobile = order button drawer trigger. */}
+                {/* Desktop = crimson Cart pill (the toolbar's cart CTA); mobile = order button drawer trigger. */}
                 <div className='hidden lg:block'>
                     <CartPill count={orderCount(lines)} />
                 </div>
@@ -456,12 +429,12 @@ function MobileOrderTrigger({ lines, onOpen }: { lines: OrderLine[]; onOpen: () 
             type='button'
             onClick={onOpen}
             aria-label={`Open order, ${count} items`}
-            className='inline-flex h-10 items-center gap-2 rounded-full bg-selected px-3.5 text-selected-foreground shadow-sm transition-colors hover:bg-selected/90'
+            className='inline-flex h-10 items-center gap-2 rounded-full bg-primary px-3.5 text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
         >
             <span className='relative'>
                 <ShoppingCart className='size-5' aria-hidden />
                 {count > 0 && (
-                    <span className='absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-selected text-[10px] font-bold text-selected-foreground'>
+                    <span className='absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-primary-foreground text-[10px] font-bold text-primary'>
                         {count}
                     </span>
                 )}
@@ -555,8 +528,8 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Default — desktop shell: one large-radius light-gray shell floats over the
- * dark ambient frame (decorative line-art only). A floating rounded toolbar
- * (brand · centered nav-tab pills with a black active pill · search + a black
+ * dark ambient frame. A floating rounded toolbar
+ * (brand · centered nav-tab pills with a black active pill · search + a crimson
  * Cart pill) stays pinned; the content zone and the persistent order Summary
  * Panel each scroll independently. The sidebar shows running items, a promo pill,
  * discount/delivery breakdown, the bold crimson total, and the one crimson

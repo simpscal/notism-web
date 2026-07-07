@@ -643,17 +643,6 @@ function SettingsShell({
 }) {
     return (
         <div className='relative flex h-screen w-full flex-col bg-[#17140f] p-3 sm:p-5'>
-            {/* Decorative low-contrast line-art motif — behind the shell, never interactive. */}
-            <div
-                aria-hidden
-                className='pointer-events-none absolute inset-0 opacity-[0.06]'
-                style={{
-                    backgroundImage:
-                        'radial-gradient(circle at 1px 1px, #f5f0e6 1px, transparent 0), radial-gradient(circle at 24px 24px, #f5f0e6 1px, transparent 0)',
-                    backgroundSize: '48px 48px',
-                }}
-            />
-
             {/* One large-radius light-gray shell — fills the frame. */}
             <div className='relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden rounded-[2rem] bg-[oklch(0.955_0.002_286)] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:p-4'>
                 <AppToolbar />

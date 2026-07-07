@@ -210,16 +210,6 @@ function NavPlaceholder() {
 function AdminShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='relative flex h-screen w-full flex-col overflow-hidden bg-frame'>
-            {/* Decorative dot-grid motif — very low contrast, never interactive */}
-            <div
-                aria-hidden
-                className='pointer-events-none absolute inset-0 opacity-[0.05]'
-                style={{
-                    backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.9) 1px, transparent 0)',
-                    backgroundSize: '26px 26px',
-                }}
-            />
-
             <div
                 className={cn(
                     'relative z-10 mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col overflow-hidden rounded-[2rem] bg-muted ring-1 ring-black/5 sm:m-4',

@@ -117,8 +117,7 @@ function LiveFeedPill({ status, onReconnect }: { status: FeedStatus; onReconnect
 }
 
 // ---------------------------------------------------------------------------
-// Shell — the layered elevation base: a dark charcoal ambient frame (subtle
-// low-contrast dot-grid motif, decorative, never interactive, behind
+// Shell — the layered elevation base: a dark charcoal ambient frame (behind
 // everything) → a large-radius light-gray shell (one soft shadow) → a white
 // content panel (hairline). The light shell fills the frame and lays out the
 // pinned NavBar above an independently scrolling content zone. Content lives on
@@ -131,16 +130,6 @@ const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 function Shell({ children }: { children: React.ReactNode }) {
     return (
         <div className='relative h-screen w-full overflow-hidden bg-frame p-2 sm:p-3'>
-            {/* Decorative line-art motif — dot grid, very low contrast, never interactive */}
-            <div
-                aria-hidden
-                className='pointer-events-none absolute inset-0 opacity-[0.05]'
-                style={{
-                    backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.9) 1px, transparent 0)',
-                    backgroundSize: '26px 26px',
-                }}
-            />
-
             {/* Light shell — large radius; raised over the dark ambient frame, holds a
                 pinned NavBar over an independently scrolling content zone. The rounded
                 overflow clips the flat NavBar's top corners to the shell radius. */}

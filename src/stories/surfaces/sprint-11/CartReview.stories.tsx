@@ -149,16 +149,6 @@ const LINES: CartLine[] = [
 function AppShell({ cartCount, children }: { cartCount: number; children: React.ReactNode }) {
     return (
         <div className='flex h-screen flex-col bg-frame p-3 sm:p-5'>
-            {/* Decorative line-art motif — behind the shell, never carries content. */}
-            <div
-                aria-hidden
-                className='pointer-events-none fixed inset-0 opacity-[0.05]'
-                style={{
-                    backgroundImage:
-                        'radial-gradient(circle at 20% 30%, white 1px, transparent 1px), radial-gradient(circle at 70% 60%, white 1px, transparent 1px)',
-                    backgroundSize: '48px 48px, 64px 64px',
-                }}
-            />
             <div className='relative mx-auto flex h-full w-full min-h-0 max-w-7xl flex-col overflow-hidden rounded-[2.5rem] bg-muted shadow-xl'>
                 <Toolbar cartCount={cartCount} />
                 {/* The only scroll region — the toolbar above stays pinned. */}

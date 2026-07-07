@@ -29,8 +29,8 @@ interface ClientToolbarDesktopProps {
 
 // Desktop consumer toolbar rebuilt on the shared, domain-blind NavBar: brand
 // slot (crimson wordmark) · centered nav-tab region (active tab = the one "you
-// are here" accent) · actions slot (language, theme, account, and the black
-// structural Cart pill that anchors the persistent order sidebar).
+// are here" accent) · actions slot (language, theme, account, and the brand
+// crimson Cart pill that anchors the persistent order sidebar).
 function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
     const { t } = useTranslation();
     const location = useLocation();
@@ -159,12 +159,12 @@ function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
                 <Link
                     to={`/${ROUTES.CART}`}
                     aria-label={`Cart, ${cartItemCount} items`}
-                    className='inline-flex h-10 items-center gap-2 rounded-full bg-selected px-4 text-sm font-semibold text-selected-foreground shadow-sm transition-colors hover:bg-selected/90'
+                    className='inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
                 >
                     <ShoppingBag className='size-4' aria-hidden />
                     {t('nav.cart')}
                     {cartItemCount > 0 && (
-                        <span className='flex size-5 items-center justify-center rounded-full bg-selected-foreground/20 text-[10px] font-bold'>
+                        <span className='flex size-5 items-center justify-center rounded-full bg-primary-foreground/20 text-[10px] font-bold'>
                             {cartItemCount > 99 ? '99+' : cartItemCount}
                         </span>
                     )}

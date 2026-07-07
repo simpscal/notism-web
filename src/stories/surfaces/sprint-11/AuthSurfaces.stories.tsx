@@ -44,21 +44,14 @@ import { Separator } from '@/components/separator';
 // Ambient frame + raised card — the shared auth shell.
 // ---------------------------------------------------------------------------
 
-/** Dark charcoal ambient canvas with a subtle monochrome line-art motif —
- *  the first layer of the theme's frame → shell → card stack. Decorative only:
- *  UI chrome stays neutral so the card pops, and no red ever touches it. The
- *  card always sits above it via a single gentle elevation step. */
+/** Dark charcoal ambient canvas — the first layer of the theme's frame → shell →
+ *  card stack. UI chrome stays neutral so the card pops, and no red ever touches
+ *  it. The card always sits above it via a single gentle elevation step. */
 function AmbientFrame({ children }: { children: React.ReactNode }) {
     return (
         <div
             className='relative flex min-h-screen w-full items-center justify-center px-4 py-10'
-            style={{
-                backgroundColor: '#1A1A1A',
-                backgroundImage: [
-                    'radial-gradient(circle at 50% 0%, rgba(255,255,255,0.04), transparent 55%)',
-                    'repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 28px)',
-                ].join(', '),
-            }}
+            style={{ backgroundColor: '#1A1A1A' }}
         >
             {/* Quiet language control — mirrors the live layout's top-right switcher */}
             <div className='absolute right-4 top-4 md:right-6 md:top-6'>

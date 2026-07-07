@@ -537,7 +537,7 @@ function MobileBottomBar() {
 }
 
 // ---------------------------------------------------------------------------
-// Ambient frame — dark charcoal backdrop with a subtle decorative motif; ONE
+// Ambient frame — dark charcoal backdrop; ONE
 // large-radius LIGHT-GRAY app shell floats on top with a single gentle shadow
 // (no heavy ring). White section panels live on the shell; content NEVER
 // touches the raw dark frame (theme). The shell is NOT clipped, so the page
@@ -548,15 +548,6 @@ function MobileBottomBar() {
 function AmbientShell({ children, mobile = false }: { children: React.ReactNode; mobile?: boolean }) {
     return (
         <div className='min-h-screen w-full bg-frame'>
-            {/* decorative ambient light — behind the shell, neutral chrome, never interactive */}
-            <div
-                aria-hidden
-                className='pointer-events-none fixed inset-0 opacity-70'
-                style={{
-                    backgroundImage:
-                        'radial-gradient(60rem 40rem at 15% -10%, oklch(1 0 0 / 0.06), transparent 60%), radial-gradient(50rem 40rem at 110% 20%, oklch(1 0 0 / 0.04), transparent 55%)',
-                }}
-            />
             <div className={mobile ? 'relative px-2 py-2' : 'relative px-3 py-3 sm:px-5 sm:py-5'}>
                 <div
                     className={[
