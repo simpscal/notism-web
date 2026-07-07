@@ -4,20 +4,16 @@ import {
     ChefHat,
     Eye,
     ImagePlus,
-    LayoutDashboard,
     LayoutGrid,
     MoreVertical,
     Plus,
-    Radio,
-    Receipt,
     Search,
     Trash2,
     UtensilsCrossed,
 } from 'lucide-react';
 import React from 'react';
 
-import { cn } from '@/app/utils/index';
-import { Avatar, AvatarFallback } from '@/components/avatar';
+import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
@@ -44,40 +40,41 @@ import { Textarea } from '@/components/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 // ---------------------------------------------------------------------------
-// Implementation reference — Sprint 11 (admin menu-management restyle).
+// Surface: Admin Menu Management (foods + categories) — restyle-only (sprint 11).
 //
-// Restyles the EXISTING admin foods + categories surfaces
-// (src/pages/admin/foods, food-detail, categories, category-detail) to
-// DESIGN_THEME.md. Business functionality is UNCHANGED — same table columns,
-// same debounced search, same one Add action per view, same single-column
-// editor fields + image upload, same delete confirm dialog. Only the visual +
-// UX treatment changes:
+// Conformed to DESIGN_THEME.md. Business behaviour is UNCHANGED from the existing
+// admin foods / food-detail / categories / category-detail surfaces: same table
+// columns, same debounced search, same one Add action per view, same single-column
+// editor + image upload, same delete confirm dialog. Only the visual + UX
+// treatment changes.
 //
-//   • a soft, minimal ELEVATION LADDER: a calm dark FRAME → ONE large-radius
-//     light-gray SHELL → white content panels (hairline + faint shadow) → white
-//     table containers (hairline, little/no shadow); one gentle step per level;
-//   • a REAL floating ROUNDED admin TOOLBAR pinned inside the shell (brand left,
-//     admin nav centre with the active item as a solid BLACK pill + white label,
-//     live-feed + account right) — no order sidebar; the content scrolls beneath
-//     the toolbar, and wide tables scroll horizontally in their own container;
-//   • TWO-TONE discipline: RED is reserved for PRICES only — the single loudest
-//     red per screen. Every structural primary (the one Add / Save per view) is a
-//     BLACK pill, not red; availability reads as a WORD label + status color;
-//   • admin volume stays a TABLE (theme: cards for consumers, tables for admin);
-//     the foods/categories lists are on-theme SORTABLE tables with search and
-//     exactly ONE black primary Add per view; every price is crimson;
-//   • the editor is a SINGLE-COLUMN form (max ~40rem, labels above fields) with
-//     category as FILTER CHIPS, unit as a SEGMENTED CHOICE (selected = black),
-//     the image upload beneath, and one black primary Save;
-//   • the destructive Delete never sits adjacent to the primary — in the editor
-//     it lives in a separate danger area, and it always routes through an
-//     explicit confirm dialog (theme: destructive apart + explicit confirm).
+// Chrome ownership (delta): this surface is an admin PAGE BODY rendered inside
+// the AdminAppShell, which owns the real chrome via the shared NavBar. So the top
+// nav here is a labelled, muted, dashed sticky PLACEHOLDER — never a re-implemented
+// bar — consistent with sibling AdminRefunds / AdminUserManagement / AdminOrderDetail.
 //
-// The admin toolbar is the real portal chrome (brand + admin nav + live-feed +
-// account); only the menu-management content zone carries this sprint's work.
+// Selection controls (delta): single-selects are real selections, never a Button
+// in a "selected" style. The editor's Category and Quantity-unit choices are
+// ToggleGroup variant="segmented" (active = solid `selected` ink fill). Buttons are
+// reserved for ACTIONS only — the one Add / Save per view, row actions, destructive
+// Delete.
+//
+// Two-tone hierarchy (§1/§2): RED (`primary`) is reserved for PRICES only — the one
+// loudest thing per screen; every price is crimson. Every structural primary (the
+// one Add / Save per view) is a BLACK `selected` pill, not red; availability reads
+// as a WORD label + status colour. Elevation (§4): dark ambient frame → ONE
+// large-radius light-gray shell → white content / table panels (hairline), a single
+// soft shadow on floating chrome only, one gentle step per level. Layout (§6): admin
+// volume stays a sortable TABLE with search + pagination; the editor is a
+// single-column form (labels above fields) with the image upload beneath. States
+// (§8): hover darkens; the destructive Delete lives apart from the primary and
+// always routes through an explicit confirm dialog.
 //
 // Mock-only fixtures + local state. No api / model / store imports.
 // ---------------------------------------------------------------------------
+
+// One soft shadow, floating surfaces only (§4 elevation).
+const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 
 // ---------------------------------------------------------------------------
 // Domain shapes (mock only — mirrors the foods/categories table + editor
@@ -185,131 +182,56 @@ const UNIT_OPTIONS = [
 ];
 
 // ---------------------------------------------------------------------------
-// Ambient frame — a calm, minimal dark backdrop carrying only a faint,
-// low-contrast line-art motif. Never holds controls; always sits behind the
-// light shell as the first (softest) step of the elevation ladder.
+// Nav placeholder — the admin top nav is owned by the AdminAppShell (which
+// carries the shared NavBar); this page body does not re-implement it. It renders
+// as a labelled, muted, dashed sticky bar pinned at the top of the shell —
+// consistent with sibling AdminRefunds / AdminUserManagement / AdminOrderDetail.
 // ---------------------------------------------------------------------------
 
-function AmbientLineArt() {
+function NavPlaceholder() {
     return (
-        <svg
-            aria-hidden
-            className='pointer-events-none absolute inset-0 h-full w-full text-white/[0.035]'
-            preserveAspectRatio='xMidYMid slice'
-        >
-            <defs>
-                <pattern id='admin-menu-motif' width='200' height='200' patternUnits='userSpaceOnUse'>
-                    <circle cx='48' cy='48' r='28' fill='none' stroke='currentColor' strokeWidth='1.5' />
-                    <path d='M48 16v64M16 48h64' stroke='currentColor' strokeWidth='1.5' />
-                    <path
-                        d='M150 150c24 0 36-16 36-34M150 150c-22 0-36-14-36-32M150 150v38'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='1.5'
-                    />
-                </pattern>
-            </defs>
-            <rect width='100%' height='100%' fill='url(#admin-menu-motif)' />
-        </svg>
-    );
-}
-
-function AmbientFrame({ children }: { children: React.ReactNode }) {
-    return (
-        <div className='relative h-screen w-full overflow-hidden bg-[#17171b] p-3 lg:p-6'>
-            <AmbientLineArt />
-            {/* Bounded height so the shell can hold a self-scrolling content zone. */}
-            <div className='relative z-10 mx-auto flex h-full w-full max-w-7xl'>{children}</div>
+        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-5 sm:pt-5'>
+            <div className='flex h-14 items-center justify-center rounded-full border border-dashed border-border bg-card/60'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
+                    admin top nav placeholder
+                </span>
+            </div>
         </div>
     );
 }
 
 // ---------------------------------------------------------------------------
-// Admin toolbar — the real portal chrome: a large-radius white bar that FLOATS
-// inside the shell with a margin all around, pinned to the top. Brand left,
-// admin nav centre (active = white pill + crimson icon/label), live-feed +
-// account right. No order sidebar. Stays a condensed rounded bar on mobile.
+// Shell — dark ambient frame → ONE large-radius light-gray shell filling the
+// viewport → white content panels, one gentle step per level. The nav
+// placeholder is pinned at the top; only the page content scrolls beneath it
+// (single scroll region, no double scrollbars).
 // ---------------------------------------------------------------------------
 
-const NAV_ITEMS = [
-    { id: 'foods', label: 'Foods', icon: UtensilsCrossed },
-    { id: 'categories', label: 'Categories', icon: LayoutGrid },
-    { id: 'orders', label: 'Orders', icon: Receipt },
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-] as const;
-
-type NavId = (typeof NAV_ITEMS)[number]['id'];
-
-function AdminToolbar({ active }: { active: NavId }) {
+function AdminShell({ children }: { children: React.ReactNode }) {
     return (
-        <header className='flex items-center gap-2 rounded-[1.25rem] border bg-card px-2.5 py-2 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:gap-3 sm:px-3'>
-            {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav pills stay black. */}
-            <div className='flex items-center gap-2 pl-1 pr-1 sm:pr-2'>
-                <span className='flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
-                    <ChefHat className='size-4' aria-hidden />
-                </span>
-                <span className='hidden text-sm font-bold tracking-tight text-primary sm:inline'>Notism Kitchen</span>
+        <div className='relative flex h-screen w-full flex-col overflow-hidden bg-frame'>
+            {/* Decorative dot-grid motif — very low contrast, never interactive */}
+            <div
+                aria-hidden
+                className='pointer-events-none absolute inset-0 opacity-[0.05]'
+                style={{
+                    backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.9) 1px, transparent 0)',
+                    backgroundSize: '26px 26px',
+                }}
+            />
+
+            <div
+                className={cn(
+                    'relative z-10 mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col overflow-hidden rounded-[2rem] bg-muted ring-1 ring-black/5 sm:m-4',
+                    SOFT_SHADOW
+                )}
+            >
+                <NavPlaceholder />
+
+                {/* Only the page content scrolls */}
+                <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
             </div>
-
-            {/* Admin nav — centred; active item is a solid BLACK pill with a white icon + label. */}
-            <nav className='mx-auto flex items-center gap-1'>
-                {NAV_ITEMS.map(item => {
-                    const isActive = item.id === active;
-                    const Icon = item.icon;
-                    return (
-                        <span
-                            key={item.id}
-                            aria-current={isActive ? 'page' : undefined}
-                            className={[
-                                'flex items-center gap-2 rounded-full px-2.5 py-2 text-sm font-medium transition-colors sm:px-3',
-                                isActive
-                                    ? 'bg-background text-primary shadow-sm ring-1 ring-black/5'
-                                    : 'text-muted-foreground hover:text-foreground',
-                            ].join(' ')}
-                        >
-                            <Icon className='size-4' aria-hidden />
-                            <span className='hidden lg:inline'>{item.label}</span>
-                        </span>
-                    );
-                })}
-            </nav>
-
-            {/* Right — live feed status + account. */}
-            <div className='flex items-center gap-2 pr-0.5'>
-                <span className='hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium text-muted-foreground sm:flex'>
-                    <span className='relative flex size-2'>
-                        <span className='absolute inline-flex size-full rounded-full bg-success/70 motion-safe:animate-ping' />
-                        <span className='relative inline-flex size-2 rounded-full bg-success' />
-                    </span>
-                    <Radio className='size-3.5' aria-hidden />
-                    Live feed
-                </span>
-                <Avatar className='size-9 border'>
-                    <AvatarFallback className='bg-secondary text-xs font-semibold text-foreground'>AV</AvatarFallback>
-                </Avatar>
-            </div>
-        </header>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// Admin shell — the elevation ladder: dark frame → ONE large-radius light-gray
-// shell → white floating toolbar + content panels. The shell fills the viewport
-// and clips; the toolbar is pinned while the content zone scrolls within.
-// ---------------------------------------------------------------------------
-
-function AdminShell({ children, active = 'foods' }: { children: React.ReactNode; active?: NavId }) {
-    return (
-        <AmbientFrame>
-            <div className='flex min-h-0 w-full flex-col overflow-hidden rounded-[1.5rem] bg-muted shadow-[0_30px_80px_-45px_rgba(0,0,0,0.75)]'>
-                {/* Pinned floating toolbar — margin all around; sides align with the content padding. */}
-                <div className='shrink-0 px-6 pt-4 lg:px-8 lg:pt-6'>
-                    <AdminToolbar active={active} />
-                </div>
-                {/* Content zone — scrolls within the shell; the toolbar stays put. */}
-                <main className='min-h-0 flex-1 overflow-y-auto'>{children}</main>
-            </div>
-        </AmbientFrame>
+        </div>
     );
 }
 
@@ -329,7 +251,7 @@ function SurfaceHeader({ eyebrow, title, subtitle }: { eyebrow: string; title: s
 }
 
 // ---------------------------------------------------------------------------
-// Foods table — on-theme admin table. Search (left) + exactly ONE crimson
+// Foods table — on-theme admin table. Search (left) + exactly ONE black
 // primary Add (right); price columns crimson; availability as a status badge;
 // row actions in a dropdown where Delete is destructive and apart from the
 // primary. Mirrors the existing foods columns + sorting.
@@ -472,7 +394,7 @@ function FoodsTableView({ rows }: { rows: FoodRow[] }) {
 
 // ---------------------------------------------------------------------------
 // Categories table — the simpler admin table (Name + count + actions). Same
-// toolbar grammar: search + one crimson primary Add.
+// toolbar grammar: search + one black primary Add.
 // ---------------------------------------------------------------------------
 
 function CategoriesTableView({ rows }: { rows: CategoryRow[] }) {
@@ -544,8 +466,10 @@ function DeleteConfirmDialog({
 
 // ---------------------------------------------------------------------------
 // Food editor — SINGLE-COLUMN form (max ~40rem, labels above fields), image
-// upload beneath, one crimson primary Save. The destructive Delete lives in a
+// upload beneath, one black primary Save. The destructive Delete lives in a
 // separate danger area, apart from the primary, and opens the confirm dialog.
+// Category + unit are real single-selects (ToggleGroup variant="segmented"),
+// never a Button in a selected style.
 // ---------------------------------------------------------------------------
 
 function ImageTile({ label, onRemove }: { label: string; onRemove?: () => void }) {
@@ -634,38 +558,37 @@ function FoodEditorView({ mode }: { mode: 'create' | 'edit' }) {
                             </Field>
                         </div>
 
-                        {/* Category — Filter Chips (choose one from many); selected = black pill. */}
+                        {/* Category — Segmented Choice (single-select); active = solid `selected` ink fill. */}
                         <Field>
-                            <FieldLabel>Category</FieldLabel>
-                            <div className='flex flex-wrap gap-2'>
-                                {CATEGORY_OPTIONS.map(option => {
-                                    const selected = category === option;
-                                    return (
-                                        <Button
-                                            key={option}
-                                            type='button'
-                                            size='sm'
-                                            variant={selected ? undefined : 'outline'}
-                                            className={cn(
-                                                selected && 'bg-selected text-selected-foreground hover:bg-selected/90',
-                                                'rounded-full'
-                                            )}
-                                            aria-pressed={selected}
-                                            onClick={() => setCategory(option)}
-                                        >
-                                            {option}
-                                        </Button>
-                                    );
-                                })}
-                            </div>
+                            <FieldLabel htmlFor='category-toggle'>Category</FieldLabel>
+                            <ToggleGroup
+                                id='category-toggle'
+                                type='single'
+                                variant='segmented'
+                                value={category}
+                                onValueChange={value => value && setCategory(value)}
+                                className='w-full'
+                            >
+                                {CATEGORY_OPTIONS.map(option => (
+                                    <ToggleGroupItem
+                                        key={option}
+                                        value={option}
+                                        aria-label={option}
+                                        className='flex-1 px-3'
+                                    >
+                                        {option}
+                                    </ToggleGroupItem>
+                                ))}
+                            </ToggleGroup>
                         </Field>
 
-                        {/* Quantity unit — Segmented Choice (single-select); active = black. */}
+                        {/* Quantity unit — Segmented Choice (single-select); active = solid `selected` ink fill. */}
                         <Field>
-                            <FieldLabel>Quantity unit</FieldLabel>
+                            <FieldLabel htmlFor='unit-toggle'>Quantity unit</FieldLabel>
                             <ToggleGroup
+                                id='unit-toggle'
                                 type='single'
-                                variant='outline'
+                                variant='segmented'
                                 value={unit}
                                 onValueChange={value => value && setUnit(value)}
                                 className='w-full max-w-xs'
@@ -764,7 +687,7 @@ function FoodsListPage() {
     const filtered = FOODS.filter(f => f.name.toLowerCase().includes(search.trim().toLowerCase()));
 
     return (
-        <div className='p-6 lg:p-8'>
+        <div className='px-3 py-6 sm:px-5'>
             <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
             <FoodsToolbar search={search} onSearch={setSearch} />
             {filtered.length > 0 ? (
@@ -802,7 +725,7 @@ function CategoriesListPage() {
     const filtered = CATEGORIES.filter(c => c.name.toLowerCase().includes(search.trim().toLowerCase()));
 
     return (
-        <div className='p-6 lg:p-8'>
+        <div className='px-3 py-6 sm:px-5'>
             <SurfaceHeader eyebrow='MENU' title='Categories' subtitle='Group dishes so the menu is easy to browse.' />
             <div className='mb-4 flex flex-wrap items-center justify-between gap-3'>
                 <InputGroup className='max-w-sm flex-1'>
@@ -860,9 +783,10 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Foods table (default) — the foods list restyled on-theme: eyebrow + display
- * H1, a search field and exactly ONE crimson primary Add, a sortable admin
- * table with crimson prices and a status badge for availability, and per-row
- * actions where Delete is destructive and apart from the primary.
+ * H1, a search field and exactly ONE black primary Add, a sortable admin table
+ * with crimson prices and a status badge for availability, and per-row actions
+ * where Delete is destructive and apart from the primary. The admin top nav is
+ * the shell-owned placeholder.
  */
 export const FoodsTable: Story = {
     name: 'Foods Table (Default)',
@@ -881,7 +805,7 @@ export const FoodsEmpty: Story = {
     name: 'Foods Table (Empty)',
     render: () => (
         <AdminShell>
-            <div className='p-6 lg:p-8'>
+            <div className='px-3 py-6 sm:px-5'>
                 <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
                 <FoodsToolbar search='pho' onSearch={() => undefined} />
                 <div className='rounded-[1.25rem] border border-dashed bg-muted/10 py-16'>
@@ -910,7 +834,7 @@ export const FoodsLoading: Story = {
     name: 'Foods Table (Loading)',
     render: () => (
         <AdminShell>
-            <div className='p-6 lg:p-8'>
+            <div className='px-3 py-6 sm:px-5'>
                 <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
                 <div className='flex min-h-[360px] items-center justify-center rounded-[1.25rem] border bg-card'>
                     <Spinner size='lg' />
@@ -928,7 +852,7 @@ export const FoodsError: Story = {
     name: 'Foods Table (Error)',
     render: () => (
         <AdminShell>
-            <div className='p-6 lg:p-8'>
+            <div className='px-3 py-6 sm:px-5'>
                 <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
                 <div className='flex min-h-[360px] items-center justify-center rounded-[1.25rem] border bg-card'>
                     <ErrorState
@@ -945,13 +869,14 @@ export const FoodsError: Story = {
 
 /**
  * Food editor (add) — the single-column create form: labels above fields, image
- * upload beneath, one crimson primary Add. No danger zone in create mode.
+ * upload beneath, one black primary Add. Category + unit are segmented
+ * single-selects. No danger zone in create mode.
  */
 export const FoodEditorAdd: Story = {
     name: 'Food Editor Form (Add)',
     render: () => (
         <AdminShell>
-            <div className='p-6 lg:p-8'>
+            <div className='px-3 py-6 sm:px-5'>
                 <FoodEditorView mode='create' />
             </div>
         </AdminShell>
@@ -960,14 +885,14 @@ export const FoodEditorAdd: Story = {
 
 /**
  * Food editor (edit) — the single-column edit form with existing values +
- * photos, one crimson primary Save, and a separate danger area for the
+ * photos, one black primary Save, and a separate danger area for the
  * destructive Delete (apart from the primary, routes through confirm).
  */
 export const FoodEditorEdit: Story = {
     name: 'Food Editor Form (Edit)',
     render: () => (
         <AdminShell>
-            <div className='p-6 lg:p-8'>
+            <div className='px-3 py-6 sm:px-5'>
                 <FoodEditorView mode='edit' />
             </div>
         </AdminShell>
@@ -976,12 +901,12 @@ export const FoodEditorEdit: Story = {
 
 /**
  * Categories table — the categories list restyled on-theme: same toolbar
- * grammar (search + one crimson Add) and the simpler admin table.
+ * grammar (search + one black Add) and the simpler admin table.
  */
 export const CategoriesTable: Story = {
     name: 'Categories Table',
     render: () => (
-        <AdminShell active='categories'>
+        <AdminShell>
             <CategoriesListPage />
         </AdminShell>
     ),
@@ -999,7 +924,7 @@ export const DeleteConfirm: Story = {
             const [open, setOpen] = React.useState(true);
             return (
                 <AdminShell>
-                    <div className='p-6 lg:p-8'>
+                    <div className='px-3 py-6 sm:px-5'>
                         <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
                         <FoodsToolbar search='' onSearch={() => undefined} />
                         <FoodsTableView rows={FOODS} />
