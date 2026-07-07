@@ -1,12 +1,12 @@
-import { Globe, Home, LogIn, LogOut, Moon, Settings, ShoppingCart, Sun, User } from 'lucide-react';
+import { Globe, Home, LogIn, LogOut, Moon, Settings, ShoppingBag, ShoppingCart, Sun, User } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { useLanguageToggle } from '@/app/i18n/use-language-toggle';
-import { cn, getDisplayName, getInitials } from '@/app/utils';
+import { getDisplayName, getInitials } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import { Button } from '@/components/button';
 import {
@@ -17,6 +17,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/dropdown-menu';
+import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useAppSelector } from '@/core/hooks';
 import { selectCartTotalItems } from '@/store/cart';
@@ -26,161 +27,150 @@ interface ClientToolbarDesktopProps {
     onLogout: () => void;
 }
 
+// Desktop consumer toolbar rebuilt on the shared, domain-blind NavBar: brand
+// slot (crimson wordmark) · centered nav-tab region (active tab = the one "you
+// are here" accent) · actions slot (language, theme, account, and the black
+// structural Cart pill that anchors the persistent order sidebar).
 function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
     const { t } = useTranslation();
+    const location = useLocation();
     const cartItemCount = useAppSelector(selectCartTotalItems);
     const { theme, setTheme } = useTheme();
     const { currentLanguage, toggleLanguage } = useLanguageToggle();
 
     const displayName = user ? getDisplayName(user) : null;
     const initials = user ? getInitials(user) : 'U';
-
     const isDark = theme === 'dark';
-
-    const handleThemeToggle = useCallback(() => {
-        setTheme(theme === 'dark' ? 'light' : 'dark');
-    }, [theme, setTheme]);
-
     const langLabel = currentLanguage === 'en' ? 'EN' : 'VI';
 
-    const desktopNavItems = useMemo(
+    const navItems = useMemo(
         () => [
-            { label: t('nav.home'), path: `/${ROUTES.FOODS.LIST}`, icon: Home },
-            ...(user ? [{ label: t('nav.orders'), path: `/${ROUTES.ORDERS.LIST}`, icon: ShoppingCart }] : []),
+            { label: t('nav.home'), path: ROUTES.FOODS.LIST, icon: Home },
+            ...(user ? [{ label: t('nav.orders'), path: ROUTES.ORDERS.LIST, icon: ShoppingCart }] : []),
         ],
         [t, user]
     );
 
+    const handleThemeToggle = useCallback(() => {
+        setTheme(isDark ? 'light' : 'dark');
+    }, [isDark, setTheme]);
+
     return (
-        <header className='sticky top-0 z-50 hidden h-16 w-full border-b bg-background lg:flex'>
-            <div className='mx-auto flex h-full w-full max-w-7xl items-center px-6'>
-                {/* Left — brand */}
-                <div className='flex flex-1 items-center'>
-                    <Link
-                        to={`/${ROUTES.FOODS.LIST}`}
-                        className='text-primary font-semibold tracking-tight text-lg hover:opacity-80 transition-opacity'
-                    >
-                        Notism
-                    </Link>
-                </div>
+        <NavBar className='hidden shrink-0 lg:flex'>
+            <NavBarBrand>
+                <Link
+                    to={`/${ROUTES.FOODS.LIST}`}
+                    className='pl-2 text-lg font-extrabold tracking-tight text-primary transition-opacity hover:opacity-80'
+                >
+                    Notism
+                </Link>
+            </NavBarBrand>
 
-                {/* Center — nav links */}
-                <nav className='flex items-center gap-1'>
-                    {desktopNavItems.map(item => (
-                        <NavLink
-                            key={item.path + item.label}
-                            to={item.path}
-                            end={false}
-                            className={({ isActive }) =>
-                                cn(
-                                    'rounded-full px-3 py-2 text-sm font-medium transition-colors',
-                                    isActive
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                                )
-                            }
-                        >
-                            {item.label}
-                        </NavLink>
-                    ))}
-                </nav>
+            <NavBarNav className='flex-1 justify-center'>
+                {navItems.map(item => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname.startsWith(`/${item.path}`);
+                    return (
+                        <NavBarItem key={item.path} active={isActive} asChild>
+                            <NavLink to={`/${item.path}`} end={false}>
+                                <Icon className='size-4' aria-hidden />
+                                {item.label}
+                            </NavLink>
+                        </NavBarItem>
+                    );
+                })}
+            </NavBarNav>
 
-                {/* Right — controls */}
-                <div className='flex flex-1 items-center justify-end gap-2'>
-                    {/* Cart */}
-                    <Link
-                        to={`/${ROUTES.CART}`}
-                        aria-label={`Cart, ${cartItemCount} items`}
-                        className='relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors'
-                    >
-                        <ShoppingCart className='h-5 w-5' />
-                        {cartItemCount > 0 && (
-                            <span className='absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold'>
-                                {cartItemCount > 99 ? '99+' : cartItemCount}
-                            </span>
-                        )}
-                    </Link>
+            <NavBarActions>
+                <button
+                    type='button'
+                    aria-label={`Language: ${langLabel}`}
+                    onClick={toggleLanguage}
+                    className='flex h-9 items-center gap-1.5 rounded-full px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+                >
+                    <Globe className='size-4' aria-hidden />
+                    {langLabel}
+                </button>
 
-                    {/* Language toggle */}
-                    <button
-                        aria-label={`Language: ${langLabel}`}
-                        onClick={toggleLanguage}
-                        className='flex h-9 items-center gap-1.5 rounded-full px-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors'
-                    >
-                        <Globe className='h-4 w-4' />
-                        <span>{langLabel}</span>
-                    </button>
+                <button
+                    type='button'
+                    aria-label={t('nav.theme')}
+                    onClick={handleThemeToggle}
+                    className='flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+                >
+                    {isDark ? <Sun className='size-4' aria-hidden /> : <Moon className='size-4' aria-hidden />}
+                </button>
 
-                    {/* Theme toggle */}
-                    <button
-                        aria-label='Toggle theme'
-                        onClick={handleThemeToggle}
-                        className='flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors'
-                    >
-                        {isDark ? <Sun className='h-4 w-4' /> : <Moon className='h-4 w-4' />}
-                    </button>
+                {user ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                                aria-label='User menu'
+                                className='flex items-center gap-2 rounded-full px-1 py-1 transition-colors hover:bg-accent'
+                            >
+                                <Avatar className='size-9'>
+                                    <AvatarImage src={user.avatarUrl ?? ''} alt={displayName ?? ''} />
+                                    <AvatarFallback className='bg-selected text-xs font-semibold text-selected-foreground'>
+                                        {initials}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align='end' className='w-56'>
+                            <DropdownMenuLabel className='font-normal'>
+                                <p className='truncate text-sm font-medium'>{displayName}</p>
+                                <p className='truncate text-xs text-muted-foreground'>{user.email}</p>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>
+                                    <User className='mr-2 size-4' />
+                                    {t('settings.profile.title')}
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to={`/${ROUTES.ORDERS.LIST}`}>
+                                    <ShoppingCart className='mr-2 size-4' />
+                                    {t('nav.orders')}
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to={`/${ROUTES.SETTINGS.BASE}`}>
+                                    <Settings className='mr-2 size-4' />
+                                    {t('nav.setting')}
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem variant='destructive' onClick={onLogout}>
+                                <LogOut className='mr-2 size-4' />
+                                {t('nav.logOut')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <Button size='sm' variant='outline' className='gap-2' asChild>
+                        <Link to={`/${ROUTES.AUTH.LOGIN}`}>
+                            <LogIn className='size-4' />
+                            {t('nav.logIn')}
+                        </Link>
+                    </Button>
+                )}
 
-                    {/* User / Login */}
-                    {user ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button
-                                    aria-label='User menu'
-                                    className='flex items-center gap-2 rounded-full px-2 py-1 hover:bg-accent/50 transition-colors'
-                                >
-                                    <Avatar className='h-9 w-9 rounded-full'>
-                                        <AvatarImage src={user.avatarUrl ?? ''} alt={displayName ?? ''} />
-                                        <AvatarFallback className='bg-primary text-primary-foreground text-xs font-semibold'>
-                                            {initials}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <span className='max-w-[140px] truncate text-sm font-medium text-foreground hidden lg:block'>
-                                        {displayName}
-                                    </span>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align='end' className='w-56'>
-                                <DropdownMenuLabel className='font-normal'>
-                                    <p className='text-sm font-medium truncate'>{displayName}</p>
-                                    <p className='text-xs text-muted-foreground truncate'>{user.email}</p>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.SETTINGS.PROFILE}`}>
-                                        <User className='mr-2 h-4 w-4' />
-                                        {t('settings.profile.title')}
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.ORDERS.LIST}`}>
-                                        <ShoppingCart className='mr-2 h-4 w-4' />
-                                        {t('nav.orders')}
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link to={`/${ROUTES.SETTINGS.BASE}`}>
-                                        <Settings className='mr-2 h-4 w-4' />
-                                        {t('nav.setting')}
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem variant='destructive' onClick={onLogout}>
-                                    <LogOut className='mr-2 h-4 w-4' />
-                                    {t('nav.logOut')}
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    ) : (
-                        <Button size='sm' className='gap-2' asChild>
-                            <Link to={`/${ROUTES.AUTH.LOGIN}`}>
-                                <LogIn className='h-4 w-4' />
-                                {t('nav.logIn')}
-                            </Link>
-                        </Button>
+                <Link
+                    to={`/${ROUTES.CART}`}
+                    aria-label={`Cart, ${cartItemCount} items`}
+                    className='inline-flex h-10 items-center gap-2 rounded-full bg-selected px-4 text-sm font-semibold text-selected-foreground shadow-sm transition-colors hover:bg-selected/90'
+                >
+                    <ShoppingBag className='size-4' aria-hidden />
+                    {t('nav.cart')}
+                    {cartItemCount > 0 && (
+                        <span className='flex size-5 items-center justify-center rounded-full bg-selected-foreground/20 text-[10px] font-bold'>
+                            {cartItemCount > 99 ? '99+' : cartItemCount}
+                        </span>
                     )}
-                </div>
-            </div>
-        </header>
+                </Link>
+            </NavBarActions>
+        </NavBar>
     );
 }
 
