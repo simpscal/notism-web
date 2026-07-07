@@ -49,7 +49,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //     single-select control. No Button carries a selected state anywhere on the
 //     surface; the sole selection affordance is the segmented group's own on-state.
 //   • Admin top nav → this surface is a PAGE rendered inside the admin app shell
-//     (AdminAppShell owns the shared NavBar variant="admin"), so the top nav is a
+//     (AdminAppShell owns the shared NavBar), so the top nav is a
 //     labelled sticky placeholder here rather than a re-implemented bar.
 //
 // Mock-only fixtures; no api/model/state imports. Composed from @/components/*.

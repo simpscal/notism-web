@@ -187,7 +187,7 @@ const NAV_ITEMS = [
 
 function Toolbar({ cartCount }: { cartCount: number }) {
     return (
-        <NavBar variant='consumer' className='z-40 m-3 shrink-0 gap-3 bg-card/95 backdrop-blur sm:m-4'>
+        <NavBar className='z-40 m-3 shrink-0 gap-3 bg-card/95 backdrop-blur sm:m-4'>
             {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav/Cart pills stay black. */}
             <NavBarBrand className='pl-1 pr-1 sm:pr-2'>
                 <span className='flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground'>

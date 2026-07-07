@@ -214,7 +214,7 @@ function AmbientFrame({ children }: { children: React.ReactNode }) {
 function ShellTopbar({ activeNav = 'main' }: { activeNav?: string }) {
     return (
         <div className='shrink-0 p-3 sm:p-4'>
-            <NavBar variant='consumer'>
+            <NavBar>
                 <NavBarBrand>
                     <span className='px-1 text-lg font-bold tracking-tight text-primary'>Notism</span>
                 </NavBarBrand>

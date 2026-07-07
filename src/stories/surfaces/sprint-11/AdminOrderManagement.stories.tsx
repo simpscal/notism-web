@@ -524,7 +524,7 @@ function OrdersKanbanView({ orders }: { orders: OrderRow[] }) {
 }
 
 // ---------------------------------------------------------------------------
-// Admin toolbar — the shared, domain-blind NavBar (variant="admin"), matching
+// Admin toolbar — the shared, domain-blind NavBar, matching
 // sibling AdminAppShell.stories.tsx: brand + Admin badge (left) · admin nav
 // (centre, NavBarNav/NavBarItem — the active route is a real navigation
 // selection via aria-current, rendered as the variant's ink active pill, never
@@ -545,10 +545,7 @@ const ADMIN_NAV: { key: string; label: string; icon: LucideIcon }[] = [
 
 function AdminToolbar({ activePage = 'orders' }: { activePage?: string }) {
     return (
-        <NavBar
-            variant='admin'
-            className='h-16 shrink-0 rounded-full border-b-0 px-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:px-4'
-        >
+        <NavBar className='h-16 shrink-0 rounded-full border-b-0 px-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:px-4'>
             {/* Left — brand + Admin badge */}
             <NavBarBrand className='pl-1'>
                 <span className='text-lg font-semibold tracking-tight text-primary'>Notism</span>

@@ -23,7 +23,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //       panel (hairline + faint shadow) → white metric cards (hairline,
 //       little/no shadow). No heavy rings or drop shadows.
 //   • The admin nav is NOT this surface's concern — it is owned by the
-//     AdminAppShell surface (shared NavBar variant="admin"). This dashboard is
+//     AdminAppShell surface (shared NavBar). This dashboard is
 //     a page body rendered inside that shell, so the nav region here is a
 //     labeled, muted sticky placeholder, not a re-implemented bar.
 //   • Metric clusters render as on-theme cards — large rounding (rounded-3xl),
@@ -134,7 +134,7 @@ const STATUS_META: Record<OrderStatusKey, { label: string; color: string; blurb:
 // ---------------------------------------------------------------------------
 // Admin nav placeholder — the admin chrome is NOT this surface's concern. The
 // portal-wide top nav is owned by the AdminAppShell surface, where it is the
-// shared, domain-blind NavBar (variant="admin"). This dashboard is a PAGE body
+// shared, domain-blind NavBar. This dashboard is a PAGE body
 // rendered inside that shell, so the nav region here is a labeled, muted
 // placeholder (sticky, dashed hairline, mono uppercase label) rather than a
 // re-implemented bar — mirroring the placeholder rule and keeping a single

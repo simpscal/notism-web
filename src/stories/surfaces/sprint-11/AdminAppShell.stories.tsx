@@ -24,7 +24,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 // Surface — AdminAppShell (Sprint 11), route: wraps all /admin routes.
 //
 // The admin chrome is unified on the shared, domain-blind NavBar
-// (variant="admin"): a bordered ink-active bar carrying the brand, the admin
+//: a bordered ink-active bar carrying the brand, the admin
 // nav, and the portal-wide live new-order feed + account controls. Navigation
 // selection is a real navigation selection — NavBarItem's aria-current, an ink
 // pill for the current route — never a Button in a selected style. No filter or
@@ -178,7 +178,7 @@ function AdminTopBar({
     onReconnect?: () => void;
 }) {
     return (
-        <NavBar variant='admin' className='z-30 hidden h-16 shrink-0 px-4 lg:flex'>
+        <NavBar className='z-30 hidden h-16 shrink-0 px-4 lg:flex'>
             {/* Left — brand */}
             <NavBarBrand className='pl-1'>
                 <span className='text-lg font-semibold tracking-tight text-primary'>Notism</span>

@@ -31,7 +31,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 // src/pages/admin/refund-detail/ — same statuses, tabs, cards and confirm flow.
 //
 // The admin top nav is owned by the AdminAppShell (which carries the shared
-// NavBar variant="admin"), so it is a labelled sticky placeholder here rather
+// NavBar), so it is a labelled sticky placeholder here rather
 // than a re-implemented bar — consistent with sibling AdminOrderDetail.
 //
 // Design-system conformance (DESIGN_THEME.md):
@@ -233,7 +233,7 @@ function StatusBadge({ status }: { status: RefundStatus }) {
 
 // ---------------------------------------------------------------------------
 // Nav placeholder — the admin top nav is owned by the AdminAppShell (which
-// carries the shared NavBar variant="admin"); this surface does not re-implement
+// carries the shared NavBar); this surface does not re-implement
 // it. It renders as a labelled, muted, dashed sticky bar pinned at the top of
 // the shell — consistent with sibling AdminOrderDetail.
 // ---------------------------------------------------------------------------

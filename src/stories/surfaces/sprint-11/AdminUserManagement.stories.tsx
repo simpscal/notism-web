@@ -39,7 +39,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //
 // Chrome ownership (delta): this surface is an admin PAGE BODY rendered inside
 // the AdminAppShell, which owns the real chrome via the shared NavBar
-// variant="admin". So the top nav here is a labelled, muted, dashed sticky
+//. So the top nav here is a labelled, muted, dashed sticky
 // placeholder — never a re-implemented bar — consistent with sibling
 // AdminAppShell / AdminRefunds.
 //
@@ -137,7 +137,7 @@ const CURRENT_USER_ID = 'usr-1001';
 
 // ---------------------------------------------------------------------------
 // Nav placeholder — the admin top nav is owned by the AdminAppShell (which
-// carries the shared NavBar variant="admin"); this page body does not
+// carries the shared NavBar); this page body does not
 // re-implement it. It renders as a labelled, muted, dashed sticky bar pinned at
 // the top of the shell — consistent with sibling AdminRefunds / AdminOrderDetail.
 // ---------------------------------------------------------------------------

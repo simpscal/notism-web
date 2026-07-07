@@ -144,7 +144,7 @@ function Panel({ className = '', children }: { className?: string; children: Rea
 function TopNav() {
     return (
         <div className='sticky top-3 z-30 px-4 pt-4 sm:px-6'>
-            <NavBar variant='consumer' className='mx-auto max-w-6xl bg-card/90 backdrop-blur-md'>
+            <NavBar className='mx-auto max-w-6xl bg-card/90 backdrop-blur-md'>
                 <NavBarBrand>
                     <span className='flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
                         <UtensilsCrossed className='size-4' />
@@ -606,7 +606,7 @@ function LandingMobile() {
             <div className='flex min-h-screen flex-col'>
                 {/* Floating condensed consumer NavBar — never full-bleed on mobile. */}
                 <div className='sticky top-2 z-30 px-3 pt-3'>
-                    <NavBar variant='consumer' className='mx-auto h-14 bg-card/90 backdrop-blur'>
+                    <NavBar className='mx-auto h-14 bg-card/90 backdrop-blur'>
                         <NavBarBrand>
                             <span className='flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground'>
                                 <UtensilsCrossed className='size-3.5' />

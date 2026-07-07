@@ -35,7 +35,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 // WHITE cards (hairline, little / no shadow).
 //
 // Chrome: the top nav is owned by the CONSUMER APP SHELL (see the Consumer App
-// Shell surface, which renders the shared `NavBar variant="consumer"`). This
+// Shell surface, which renders the shared `NavBar`). This
 // surface only redesigns the MENU CONTENT ZONE, so the toolbar appears here as a
 // pinned, muted NAV PLACEHOLDER (dashed) — never reimplemented per-surface. The
 // shell fills the viewport and the menu content zone scrolls within it.
@@ -395,7 +395,7 @@ function MenuEmpty({ onClearFilters }: { onClearFilters: () => void }) {
 
 // ---------------------------------------------------------------------------
 // Top nav placeholder — the top nav belongs to the CONSUMER APP SHELL (which
-// renders the shared `NavBar variant="consumer"`). This surface only redesigns
+// renders the shared `NavBar`). This surface only redesigns
 // the menu content zone, so the toolbar is a pinned, muted placeholder here
 // (dashed, mono label) — never reimplemented per-surface.
 // ---------------------------------------------------------------------------

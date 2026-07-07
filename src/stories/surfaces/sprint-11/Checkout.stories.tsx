@@ -339,7 +339,7 @@ const NAV_ITEMS = [
 function Toolbar() {
     return (
         <div className='shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
-            <NavBar variant='consumer'>
+            <NavBar>
                 <NavBarBrand>
                     <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
                         <ChefHat className='h-4 w-4' />

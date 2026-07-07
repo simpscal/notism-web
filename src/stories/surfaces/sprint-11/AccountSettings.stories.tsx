@@ -597,7 +597,7 @@ const ACTIVE_NAV = 'account';
  */
 function AppToolbar() {
     return (
-        <NavBar variant='consumer' className='shrink-0 bg-muted/50 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
+        <NavBar className='shrink-0 bg-muted/50 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
             <NavBarBrand>
                 <span className='flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm'>
                     <UtensilsCrossed className='h-4 w-4' aria-hidden />

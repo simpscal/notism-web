@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Bell, Home, LayoutDashboard, Search, Settings, ShoppingBag, Users } from 'lucide-react';
+import { Home, Search, ShoppingBag } from 'lucide-react';
 
 import { Avatar, AvatarFallback } from '@/components/avatar';
 import { Button } from '@/components/button';
@@ -12,12 +12,6 @@ const meta = {
         layout: 'padded',
     },
     tags: ['autodocs'],
-    argTypes: {
-        variant: {
-            control: 'select',
-            options: ['consumer', 'admin'],
-        },
-    },
 } satisfies Meta<typeof NavBar>;
 
 export default meta;
@@ -28,13 +22,12 @@ const BrandMark = ({ label = 'Acme' }: { label?: string }) => (
 );
 
 /**
- * Default — consumer top-nav: a floating rounded bar with a brand slot, a
- * centered single-select nav region (the active item is a white pill with the
- * primary accent — a real navigation selection, never a Button in a selected
- * style), and a trailing actions slot.
+ * Default — a floating rounded bar with a brand slot, a centered single-select
+ * nav region (the active item is a white pill with the primary accent — a real
+ * navigation selection, never a Button in a selected style), and a trailing
+ * actions slot. One unified bar serves every surface.
  */
 export const Default: Story = {
-    args: { variant: 'consumer' },
     render: args => (
         <NavBar {...args}>
             <NavBarBrand>
@@ -65,51 +58,10 @@ export const Default: Story = {
 };
 
 /**
- * Admin — the same primitive with a flatter, bordered chrome and an ink active
- * treatment (routine selection). Proves the bar serves an admin layout without
- * baking any domain concept into the component.
- */
-export const Admin: Story = {
-    args: { variant: 'admin' },
-    render: args => (
-        <NavBar {...args}>
-            <NavBarBrand>
-                <BrandMark label='Acme Admin' />
-            </NavBarBrand>
-            <NavBarNav>
-                <NavBarItem active>
-                    <LayoutDashboard className='size-4' aria-hidden />
-                    Dashboard
-                </NavBarItem>
-                <NavBarItem>
-                    <Users className='size-4' aria-hidden />
-                    Users
-                </NavBarItem>
-                <NavBarItem>
-                    <Settings className='size-4' aria-hidden />
-                    Settings
-                </NavBarItem>
-            </NavBarNav>
-            <NavBarActions>
-                <Button variant='ghost' size='icon-sm' aria-label='Notifications'>
-                    <Bell />
-                </Button>
-                <Avatar className='size-9'>
-                    <AvatarFallback className='bg-selected text-xs font-semibold text-selected-foreground'>
-                        AD
-                    </AvatarFallback>
-                </Avatar>
-            </NavBarActions>
-        </NavBar>
-    ),
-};
-
-/**
  * AsChild — nav items render as anchors (or router links) via `asChild` while
  * keeping the active selection semantics (aria-current) and token styling.
  */
 export const AsLinks: Story = {
-    args: { variant: 'consumer' },
     render: args => (
         <NavBar {...args}>
             <NavBarBrand>

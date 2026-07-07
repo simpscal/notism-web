@@ -242,7 +242,7 @@ const NAV_ITEMS: { key: string; label: string; icon: LucideIcon; active?: boolea
 
 function Toolbar() {
     return (
-        <NavBar variant='consumer' className='shrink-0'>
+        <NavBar className='shrink-0'>
             <NavBarBrand>
                 <span className='pl-1 text-lg font-extrabold tracking-tight text-primary lg:pl-2'>Notism</span>
             </NavBarBrand>
