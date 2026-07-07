@@ -31,9 +31,9 @@ function ClientLayout() {
     }, []);
 
     return (
-        <div className='relative flex h-screen w-full overflow-hidden bg-frame p-3 sm:p-4 lg:p-6'>
+        <div className='relative flex h-screen w-full overflow-hidden bg-muted'>
             <div className='relative z-10 flex min-h-0 w-full flex-1 items-stretch'>
-                <div className='flex h-full w-full flex-col gap-3 rounded-[1.75rem] bg-muted p-3 shadow-[0_20px_60px_-26px_rgba(0,0,0,0.45)] lg:gap-4 lg:rounded-[2rem] lg:p-4'>
+                <div className='flex h-full w-full flex-col gap-3 bg-muted p-3 lg:gap-4 lg:p-4'>
                     <ClientToolbarDesktop user={user} onLogout={handleLogout} />
                     <ClientToolbarMobile user={user} onLogout={handleLogout} onOpenOrder={handleOpenOrder} />
 

@@ -59,10 +59,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/sheet
 // Mock-only fixtures + local state. No api / model / store / SignalR imports.
 // ---------------------------------------------------------------------------
 
-// Soft low-spread shadow for the single floating shell (one gentle step off the
-// dark frame). Panels/toolbar use shadow-sm; cards use hairline borders only.
-const SHELL_SHADOW = 'shadow-[0_20px_60px_-26px_rgba(0,0,0,0.45)]';
-
 // Mock order-level discount, mirrored in the Summary Panel breakdown (theme:
 // negative values render crimson + prefixed, delivery "Free" renders green).
 const DISCOUNT_RATE = 0.1;
@@ -123,9 +119,7 @@ const NAV_ITEMS: NavItem[] = [
 function AmbientFrame({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
         <div
-            className={['relative flex h-screen w-full overflow-hidden bg-frame p-3 sm:p-4 lg:p-6', className]
-                .filter(Boolean)
-                .join(' ')}
+            className={['relative flex h-screen w-full overflow-hidden bg-muted', className].filter(Boolean).join(' ')}
         >
             <div className='relative z-10 flex min-h-0 w-full flex-1 items-stretch'>{children}</div>
         </div>
@@ -454,9 +448,7 @@ function MobileOrderTrigger({ lines, onOpen }: { lines: OrderLine[]; onOpen: () 
 function DesktopShell({ lines, activeNav = 'home' }: { lines: OrderLine[]; activeNav?: string }) {
     return (
         <AmbientFrame>
-            <div
-                className={`flex h-full w-full flex-col gap-3 rounded-[1.75rem] bg-muted p-3 lg:gap-4 lg:rounded-[2rem] lg:p-4 ${SHELL_SHADOW}`}
-            >
+            <div className='flex h-full w-full flex-col gap-3 bg-muted p-3 lg:gap-4 lg:p-4'>
                 <ShellTopbar activeNav={activeNav} lines={lines} />
                 <div className='flex min-h-0 flex-1 gap-3 lg:gap-4'>
                     <ContentZonePlaceholder />
@@ -479,9 +471,7 @@ function MobileShell({ lines, initialOpen = false }: { lines: OrderLine[]; initi
     const [open, setOpen] = React.useState(initialOpen);
     return (
         <AmbientFrame className='justify-center'>
-            <div
-                className={`flex h-full w-full max-w-[26rem] flex-col gap-3 rounded-[1.75rem] bg-muted p-3 ${SHELL_SHADOW}`}
-            >
+            <div className='flex h-full w-full max-w-[26rem] flex-col gap-3 bg-muted p-3'>
                 <ShellTopbar
                     activeNav='home'
                     lines={lines}
