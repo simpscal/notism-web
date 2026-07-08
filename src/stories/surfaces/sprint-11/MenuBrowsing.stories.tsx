@@ -469,13 +469,7 @@ function MenuContent({
 
 function MenuShell({ children }: { children: React.ReactNode }) {
     return (
-        <div
-            className='bg-frame flex h-screen w-full flex-col p-3 sm:p-6 lg:p-8'
-            style={{
-                backgroundImage:
-                    'radial-gradient(circle at 20% 15%, rgba(255,255,255,0.04) 0, transparent 40%), radial-gradient(circle at 85% 80%, rgba(255,255,255,0.03) 0, transparent 45%)',
-            }}
-        >
+        <div className='bg-frame flex h-screen w-full flex-col p-3 sm:p-6 lg:p-8'>
             <div className='bg-muted mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-[2rem] shadow-[0_24px_70px_-32px_rgba(0,0,0,0.7)]'>
                 <TopNavPlaceholder />
                 <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-1 sm:px-4 sm:pb-5 lg:px-5'>{children}</div>

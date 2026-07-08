@@ -694,13 +694,7 @@ function ActionRail({ order }: { order: OrderFixture }) {
 
 function OrderTrackingShell({ children }: { children: React.ReactNode }) {
     return (
-        <div
-            className='flex h-screen w-full flex-col bg-[oklch(0.16_0.006_285.885)] p-3 sm:p-6'
-            style={{
-                backgroundImage:
-                    'radial-gradient(circle at 12% 18%, rgba(255,255,255,0.04) 0, transparent 42%), radial-gradient(circle at 88% 82%, rgba(255,255,255,0.03) 0, transparent 40%)',
-            }}
-        >
+        <div className='flex h-screen w-full flex-col bg-[oklch(0.16_0.006_285.885)] p-3 sm:p-6'>
             {/* One large-radius light-gray shell — fills the frame, clips its scroll. */}
             <div className='mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-border/50 bg-muted shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
                 {/* Floating toolbar region — margin all around; pinned above the scroll. */}

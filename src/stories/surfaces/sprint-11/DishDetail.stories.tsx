@@ -162,40 +162,14 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Ambient frame — the dark charcoal backdrop with a low-contrast, purely
-// decorative line-art motif. Never carries controls or content; always sits
-// BEHIND the light shell. Fixed to the viewport so the shell (and only its
-// content zone) does the scrolling.
+// Ambient frame — the dark charcoal backdrop. Never carries controls or content;
+// always sits BEHIND the light shell. Fixed to the viewport so the shell (and
+// only its content zone) does the scrolling.
 // ---------------------------------------------------------------------------
-
-function AmbientLineArt() {
-    return (
-        <svg
-            aria-hidden
-            className='pointer-events-none absolute inset-0 h-full w-full text-white/[0.05]'
-            preserveAspectRatio='xMidYMid slice'
-        >
-            <defs>
-                <pattern id='dish-shell-motif' width='180' height='180' patternUnits='userSpaceOnUse'>
-                    <circle cx='40' cy='40' r='26' fill='none' stroke='currentColor' strokeWidth='1.5' />
-                    <path d='M40 14v52M14 40h52' stroke='currentColor' strokeWidth='1.5' />
-                    <path
-                        d='M120 120c22 0 34-14 34-32M120 120c-20 0-34-12-34-30M120 120v34'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='1.5'
-                    />
-                </pattern>
-            </defs>
-            <rect width='100%' height='100%' fill='url(#dish-shell-motif)' />
-        </svg>
-    );
-}
 
 function AmbientFrame({ children }: { children: React.ReactNode }) {
     return (
         <div className='relative flex h-screen w-full overflow-hidden bg-[#131316] p-3 sm:p-4 lg:p-6'>
-            <AmbientLineArt />
             <div className='relative z-10 flex min-h-0 w-full'>{children}</div>
         </div>
     );
