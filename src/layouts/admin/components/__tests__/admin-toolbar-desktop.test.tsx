@@ -40,6 +40,25 @@ describe('AdminToolbarDesktop', () => {
         expect(links[0]).toHaveTextContent(/dashboard/i);
     });
 
+    it('renders the full icon+label admin nav set', () => {
+        renderToolbar();
+
+        const nav = screen.getByRole('navigation');
+        const links = nav.querySelectorAll('a');
+
+        // dashboard, orders, refunds, foods, categories, users
+        expect(links).toHaveLength(6);
+        // Each item pairs an icon (svg) with its label text.
+        expect(links[0].querySelector('svg')).not.toBeNull();
+        expect(links[0]).toHaveTextContent(/dashboard/i);
+    });
+
+    it('does not render an order sidebar', () => {
+        renderToolbar();
+
+        expect(screen.queryByTestId('order-sidebar')).not.toBeInTheDocument();
+    });
+
     it('points the Dashboard link at the admin dashboard route', () => {
         renderToolbar();
 

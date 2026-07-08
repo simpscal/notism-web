@@ -29,12 +29,16 @@ function AdminLayout() {
     }, [dispatch, navigate]);
 
     return (
-        <div className='flex h-screen flex-col bg-background'>
-            <AdminToolbarDesktop user={user} onLogout={handleLogout} liveFeedStatus={liveFeedStatus} />
-            <AdminToolbarMobile user={user} onLogout={handleLogout} liveFeedStatus={liveFeedStatus} />
-            <main className='flex-1 overflow-y-auto pb-16 lg:pb-0'>
-                <Outlet />
-            </main>
+        // Ambient dark frame → large-radius light shell → pinned NavBar toolbar
+        // above an independently scrolling, table-oriented content zone.
+        <div className='relative h-screen w-full overflow-hidden bg-frame p-2 sm:p-3'>
+            <div className='relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[2rem] bg-muted shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
+                <AdminToolbarDesktop user={user} onLogout={handleLogout} liveFeedStatus={liveFeedStatus} />
+                <AdminToolbarMobile user={user} onLogout={handleLogout} liveFeedStatus={liveFeedStatus} />
+                <main className='min-h-0 flex-1 overflow-y-auto'>
+                    <Outlet />
+                </main>
+            </div>
         </div>
     );
 }
