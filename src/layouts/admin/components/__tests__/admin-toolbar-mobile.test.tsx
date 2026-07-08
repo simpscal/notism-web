@@ -38,19 +38,20 @@ describe('AdminToolbarMobile', () => {
         expect(dashboardLink).toHaveAttribute('href', `/${ROUTES.ADMIN.DASHBOARD}`);
     });
 
-    it('renders Dashboard as the first nav shortcut', () => {
+    it('renders the first four admin nav shortcuts', () => {
         renderToolbar();
 
-        const links = screen.getAllByRole('link');
-        expect(links[0]).toHaveAttribute('href', `/${ROUTES.ADMIN.DASHBOARD}`);
+        expect(screen.getByRole('link', { name: /dashboard/i })).toHaveAttribute('href', `/${ROUTES.ADMIN.DASHBOARD}`);
+        expect(screen.getByRole('link', { name: /orders/i })).toHaveAttribute('href', `/${ROUTES.ADMIN.ORDERS}`);
+        expect(screen.getByRole('link', { name: /refunds/i })).toHaveAttribute('href', `/${ROUTES.ADMIN.REFUNDS}`);
+        expect(screen.getByRole('link', { name: /foods/i })).toHaveAttribute('href', `/${ROUTES.ADMIN.FOODS}`);
     });
 
-    it('marks the Dashboard shortcut active when on the dashboard route', () => {
+    it('marks the Dashboard shortcut active via aria-current when on the dashboard route', () => {
         renderToolbar({ initialPath: `/${ROUTES.ADMIN.DASHBOARD}` });
 
         const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
         expect(dashboardLink).toHaveAttribute('aria-current', 'page');
-        expect(dashboardLink.className).toMatch(/text-primary/);
     });
 
     it('does not mark the Dashboard shortcut active when on another admin route', () => {

@@ -41,6 +41,19 @@ describe('AdminLayout', () => {
         expect(useNewOrderAlertsMock).toHaveBeenCalled();
     });
 
+    it('wraps the routed Outlet content inside the shell', () => {
+        renderLayout();
+
+        expect(screen.getByText('dashboard page body')).toBeInTheDocument();
+    });
+
+    it('does not render an order sidebar in the admin shell', () => {
+        renderLayout();
+
+        expect(screen.queryByTestId('order-sidebar')).not.toBeInTheDocument();
+        expect(screen.queryByText(/order summary/i)).not.toBeInTheDocument();
+    });
+
     it('renders the live-feed pill in the persistent admin toolbar', () => {
         renderLayout();
 
