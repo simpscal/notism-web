@@ -1,32 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import {
-    CheckCircle2,
-    Eye,
-    Grid3x3,
-    LayoutDashboard,
-    LayoutGrid,
-    MoreVertical,
-    Package,
-    Radio,
-    Receipt,
-    Search,
-    StickyNote,
-    Tags,
-    Truck,
-    Users,
-    UtensilsCrossed,
-    type LucideIcon,
-} from 'lucide-react';
+import { CheckCircle2, Eye, Grid3x3, LayoutGrid, MoreVertical, Package, Search, StickyNote, Truck } from 'lucide-react';
 import React from 'react';
 
-import { Avatar, AvatarFallback } from '@/components/avatar';
-import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 import Kanban, { type KanbanColumn } from '@/components/kanban';
-import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Skeleton } from '@/components/skeleton';
 import {
     SortableTableHead,
@@ -53,8 +33,8 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //
 // This story only RESTYLES visuals + density to DESIGN_THEME.md:
 //   • FULL-BLEED / edge-to-edge board on the app canvas (bg-muted) — no dark
-//     ambient frame, no enclosing floating shell; the toolbar is the one
-//     floating rounded element pinned above the scrolling content;
+//     ambient frame, no enclosing floating shell; a dashed nav placeholder is
+//     pinned above the scrolling content (the admin top nav is owned by the shell);
 //   • price / total is the single crimson emphasis (never spread to controls);
 //   • view toggle + payment filter read as on-theme single-select controls,
 //     exactly one selection each;
@@ -408,8 +388,8 @@ function OrdersTableView({ orders }: { orders: OrderRow[] }) {
             </div>
 
             {/* Table scrolls independently — vertical for row volume, horizontal
-                for the wide admin table — inside its own hairline container. */}
-            <div className='min-h-0 flex-1 overflow-auto rounded-2xl border border-border/70'>
+                for the wide admin table — inside its own white hairline container. */}
+            <div className='min-h-0 flex-1 overflow-auto rounded-2xl border border-border/70 bg-background'>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -583,80 +563,37 @@ function OrdersBoardSkeleton() {
 }
 
 // ---------------------------------------------------------------------------
-// Admin toolbar — the shared, domain-blind NavBar, matching
-// sibling AdminAppShell.stories.tsx: brand + Admin badge (left) · admin nav
-// (centre, NavBarNav/NavBarItem — the active route is a real navigation
-// selection via aria-current, rendered as the variant's ink active pill, never
-// a Button in a selected style) · live-feed indicator + account (right). The
-// bar is the one floating rounded element: a detached, rounded toolbar inset
-// from the layout edges, riding above the full-bleed content via additive
-// className; its selection + colour roles are the component's own. Red stays
-// reserved for price.
+// Nav placeholder — the admin top nav is owned by AdminAppShell, not
+// re-implemented per surface. A sticky, dashed, pinned bar stands in for it here
+// (matching the sibling AdminOrderDetail / AdminRefunds surfaces).
 // ---------------------------------------------------------------------------
 
-const ADMIN_NAV: { key: string; label: string; icon: LucideIcon }[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { key: 'orders', label: 'Orders', icon: Package },
-    { key: 'refunds', label: 'Refunds', icon: Receipt },
-    { key: 'foods', label: 'Foods', icon: UtensilsCrossed },
-    { key: 'categories', label: 'Categories', icon: Tags },
-    { key: 'users', label: 'Users', icon: Users },
-];
-
-function AdminToolbar({ activePage = 'orders' }: { activePage?: string }) {
+function NavPlaceholder() {
     return (
-        <NavBar className='h-16 shrink-0 rounded-full border-b-0 px-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:px-4'>
-            {/* Left — brand + Admin badge */}
-            <NavBarBrand className='pl-1'>
-                <span className='text-lg font-semibold tracking-tight text-primary'>Notism</span>
-                <Badge variant='secondary' className='px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wide'>
-                    Admin
-                </Badge>
-            </NavBarBrand>
-
-            {/* Centre — admin nav; active route = ink pill via aria-current, never a Button */}
-            <NavBarNav className='flex-1 justify-center'>
-                {ADMIN_NAV.map(item => {
-                    const Icon = item.icon;
-                    return (
-                        <NavBarItem key={item.key} active={item.key === activePage}>
-                            <Icon className='h-4 w-4' aria-hidden />
-                            <span className='hidden lg:inline'>{item.label}</span>
-                        </NavBarItem>
-                    );
-                })}
-            </NavBarNav>
-
-            {/* Right — live feed + account */}
-            <NavBarActions className='gap-3'>
-                <span className='hidden items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-3 py-1.5 text-xs font-semibold text-success sm:inline-flex'>
-                    <Radio className='h-3.5 w-3.5' aria-hidden />
-                    Live orders on
+        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
+            <div className='flex h-14 items-center justify-center rounded-full border border-dashed border-border bg-card/60'>
+                <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
+                    admin top nav placeholder
                 </span>
-                <Avatar className='h-8 w-8 border border-border/60'>
-                    <AvatarFallback className='bg-secondary text-xs font-semibold text-foreground'>AD</AvatarFallback>
-                </Avatar>
-            </NavBarActions>
-        </NavBar>
+            </div>
+        </div>
     );
 }
 
 // ---------------------------------------------------------------------------
 // Shell — FULL-BLEED / edge-to-edge on the app canvas (bg-muted). No dark
 // ambient frame, no enclosing floating light-gray shell, no white content
-// panel: the orders board flows directly on the canvas. The floating rounded
-// toolbar is the one raised element, pinned above an independently scrolling
-// content zone; the board scrolls within its own hairline containers. Sensible
+// panel: the orders board flows directly on the canvas. A dashed nav placeholder
+// is pinned above an independently scrolling content zone (the admin top nav is
+// owned by AdminAppShell); the board scrolls within its own hairline containers. Sensible
 // page padding around both. min-h / flex throughout — no fixed heights.
 // ---------------------------------------------------------------------------
 
 function OrdersShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
-            {/* Pinned floating toolbar — inset from the layout edges, outside the scroll zone. */}
-            <div className='shrink-0 px-4 pt-4 sm:px-6 sm:pt-6'>
-                <AdminToolbar />
-            </div>
+            {/* Pinned nav placeholder — the admin top nav is owned by AdminAppShell. */}
+            <NavPlaceholder />
 
             {/* Edge-to-edge content zone — the board scrolls independently on the canvas. */}
             <div className='flex min-h-0 flex-1 flex-col gap-5 overflow-hidden px-4 py-4 sm:px-6 sm:py-6'>

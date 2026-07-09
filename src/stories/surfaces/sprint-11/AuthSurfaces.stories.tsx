@@ -17,11 +17,10 @@ import { Separator } from '@/components/separator';
 // back to login). Only the visuals + UX copy move on-theme.
 //
 // Theme application (DESIGN_THEME.md):
-//   • Layering (§4) — a dark charcoal AMBIENT CANVAS (#1A1A1A) with a neutral,
-//     low-contrast line-art motif sits behind everything; the form lives on a
-//     single raised white CARD floating over it. Elevation is ONE gentle step:
-//     the theme's single soft shadow (0 4px 20px rgba(0,0,0,0.05)) + hairline —
-//     no heavy rings. No control ever touches the raw dark frame.
+//   • Layering (§4) — a light neutral CANVAS (bg-muted) sits behind everything;
+//     the form lives on a single raised white CARD floating over it. Elevation is
+//     ONE gentle step: the theme's single soft shadow (0 4px 20px rgba(0,0,0,0.05))
+//     + hairline — no heavy rings.
 //   • Two-tone hierarchy (§1) — the submit is the primary STRUCTURAL action and
 //     auth carries NO commerce/price, so it is a BLACK pill (Sign in / Create
 //     account / Send reset link / Save new password). Red is reserved for
@@ -44,18 +43,15 @@ import { Separator } from '@/components/separator';
 // Ambient frame + raised card — the shared auth shell.
 // ---------------------------------------------------------------------------
 
-/** Dark charcoal ambient canvas — the first layer of the theme's frame → shell →
- *  card stack. UI chrome stays neutral so the card pops, and no red ever touches
- *  it. The card always sits above it via a single gentle elevation step. */
+/** Light neutral canvas — the base layer the auth card floats on. UI chrome stays
+ *  neutral so the card pops, and no red ever touches it. The card always sits
+ *  above it via a single gentle elevation step. */
 function AmbientFrame({ children }: { children: React.ReactNode }) {
     return (
-        <div
-            className='relative flex min-h-screen w-full items-center justify-center px-4 py-10'
-            style={{ backgroundColor: '#1A1A1A' }}
-        >
+        <div className='relative flex min-h-screen w-full items-center justify-center bg-muted px-4 py-10'>
             {/* Quiet language control — mirrors the live layout's top-right switcher */}
             <div className='absolute right-4 top-4 md:right-6 md:top-6'>
-                <span className='inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 backdrop-blur-sm'>
+                <span className='inline-flex items-center rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground'>
                     🇬🇧 EN
                 </span>
             </div>
@@ -64,7 +60,7 @@ function AmbientFrame({ children }: { children: React.ReactNode }) {
     );
 }
 
-/** Raised white card — one gentle elevation step above the ambient frame via
+/** Raised white card — one gentle elevation step above the light canvas via
  *  the theme's single soft shadow (§4: 0 4px 20px rgba(0,0,0,0.05)) + hairline
  *  (never a heavy ring), heavy 24px radius as the signature, single-column body
  *  ≤ ~26rem. */
@@ -107,7 +103,7 @@ function AuthCard({
                 {children}
             </div>
 
-            {footer && <div className='mt-6 text-center text-sm text-white/70'>{footer}</div>}
+            {footer && <div className='mt-6 text-center text-sm text-muted-foreground'>{footer}</div>}
         </div>
     );
 }
@@ -240,8 +236,8 @@ function GoogleButton() {
     );
 }
 
-/** Quiet text link — inherits its context colour (ink on the card, light on the
- *  dark frame footer) and stays quiet: no red accent, weight + underline signal
+/** Quiet text link — inherits its context colour (ink on the card, muted on the
+ *  canvas footer) and stays quiet: no red accent, weight + underline signal
  *  the action. */
 function QuietLink({ children }: { children: React.ReactNode }) {
     return (
@@ -421,7 +417,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Login — single-column form on a raised card over the dark ambient frame.
+ * Login — single-column form on a raised card over the light canvas.
  * Labels above fields, one BLACK structural primary ("Sign in"); Google OAuth is
  * a white outline pill, and "Forgot password?" / "Create an account" stay quiet
  * ink links. No red anywhere on the surface.
