@@ -46,8 +46,10 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 //     Panel pattern (rows → dashed divider → bold total); order refs render as
 //     mono Tag Pills.
 //   • Spacing / shape (§4): card radius 20–24px, hairline borders, a single
-//     soft shadow on FLOATING surfaces only (toolbar, list panel, dialogs) —
-//     dark ambient frame → light shell → white cards, one gentle step per level.
+//     soft shadow on FLOATING surfaces only (list panel, dialogs). The layout is
+//     FULL-BLEED / edge-to-edge on the app canvas (bg-muted) — no dark ambient
+//     frame, no enclosing floating shell; white cards float directly on the
+//     canvas, one gentle step of elevation.
 //   • States (§8): hover darkens ~8%; the destructive/irreversible confirm is
 //     set APART in an explicit dialog, never adjacent to the trigger.
 //
@@ -251,26 +253,21 @@ function NavPlaceholder() {
 }
 
 // ---------------------------------------------------------------------------
-// Shell — dark ambient frame → ONE large-radius light-grey shell filling the
-// viewport → white floating surfaces, one gentle step per level. The nav
-// placeholder is pinned at the top; only the refunds content scrolls beneath it
-// (single scroll region, no double scrollbars).
+// Shell — FULL-BLEED. No dark ambient frame, no enclosing floating light shell.
+// A single edge-to-edge column on the app's neutral canvas (bg-muted): the nav
+// placeholder is pinned at the top and only the refunds content scrolls beneath
+// it (single scroll region, no double scrollbars). White floating surfaces
+// (list panel, cards, dialogs) flow directly on the canvas, never inside a
+// rounded shell.
 // ---------------------------------------------------------------------------
 
 function AdminShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='bg-frame relative flex h-screen w-full flex-col overflow-hidden'>
-            <div
-                className={cn(
-                    'bg-muted relative z-10 mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col overflow-hidden rounded-[2rem] ring-1 ring-black/5 sm:m-4',
-                    SOFT_SHADOW
-                )}
-            >
-                <NavPlaceholder />
+        <div className='bg-muted flex h-screen w-full flex-col overflow-hidden'>
+            <NavPlaceholder />
 
-                {/* Only the refunds content scrolls */}
-                <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
-            </div>
+            {/* Only the refunds content scrolls */}
+            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
         </div>
     );
 }

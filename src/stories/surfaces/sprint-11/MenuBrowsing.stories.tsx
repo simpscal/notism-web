@@ -29,10 +29,10 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //     affordance are solid BLACK (structural / selection / control); idle
 //     segments are quiet on the muted track (secondary).
 //
-// Elevation — soft + minimal, one gentle step per level (no heavy rings /
-// shadows): dark ambient frame → one large-radius LIGHT-GRAY shell (soft
-// shadow) → a WHITE content panel (large radius, hairline, faint shadow) →
-// WHITE cards (hairline, little / no shadow).
+// Elevation — soft + minimal, full-bleed on the app's neutral canvas (bg-muted):
+// NO dark ambient frame, NO enclosing floating light shell. Content flows
+// edge-to-edge with sensible page padding → a WHITE content panel (large radius,
+// hairline, faint shadow) → WHITE cards (hairline, little / no shadow).
 //
 // Chrome: the top nav is owned by the CONSUMER APP SHELL (see the Consumer App
 // Shell surface, which renders the shared `NavBar`). This
@@ -461,19 +461,19 @@ function MenuContent({
 }
 
 // ---------------------------------------------------------------------------
-// App shell — dark ambient frame → one large-radius LIGHT-GRAY shell (soft
-// shadow). The shell fills the viewport as a flex column: the nav placeholder
-// is pinned at the top and the menu content zone scrolls beneath it, so there
-// is a single scroll region and no clipping.
+// App shell — FULL-BLEED / edge-to-edge on the app's neutral canvas (bg-muted):
+// NO dark ambient frame, NO enclosing floating light shell. A single column
+// fills the viewport: the nav placeholder is pinned at the top and the menu
+// content zone scrolls beneath it (sensible page padding), so there is a single
+// scroll region and no clipping. The content flows directly on the canvas, never
+// inside a rounded floating shell.
 // ---------------------------------------------------------------------------
 
 function MenuShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='bg-frame flex h-screen w-full flex-col p-3 sm:p-6 lg:p-8'>
-            <div className='bg-muted mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-[2rem] shadow-[0_24px_70px_-32px_rgba(0,0,0,0.7)]'>
-                <TopNavPlaceholder />
-                <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-1 sm:px-4 sm:pb-5 lg:px-5'>{children}</div>
-            </div>
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <TopNavPlaceholder />
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-1 sm:px-6 sm:pb-8'>{children}</div>
         </div>
     );
 }
@@ -514,9 +514,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — the full menu on desktop: an image-forward card grid on the light
- * shell, with the "All" segment selected in the segmented category filter and
- * prices in crimson. Each card is a single tap target.
+ * Default — the full menu on desktop: an image-forward card grid full-bleed on
+ * the app canvas, with the "All" segment selected in the segmented category
+ * filter and prices in crimson. Each card is a single tap target.
  */
 export const Default: Story = {
     name: 'Default — Image-Forward Card Grid',

@@ -33,7 +33,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 // status-update panel in the right rail). Only the VISUALS + UX are on-theme:
 //
 //   • Cards — items + payment details render as on-theme white cards on the
-//     light shell, large-radius, with an eyebrow micro-label + heading + quiet
+//     app canvas, large-radius, with an eyebrow micro-label + heading + quiet
 //     body hierarchy. Order lines carry a circular thumbnail.
 //   • Two-tone hierarchy — RED is reserved for money: every line price and the
 //     running total, the ONE loudest red on the screen. The status-update commit
@@ -506,21 +506,21 @@ function PaymentStatusPanel({
 }
 
 // ---------------------------------------------------------------------------
-// Surface shell — dark ambient frame → ONE large-radius light-gray shell filling
-// the viewport → white cards. The admin top nav (owned by AdminAppShell) is a
-// pinned placeholder at the top of the shell; the order-detail body scrolls
-// beneath it in a single scroll region (no double scrollbars).
+// Surface shell — FULL-BLEED. No dark ambient frame, no enclosing floating
+// shell: the order-detail body flows edge-to-edge directly on the app's neutral
+// canvas (bg-muted) with sensible page padding, closed to a comfortable reading
+// width. The admin top nav (owned by AdminAppShell) is a pinned dashed
+// placeholder at the top; the body scrolls beneath it in a single scroll region
+// (no double scrollbars).
 // ---------------------------------------------------------------------------
 
 function AdminOrderDetailSurface({ body }: { body: React.ReactNode }) {
     return (
-        <div className='flex h-screen flex-col bg-frame p-2 sm:p-4'>
-            <div className='mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] bg-muted'>
-                <NavPlaceholder />
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <NavPlaceholder />
 
-                <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-6 pt-4 sm:px-6 sm:pb-8 sm:pt-6'>
-                    <div className='mx-auto w-full max-w-5xl'>{body}</div>
-                </div>
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-4 sm:px-6 sm:pt-6'>
+                <div className='mx-auto w-full max-w-5xl'>{body}</div>
             </div>
         </div>
     );

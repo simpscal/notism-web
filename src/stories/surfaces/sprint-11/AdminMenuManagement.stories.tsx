@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import React from 'react';
 
-import { cn } from '@/app/utils/tailwind.utils';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
@@ -62,19 +61,17 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 // Two-tone hierarchy (§1/§2): RED (`primary`) is reserved for PRICES only — the one
 // loudest thing per screen; every price is crimson. Every structural primary (the
 // one Add / Save per view) is a BLACK `selected` pill, not red; availability reads
-// as a WORD label + status colour. Elevation (§4): dark ambient frame → ONE
-// large-radius light-gray shell → white content / table panels (hairline), a single
-// soft shadow on floating chrome only, one gentle step per level. Layout (§6): admin
-// volume stays a sortable TABLE with search + pagination; the editor is a
-// single-column form (labels above fields) with the image upload beneath. States
-// (§8): hover darkens; the destructive Delete lives apart from the primary and
-// always routes through an explicit confirm dialog.
+// as a WORD label + status colour. Elevation (§4): FULL-BLEED — no dark ambient
+// frame, no enclosing floating light-gray shell; content sits edge-to-edge on the
+// app's neutral canvas (`bg-muted`), with white content / table panels (hairline)
+// carrying the only structure, one gentle step per level. Layout (§6): admin volume
+// stays a sortable TABLE with search + pagination; the editor is a single-column
+// form (labels above fields) with the image upload beneath. States (§8): hover
+// darkens; the destructive Delete lives apart from the primary and always routes
+// through an explicit confirm dialog.
 //
 // Mock-only fixtures + local state. No api / model / store imports.
 // ---------------------------------------------------------------------------
-
-// One soft shadow, floating surfaces only (§4 elevation).
-const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 
 // ---------------------------------------------------------------------------
 // Domain shapes (mock only — mirrors the foods/categories table + editor
@@ -201,26 +198,20 @@ function NavPlaceholder() {
 }
 
 // ---------------------------------------------------------------------------
-// Shell — dark ambient frame → ONE large-radius light-gray shell filling the
-// viewport → white content panels, one gentle step per level. The nav
-// placeholder is pinned at the top; only the page content scrolls beneath it
-// (single scroll region, no double scrollbars).
+// Shell — FULL-BLEED. No dark ambient frame, no enclosing floating light-gray
+// shell; a single edge-to-edge column on the app's neutral canvas (bg-muted).
+// White content / table panels carry the only structure. The nav placeholder is
+// pinned at the top; only the page content scrolls beneath it (single scroll
+// region, no double scrollbars).
 // ---------------------------------------------------------------------------
 
 function AdminShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='relative flex h-screen w-full flex-col overflow-hidden bg-frame'>
-            <div
-                className={cn(
-                    'relative z-10 mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col overflow-hidden rounded-[2rem] bg-muted ring-1 ring-black/5 sm:m-4',
-                    SOFT_SHADOW
-                )}
-            >
-                <NavPlaceholder />
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <NavPlaceholder />
 
-                {/* Only the page content scrolls */}
-                <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
-            </div>
+            {/* Only the page content scrolls */}
+            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
         </div>
     );
 }

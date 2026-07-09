@@ -52,7 +52,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //   • row/card actions (open order, change status) preserved as-is.
 //
 // This story only RESTYLES visuals + density to DESIGN_THEME.md:
-//   • dark ambient frame → one large rounded light shell holding the board;
+//   • FULL-BLEED / edge-to-edge board on the app canvas (bg-muted) — no dark
+//     ambient frame, no enclosing floating shell; the toolbar is the one
+//     floating rounded element pinned above the scrolling content;
 //   • price / total is the single crimson emphasis (never spread to controls);
 //   • view toggle + payment filter read as on-theme single-select controls,
 //     exactly one selection each;
@@ -528,10 +530,11 @@ function OrdersKanbanView({ orders }: { orders: OrderRow[] }) {
 // sibling AdminAppShell.stories.tsx: brand + Admin badge (left) · admin nav
 // (centre, NavBarNav/NavBarItem — the active route is a real navigation
 // selection via aria-current, rendered as the variant's ink active pill, never
-// a Button in a selected style) · live-feed indicator + account (right). Given
-// the floating-shell aesthetic, the bar is composed rounded/floating over the
-// gray shell via additive className; its selection + colour roles are the
-// component's own. Red stays reserved for price.
+// a Button in a selected style) · live-feed indicator + account (right). The
+// bar is the one floating rounded element: a detached, rounded toolbar inset
+// from the layout edges, riding above the full-bleed content via additive
+// className; its selection + colour roles are the component's own. Red stays
+// reserved for price.
 // ---------------------------------------------------------------------------
 
 const ADMIN_NAV: { key: string; label: string; icon: LucideIcon }[] = [
@@ -582,25 +585,25 @@ function AdminToolbar({ activePage = 'orders' }: { activePage?: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Shell — soft, minimal elevation, one gentle step per level (no heavy
-// rings/shadows): dark ambient frame → one large-radius light-gray shell →
-// white content panel (hairline + faint shadow) → white table/kanban cards
-// (hairline, little/no shadow). The shell fills the viewport; the floating
-// toolbar is pinned while the orders board scrolls independently within it.
-// min-h / flex throughout — no fixed heights.
+// Shell — FULL-BLEED / edge-to-edge on the app canvas (bg-muted). No dark
+// ambient frame, no enclosing floating light-gray shell, no white content
+// panel: the orders board flows directly on the canvas. The floating rounded
+// toolbar is the one raised element, pinned above an independently scrolling
+// content zone; the board scrolls within its own hairline containers. Sensible
+// page padding around both. min-h / flex throughout — no fixed heights.
 // ---------------------------------------------------------------------------
 
 function OrdersShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='flex h-screen flex-col bg-frame p-3 sm:p-5'>
-            {/* Light-gray shell — the one large rounded surface holding chrome + content. */}
-            <div className='mx-auto flex min-h-0 w-full max-w-[1320px] flex-1 flex-col gap-3 rounded-[2rem] bg-secondary p-3 sm:gap-4 sm:p-4'>
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            {/* Pinned floating toolbar — inset from the layout edges, outside the scroll zone. */}
+            <div className='shrink-0 px-4 pt-4 sm:px-6 sm:pt-6'>
                 <AdminToolbar />
+            </div>
 
-                {/* White content panel — hairline + single soft shadow; the board scrolls inside it. */}
-                <div className='flex min-h-0 flex-1 flex-col gap-5 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:p-6'>
-                    {children}
-                </div>
+            {/* Edge-to-edge content zone — the board scrolls independently on the canvas. */}
+            <div className='flex min-h-0 flex-1 flex-col gap-5 overflow-hidden px-4 py-4 sm:px-6 sm:py-6'>
+                {children}
             </div>
         </div>
     );

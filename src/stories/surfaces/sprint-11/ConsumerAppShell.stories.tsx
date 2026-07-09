@@ -14,33 +14,39 @@ import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/com
 // Only the visual + UX treatment changes, and this sprint the persistent order
 // panel is removed from the shell entirely:
 //
-//   • dark ambient FRAME (charcoal, no controls) sits behind ONE large rounded
-//     light-gray SHELL that floats over it;
-//   • a FLOATING rounded toolbar sits inside the shell with margin on all sides
-//     (brand left · nav-tab pill row center where the active item is a BLACK pill
-//     with a white icon+label · actions right: search + language + theme + avatar
-//     + a crimson Cart affordance);
+//   • the layout is FULL-BLEED / edge-to-edge on the app's neutral canvas
+//     (bg-muted) — no frame backdrop, no enclosing floating card/shell; content
+//     flows directly on the canvas, never inside a rounded panel;
+//   • a FLOATING rounded toolbar (the shared NavBar) is the ONE raised element:
+//     detached, inset from the layout edges, carrying its own radius + a single
+//     soft shadow, pinned above the full-bleed content (brand left · nav-tab pill
+//     row center where the active item is a BLACK pill with a white icon+label ·
+//     actions right: search + language + theme + avatar + a crimson Cart
+//     affordance);
 //   • two-tone hierarchy: BLACK carries structural/contextual controls (nav tabs);
 //     CRIMSON is reserved for prices and the Cart CTA;
-//   • the shell holds the toolbar + a FULL-WIDTH content zone — there is no
-//     persistent order sidebar and no order drawer. The toolbar stays pinned
-//     while the content zone scrolls independently; the shell fills the viewport,
-//     no page scroll;
+//   • beneath the pinned toolbar a FULL-BLEED content zone scrolls independently;
+//     there is no persistent order sidebar and no order drawer. The shell fills
+//     the viewport — only the content zone scrolls, no page scroll;
 //   • the Cart affordance is a ROUTE LINK to the existing /cart (CartReview)
 //     surface — it no longer opens a sidebar or drawer. Desktop shows a crimson
 //     Cart pill; mobile shows a condensed crimson cart button. A small item-count
 //     badge sits on both (a lightweight count constant, not a full order model).
 //
-// Elevation is soft + minimal: ambient dark frame → one large-radius light-gray
-// shell (soft low-spread shadow) → white content panel (large radius, hairline,
-// faint shadow) → white cards (hairline, little/no shadow). Exactly one gentle
-// elevation step per level — no heavy rings or hard drop-shadows.
+// Elevation is soft + minimal: the floating rounded toolbar is the only raised
+// element (one soft low-spread shadow); the edge-to-edge content and any cards
+// within it use hairlines and little/no shadow. Exactly one gentle elevation
+// step for the chrome — no heavy rings or hard drop-shadows.
 //
 // Page BODIES are unchanged by this sprint → the content zone is a labelled,
-// muted placeholder; only the shell chrome (frame + toolbar) is implemented here.
+// muted placeholder; only the shell chrome (toolbar) is implemented here.
 //
 // Mock-only fixtures. No api / model / store / SignalR imports.
 // ---------------------------------------------------------------------------
+
+// One soft shadow — the only elevation in the shell, reserved for the floating
+// rounded toolbar. No heavy rings.
+const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 
 // Lightweight cart badge count (mock only — the shell no longer carries the full
 // order model; the Cart affordance routes to /cart where the real cart lives).
@@ -63,31 +69,34 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Ambient frame — the dark charcoal backdrop. Never carries controls or content;
-// always sits BEHIND the light shell. Fixed to the viewport height so the shell
-// can fill it and its inner content zone scrolls independently (no page scroll).
+// App canvas — FULL-BLEED. No frame backdrop, no enclosing floating shell. A
+// single edge-to-edge column on the app's neutral canvas (bg-muted): the pinned
+// floating toolbar at top over an independently scrolling content zone. The
+// toolbar is the only raised element; the content flows directly on the canvas,
+// never inside a rounded shell. Fixed to the viewport height so only the content
+// zone scrolls (no page scroll).
 // ---------------------------------------------------------------------------
 
-function AmbientFrame({ children, className }: { children: ReactNode; className?: string }) {
+function AppCanvas({ children, className }: { children: ReactNode; className?: string }) {
     return (
         <div
-            className={['relative flex h-screen w-full overflow-hidden bg-muted', className].filter(Boolean).join(' ')}
+            className={['flex h-screen w-full flex-col overflow-hidden bg-muted', className].filter(Boolean).join(' ')}
         >
-            <div className='relative z-10 flex min-h-0 w-full flex-1 items-stretch'>{children}</div>
+            {children}
         </div>
     );
 }
 
 // ---------------------------------------------------------------------------
 // Content zone — page bodies are UNCHANGED this sprint → a labelled, muted
-// placeholder on a white panel (large radius, hairline, faint shadow). It now
-// fills the FULL WIDTH of the shell (no right sidebar) and scrolls independently
-// within the shell (overflow-y-auto).
+// placeholder that runs FULL-BLEED / edge-to-edge on the app canvas (no
+// enclosing white panel or floating shell). The header sits directly on the
+// canvas; the placeholder block fills the remaining height.
 // ---------------------------------------------------------------------------
 
 function ContentZonePlaceholder() {
     return (
-        <section className='flex min-h-0 flex-1 flex-col overflow-y-auto rounded-[1.5rem] border border-border bg-card p-6 shadow-sm'>
+        <>
             <div className='mb-6'>
                 <p className='text-[11px] font-semibold uppercase tracking-widest text-muted-foreground'>Menu</p>
                 <h1 className='mt-1 text-2xl font-bold tracking-tight text-foreground'>What are you craving?</h1>
@@ -97,7 +106,7 @@ function ContentZonePlaceholder() {
                     menu content zone placeholder
                 </span>
             </div>
-        </section>
+        </>
     );
 }
 
@@ -150,18 +159,18 @@ function MobileCartButton({ count }: { count: number }) {
 
 // ---------------------------------------------------------------------------
 // Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
-// large-radius rounded white bar that FLOATS inside the shell (the shell padding
-// gives it margin on all sides; never edge-to-edge). Brand slot left · nav-items
-// region center (the active tab is a real navigation selection — a black pill via
-// NavBarItem's aria-current, never a Button in a selected style) · actions slot
-// right (search + language + theme + avatar + the crimson Cart affordance). On
-// mobile it condenses to brand + a crimson cart-route button (still a floating
-// bar).
+// large-radius rounded white bar that FLOATS over the full-bleed content, inset
+// from the layout edges via its wrapping row and carrying its own radius + one
+// soft shadow (never edge-to-edge). Brand slot left · nav-items region center
+// (the active tab is a real navigation selection — a black pill via NavBarItem's
+// aria-current, never a Button in a selected style) · actions slot right (search
+// + language + theme + avatar + the crimson Cart affordance). On mobile it
+// condenses to brand + a crimson cart-route button (still a floating bar).
 // ---------------------------------------------------------------------------
 
 function ShellTopbar({ activeNav }: { activeNav: string }) {
     return (
-        <NavBar className='shrink-0'>
+        <NavBar className={['shrink-0', SOFT_SHADOW].join(' ')}>
             <NavBarBrand>
                 <span className='pl-1 text-lg font-extrabold tracking-tight text-primary lg:pl-2'>Notism</span>
             </NavBarBrand>
@@ -220,41 +229,28 @@ function ShellTopbar({ activeNav }: { activeNav: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Desktop shell — one large-radius light-gray shell floats over the dark frame
-// (soft shadow). It holds the floating toolbar + a FULL-WIDTH content zone (no
-// persistent order sidebar); the content zone scrolls independently while the
-// toolbar stays pinned.
+// The shell — a full-bleed column on the app's neutral canvas. The floating
+// rounded toolbar (the shared NavBar) is pinned at top, inset from the edges via
+// its wrapping row. Beneath it, an edge-to-edge content zone scrolls
+// independently — the content flows directly on the canvas, not inside a rounded
+// shell or white panel. The toolbar condenses responsively (Storybook viewport
+// drives the breakpoint) so the desktop + mobile behaviour is real. No
+// page-level scrollbar — only the content zone scrolls. No order sidebar/drawer.
 // ---------------------------------------------------------------------------
 
-function DesktopShell({ activeNav = 'home' }: { activeNav?: string }) {
+function ConsumerAppShell({ activeNav = 'home' }: { activeNav?: string }) {
     return (
-        <AmbientFrame>
-            <div className='flex h-full w-full flex-col gap-3 bg-muted p-3 lg:gap-4 lg:p-4'>
+        <AppCanvas>
+            {/* Pinned floating toolbar — inset from the layout edges, outside the scroll zone */}
+            <div className='shrink-0 px-4 pt-4 lg:px-6 lg:pt-6'>
                 <ShellTopbar activeNav={activeNav} />
-                <div className='flex min-h-0 flex-1'>
-                    <ContentZonePlaceholder />
-                </div>
             </div>
-        </AmbientFrame>
-    );
-}
 
-// ---------------------------------------------------------------------------
-// Mobile shell — the shell narrows; the toolbar stays a rounded floating bar
-// condensed to brand + a crimson cart-route button. The content zone fills the
-// full width and scrolls independently. No drawer.
-// ---------------------------------------------------------------------------
-
-function MobileShell({ activeNav = 'home' }: { activeNav?: string }) {
-    return (
-        <AmbientFrame className='justify-center'>
-            <div className='flex h-full w-full max-w-[26rem] flex-col gap-3 bg-muted p-3'>
-                <ShellTopbar activeNav={activeNav} />
-                <div className='flex min-h-0 flex-1'>
-                    <ContentZonePlaceholder />
-                </div>
-            </div>
-        </AmbientFrame>
+            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell */}
+            <main className='flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+                <ContentZonePlaceholder />
+            </main>
+        </AppCanvas>
     );
 }
 
@@ -274,24 +270,27 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — desktop shell: one large-radius light-gray shell floats over the
- * dark ambient frame. A floating rounded toolbar (brand · centered nav-tab pills
- * with a black active pill · search + language + theme + avatar + a crimson Cart
- * pill) stays pinned; the FULL-WIDTH content zone scrolls independently. There is
- * no persistent order sidebar — the Cart pill routes to /cart (CartReview).
+ * Default — the consumer shell on desktop: a full-bleed, edge-to-edge layout on
+ * the app's neutral canvas — no frame backdrop, no enclosing floating shell. The
+ * shared NavBar floats as a detached rounded toolbar, inset from the layout edges
+ * with its own radius + one soft shadow (brand · centered nav-tab pills with a
+ * black active pill · search + language + theme + avatar + a crimson Cart pill),
+ * pinned above an independently scrolling, edge-to-edge content zone. There is no
+ * persistent order sidebar — the Cart pill routes to /cart (CartReview).
  */
 export const Default: Story = {
-    name: 'Default — Desktop Shell, Full-Width Content',
-    render: () => <DesktopShell activeNav='home' />,
+    name: 'Default — Desktop Shell, Full-Bleed Content',
+    render: () => <ConsumerAppShell activeNav='home' />,
 };
 
 /**
- * Mobile — the toolbar stays a rounded floating bar condensed to brand + a crimson
- * cart button that routes to /cart. The content zone fills the full width and
- * scrolls independently. No order drawer.
+ * Mobile — the full-bleed shell condenses: the floating rounded toolbar narrows
+ * to brand + a crimson cart button that routes to /cart, still inset with its own
+ * radius + soft shadow over the edge-to-edge content zone, which scrolls
+ * independently. No order drawer.
  */
 export const Mobile: Story = {
-    name: 'Mobile — Condensed Toolbar, Full-Width Content',
+    name: 'Mobile — Condensed Toolbar, Full-Bleed Content',
     parameters: { viewport: { defaultViewport: 'mobile1' } },
-    render: () => <MobileShell activeNav='home' />,
+    render: () => <ConsumerAppShell activeNav='home' />,
 };

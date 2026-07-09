@@ -34,12 +34,14 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //
 // Design language (derived from the codebase's Sprint 11 stories + shared kit —
 // no DESIGN_THEME.md present):
-//   • Soft, minimal elevation: dark ambient frame → ONE large-radius light-gray
-//     shell → white content cards (hairline + faint shadow). One gentle step per
-//     level; no heavy rings or shadows. Content never sits on the raw dark frame.
+//   • Soft, minimal elevation: NO dark ambient frame, NO enclosing floating shell.
+//     The surface is FULL-BLEED — content sits edge-to-edge on the app's neutral
+//     canvas (bg-muted), with white content cards (hairline + faint shadow) the
+//     only raised surfaces. One gentle step per level; no heavy rings or shadows.
 //   • The top nav is the shared, domain-blind NavBar (consumer variant) — a
-//     floating rounded bar pinned inside the shell, consistent with the Consumer
-//     App Shell. The active tab is a REAL navigation selection (NavBarItem
+//     floating rounded bar pinned above the content, inset from the layout edges,
+//     consistent with the Consumer App Shell. The active tab is a REAL navigation
+//     selection (NavBarItem
 //     aria-current — white pill + primary accent), never a Button in a selected
 //     style.
 //   • Delivery progression is the shared Timeline primitive (placed → preparing →
@@ -228,11 +230,12 @@ const ORDER_DELIVERED: OrderFixture = {
 
 // ---------------------------------------------------------------------------
 // Floating top nav — the shared, domain-blind NavBar (consumer variant): a
-// large-radius rounded bar that floats inside the shell (the shell padding gives
-// it margin all around). Brand slot left · nav-items region center (the active
-// tab is a real navigation selection via NavBarItem aria-current, never a Button
-// in a selected style) · actions slot right (search + a Cart CTA). Consistent
-// with the Consumer App Shell topbar.
+// large-radius rounded bar that floats above the full-bleed content, inset from
+// the layout edges (the wrapping row's padding gives it margin all around).
+// Brand slot left · nav-items region center (the active tab is a real navigation
+// selection via NavBarItem aria-current, never a Button in a selected style) ·
+// actions slot right (search + a Cart CTA). Consistent with the Consumer App
+// Shell topbar.
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS: { key: string; label: string; icon: LucideIcon; active?: boolean }[] = [
@@ -685,43 +688,40 @@ function ActionRail({ order }: { order: OrderFixture }) {
 }
 
 // ---------------------------------------------------------------------------
-// Order-tracking shell — soft, minimal elevation:
-//   dark ambient frame → ONE large-radius light-gray shell → white cards.
-// The shell fills the viewport; the toolbar is pinned above a single scroll
-// region so tracking content scrolls WITHIN the shell (no double scrollbars).
-// The checkout trust/progress bar is unchanged chrome → labelled placeholder.
+// Order-tracking shell — FULL-BLEED. NO dark ambient frame, NO enclosing floating
+// shell: a single edge-to-edge column on the app's neutral canvas (bg-muted). The
+// floating toolbar is pinned at top, inset from the layout edges, above an
+// independently scrolling content zone so tracking content scrolls beneath the
+// pinned chrome (no double scrollbars) and flows directly on the canvas — never
+// inside a rounded shell or white panel. The checkout trust/progress bar is
+// unchanged chrome → labelled placeholder.
 // ---------------------------------------------------------------------------
 
 function OrderTrackingShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='flex h-screen w-full flex-col bg-[oklch(0.16_0.006_285.885)] p-3 sm:p-6'>
-            {/* One large-radius light-gray shell — fills the frame, clips its scroll. */}
-            <div className='mx-auto flex h-full w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-border/50 bg-muted shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
-                {/* Floating toolbar region — margin all around; pinned above the scroll. */}
-                <div className='shrink-0 px-4 pt-4 sm:px-6 sm:pt-6'>
-                    <Toolbar />
-                </div>
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            {/* Pinned floating toolbar — inset from the layout edges, above the scroll. */}
+            <div className='shrink-0 px-4 pt-4 sm:px-6 sm:pt-6'>
+                <Toolbar />
+            </div>
 
-                {/* Single scroll region — the tracking content scrolls here. */}
-                <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-6 sm:px-6'>
-                    {/* Hero band */}
-                    <div className='px-1 pb-2 pt-4'>
-                        <Button variant='ghost' size='sm' className='-ml-2 mb-3 rounded-full text-muted-foreground'>
-                            <ArrowLeft className='h-4 w-4' />
-                            Back to orders
-                        </Button>
-                        <h1 className='text-3xl font-black tracking-tight text-foreground sm:text-4xl'>
-                            Track your order
-                        </h1>
-                        <p className='mt-1 text-muted-foreground'>Follow every step from kitchen to doorstep.</p>
-                        <div className='mt-4'>
-                            <Placeholder label='checkout trust + progress bar placeholder' />
-                        </div>
+            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell. */}
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-6 sm:px-6'>
+                {/* Hero band */}
+                <div className='px-1 pb-2 pt-4'>
+                    <Button variant='ghost' size='sm' className='-ml-2 mb-3 rounded-full text-muted-foreground'>
+                        <ArrowLeft className='h-4 w-4' />
+                        Back to orders
+                    </Button>
+                    <h1 className='text-3xl font-black tracking-tight text-foreground sm:text-4xl'>Track your order</h1>
+                    <p className='mt-1 text-muted-foreground'>Follow every step from kitchen to doorstep.</p>
+                    <div className='mt-4'>
+                        <Placeholder label='checkout trust + progress bar placeholder' />
                     </div>
-
-                    {/* Body */}
-                    <div className='px-1 py-6 sm:py-8'>{children}</div>
                 </div>
+
+                {/* Body */}
+                <div className='px-1 py-6 sm:py-8'>{children}</div>
             </div>
         </div>
     );

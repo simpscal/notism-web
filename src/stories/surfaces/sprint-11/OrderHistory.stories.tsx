@@ -37,7 +37,8 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 // shared kit for three regions that were previously bespoke:
 //
 //   • Top nav → the shared, domain-blind NavBar (consumer variant): a floating
-//     rounded bar pinned inside the shell. The active tab ("Orders") is a REAL
+//     rounded bar pinned above the full-bleed content. The active tab ("Orders")
+//     is a REAL
 //     navigation selection (NavBarItem aria-current — white pill + primary
 //     accent), never a Button in a selected style. (Consistent with the Consumer
 //     App Shell + Order Tracking toolbars.)
@@ -132,17 +133,15 @@ function Toolbar() {
 }
 
 // ---------------------------------------------------------------------------
-// Page shell — the soft elevation staircase. Dark ambient frame fills the
-// viewport; a single large-radius light shell floats inside it with a soft
-// shadow. The floating toolbar is pinned; `children` scrolls beneath it.
+// Page shell — FULL-BLEED: no dark ambient frame, no enclosing floating light
+// shell. A single edge-to-edge column on the app's neutral canvas (bg-muted);
+// the floating toolbar is pinned and `children` scrolls beneath it.
 // ---------------------------------------------------------------------------
 
 function Shell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='flex h-screen flex-col bg-frame p-3 sm:p-5'>
-            <div
-                className={`mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col gap-3 overflow-hidden rounded-[2rem] bg-muted p-2.5 sm:gap-4 sm:rounded-[2.25rem] sm:p-3.5 ${SOFT_SHADOW}`}
-            >
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <div className='mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col gap-3 p-3 sm:gap-4 sm:p-5'>
                 <Toolbar />
                 {children}
             </div>
@@ -488,9 +487,9 @@ function NoMatches({ label }: { label: string }) {
 
 // ---------------------------------------------------------------------------
 // Order-history body — the white content panel: hairline + soft shadow, one
-// gentle step above the light shell. Header + status filter are pinned; the card
-// list scrolls within the shell beneath them (load-more on scroll preserved,
-// single scroll region).
+// gentle step above the full-bleed canvas. Header + status filter are pinned; the
+// card list scrolls beneath them (load-more on scroll preserved, single scroll
+// region).
 // ---------------------------------------------------------------------------
 
 function OrderHistoryPage({

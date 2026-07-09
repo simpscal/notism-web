@@ -16,12 +16,14 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 // Business functionality is UNCHANGED from the current dashboard
 // (src/pages/admin/dashboard): the same three metric clusters, the same data
 // shapes, the same section states. This story only restyles them to
-// DESIGN_THEME.md, matching the elevation + floating-toolbar reference:
+// DESIGN_THEME.md, matching the AdminAppShell full-bleed reference:
 //
-//   • Elevation is soft and minimal — ONE gentle step per level:
-//       dark ambient frame → large-radius light-gray shell → white content
-//       panel (hairline + faint shadow) → white metric cards (hairline,
-//       little/no shadow). No heavy rings or drop shadows.
+//   • Layout is FULL-BLEED / edge-to-edge on the app's neutral canvas
+//     (bg-muted) — NO dark ambient frame, NO enclosing floating light-gray
+//     shell. The dashboard body flows directly on the canvas with sensible
+//     page padding. Elevation stays soft and minimal — ONE gentle step per
+//     level: canvas → white content panel (hairline) → white metric cards
+//     (hairline, little/no shadow). No heavy rings or drop shadows.
 //   • The admin nav is NOT this surface's concern — it is owned by the
 //     AdminAppShell surface (shared NavBar). This dashboard is
 //     a page body rendered inside that shell, so the nav region here is a
@@ -447,47 +449,46 @@ function ClusterError({ title, description }: { title: string; description: stri
 }
 
 // ---------------------------------------------------------------------------
-// Portal shell — soft, minimal elevation, one gentle step per level:
+// Portal shell — FULL-BLEED, matching the AdminAppShell reference. NO dark
+// ambient frame, NO enclosing floating light-gray shell. An edge-to-edge column
+// on the app's neutral canvas (bg-muted):
 //
-//   dark ambient frame (fills the viewport)
-//     → large-radius light-gray shell (fills the frame, flex column)
-//        → sticky admin-nav placeholder (pinned, margin all around)
-//        → scrollable body: white content panel (hairline + faint shadow)
-//           → white metric cards (hairline, no shadow)
+//   canvas (fills the viewport, flex column, bg-muted)
+//     → sticky admin-nav placeholder (pinned top, page padding)
+//     → scrollable body: white content panel (hairline)
+//        → white metric cards (hairline, no shadow)
 //
-// The shell fills the viewport; only the body scrolls (single scrollbar); the
+// The canvas fills the viewport; only the body scrolls (single scrollbar); the
 // nav region stays pinned. Sizing uses min-h / flex, never fixed heights.
 // ---------------------------------------------------------------------------
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='flex h-screen w-full flex-col bg-[oklch(0.22_0.01_60)] p-3 sm:p-5'>
-            <div className='mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-[2rem] bg-muted'>
-                {/* Admin nav — owned by AdminAppShell; a muted sticky placeholder here */}
-                <div className='shrink-0 p-3 sm:p-4'>
-                    <AdminNavPlaceholder />
-                </div>
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            {/* Admin nav — owned by AdminAppShell; a muted sticky placeholder here */}
+            <div className='shrink-0 px-4 pt-4 sm:px-6 sm:pt-6'>
+                <AdminNavPlaceholder />
+            </div>
 
-                {/* Scrollable body — the only scroll region */}
-                <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-3 sm:px-4 sm:pb-4'>
-                    {/* Content panel — a surface level, not a floating panel: hairline only,
-                        NO shadow (theme §4 reserves the soft shadow for floating panels). */}
-                    <div className='rounded-3xl border bg-card p-6 sm:p-10'>
-                        {/* Dashboard header — the surface's own heading (H1 + date) */}
-                        <div className='mb-8 flex items-center gap-3'>
-                            <span className='flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-background'>
-                                <LayoutDashboard className='h-5 w-5' aria-hidden />
-                            </span>
-                            <div>
-                                <h1 className='text-2xl font-bold tracking-tight text-foreground'>Dashboard</h1>
-                                <p className='mt-0.5 text-sm text-muted-foreground'>
-                                    Operational overview for {TODAY_LABEL}
-                                </p>
-                            </div>
+            {/* Scrollable body — the only scroll region, edge-to-edge on the canvas */}
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+                {/* Content panel — a surface level, not a floating panel: hairline only,
+                    NO shadow (theme §4 reserves the soft shadow for floating panels). */}
+                <div className='mx-auto w-full max-w-7xl rounded-3xl border bg-card p-6 sm:p-10'>
+                    {/* Dashboard header — the surface's own heading (H1 + date) */}
+                    <div className='mb-8 flex items-center gap-3'>
+                        <span className='flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-background'>
+                            <LayoutDashboard className='h-5 w-5' aria-hidden />
+                        </span>
+                        <div>
+                            <h1 className='text-2xl font-bold tracking-tight text-foreground'>Dashboard</h1>
+                            <p className='mt-0.5 text-sm text-muted-foreground'>
+                                Operational overview for {TODAY_LABEL}
+                            </p>
                         </div>
-
-                        <div className='space-y-8'>{children}</div>
                     </div>
+
+                    <div className='space-y-8'>{children}</div>
                 </div>
             </div>
         </div>

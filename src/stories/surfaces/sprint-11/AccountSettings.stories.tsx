@@ -42,21 +42,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/tabs';
 // content pane), and the same states (default / loading / error / success). It
 // only changes the VISUALS + UX to the theme:
 //
-//   • Elevation — soft + minimal, one gentle step per level: dark ambient frame
-//     → ONE large-radius light-gray shell → white settings panel (hairline,
-//     faint shadow) → white cards + section rail (hairline, little/no shadow).
-//     No heavy rings or drop shadows; whitespace separates before a border does.
+//   • Elevation — soft + minimal, FULL-BLEED: NO dark ambient frame, NO enclosing
+//     floating light-gray shell. Content sits edge-to-edge on the app's neutral
+//     canvas (bg-muted). One gentle step of elevation remains within: the white
+//     settings panel (hairline, faint shadow) → white cards + section rail
+//     (hairline, little/no shadow). No heavy rings or drop shadows; whitespace
+//     separates before a border does.
 //   • Toolbar — the shared, domain-blind NavBar (consumer variant): a floating,
-//     large-radius rounded app bar that sits INSIDE the shell with margin all
-//     around — brand left, nav centre (active = a real navigation selection via
-//     NavBarItem's aria-current, never a Button styled selected), search + a
-//     black Cart pill right. On mobile it stays a rounded floating bar.
+//     large-radius rounded app bar, inset from the layout edges and riding above
+//     the full-bleed content — brand left, nav centre (active = a real navigation
+//     selection via NavBarItem's aria-current, never a Button styled selected),
+//     search + a black Cart pill right. On mobile it stays a rounded floating bar.
 //   • Section switcher — a REAL selection primitive (Tabs, orientation vertical):
 //     the vertical rail is a role=tablist whose active trigger takes aria-selected
 //     + a white pill (data-[state=active]). Never a Button styled as selected.
-//   • Scrolling — the shell fills the viewport; the toolbar is pinned; only the
-//     settings content pane scrolls within the shell (min-h/flex, no fixed
-//     heights, no double scrollbars).
+//   • Scrolling — the layout fills the viewport; the toolbar is pinned; only the
+//     settings content zone scrolls beneath it (min-h/flex, no fixed heights, no
+//     double scrollbars).
 //   • Forms — single column, max ~40rem, labels ABOVE fields, roomy 8px-grid
 //     density, heavy consistent rounding. Never multi-column.
 //   • Two-tone — Save is the primary STRUCTURAL action, so it is a BLACK pill
@@ -562,8 +564,8 @@ function PaymentSuccessPane() {
 }
 
 // ===========================================================================
-// APP SHELL — dark ambient frame → light-gray shell → floating shared NavBar +
-// scrollable white settings panel
+// APP SHELL — full-bleed layout on the app canvas: a floating shared NavBar
+// pinned above an independently scrolling white settings panel
 // ===========================================================================
 
 // The centre nav mirrors the app's real top-level destinations; Account is the
@@ -580,15 +582,15 @@ const ACTIVE_NAV = 'account';
 
 /**
  * Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
- * large-radius rounded bar that FLOATS inside the shell (the shell padding gives
- * it margin on all sides; never edge-to-edge). Brand slot left · nav-items region
- * centre (the active tab is a real navigation selection — NavBarItem's
- * aria-current promotes it to a white pill, never a Button styled selected) ·
- * actions slot right (search + a black Cart pill).
+ * large-radius rounded bar that FLOATS above the full-bleed content, inset from
+ * the layout edges by its wrapping row (never edge-to-edge). Brand slot left ·
+ * nav-items region centre (the active tab is a real navigation selection —
+ * NavBarItem's aria-current promotes it to a white pill, never a Button styled
+ * selected) · actions slot right (search + a black Cart pill).
  */
 function AppToolbar() {
     return (
-        <NavBar className='shrink-0 bg-muted/50 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
+        <NavBar className='shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
             <NavBarBrand>
                 <span className='flex h-9 w-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm'>
                     <UtensilsCrossed className='h-4 w-4' aria-hidden />
@@ -628,11 +630,12 @@ function AppToolbar() {
 }
 
 /**
- * The on-theme app shell: a dark ambient frame (decorative line-art, behind
- * everything) → ONE large-radius light-gray shell that fills the viewport. The
- * toolbar is pinned; only the content region scrolls (flex + min-h-0). The
- * settings section switcher is a real Tabs primitive (vertical orientation): the
- * rail is its tablist, the pane its active tabpanel.
+ * The on-theme app shell: FULL-BLEED — no dark ambient frame, no enclosing
+ * floating light-gray shell. A single edge-to-edge column on the app's neutral
+ * canvas (bg-muted). The toolbar is pinned and floats above; only the content
+ * zone scrolls (flex + min-h-0). The settings section switcher is a real Tabs
+ * primitive (vertical orientation): the rail is its tablist, the pane its active
+ * tabpanel.
  */
 function SettingsShell({
     defaultSection = 'profile',
@@ -642,65 +645,65 @@ function SettingsShell({
     paymentPane?: React.ReactNode;
 }) {
     return (
-        <div className='relative flex h-screen w-full flex-col bg-[#17140f] p-3 sm:p-5'>
-            {/* One large-radius light-gray shell — fills the frame. */}
-            <div className='relative flex min-h-0 flex-1 flex-col gap-4 overflow-hidden rounded-[2rem] bg-[oklch(0.955_0.002_286)] p-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:p-4'>
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            {/* Pinned floating toolbar — inset from the layout edges, outside the scroll zone. */}
+            <div className='shrink-0 px-3 pt-3 sm:px-6 sm:pt-6'>
                 <AppToolbar />
+            </div>
 
-                {/* Scroll region — the only scroller; the toolbar stays pinned above. */}
-                <div className='min-h-0 flex-1 overflow-y-auto'>
-                    <div className='mx-auto w-full max-w-5xl px-1 pb-4 sm:px-2'>
-                        <div className='mb-5 space-y-1 px-1 pt-1'>
-                            <Eyebrow>Account</Eyebrow>
-                            <h1 className='text-2xl font-bold tracking-tight text-foreground'>Settings</h1>
-                        </div>
-
-                        {/* White settings panel — hairline + faint shadow (one gentle step). */}
-                        <Card className='overflow-hidden rounded-[1.5rem] border-border/70 p-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
-                            {/* Section switcher = a real Tabs selection primitive (vertical
-                                rail). Active trigger takes aria-selected + a white pill via
-                                data-[state=active]; never a Button styled as selected. */}
-                            <Tabs
-                                defaultValue={defaultSection}
-                                orientation='vertical'
-                                className='grid grid-cols-1 gap-0 md:grid-cols-[15rem_minmax(0,1fr)]'
-                            >
-                                <div className='border-b border-border/70 bg-muted/40 p-3 md:border-b-0 md:border-r'>
-                                    <span className='block px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground'>
-                                        Sections
-                                    </span>
-                                    <TabsList className='flex h-auto w-full flex-col items-stretch gap-1 rounded-none bg-transparent p-0'>
-                                        {SECTIONS.map(section => {
-                                            const Icon = section.icon;
-                                            return (
-                                                <TabsTrigger
-                                                    key={section.id}
-                                                    value={section.id}
-                                                    className='h-auto justify-start gap-2.5 rounded-full border-transparent px-3.5 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-border/70 data-[state=active]:text-foreground'
-                                                >
-                                                    <Icon className='h-4 w-4' aria-hidden />
-                                                    {section.label}
-                                                </TabsTrigger>
-                                            );
-                                        })}
-                                    </TabsList>
-                                </div>
-
-                                {/* Content pane — single focused column, max ~40rem forms. */}
-                                <div className='min-w-0 bg-background'>
-                                    <div className='mx-auto max-w-[40rem]'>
-                                        <TabsContent value='profile'>
-                                            <ProfilePane />
-                                        </TabsContent>
-                                        <TabsContent value='appearance'>
-                                            <AppearancePane />
-                                        </TabsContent>
-                                        <TabsContent value='payment'>{paymentPane ?? <PaymentPane />}</TabsContent>
-                                    </div>
-                                </div>
-                            </Tabs>
-                        </Card>
+            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell. */}
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+                <div className='mx-auto w-full max-w-5xl'>
+                    <div className='mb-5 space-y-1 px-1'>
+                        <Eyebrow>Account</Eyebrow>
+                        <h1 className='text-2xl font-bold tracking-tight text-foreground'>Settings</h1>
                     </div>
+
+                    {/* White settings panel — hairline + faint shadow (one gentle step). */}
+                    <Card className='overflow-hidden rounded-[1.5rem] border-border/70 p-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
+                        {/* Section switcher = a real Tabs selection primitive (vertical
+                            rail). Active trigger takes aria-selected + a white pill via
+                            data-[state=active]; never a Button styled as selected. */}
+                        <Tabs
+                            defaultValue={defaultSection}
+                            orientation='vertical'
+                            className='grid grid-cols-1 gap-0 md:grid-cols-[15rem_minmax(0,1fr)]'
+                        >
+                            <div className='border-b border-border/70 bg-muted/40 p-3 md:border-b-0 md:border-r'>
+                                <span className='block px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground'>
+                                    Sections
+                                </span>
+                                <TabsList className='flex h-auto w-full flex-col items-stretch gap-1 rounded-none bg-transparent p-0'>
+                                    {SECTIONS.map(section => {
+                                        const Icon = section.icon;
+                                        return (
+                                            <TabsTrigger
+                                                key={section.id}
+                                                value={section.id}
+                                                className='h-auto justify-start gap-2.5 rounded-full border-transparent px-3.5 py-2.5 text-sm font-medium text-muted-foreground data-[state=active]:border-border/70 data-[state=active]:text-foreground'
+                                            >
+                                                <Icon className='h-4 w-4' aria-hidden />
+                                                {section.label}
+                                            </TabsTrigger>
+                                        );
+                                    })}
+                                </TabsList>
+                            </div>
+
+                            {/* Content pane — single focused column, max ~40rem forms. */}
+                            <div className='min-w-0 bg-background'>
+                                <div className='mx-auto max-w-[40rem]'>
+                                    <TabsContent value='profile'>
+                                        <ProfilePane />
+                                    </TabsContent>
+                                    <TabsContent value='appearance'>
+                                        <AppearancePane />
+                                    </TabsContent>
+                                    <TabsContent value='payment'>{paymentPane ?? <PaymentPane />}</TabsContent>
+                                </div>
+                            </div>
+                        </Tabs>
+                    </Card>
                 </div>
             </div>
         </div>

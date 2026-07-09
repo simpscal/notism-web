@@ -30,8 +30,10 @@ import { Separator } from '@/components/separator';
 // theme:
 //   • Appetizing, image-forward, food-as-hero — real top-down food photography
 //     fills the hero and every card; never flat enterprise/marketing boilerplate.
-//   • Dark ambient frame (decorative line-art glow) sits BEHIND one large,
-//     generously rounded light app shell; content lives on the shell.
+//   • FULL-BLEED / edge-to-edge — content flows directly on the app's neutral
+//     canvas (bg-muted) with sensible page padding. No dark ambient frame, no
+//     enclosing floating rounded shell; the pinned toolbar is the one floating
+//     rounded element riding above the full-width content.
 //   • Heavy, consistent rounding as a signature (pills fully round, cards
 //     large-radius, icon buttons circular).
 //   • Exactly ONE crimson order-level primary on the page — the hero
@@ -133,8 +135,9 @@ function Panel({ className = '', children }: { className?: string; children: Rea
 
 // ---------------------------------------------------------------------------
 // Top nav — the shared consumer NavBar so the landing chrome matches the rest of
-// the client. It floats inside the shell with margin all around (never
-// full-bleed) and stays pinned as the page scrolls. Brand slot (left), a
+// the client. It is the one floating rounded element: a detached bar inset from
+// the canvas edges (margin all around, never full-bleed) that stays pinned as the
+// full-width content scrolls beneath it. Brand slot (left), a
 // single-select nav region (center), and a trailing actions slot (right). The
 // current nav item is expressed as a real navigation selection via NavBarItem
 // `active` (aria-current) — never a Button in a selected style. Auth actions stay
@@ -537,29 +540,15 @@ function MobileBottomBar() {
 }
 
 // ---------------------------------------------------------------------------
-// Ambient frame — dark charcoal backdrop; ONE
-// large-radius LIGHT-GRAY app shell floats on top with a single gentle shadow
-// (no heavy ring). White section panels live on the shell; content NEVER
-// touches the raw dark frame (theme). The shell is NOT clipped, so the page
-// scrolls as one clean column (document scroll) with the toolbar pinned inside
-// — no inner overflow, no double scrollbar. `mobile` tightens the frame.
+// App canvas — FULL-BLEED. Content flows edge-to-edge directly on the app's
+// neutral canvas (bg-muted): no dark ambient frame, no enclosing floating
+// rounded shell. Sections keep their own centered max-width + page padding, and
+// the toolbar is the one floating rounded element pinned above the full-width
+// content. The page scrolls as one clean column (document scroll).
 // ---------------------------------------------------------------------------
 
-function AmbientShell({ children, mobile = false }: { children: React.ReactNode; mobile?: boolean }) {
-    return (
-        <div className='min-h-screen w-full bg-frame'>
-            <div className={mobile ? 'relative px-2 py-2' : 'relative px-3 py-3 sm:px-5 sm:py-5'}>
-                <div
-                    className={[
-                        'mx-auto bg-muted pb-4 shadow-lg',
-                        mobile ? 'max-w-[430px] rounded-[1.5rem]' : 'max-w-[1200px] rounded-[1.75rem]',
-                    ].join(' ')}
-                >
-                    {children}
-                </div>
-            </div>
-        </div>
-    );
+function AppCanvas({ children }: { children: React.ReactNode }) {
+    return <div className='min-h-screen w-full bg-muted pb-4'>{children}</div>;
 }
 
 // ---------------------------------------------------------------------------
@@ -568,7 +557,7 @@ function AmbientShell({ children, mobile = false }: { children: React.ReactNode;
 
 function LandingDesktop() {
     return (
-        <AmbientShell>
+        <AppCanvas>
             <TopNav />
             <main>
                 <Hero />
@@ -578,13 +567,13 @@ function LandingDesktop() {
                 <FinalCta />
                 <LandingFooter />
             </main>
-        </AmbientShell>
+        </AppCanvas>
     );
 }
 
 function LandingMobile() {
     return (
-        <AmbientShell mobile>
+        <AppCanvas>
             <div className='flex min-h-screen flex-col'>
                 {/* Floating condensed consumer NavBar — never full-bleed on mobile. */}
                 <div className='sticky top-2 z-30 px-3 pt-3'>
@@ -615,7 +604,7 @@ function LandingMobile() {
 
                 <MobileBottomBar />
             </div>
-        </AmbientShell>
+        </AppCanvas>
     );
 }
 
@@ -635,19 +624,23 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default (desktop) — the full landing page on the on-theme dark ambient frame
- * with a large rounded light shell. Food-as-hero imagery throughout; exactly one
- * crimson order-level primary ("Start ordering") leading into the ordering flow;
- * every other action is idle/black. All original sections and copy preserved.
+ * Default (desktop) — the full landing page full-bleed on the app's neutral
+ * canvas (bg-muted): no dark ambient frame, no enclosing floating shell, just
+ * the pinned floating toolbar riding above edge-to-edge content. Food-as-hero
+ * imagery throughout; exactly one crimson order-level primary ("Start ordering")
+ * leading into the ordering flow; every other action is idle/black. All original
+ * sections and copy preserved.
  */
 export const Desktop: Story = {
     render: () => <LandingDesktop />,
 };
 
 /**
- * Mobile — the same landing, restyled, within the small viewport: compact top
- * bar, single-column stacked sections, and the fixed bottom action bar from the
- * live landing. Still exactly one crimson primary (the hero CTA).
+ * Mobile — the same landing, full-bleed within the small viewport: content runs
+ * edge-to-edge on the app canvas (no frame, no enclosing shell) with a compact
+ * floating top bar, single-column stacked sections, and the floating bottom
+ * action bar from the live landing. Still exactly one crimson primary (the hero
+ * CTA).
  */
 export const Mobile: Story = {
     parameters: {

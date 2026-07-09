@@ -38,10 +38,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //   • Delete confirm — explicit confirm dialog; the one irreversible red action.
 //
 // Chrome ownership (delta): this surface is an admin PAGE BODY rendered inside
-// the AdminAppShell, which owns the real chrome via the shared NavBar
-//. So the top nav here is a labelled, muted, dashed sticky
-// placeholder — never a re-implemented bar — consistent with sibling
-// AdminAppShell / AdminRefunds.
+// the AdminAppShell, which owns the real chrome via the shared NavBar. So the top
+// nav here is a labelled, muted, dashed sticky placeholder — never a
+// re-implemented bar — consistent with sibling AdminAppShell.
 //
 // Selection controls (delta): a single-select (the editor's Role choice) is a
 // real selection, expressed with ToggleGroup variant="segmented" (active =
@@ -50,9 +49,11 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //
 // Two-tone hierarchy (§1): black = primary structural actions (Save, active
 // segmented choice); this surface carries no prices, so red is reserved for
-// urgency — destructive delete only. Elevation (§4): dark ambient frame → one
-// large-radius light shell → white content/table containers (hairline), a single
-// soft shadow on floating chrome only, one gentle step per level. Layout (§6):
+// urgency — destructive delete only. Elevation (§4): FULL-BLEED — no dark ambient
+// frame, no enclosing floating light shell; the page body sits edge-to-edge on
+// the app's neutral canvas (bg-muted), with white content/table containers
+// (hairline) the one gentle step above it and a single soft shadow on floating
+// panels only. Layout (§6):
 // admin sortable table + search + pagination; single-column editor with labels
 // above fields. States (§8): hover darkens, disabled reads as ink-tertiary on
 // bg-subtle, destructive stays apart behind an explicit confirm.
@@ -155,26 +156,20 @@ function NavPlaceholder() {
 }
 
 // ---------------------------------------------------------------------------
-// Shell — dark ambient frame → ONE large-radius light-gray shell filling the
-// viewport → white content panels, one gentle step per level. The nav
-// placeholder is pinned at the top; only the page content scrolls beneath it
-// (single scroll region, no double scrollbars).
+// Shell — FULL-BLEED. No dark ambient frame, no enclosing floating light-gray
+// shell: the page body sits edge-to-edge on the app's neutral canvas (bg-muted),
+// mirroring sibling AdminAppShell. The nav placeholder is pinned at the top; only
+// the page content scrolls beneath it (single scroll region, no double
+// scrollbars). White content panels remain the one gentle step above the canvas.
 // ---------------------------------------------------------------------------
 
 function AdminShell({ children }: { children: React.ReactNode }) {
     return (
-        <div className='relative flex h-screen w-full flex-col overflow-hidden bg-frame'>
-            <div
-                className={cn(
-                    'relative z-10 mx-auto flex min-h-0 w-full max-w-[88rem] flex-1 flex-col overflow-hidden rounded-[2rem] bg-muted ring-1 ring-black/5 sm:m-4',
-                    SOFT_SHADOW
-                )}
-            >
-                <NavPlaceholder />
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <NavPlaceholder />
 
-                {/* Only the page content scrolls */}
-                <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
-            </div>
+            {/* Only the page content scrolls */}
+            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
         </div>
     );
 }

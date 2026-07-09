@@ -46,17 +46,19 @@ import { Toaster } from '@/components/sonner';
 // DESIGN_THEME.md; it adds/removes no steps.
 //
 // Theme application (DESIGN_THEME.md):
-//   • Elevation — soft and minimal, one gentle step per level: dark ambient
-//     frame → ONE large-radius light-gray shell → white panels (hairline,
-//     faint shadow) → white line cards (hairline, no shadow). No heavy rings.
+//   • Elevation — soft and minimal, one gentle step per level: FULL-BLEED app
+//     canvas (bg-muted, no dark frame, no enclosing floating shell) → white
+//     panels (hairline, faint shadow) → white line cards (hairline, no shadow).
+//     No heavy rings.
 //   • Toolbar — the shared domain-blind NavBar (consumer variant): a real
-//     floating rounded bar pinned to the top of the shell (margin all around,
-//     never full-bleed): brand left, icon+label nav in the centre (active = a
+//     floating rounded bar pinned to the top, detached and inset from the canvas
+//     edges (its own margin, own radius + soft shadow, riding above the
+//     full-bleed content): brand left, icon+label nav in the centre (active = a
 //     real navigation selection via NavBarItem's aria-current — a white pill +
 //     crimson icon/label, never a Button in a selected style), search + crimson
 //     Cart pill right. Condenses on mobile, staying a rounded floating bar.
-//   • Scrolling — the shell fills the viewport; the toolbar is pinned and the
-//     cart body scrolls within the shell (single scrollbar, no clipping).
+//   • Scrolling — the canvas fills the viewport; the toolbar is pinned and the
+//     cart body scrolls beneath it (single scrollbar, no clipping).
 //   • Color roles — every line price and the running total read in CRIMSON;
 //     item-level + selection controls (steppers, checkbox) read BLACK; exactly
 //     ONE crimson order-level action in the cart body ("Proceed to payment").
@@ -139,29 +141,29 @@ const LINES: CartLine[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// App shell — the ambient frame fills the viewport; ONE large-radius light-gray
-// shell sits on it and fills the frame. The toolbar is pinned at the top of the
-// shell; only the body below scrolls, so there is a single scrollbar and no
-// clipping. Elevation climbs one gentle step at a time (frame → shell → panels
-// → cards); no heavy shadows or rings.
+// App shell — FULL-BLEED. No dark ambient frame, no enclosing floating shell: a
+// single edge-to-edge column on the app's neutral canvas (bg-muted). The
+// floating rounded toolbar is pinned at the top (inset from the edges, riding
+// above the content); only the body below scrolls, so there is a single
+// scrollbar and no clipping. Elevation climbs one gentle step at a time (canvas
+// → panels → cards); no heavy shadows or rings.
 // ---------------------------------------------------------------------------
 
 function AppShell({ cartCount, children }: { cartCount: number; children: React.ReactNode }) {
     return (
-        <div className='flex h-screen flex-col bg-frame p-3 sm:p-5'>
-            <div className='relative mx-auto flex h-full w-full min-h-0 max-w-7xl flex-col overflow-hidden rounded-[2.5rem] bg-muted shadow-xl'>
-                <Toolbar cartCount={cartCount} />
-                {/* The only scroll region — the toolbar above stays pinned. */}
-                <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
-            </div>
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <Toolbar cartCount={cartCount} />
+            {/* The only scroll region — the toolbar above stays pinned. */}
+            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
         </div>
     );
 }
 
 // ---------------------------------------------------------------------------
 // Floating rounded toolbar — the shared domain-blind NavBar (consumer variant):
-// a large-radius rounded bar that FLOATS inside the shell (margin all around via
-// the wrapper padding; never full-bleed). Brand slot left · nav-items region
+// a large-radius rounded bar that FLOATS over the full-bleed canvas (detached,
+// inset from the edges via its own margin; own radius + soft shadow). Brand slot
+// left · nav-items region
 // centre (the active tab is a real navigation selection — a white pill + crimson
 // icon/label via NavBarItem's aria-current, never a Button in a selected style) ·
 // actions slot right (search + crimson Cart pill). Condenses on mobile, staying a
@@ -416,7 +418,7 @@ function CartLineCard({
 
 // ---------------------------------------------------------------------------
 // Summary Panel (DESIGN_THEME §5) — a floating white panel (hairline + one soft
-// shadow) on the gray shell. Structure top→bottom: title + count → line items →
+// shadow) on the app canvas. Structure top→bottom: title + count → line items →
 // DASHED divider → promo-code row (removable Promo/Tag Pill) → discount/delivery
 // breakdown (plain rows) → bold total row → primary CTA pinned at the bottom.
 // Every price + the total read CRIMSON; the discount reads crimson with a `-`
@@ -633,7 +635,7 @@ function CartReview({ initialLines, forceConfirmId }: { initialLines: CartLine[]
                     <EmptyCart />
                 ) : (
                     <div className='grid gap-6 lg:grid-cols-3'>
-                        {/* White lines panel on the gray shell — holds the white line cards. */}
+                        {/* White lines panel on the app canvas — holds the white line cards. */}
                         <div className='space-y-3 rounded-3xl border bg-card p-3 shadow-sm sm:p-4 lg:col-span-2'>
                             {lines.map(line => (
                                 <CartLineCard
@@ -680,7 +682,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Default — the cart with lines. A floating rounded toolbar is pinned at the top
- * of one light-gray shell; the cart body scrolls beneath it. Each order line is
+ * of the full-bleed app canvas; the cart body scrolls beneath it. Each order line is
  * a white card (hairline, no shadow) on the white lines panel, with a circular
  * thumbnail; every line price and the running total read in crimson; the
  * circular −/+ steppers and the selection checkbox read black; a single crimson

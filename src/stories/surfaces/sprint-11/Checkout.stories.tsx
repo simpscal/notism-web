@@ -322,7 +322,7 @@ function FinalCta({ method, onPlaceOrder }: { method: PaymentMethod; onPlaceOrde
 
 // ---------------------------------------------------------------------------
 // Floating rounded toolbar — the shared, domain-blind NavBar (consumer variant):
-// a large-radius rounded bar floating inside the shell (§6). Brand slot left ·
+// a large-radius rounded bar floating over the full-bleed content (§6). Brand slot left ·
 // nav-items region centre (the active tab is a real navigation selection via
 // NavBarItem's aria-current — a white pill w/ crimson icon+label, never a Button
 // in a "selected" style) · actions slot right (search + the black Cart pill).
@@ -386,8 +386,11 @@ function CheckoutProgressPlaceholder() {
 }
 
 // ---------------------------------------------------------------------------
-// Checkout shell — dark ambient frame behind a light rounded shell; the form is
-// a SINGLE COLUMN, max ~40rem, labels above fields (§4, §6).
+// Checkout shell — FULL-BLEED / edge-to-edge on the app's neutral canvas
+// (bg-muted): no dark ambient frame, no enclosing floating light shell. The
+// floating rounded toolbar is pinned at top and the Final CTA at the bottom,
+// over an independently scrolling single-column content zone. The form is a
+// SINGLE COLUMN, max ~40rem, labels above fields (§4, §6).
 // ---------------------------------------------------------------------------
 
 interface CheckoutSurfaceProps {
@@ -417,99 +420,97 @@ function CheckoutSurface({
     };
 
     return (
-        // Level 1 — dark ambient frame. Decorative backdrop; the shell floats above.
-        <div className='flex min-h-screen flex-col bg-frame p-2 sm:p-4'>
-            {/* Level 2 — ONE large-radius light shell; fills the viewport and is the
-                single scroll container (toolbar pinned top, Final CTA pinned bottom). */}
-            <div className='mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-[1.75rem] bg-muted/60'>
-                <Toolbar />
+        // Full-bleed canvas — no dark frame, no enclosing floating shell. Content
+        // flows edge-to-edge on the app's neutral canvas; this is the single scroll
+        // container (toolbar pinned top, Final CTA pinned bottom).
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <Toolbar />
 
-                {/* Scroll region — only the single-column content scrolls here. */}
-                <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-6 sm:px-4'>
-                    <div className='mx-auto max-w-[40rem] pt-4 sm:pt-5'>
-                        {/* Level 3 — white form panel: hairline + one soft shadow. */}
-                        <div className='space-y-8 rounded-[1.5rem] border border-border/70 bg-background p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:p-7'>
-                            <CheckoutProgressPlaceholder />
+            {/* Scroll region — only the single-column content scrolls here. */}
+            <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-6 sm:px-4'>
+                <div className='mx-auto max-w-[40rem] pt-4 sm:pt-5'>
+                    {/* White form panel: hairline + one soft shadow. */}
+                    <div className='space-y-8 rounded-[1.5rem] border border-border/70 bg-background p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:p-7'>
+                        <CheckoutProgressPlaceholder />
 
-                            <header className='space-y-1'>
-                                <Eyebrow>Checkout</Eyebrow>
-                                <h1 className='text-3xl font-black tracking-tight text-foreground'>Almost there</h1>
-                                <p className='text-sm text-muted-foreground'>
-                                    Review your order, tell us where to bring it, and place your order.
-                                </p>
-                            </header>
+                        <header className='space-y-1'>
+                            <Eyebrow>Checkout</Eyebrow>
+                            <h1 className='text-3xl font-black tracking-tight text-foreground'>Almost there</h1>
+                            <p className='text-sm text-muted-foreground'>
+                                Review your order, tell us where to bring it, and place your order.
+                            </p>
+                        </header>
 
-                            {/* Delivery — single column, labels ABOVE each field */}
-                            <section className='space-y-4'>
-                                <Eyebrow>Delivery</Eyebrow>
-                                <div className='space-y-2'>
-                                    <Label htmlFor='checkout-address'>
-                                        <MapPin className='h-3.5 w-3.5' />
-                                        Delivery address
-                                    </Label>
-                                    <Input
-                                        id='checkout-address'
-                                        value={address}
-                                        onChange={e => setAddress(e.target.value)}
-                                        aria-invalid={error || undefined}
-                                        placeholder='Street, district, city'
-                                    />
-                                    {error && (
-                                        <p className='text-sm font-medium text-destructive'>
-                                            Add a delivery address so we know where to bring your order.
-                                        </p>
-                                    )}
-                                </div>
-                                <div className='space-y-2'>
-                                    <Label htmlFor='checkout-notes'>
-                                        Delivery notes{' '}
-                                        <span className='text-xs font-normal text-muted-foreground'>(optional)</span>
-                                    </Label>
-                                    <Textarea
-                                        id='checkout-notes'
-                                        value={notes}
-                                        onChange={e => setNotes(e.target.value)}
-                                        rows={3}
-                                        placeholder='Gate code, landmark, or anything the driver should know'
-                                    />
-                                </div>
-                            </section>
+                        {/* Delivery — single column, labels ABOVE each field */}
+                        <section className='space-y-4'>
+                            <Eyebrow>Delivery</Eyebrow>
+                            <div className='space-y-2'>
+                                <Label htmlFor='checkout-address'>
+                                    <MapPin className='h-3.5 w-3.5' />
+                                    Delivery address
+                                </Label>
+                                <Input
+                                    id='checkout-address'
+                                    value={address}
+                                    onChange={e => setAddress(e.target.value)}
+                                    aria-invalid={error || undefined}
+                                    placeholder='Street, district, city'
+                                />
+                                {error && (
+                                    <p className='text-sm font-medium text-destructive'>
+                                        Add a delivery address so we know where to bring your order.
+                                    </p>
+                                )}
+                            </div>
+                            <div className='space-y-2'>
+                                <Label htmlFor='checkout-notes'>
+                                    Delivery notes{' '}
+                                    <span className='text-xs font-normal text-muted-foreground'>(optional)</span>
+                                </Label>
+                                <Textarea
+                                    id='checkout-notes'
+                                    value={notes}
+                                    onChange={e => setNotes(e.target.value)}
+                                    rows={3}
+                                    placeholder='Gate code, landmark, or anything the driver should know'
+                                />
+                            </div>
+                        </section>
 
-                            {/* Payment method — single-select RadioGroup (vertical rows) */}
-                            <section className='space-y-3'>
-                                <Eyebrow>Payment</Eyebrow>
-                                <RadioGroup
-                                    value={method}
-                                    onValueChange={value => setMethod(value as PaymentMethod)}
-                                    aria-label='Payment method'
-                                    className='gap-3'
-                                >
-                                    <PaymentOption
-                                        value='cod'
-                                        selected={method === 'cod'}
-                                        icon={<Banknote className='h-4 w-4' />}
-                                        title='Cash on delivery'
-                                        hint='Pay when it arrives'
-                                    />
-                                    <PaymentOption
-                                        value='banking'
-                                        selected={method === 'banking'}
-                                        icon={<CreditCard className='h-4 w-4' />}
-                                        title='Bank transfer'
-                                        hint='Scan & pay now'
-                                    />
-                                </RadioGroup>
-                                {method === 'banking' && <BankTransferPanel />}
-                            </section>
+                        {/* Payment method — single-select RadioGroup (vertical rows) */}
+                        <section className='space-y-3'>
+                            <Eyebrow>Payment</Eyebrow>
+                            <RadioGroup
+                                value={method}
+                                onValueChange={value => setMethod(value as PaymentMethod)}
+                                aria-label='Payment method'
+                                className='gap-3'
+                            >
+                                <PaymentOption
+                                    value='cod'
+                                    selected={method === 'cod'}
+                                    icon={<Banknote className='h-4 w-4' />}
+                                    title='Cash on delivery'
+                                    hint='Pay when it arrives'
+                                />
+                                <PaymentOption
+                                    value='banking'
+                                    selected={method === 'banking'}
+                                    icon={<CreditCard className='h-4 w-4' />}
+                                    title='Bank transfer'
+                                    hint='Scan & pay now'
+                                />
+                            </RadioGroup>
+                            {method === 'banking' && <BankTransferPanel />}
+                        </section>
 
-                            {/* Order review — Summary Panel pattern */}
-                            <SummaryPanel lines={ORDER_LINES} />
-                        </div>
+                        {/* Order review — Summary Panel pattern */}
+                        <SummaryPanel lines={ORDER_LINES} />
                     </div>
                 </div>
-
-                <FinalCta method={method} onPlaceOrder={handlePlaceOrder} />
             </div>
+
+            <FinalCta method={method} onPlaceOrder={handlePlaceOrder} />
         </div>
     );
 }

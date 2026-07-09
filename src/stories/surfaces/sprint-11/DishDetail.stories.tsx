@@ -29,19 +29,21 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 // Business behaviour mirrors src/pages/food-detail — the same single-select
 // option groups (SIZE, BUILD YOUR MEAL) read as pills, the same quantity
 // stepper, the same add-to-order flow with a success banner, and the same
-// required-option gating. Visuals follow the theme:
+// required-option gating. Visuals:
 //
-//   • Elevation ladder — dark ambient FRAME → one large-radius light-gray
-//     SHELL → white content PANEL (hairline + faint shadow) → white cards /
-//     tiles (hairline, little to no shadow). One gentle step per level; no
-//     heavy rings or shadows.
+//   • Elevation ladder — FULL-BLEED / edge-to-edge on the app's neutral canvas
+//     (bg-muted): NO dark ambient frame, NO enclosing floating light-gray shell.
+//     The content flows directly on the canvas with sensible page padding →
+//     white content PANEL (hairline + faint shadow) → white cards / tiles
+//     (hairline, little to no shadow). One gentle step per level; no heavy rings.
 //   • Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
-//     large-radius rounded bar that floats inside the shell with margin all
-//     around. Brand left, nav centre (the active tab is a real navigation
-//     selection via NavBarItem's aria-current — a white pill with a crimson
-//     icon + label, never a Button in a selected style), search + the Cart
-//     action right. Pinned above the scroll zone; condensed on mobile.
-//   • Scrolling — the shell fills the viewport; only the content zone scrolls
+//     large-radius rounded bar, the one floating element, inset from the layout
+//     edges and riding above the full-bleed content. Brand left, nav centre (the
+//     active tab is a real navigation selection via NavBarItem's aria-current — a
+//     white pill with a crimson icon + label, never a Button in a selected
+//     style), search + the Cart action right. Pinned above the scroll zone;
+//     condensed on mobile.
+//   • Scrolling — the canvas fills the viewport; only the content zone scrolls
 //     within it; the toolbar stays pinned. No double scrollbars.
 //   • Item detail — one large dish image is the single focus, one
 //     display-weight title, an always-visible Add control. Options sit under
@@ -162,27 +164,25 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Ambient frame — the dark charcoal backdrop. Never carries controls or content;
-// always sits BEHIND the light shell. Fixed to the viewport so the shell (and
-// only its content zone) does the scrolling.
+// App canvas — FULL-BLEED. No dark ambient frame, no enclosing floating shell.
+// A single edge-to-edge column on the app's neutral canvas (bg-muted): pinned
+// floating toolbar at top over an independently scrolling content zone. Fixed to
+// the viewport so only the content zone does the scrolling.
 // ---------------------------------------------------------------------------
 
-function AmbientFrame({ children }: { children: React.ReactNode }) {
-    return (
-        <div className='relative flex h-screen w-full overflow-hidden bg-[#131316] p-3 sm:p-4 lg:p-6'>
-            <div className='relative z-10 flex min-h-0 w-full'>{children}</div>
-        </div>
-    );
+function AppCanvas({ children }: { children: React.ReactNode }) {
+    return <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>{children}</div>;
 }
 
 // ---------------------------------------------------------------------------
 // Floating toolbar — the shared, domain-blind NavBar (consumer variant): a
-// large-radius rounded white bar that FLOATS inside the shell (the shell padding
-// gives it margin on all sides; never edge-to-edge). Brand slot left · nav-items
-// region center (the active tab is a real navigation selection — a white pill w/
-// crimson icon+label via NavBarItem's aria-current, never a Button in a selected
-// style) · actions slot right (search + the Cart action). Nav collapses on
-// mobile; the bar stays a floating pill (never full-bleed).
+// large-radius rounded white bar, the one floating element, inset from the layout
+// edges (its own padding gives it margin on all sides) and riding above the
+// full-bleed content. Brand slot left · nav-items region center (the active tab
+// is a real navigation selection — a white pill w/ crimson icon+label via
+// NavBarItem's aria-current, never a Button in a selected style) · actions slot
+// right (search + the Cart action). Nav collapses on mobile; the bar stays a
+// floating pill.
 // ---------------------------------------------------------------------------
 
 function ShellTopbar({ activeNav = 'main' }: { activeNav?: string }) {
@@ -225,24 +225,22 @@ function ShellTopbar({ activeNav = 'main' }: { activeNav?: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Shell — one large-radius light-gray shell filling the frame. Holds the
-// pinned toolbar plus a single scrolling content zone.
+// Shell — a full-bleed column on the app's neutral canvas. Holds the pinned
+// floating toolbar plus a single edge-to-edge scrolling content zone.
 // ---------------------------------------------------------------------------
 
 function DishShell({ children }: { children: React.ReactNode }) {
     return (
-        <AmbientFrame>
-            <div className='flex min-h-0 w-full flex-col overflow-hidden rounded-[2rem] bg-secondary/60 sm:rounded-[2.5rem]'>
-                <ShellTopbar />
-                <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
-            </div>
-        </AmbientFrame>
+        <AppCanvas>
+            <ShellTopbar />
+            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
+        </AppCanvas>
     );
 }
 
 // ---------------------------------------------------------------------------
 // Content panel — the white surface the dish content lives on: hairline +
-// faint shadow, one gentle step above the light-gray shell.
+// faint shadow, one gentle step above the neutral canvas.
 // ---------------------------------------------------------------------------
 
 function ContentPanel({ children }: { children: React.ReactNode }) {
@@ -597,7 +595,8 @@ function DishContent({
 }
 
 // ---------------------------------------------------------------------------
-// Page shell — floating toolbar (pinned) + scrolling dish content panel.
+// Page — full-bleed canvas: floating toolbar (pinned) + scrolling dish content
+// panel edge-to-edge on the neutral canvas.
 // ---------------------------------------------------------------------------
 
 function DishDetailPage(props: Omit<DishContentProps, 'dish'> & { dish?: DishFixture }) {
@@ -648,7 +647,7 @@ function InteractiveDishDetail() {
 
 // ---------------------------------------------------------------------------
 // Loading / error states — mirror the current surface's states, wrapped in the
-// same shell + content panel so the elevation ladder is consistent.
+// same full-bleed canvas + content panel so the elevation ladder is consistent.
 // ---------------------------------------------------------------------------
 
 function DishDetailSkeleton() {
