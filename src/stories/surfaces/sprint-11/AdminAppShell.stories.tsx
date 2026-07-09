@@ -23,23 +23,30 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 // ---------------------------------------------------------------------------
 // Surface — AdminAppShell (Sprint 11), route: wraps all /admin routes.
 //
-// The admin chrome is unified on the shared, domain-blind NavBar
-//: a bordered ink-active bar carrying the brand, the admin
-// nav, and the portal-wide live new-order feed + account controls. Navigation
-// selection is a real navigation selection — NavBarItem's aria-current, an ink
-// pill for the current route — never a Button in a selected style. No filter or
-// segmented control lives in this shell, so the audit for selected-state
-// Buttons resolves to nav selection alone.
+// The admin chrome is unified on the shared, domain-blind NavBar: a rounded bar
+// carrying the brand, the admin nav, and the portal-wide live new-order feed +
+// account controls. Navigation selection is a real navigation selection —
+// NavBarItem's aria-current, the active-route pill for the current route — never
+// a Button in a selected style. No filter or segmented control lives in this
+// shell, so the audit for selected-state Buttons resolves to nav selection
+// alone.
 //
-// Elevation (derived from the codebase's shell language, mirrored from the
-// consumer shell): a dark charcoal ambient frame (decorative line-art, never
-// interactive) sits behind ONE large-radius light-gray shell; the shell pins
-// the NavBar above an independently scrolling white content panel that holds a
-// table-oriented working zone. NO order sidebar — this is admin, not consumer.
+// Elevation (the Sprint-11 restyle): NO dark ambient frame, NO enclosing
+// floating light-gray shell. The layout is FULL-BLEED / edge-to-edge — content
+// fills the entire layout on the app's neutral canvas, never floating inside a
+// card or frame. The desktop toolbar (NavBar) is the ONE floating element: a
+// detached, rounded bar inset from the layout edges, carrying its own radius +
+// a single soft shadow, riding above the full-bleed content. Mobile chrome
+// speaks the same language — the condensed top strip and bottom nav are floating
+// rounded bars (inset, own radius + soft shadow) over the full-bleed layout,
+// not flat edge-pinned strips. The content is a table-oriented working zone that
+// scrolls independently beneath the pinned chrome. NO order sidebar — this is
+// admin, not consumer.
 //
-// Color roles: crimson reserved for prices/totals + urgency (the live feed);
-// active nav is ink (bg-selected), not red; status is shown in words + a
-// consistent colour, never colour alone.
+// Color roles: crimson reserved for prices/totals + urgency (the live feed) and
+// the active toolbar nav highlight (the one "you are here" mark per bar, via the
+// NavBar's aria-current pill); status is shown in words + a consistent semantic
+// colour, never colour alone.
 //
 // Mock-only fixtures; no api / model / store / i18n / layout-source imports.
 // The admin PAGE body is a table-oriented placeholder content region — pages
@@ -117,42 +124,32 @@ function LiveFeedPill({ status, onReconnect }: { status: FeedStatus; onReconnect
 }
 
 // ---------------------------------------------------------------------------
-// Shell — the layered elevation base: a dark charcoal ambient frame (behind
-// everything) → a large-radius light-gray shell (one soft shadow) → a white
-// content panel (hairline). The light shell fills the frame and lays out the
-// pinned NavBar above an independently scrolling content zone. Content lives on
-// the raised light shell, never on the raw dark frame.
+// Layout base — FULL-BLEED. No dark ambient frame, no enclosing floating shell.
+// A single edge-to-edge column on the app's neutral canvas (bg-muted): pinned
+// floating chrome at top (and, on mobile, at the bottom) over an independently
+// scrolling content zone. The floating chrome is the only raised element; the
+// content flows directly on the canvas, never inside a rounded shell.
 // ---------------------------------------------------------------------------
 
-// One soft shadow, reserved for the floating shell only. No heavy rings.
+// One soft shadow — the only elevation in the shell, reserved for the floating
+// rounded chrome (toolbar / mobile strips). No heavy rings.
 const SOFT_SHADOW = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)]';
 
-function Shell({ children }: { children: React.ReactNode }) {
-    return (
-        <div className='relative h-screen w-full overflow-hidden bg-frame p-2 sm:p-3'>
-            {/* Light shell — large radius; raised over the dark ambient frame, holds a
-                pinned NavBar over an independently scrolling content zone. The rounded
-                overflow clips the flat NavBar's top corners to the shell radius. */}
-            <div
-                className={[
-                    'relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[2rem] bg-muted',
-                    SOFT_SHADOW,
-                ].join(' ')}
-            >
-                {children}
-            </div>
-        </div>
-    );
+function AppCanvas({ children }: { children: React.ReactNode }) {
+    return <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>{children}</div>;
 }
 
 // ---------------------------------------------------------------------------
-// Desktop toolbar — the shared, domain-blind NavBar (admin variant): a flat
-// bordered bar pinned at the top of the shell. Brand + Admin badge (left, via
-// NavBarBrand) · admin nav (centre, via NavBarNav/NavBarItem — the active route
-// is a real navigation selection expressed by aria-current, rendered as the ink
-// active pill the admin variant provides, never a Button in a selected style) ·
-// live-feed indicator + account controls (right, via NavBarActions). Stays
-// pinned above the scrolling content zone.
+// Desktop toolbar — the shared, domain-blind NavBar: a FLOATING, rounded bar,
+// detached and inset from the layout edges (a margin around it), carrying its
+// own radius + one soft shadow, riding above the full-bleed content. It is the
+// only floating rounded element in the desktop shell. Brand + Admin badge (left,
+// via NavBarBrand) · admin nav (centre, via NavBarNav/NavBarItem — the active
+// route is a real navigation selection expressed by aria-current, rendered as
+// the NavBar's active pill with the crimson accent, never a Button in a selected
+// style) · live-feed indicator + account controls (right, via NavBarActions).
+// The inset margin comes from the wrapping layout row; the NavBar keeps its own
+// pill radius. Stays pinned above the scrolling content zone.
 // ---------------------------------------------------------------------------
 
 function AdminTopBar({
@@ -167,7 +164,7 @@ function AdminTopBar({
     onReconnect?: () => void;
 }) {
     return (
-        <NavBar className='z-30 hidden h-16 shrink-0 px-4 lg:flex'>
+        <NavBar className={['z-30 hidden h-16 shrink-0 px-4 lg:flex', SOFT_SHADOW].join(' ')}>
             {/* Left — brand */}
             <NavBarBrand className='pl-1'>
                 <span className='text-lg font-semibold tracking-tight text-primary'>Notism</span>
@@ -210,15 +207,23 @@ function AdminTopBar({
 }
 
 // ---------------------------------------------------------------------------
-// Mobile chrome — a condensed top strip (brand + live-feed indicator, kept
-// visible on every route) pinned at top, and a bottom bar of icon+label nav
-// shortcuts + avatar. Both flat within the shell. The active shortcut is a real
-// navigation selection (aria-current) with the ink accent.
+// Mobile chrome — floating rounded bars speaking the same language as the
+// desktop toolbar: a condensed top strip (brand + live-feed indicator, kept
+// visible on every route) and a bottom bar of icon+label nav shortcuts + avatar.
+// Both are detached, inset from the layout edges, with their own radius + one
+// soft shadow (no flat edge-pinned strips) — riding over the full-bleed content.
+// The active shortcut is a real navigation selection (aria-current) with the ink
+// accent. The inset margin comes from the wrapping layout rows.
 // ---------------------------------------------------------------------------
 
 function MobileTopStrip({ feedStatus }: { feedStatus: FeedStatus }) {
     return (
-        <header className='z-30 flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4 lg:hidden'>
+        <header
+            className={[
+                'z-30 flex h-14 shrink-0 items-center justify-between rounded-full border border-border bg-card px-4 lg:hidden',
+                SOFT_SHADOW,
+            ].join(' ')}
+        >
             <div className='flex items-center gap-2'>
                 <span className='text-base font-semibold tracking-tight text-primary'>Notism</span>
                 <Badge variant='secondary' className='px-1.5 py-0 text-[10px] font-semibold uppercase tracking-wide'>
@@ -232,7 +237,12 @@ function MobileTopStrip({ feedStatus }: { feedStatus: FeedStatus }) {
 
 function MobileBottomBar({ activePage, onNavigate }: { activePage: string; onNavigate?: (key: string) => void }) {
     return (
-        <div className='z-30 flex h-16 shrink-0 items-center justify-around border-t border-border bg-card px-2 lg:hidden'>
+        <div
+            className={[
+                'z-30 flex h-16 shrink-0 items-center justify-around rounded-full border border-border bg-card px-2 lg:hidden',
+                SOFT_SHADOW,
+            ].join(' ')}
+        >
             {MOBILE_NAV_ITEMS.map(item => {
                 const Icon = item.icon;
                 const active = item.key === activePage;
@@ -273,8 +283,8 @@ function MobileBottomBar({ activePage, onNavigate }: { activePage: string; onNav
 // Content region — table-oriented working zone (Admin orders pattern: status
 // column present, sortable by state + time). NO order sidebar. This stands in
 // for the admin page bodies that the shell wraps; it is the placeholder content
-// region rendered table-shaped so the shell reads as a real admin working
-// surface. Prices/total are crimson per the shell's colour roles.
+// region rendered table-shaped so the full-bleed layout reads as a real admin
+// working surface. Prices/total are crimson per the shell's colour roles.
 // ---------------------------------------------------------------------------
 
 interface AdminOrderRow {
@@ -427,12 +437,14 @@ function OrdersContentRegion({ rows = ORDER_ROWS }: { rows?: AdminOrderRow[] }) 
 }
 
 // ---------------------------------------------------------------------------
-// The shell — a large-radius light-gray shell fills the viewport and pins the
-// NavBar (desktop) / condensed strips (mobile) above an independently scrolling
-// content zone; the white content panel holds the table. Desktop and mobile
-// chrome are both composed here so the responsive behaviour is real (Storybook
-// viewport drives the breakpoint). No page-level scrollbar — only the content
-// zone scrolls.
+// The shell — a full-bleed column on the app's neutral canvas. Floating rounded
+// chrome (the desktop NavBar / mobile top strip) is pinned at top, inset from
+// the edges via its wrapping row; on mobile a floating bottom nav is pinned at
+// the base. Between them, an edge-to-edge content zone scrolls independently —
+// the table content flows directly on the canvas, not inside a rounded shell or
+// white panel. Desktop and mobile chrome are both composed here so the
+// responsive behaviour is real (Storybook viewport drives the breakpoint). No
+// page-level scrollbar — only the content zone scrolls.
 // ---------------------------------------------------------------------------
 
 function AdminAppShell({
@@ -449,21 +461,24 @@ function AdminAppShell({
     const [page, setPage] = React.useState(activePage);
 
     return (
-        <Shell>
-            {/* Pinned chrome — outside the scroll zone */}
-            <AdminTopBar activePage={page} onNavigate={setPage} feedStatus={feedStatus} onReconnect={onReconnect} />
-            <MobileTopStrip feedStatus={feedStatus} />
+        <AppCanvas>
+            {/* Pinned floating chrome — inset from the layout edges, outside the scroll zone */}
+            <div className='hidden shrink-0 px-4 pt-4 lg:block lg:px-6 lg:pt-6'>
+                <AdminTopBar activePage={page} onNavigate={setPage} feedStatus={feedStatus} onReconnect={onReconnect} />
+            </div>
+            <div className='shrink-0 px-3 pt-3 lg:hidden'>
+                <MobileTopStrip feedStatus={feedStatus} />
+            </div>
 
-            {/* Independently scrolling content zone */}
-            <main className='min-h-0 flex-1 overflow-y-auto p-3 sm:p-4'>
-                {/* White content panel — hairline only, no shadow */}
-                <div className='rounded-[1.5rem] border border-border/60 bg-background p-4 sm:p-6'>
-                    <OrdersContentRegion rows={rows} />
-                </div>
+            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell */}
+            <main className='min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+                <OrdersContentRegion rows={rows} />
             </main>
 
-            <MobileBottomBar activePage={page} onNavigate={setPage} />
-        </Shell>
+            <div className='shrink-0 px-3 pb-3 lg:hidden'>
+                <MobileBottomBar activePage={page} onNavigate={setPage} />
+            </div>
+        </AppCanvas>
     );
 }
 
@@ -483,13 +498,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — the admin shell on desktop: a dark ambient frame (decorative
- * line-art) sits behind a light shell that pins the shared NavBar (admin
- * variant) above an independently scrolling white content panel. The nav pairs
- * an icon with a label per item; the active route (Orders) is the ink active
- * pill expressed via aria-current — a real navigation selection, not a Button.
- * The live new-order feed indicator rides the NavBar, and the content region is
- * table-oriented with a status column — no order sidebar.
+ * Default — the admin shell on desktop: a full-bleed, edge-to-edge layout on the
+ * app's neutral canvas — no dark ambient frame, no enclosing floating shell. The
+ * shared NavBar floats as a detached rounded toolbar, inset from the layout edges
+ * with its own radius + one soft shadow, riding above an independently scrolling
+ * content region. The nav pairs an icon with a label per item; the active route
+ * (Orders) takes the crimson accent as the NavBar's active pill expressed via
+ * aria-current — a real navigation selection, not a Button. The live new-order
+ * feed indicator rides the toolbar, and the content region is table-oriented with
+ * a status column — no order sidebar.
  */
 export const Default: Story = {
     name: 'Default — Desktop Admin Shell (Orders active)',
@@ -497,9 +514,10 @@ export const Default: Story = {
 };
 
 /**
- * Live feed present — the same shell with the Dashboard nav item active,
- * underlining that the live new-order feed pill rides the NavBar across every
- * admin route while the ink active pill moves to whichever nav item is current.
+ * Live feed present — the same full-bleed shell with the Dashboard nav item
+ * active, underlining that the live new-order feed pill rides the floating
+ * toolbar across every admin route while the crimson active pill moves to
+ * whichever nav item is current.
  */
 export const LiveFeedPresent: Story = {
     name: 'Default — Live Feed Present (Dashboard active)',
@@ -508,7 +526,7 @@ export const LiveFeedPresent: Story = {
 
 /**
  * Loading — the shell has mounted and is establishing the live-orders
- * subscription; the NavBar feed pill shows "Connecting…". The rest of the shell
+ * subscription; the toolbar feed pill shows "Connecting…". The rest of the shell
  * (nav + table content region) is fully usable.
  */
 export const Loading: Story = {
@@ -537,10 +555,12 @@ export const Empty: Story = {
 };
 
 /**
- * Mobile — the shell condenses to a top strip (brand + live-feed pill, kept
- * visible) and a bottom nav of icon+label shortcuts with an ink badge on the
- * active item (aria-current). The table content region remains the working
- * layout; still no order sidebar.
+ * Mobile — the full-bleed shell condenses to floating rounded bars: a top strip
+ * (brand + live-feed pill, kept visible) and a bottom nav of icon+label
+ * shortcuts, both inset from the edges with their own radius + one soft shadow
+ * over the edge-to-edge content — no flat edge-pinned strips, no enclosing shell.
+ * The active shortcut carries an ink badge (aria-current). The table content
+ * region remains the working layout; still no order sidebar.
  */
 export const Mobile: Story = {
     name: 'Mobile — Condensed Admin Shell',
