@@ -25,6 +25,7 @@ import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Separator } from '@/components/separator';
+import { Skeleton } from '@/components/skeleton';
 import Spinner from '@/components/spinner';
 import Timeline from '@/components/timeline';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
@@ -441,6 +442,63 @@ function OrderCard({ order, onOpen }: { order: OrderCardData; onOpen: (slugId: s
 }
 
 // ---------------------------------------------------------------------------
+// Initial-load skeleton — the FIRST full-list fetch, before any orders have
+// arrived. A placeholder order card that mirrors the loaded List Row shape:
+// circular thumb, heading + meta lines, the crimson total block, and the
+// Timeline panel — each region a muted, pulsing Skeleton so the layout does not
+// jump when real orders land. Distinct from the load-more footer spinner, which
+// stays a quiet Spinner row (incremental paging, not the first fetch).
+// ---------------------------------------------------------------------------
+
+function SkeletonOrderCard() {
+    return (
+        <Card className='gap-0 rounded-[22px] border-border/70 p-4 shadow-none sm:p-5'>
+            <div className='grid gap-4 md:grid-cols-[minmax(0,1fr)_18rem] md:gap-6'>
+                {/* Left column — thumb + heading + meta + total placeholders. */}
+                <div className='flex items-start gap-4'>
+                    <Skeleton className='h-14 w-14 shrink-0 rounded-full sm:h-16 sm:w-16' />
+
+                    <div className='flex min-w-0 flex-1 flex-col gap-2'>
+                        <div className='flex items-start justify-between gap-3'>
+                            <div className='min-w-0 space-y-2'>
+                                <Skeleton className='h-6 w-44' />
+                                <Skeleton className='h-3 w-28' />
+                            </div>
+                            <Skeleton className='h-7 w-24 shrink-0 rounded-full' />
+                        </div>
+
+                        <Skeleton className='h-3.5 w-32' />
+
+                        <Separator className='my-1' />
+
+                        <div className='flex items-end justify-between'>
+                            <div className='space-y-1.5'>
+                                <Skeleton className='h-2.5 w-10' />
+                                <Skeleton className='h-6 w-24' />
+                            </div>
+                            <Skeleton className='h-4 w-20' />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right column — the Timeline panel placeholder. */}
+                <div className='rounded-2xl border border-border/70 bg-muted/30 p-4'>
+                    <Skeleton className='mb-4 h-2.5 w-28' />
+                    <div className='space-y-4'>
+                        {Array.from({ length: PROGRESS_STEPS.length }).map((_, index) => (
+                            <div key={index} className='flex items-center gap-3'>
+                                <Skeleton className='h-8 w-8 shrink-0 rounded-full' />
+                                <Skeleton className='h-3.5 w-32' />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </Card>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Load-more sentinel — mirrors src/pages/orders OrdersLoadMore. The list loads
 // more on scroll; this row is where the fetch state surfaces at the list foot.
 // ---------------------------------------------------------------------------
@@ -551,6 +609,46 @@ function OrderHistoryPage({
 }
 
 // ---------------------------------------------------------------------------
+// Initial-load state — the first full-list fetch. The pinned header + status
+// filter render immediately; the scroll region is filled with skeleton order
+// cards (mirroring the loaded shape) instead of a lone centered spinner, so the
+// page keeps its structure while orders load in.
+// ---------------------------------------------------------------------------
+
+function OrderHistoryLoading() {
+    const noOp = () => undefined;
+    return (
+        <Shell>
+            <div
+                className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-border/70 bg-background ${SOFT_SHADOW}`}
+            >
+                <header className='shrink-0 border-b border-border/60 px-5 pt-6 pb-5 sm:px-8'>
+                    <h1 className='text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>My orders</h1>
+                    <p className='mt-2 text-sm text-muted-foreground'>
+                        Track a delivery in progress or reopen any past order.
+                    </p>
+                    <div className='mt-4'>
+                        <StatusFilter value='all' onChange={noOp} />
+                    </div>
+                </header>
+
+                <div className='min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-8 sm:px-6'>
+                    <div
+                        className='mx-auto w-full max-w-3xl space-y-4'
+                        aria-busy='true'
+                        aria-label='Loading your orders'
+                    >
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <SkeletonOrderCard key={index} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </Shell>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Empty state — illustration + exactly ONE CTA (no dead ends). The CTA leads
 // back to the menu; it is a structural primary action (not a final/irreversible
 // step), so it is ink, not red.
@@ -622,6 +720,20 @@ export const Default: Story = {
 export const Filtered: Story = {
     name: 'Partial — Filtered To In Progress',
     render: () => <OrderHistoryPage orders={ORDERS} loadMore='idle' initialFilter='active' />,
+};
+
+/**
+ * Loading (initial) — the FIRST full-list fetch, before any orders have
+ * arrived. The pinned header + status filter render immediately and the list
+ * body is filled with placeholder order cards built from pulsing Skeletons that
+ * mirror the loaded List Row shape (circular thumb, heading + meta, crimson
+ * total block, Timeline panel), so the layout does not jump when real orders
+ * land. This is the initial fetch only — incremental load-more paging keeps its
+ * quiet footer spinner (see "Loading More").
+ */
+export const Loading: Story = {
+    name: 'Loading — Initial List Fetch (Skeleton)',
+    render: () => <OrderHistoryLoading />,
 };
 
 /**

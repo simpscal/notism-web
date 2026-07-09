@@ -12,7 +12,7 @@ import ErrorState from '@/components/error-state';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
+import { Skeleton } from '@/components/skeleton';
 import {
     SortableTableHead,
     Table,
@@ -566,21 +566,86 @@ export const UsersTableEmpty: Story = {
 };
 
 /**
- * Loading — the list is fetching. A centered spinner sits inside a white panel
- * within the shell while the table resolves (mirrors the source loading state).
+ * Loading — the list is fetching. A skeleton mirrors the loaded table shape
+ * inside the white panel within the shell: a header row plus placeholder user
+ * rows resolve in place, so the layout never shifts when the data arrives.
  */
 export const UsersTableLoading: Story = {
     name: 'Users Table — Loading',
     render: () => (
         <AdminShell>
             <div className='px-3 py-6 sm:px-5'>
-                <div
-                    className={cn(
-                        'flex min-h-[60vh] w-full items-center justify-center rounded-[1.75rem] border border-border/60 bg-card',
-                        SOFT_SHADOW
-                    )}
-                >
-                    <Spinner size='lg' />
+                {/* White content panel — hairline; mirrors UsersListSurface. */}
+                <div className={cn('rounded-[1.75rem] border border-border/60 bg-card p-5 sm:p-6', SOFT_SHADOW)}>
+                    {/* Heading + subtitle placeholders */}
+                    <div className='space-y-2'>
+                        <Skeleton className='h-7 w-56' />
+                        <Skeleton className='h-4 w-80 max-w-full' />
+                    </div>
+
+                    {/* Search placeholder — matches the rounded input's footprint. */}
+                    <div className='mb-4 mt-6 max-w-md'>
+                        <Skeleton className='h-10 w-full rounded-full' />
+                    </div>
+
+                    {/* Table placeholder — same container + column geometry as the
+                        loaded table so the skeleton resolves in place. */}
+                    <div className='overflow-hidden rounded-2xl border border-border/70 bg-card'>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className='min-w-[120px]'>
+                                        <Skeleton className='h-4 w-20' />
+                                    </TableHead>
+                                    <TableHead className='min-w-[120px]'>
+                                        <Skeleton className='h-4 w-20' />
+                                    </TableHead>
+                                    <TableHead className='min-w-[200px]'>
+                                        <Skeleton className='h-4 w-32' />
+                                    </TableHead>
+                                    <TableHead className='min-w-[140px]'>
+                                        <Skeleton className='h-4 w-24' />
+                                    </TableHead>
+                                    <TableHead className='min-w-[150px]'>
+                                        <Skeleton className='h-4 w-24' />
+                                    </TableHead>
+                                    <TableHead className='min-w-[100px]'>
+                                        <Skeleton className='h-4 w-14' />
+                                    </TableHead>
+                                    <TableHead className='min-w-[80px] text-right'>
+                                        <Skeleton className='ml-auto h-4 w-14' />
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-24' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-20' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-40 max-w-full' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-28' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-28' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-5 w-16 rounded-full' />
+                                        </TableCell>
+                                        <TableCell className='text-right'>
+                                            <Skeleton className='ml-auto h-8 w-8 rounded-md' />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
             </div>
         </AdminShell>

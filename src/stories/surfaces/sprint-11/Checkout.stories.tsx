@@ -303,20 +303,16 @@ function BankTransferPanel() {
 }
 
 // ---------------------------------------------------------------------------
-// Final CTA (§5) — full-width RED pill, white bold, NO split. Pinned to the
-// bottom of the shell so the single irreversible place-order step is always
-// reachable. This is the ONE loudest red action on the surface.
+// Final CTA (§5) — full-width RED pill, white bold, NO split. Sits at the end of
+// the checkout content flow and scrolls with the page (not a pinned footer) — the
+// single irreversible place-order step. This is the ONE loudest red action.
 // ---------------------------------------------------------------------------
 
 function FinalCta({ method, onPlaceOrder }: { method: PaymentMethod; onPlaceOrder: () => void }) {
     return (
-        <div className='shrink-0 border-t border-border/70 bg-card/95 px-4 py-4 backdrop-blur sm:px-6'>
-            <div className='mx-auto max-w-[40rem]'>
-                <Button size='lg' className='h-12 w-full rounded-full text-base font-semibold' onClick={onPlaceOrder}>
-                    {method === 'banking' ? "I've transferred — place order" : 'Place order'}
-                </Button>
-            </div>
-        </div>
+        <Button size='lg' className='h-12 w-full rounded-full text-base font-semibold' onClick={onPlaceOrder}>
+            {method === 'banking' ? "I've transferred — place order" : 'Place order'}
+        </Button>
     );
 }
 
@@ -422,7 +418,7 @@ function CheckoutSurface({
     return (
         // Full-bleed canvas — no dark frame, no enclosing floating shell. Content
         // flows edge-to-edge on the app's neutral canvas; this is the single scroll
-        // container (toolbar pinned top, Final CTA pinned bottom).
+        // container (toolbar pinned top; the place-order CTA scrolls with the content).
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
             <Toolbar />
 
@@ -506,11 +502,12 @@ function CheckoutSurface({
 
                         {/* Order review — Summary Panel pattern */}
                         <SummaryPanel lines={ORDER_LINES} />
+
+                        {/* Place order — sits at the end of the content flow, scrolls with the page */}
+                        <FinalCta method={method} onPlaceOrder={handlePlaceOrder} />
                     </div>
                 </div>
             </div>
-
-            <FinalCta method={method} onPlaceOrder={handlePlaceOrder} />
         </div>
     );
 }

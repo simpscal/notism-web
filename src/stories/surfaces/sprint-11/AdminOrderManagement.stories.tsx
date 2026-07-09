@@ -27,7 +27,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
 import Kanban, { type KanbanColumn } from '@/components/kanban';
 import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
-import Spinner from '@/components/spinner';
+import { Skeleton } from '@/components/skeleton';
 import {
     SortableTableHead,
     Table,
@@ -526,6 +526,63 @@ function OrdersKanbanView({ orders }: { orders: OrderRow[] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Board skeleton — the loading placeholder that mirrors the kanban board's
+// shape (a status column per delivery state, each holding OrderCard-shaped card
+// placeholders) so the fetching state previews the real content structure
+// rather than a bare spinner. Skeleton blocks stand in for every card region:
+// the slug + price row, the status pills, the customer name/email and item line.
+// ---------------------------------------------------------------------------
+
+/** Card placeholder mirroring OrderCard's regions. */
+function OrderCardSkeleton() {
+    return (
+        <Card className='rounded-2xl border-border/70'>
+            <CardContent className='space-y-2.5 p-4'>
+                <div className='flex items-center justify-between gap-2'>
+                    <Skeleton className='h-4 w-24' />
+                    <Skeleton className='h-4 w-16' />
+                </div>
+                <div className='flex flex-wrap items-center gap-1.5'>
+                    <Skeleton className='h-6 w-24 rounded-full' />
+                    <Skeleton className='h-6 w-16 rounded-full' />
+                </div>
+                <div className='space-y-1.5'>
+                    <Skeleton className='h-3.5 w-28' />
+                    <Skeleton className='h-3 w-36' />
+                </div>
+                <Skeleton className='h-3 w-14' />
+            </CardContent>
+        </Card>
+    );
+}
+
+/** Board placeholder — one column per delivery state, cards standing in. */
+function OrdersBoardSkeleton() {
+    // Card counts per column, mirroring a typical loaded board's distribution.
+    const columnCardCounts = [2, 2, 2, 1];
+
+    return (
+        <div className='min-h-0 flex-1 overflow-hidden rounded-2xl border border-border/70'>
+            <div className='flex h-full gap-4 overflow-x-auto p-4'>
+                {columnCardCounts.map((count, columnIndex) => (
+                    <div key={columnIndex} className='flex w-72 shrink-0 flex-col gap-3'>
+                        <div className='flex items-center justify-between px-1'>
+                            <Skeleton className='h-4 w-24' />
+                            <Skeleton className='h-5 w-6 rounded-full' />
+                        </div>
+                        <div className='space-y-3'>
+                            {Array.from({ length: count }).map((_, cardIndex) => (
+                                <OrderCardSkeleton key={cardIndex} />
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Admin toolbar — the shared, domain-blind NavBar, matching
 // sibling AdminAppShell.stories.tsx: brand + Admin badge (left) · admin nav
 // (centre, NavBarNav/NavBarItem — the active route is a real navigation
@@ -711,8 +768,10 @@ export const Empty: Story = {
 };
 
 /**
- * Loading — the board is fetching orders: a centred spinner sits in the content
- * zone while the shell chrome and controls stay put.
+ * Loading — the board is fetching orders: a skeleton board mirrors the loaded
+ * kanban layout (a status column per delivery state, each holding
+ * OrderCard-shaped placeholders) so the fetching state previews the real content
+ * structure while the shell chrome and controls stay put.
  */
 export const Loading: Story = {
     name: 'Loading — Fetching Orders',
@@ -724,9 +783,7 @@ export const Loading: Story = {
                 paymentFilter='all'
                 onPaymentFilterChange={() => undefined}
             />
-            <div className='flex min-h-0 flex-1 items-center justify-center rounded-2xl border border-border/70'>
-                <Spinner size='lg' />
-            </div>
+            <OrdersBoardSkeleton />
         </OrdersShell>
     ),
 };

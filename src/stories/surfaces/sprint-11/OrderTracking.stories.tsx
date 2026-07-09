@@ -22,7 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import ErrorState from '@/components/error-state';
 import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/components/nav-bar';
 import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
+import { Skeleton } from '@/components/skeleton';
 import Timeline from '@/components/timeline';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
@@ -748,6 +748,117 @@ function OrderTrackingSurface({ order }: { order: OrderFixture }) {
 }
 
 // ---------------------------------------------------------------------------
+// Loading skeleton — mirrors the loaded tracking shape (status/timeline +
+// order-lines cards in the left column, order-summary rail on the right) while
+// the order fetches, so the layout doesn't shift when data lands. Muted,
+// pulsing placeholder blocks stand in for every real region.
+// ---------------------------------------------------------------------------
+
+function TrackingSkeleton() {
+    return (
+        <div className='grid gap-6 lg:grid-cols-3'>
+            <div className='space-y-6 lg:col-span-2'>
+                {/* Delivery status card skeleton — heading + four timeline steps. */}
+                <Card className='rounded-3xl border-border shadow-none'>
+                    <CardHeader className='space-y-2'>
+                        <Skeleton className='h-6 w-40' />
+                        <Skeleton className='h-4 w-64' />
+                    </CardHeader>
+                    <CardContent className='space-y-5'>
+                        {Array.from({ length: 4 }).map((_, index) => (
+                            <div key={index} className='flex items-center gap-4'>
+                                <Skeleton className='h-9 w-9 shrink-0 rounded-full' />
+                                <div className='flex-1 space-y-2'>
+                                    <Skeleton className='h-4 w-32' />
+                                    <Skeleton className='h-3 w-24' />
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+
+                {/* Order-lines card skeleton — heading + three list rows + meta. */}
+                <Card className='rounded-3xl border-border shadow-none'>
+                    <CardHeader className='space-y-2'>
+                        <Skeleton className='h-6 w-28' />
+                        <Skeleton className='h-4 w-16' />
+                    </CardHeader>
+                    <CardContent className='space-y-4'>
+                        <div className='space-y-2'>
+                            {Array.from({ length: 3 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className='flex items-center gap-4 rounded-2xl border border-border px-3 py-3'
+                                >
+                                    <Skeleton className='h-14 w-14 shrink-0 rounded-full' />
+                                    <div className='min-w-0 flex-1 space-y-2'>
+                                        <Skeleton className='h-4 w-40' />
+                                        <Skeleton className='h-3 w-28' />
+                                        <Skeleton className='h-3 w-36' />
+                                    </div>
+                                    <Skeleton className='h-4 w-16 shrink-0' />
+                                </div>
+                            ))}
+                        </div>
+
+                        <Separator />
+
+                        <div className='space-y-3 px-1'>
+                            <div className='flex items-center justify-between'>
+                                <Skeleton className='h-4 w-28' />
+                                <Skeleton className='h-4 w-24' />
+                            </div>
+                            <Skeleton className='h-3 w-56' />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Order-summary rail skeleton — meta blocks, breakdown, total, CTA. */}
+            <div className='lg:col-span-1'>
+                <Card className='sticky top-2 rounded-3xl border-border shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
+                    <CardHeader>
+                        <Skeleton className='h-5 w-32' />
+                    </CardHeader>
+                    <CardContent className='space-y-4'>
+                        <div className='space-y-1.5'>
+                            <Skeleton className='h-3 w-16' />
+                            <Skeleton className='h-8 w-full rounded-lg' />
+                        </div>
+                        <div className='space-y-1.5'>
+                            <Skeleton className='h-3 w-16' />
+                            <Skeleton className='h-4 w-40' />
+                        </div>
+                        <div className='space-y-1.5'>
+                            <Skeleton className='h-3 w-12' />
+                            <Skeleton className='h-6 w-28 rounded-full' />
+                        </div>
+
+                        <div className='space-y-2.5 border-t border-dashed border-border pt-4'>
+                            <div className='flex items-center justify-between'>
+                                <Skeleton className='h-4 w-20' />
+                                <Skeleton className='h-4 w-24' />
+                            </div>
+                            <div className='flex items-center justify-between'>
+                                <Skeleton className='h-4 w-20' />
+                                <Skeleton className='h-4 w-16' />
+                            </div>
+                            <div className='mt-3 flex items-end justify-between border-t pt-3'>
+                                <Skeleton className='h-3 w-12' />
+                                <Skeleton className='h-8 w-32' />
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardContent className='pt-0'>
+                        <Skeleton className='h-11 w-full rounded-full' />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Meta + Stories
 // ---------------------------------------------------------------------------
 
@@ -829,16 +940,16 @@ export const CancelRefundConfirm: Story = {
 };
 
 /**
- * Loading — the order is being fetched. The shell chrome is present while the
- * tracking content resolves.
+ * Loading — the order is being fetched. The shell chrome is present while a
+ * skeleton mirrors the loaded tracking shape (status/timeline + order-lines
+ * cards beside the order-summary rail) with muted, pulsing placeholder blocks,
+ * so the layout holds steady and doesn't shift once the data lands.
  */
 export const Loading: Story = {
     name: 'Loading — Fetching Order',
     render: () => (
         <OrderTrackingShell>
-            <div className='flex h-[420px] items-center justify-center'>
-                <Spinner size='lg' />
-            </div>
+            <TrackingSkeleton />
         </OrderTrackingShell>
     ),
 };

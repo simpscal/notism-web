@@ -19,7 +19,7 @@ import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
 import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
+import { Skeleton } from '@/components/skeleton';
 import Timeline from '@/components/timeline';
 import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
@@ -562,6 +562,145 @@ function OrderDetailBody({
 }
 
 // ---------------------------------------------------------------------------
+// Loading skeleton — mirrors the loaded order-detail shape (back link → order
+// header → the delivery / items / payment cards grid with the right-rail panel)
+// with muted, pulsing placeholder blocks in place of the real content. Same
+// layout scaffold as OrderDetailBody so the screen doesn't reflow on load.
+// ---------------------------------------------------------------------------
+
+function OrderDetailSkeleton() {
+    return (
+        <>
+            <Skeleton className='mb-6 h-8 w-32' />
+
+            <div className='space-y-6'>
+                {/* Order header */}
+                <div className='flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center'>
+                    <div className='space-y-2'>
+                        <Skeleton className='h-8 w-48' />
+                        <Skeleton className='h-4 w-40' />
+                        <Skeleton className='h-4 w-32' />
+                    </div>
+                    <div className='flex flex-col items-start gap-2 sm:items-end'>
+                        <Skeleton className='h-7 w-32' />
+                        <Skeleton className='h-5 w-24' />
+                    </div>
+                </div>
+
+                <div className='grid gap-6 lg:grid-cols-3'>
+                    <div className='space-y-6 lg:col-span-2'>
+                        {/* Delivery timeline card */}
+                        <Card>
+                            <CardHeader className='space-y-2'>
+                                <Skeleton className='h-3 w-16' />
+                                <Skeleton className='h-5 w-36' />
+                            </CardHeader>
+                            <CardContent className='space-y-4'>
+                                {[0, 1, 2, 3].map(step => (
+                                    <div key={step} className='flex items-start gap-3'>
+                                        <Skeleton className='size-9 shrink-0 rounded-full' />
+                                        <div className='flex-1 space-y-2 pt-1'>
+                                            <Skeleton className='h-4 w-28' />
+                                            <Skeleton className='h-3 w-48' />
+                                        </div>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+
+                        {/* Order items card */}
+                        <Card>
+                            <CardHeader>
+                                <div className='flex items-baseline justify-between'>
+                                    <div className='space-y-2'>
+                                        <Skeleton className='h-3 w-12' />
+                                        <Skeleton className='h-5 w-32' />
+                                    </div>
+                                    <Skeleton className='h-4 w-20' />
+                                </div>
+                            </CardHeader>
+                            <CardContent className='space-y-2.5'>
+                                {[0, 1, 2].map(line => (
+                                    <div key={line} className='flex items-center gap-4 rounded-2xl border bg-card p-3'>
+                                        <Skeleton className='size-14 shrink-0 rounded-full' />
+                                        <div className='min-w-0 flex-1 space-y-2'>
+                                            <Skeleton className='h-4 w-40' />
+                                            <Skeleton className='h-3 w-28' />
+                                        </div>
+                                        <Skeleton className='h-4 w-20 shrink-0' />
+                                    </div>
+                                ))}
+
+                                <div className='my-3 border-t border-dashed border-border' />
+
+                                <div className='space-y-2.5'>
+                                    <div className='flex items-center justify-between'>
+                                        <Skeleton className='h-4 w-24' />
+                                        <Skeleton className='h-4 w-16' />
+                                    </div>
+                                    <div className='flex items-center justify-between'>
+                                        <Skeleton className='h-4 w-28' />
+                                        <Skeleton className='h-4 w-20' />
+                                    </div>
+                                    <div className='my-1 border-t border-dashed border-border' />
+                                    <div className='flex items-center justify-between'>
+                                        <Skeleton className='h-3 w-12' />
+                                        <Skeleton className='h-6 w-28' />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Payment details card */}
+                        <Card>
+                            <CardHeader className='space-y-2'>
+                                <Skeleton className='h-3 w-16' />
+                                <Skeleton className='h-5 w-36' />
+                            </CardHeader>
+                            <CardContent className='space-y-3'>
+                                <div className='flex items-center justify-between'>
+                                    <Skeleton className='h-4 w-24' />
+                                    <Skeleton className='h-4 w-20' />
+                                </div>
+                                <Separator />
+                                <div className='flex items-center justify-between'>
+                                    <Skeleton className='h-4 w-32' />
+                                    <Skeleton className='h-4 w-28' />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Right rail — payment-status panel */}
+                    <div className='space-y-6'>
+                        <Card>
+                            <CardHeader className='space-y-2'>
+                                <Skeleton className='h-3 w-14' />
+                                <Skeleton className='h-5 w-36' />
+                            </CardHeader>
+                            <CardContent className='space-y-4'>
+                                <div className='flex items-center justify-between'>
+                                    <Skeleton className='h-4 w-24' />
+                                    <Skeleton className='h-5 w-16' />
+                                </div>
+                                <div className='flex items-center justify-between'>
+                                    <Skeleton className='h-4 w-16' />
+                                    <Skeleton className='h-4 w-24' />
+                                </div>
+                                <Separator />
+                                <Skeleton className='h-3 w-16' />
+                                <Skeleton className='h-9 w-full rounded-lg' />
+                                <Skeleton className='h-9 w-full rounded-lg' />
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Meta + Stories
 // ---------------------------------------------------------------------------
 
@@ -631,20 +770,15 @@ export const Interactive: Story = {
 };
 
 /**
- * Loading — the order is being fetched; the shell shows a centred spinner in the
- * content zone (mirrors the page's isLoading branch).
+ * Loading — the order is being fetched; the shell shows a skeleton that mirrors
+ * the loaded order-detail shape (back link → order header → the delivery / items
+ * / payment cards grid with the right-rail status panel), so the layout holds
+ * steady and doesn't reflow when the real data arrives (mirrors the page's
+ * isLoading branch).
  */
 export const Loading: Story = {
     name: 'Loading — Fetching Order',
-    render: () => (
-        <AdminOrderDetailSurface
-            body={
-                <div className='flex min-h-[60vh] w-full items-center justify-center'>
-                    <Spinner size='lg' />
-                </div>
-            }
-        />
-    ),
+    render: () => <AdminOrderDetailSurface body={<OrderDetailSkeleton />} />,
 };
 
 /**

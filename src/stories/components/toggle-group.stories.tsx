@@ -66,6 +66,30 @@ export const Segmented: Story = {
     ),
 };
 
+/**
+ * Constrained width — when the group sits in a container narrower than its
+ * content, each item keeps a content-based min-width (`min-w-fit`) so labels
+ * never squish or truncate. Items stay on a single line at their natural size.
+ */
+export const ConstrainedWidth: Story = {
+    args: { type: 'single' },
+    render: () => (
+        <div className='w-64 rounded-lg border border-dashed border-border p-3'>
+            <ToggleGroup type='single' variant='segmented' defaultValue='out-for-delivery'>
+                <ToggleGroupItem value='pending' aria-label='Pending'>
+                    Pending
+                </ToggleGroupItem>
+                <ToggleGroupItem value='preparing' aria-label='Preparing'>
+                    Preparing
+                </ToggleGroupItem>
+                <ToggleGroupItem value='out-for-delivery' aria-label='Out for delivery'>
+                    Out for delivery
+                </ToggleGroupItem>
+            </ToggleGroup>
+        </div>
+    ),
+};
+
 export const Outline: Story = {
     args: { type: 'multiple' },
     render: () => (

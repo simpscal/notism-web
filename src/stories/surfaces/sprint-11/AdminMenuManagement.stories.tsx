@@ -22,7 +22,7 @@ import ErrorState from '@/components/error-state';
 import { Field, FieldLabel } from '@/components/field';
 import { Input } from '@/components/input';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
-import Spinner from '@/components/spinner';
+import { Skeleton } from '@/components/skeleton';
 import { Switch } from '@/components/switch';
 import {
     SortableTableHead,
@@ -364,6 +364,78 @@ function FoodsTableView({ rows }: { rows: FoodRow[] }) {
                             </TableCell>
                             <TableCell className='text-right'>
                                 <FoodRowActions />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Foods loading skeleton — previews the loaded content's SHAPE while the list
+// fetches: the same white table panel, the same columns, and a handful of
+// placeholder rows whose cells trace the real row (image thumbnail block + text
+// lines for name/description/price, pill-shaped category + availability chips,
+// and a control block for stock + row actions). Token-driven Skeleton primitive
+// only — no bespoke shimmer.
+// ---------------------------------------------------------------------------
+
+const FOODS_SKELETON_ROWS = Array.from({ length: 5 }, (_, index) => index);
+
+function FoodsTableSkeleton() {
+    return (
+        <div className='overflow-x-auto rounded-[1.25rem] border bg-card'>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className='min-w-[180px]'>Name</TableHead>
+                        <TableHead className='min-w-[220px]'>Description</TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Discount</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Availability</TableHead>
+                        <TableHead className='text-right'>Stock</TableHead>
+                        <TableHead className='w-[64px] text-right'>Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {FOODS_SKELETON_ROWS.map(row => (
+                        <TableRow key={row}>
+                            {/* Image thumbnail block + name text line. */}
+                            <TableCell>
+                                <div className='flex items-center gap-3'>
+                                    <Skeleton className='size-9 shrink-0 rounded-lg' />
+                                    <Skeleton className='h-4 w-28' />
+                                </div>
+                            </TableCell>
+                            {/* Description — two stacked text lines. */}
+                            <TableCell>
+                                <div className='space-y-1.5'>
+                                    <Skeleton className='h-3.5 w-44' />
+                                    <Skeleton className='h-3.5 w-32' />
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton className='h-4 w-16' />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton className='h-4 w-14' />
+                            </TableCell>
+                            {/* Category + availability — pill-shaped chips. */}
+                            <TableCell>
+                                <Skeleton className='h-6 w-16 rounded-full' />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton className='h-6 w-20 rounded-full' />
+                            </TableCell>
+                            <TableCell className='text-right'>
+                                <Skeleton className='ml-auto h-4 w-12' />
+                            </TableCell>
+                            {/* Row-action control. */}
+                            <TableCell className='text-right'>
+                                <Skeleton className='ml-auto size-8 rounded-md' />
                             </TableCell>
                         </TableRow>
                     ))}
@@ -806,8 +878,10 @@ export const FoodsEmpty: Story = {
 };
 
 /**
- * Foods loading — the list is fetching; a centered spinner holds the content
- * zone while the shell chrome stays put.
+ * Foods loading — the list is fetching; a skeleton previews the loaded content's
+ * shape (the same toolbar, table panel, columns, and a handful of placeholder
+ * rows tracing the real row) while the shell chrome stays put, so the layout
+ * doesn't jump when data arrives.
  */
 export const FoodsLoading: Story = {
     name: 'Foods Table (Loading)',
@@ -815,9 +889,12 @@ export const FoodsLoading: Story = {
         <AdminShell>
             <div className='px-3 py-6 sm:px-5'>
                 <SurfaceHeader eyebrow='MENU' title='Foods' subtitle='Curate the dishes diners can order.' />
-                <div className='flex min-h-[360px] items-center justify-center rounded-[1.25rem] border bg-card'>
-                    <Spinner size='lg' />
+                {/* Toolbar skeleton — mirrors the search field + one Add primary. */}
+                <div className='mb-4 flex flex-wrap items-center justify-between gap-3'>
+                    <Skeleton className='h-9 w-full max-w-sm flex-1 rounded-md' />
+                    <Skeleton className='h-9 w-28 rounded-md' />
                 </div>
+                <FoodsTableSkeleton />
             </div>
         </AdminShell>
     ),
