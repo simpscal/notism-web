@@ -78,4 +78,36 @@ describe('ClientLayout shell', () => {
 
         expect(screen.getByText('routed page body')).toBeInTheDocument();
     });
+
+    it('floats the content on a light shell over a dark ambient frame carrying inert line-art', () => {
+        const { container } = renderLayoutAt('/foods');
+
+        // The outer app background is the dark ambient frame.
+        const frame = container.querySelector('.bg-frame');
+        expect(frame).not.toBeNull();
+
+        // The frame carries only decoration — hidden from a11y and non-interactive.
+        const decoration = frame!.querySelector('[aria-hidden="true"]');
+        expect(decoration).not.toBeNull();
+        expect(decoration).toHaveClass('pointer-events-none');
+
+        // A single light shell floats inside the frame and holds the content.
+        expect(frame!.querySelector('.bg-muted')).not.toBeNull();
+    });
+
+    it('reserves crimson for the checkout commit — the toolbar cart pill is ink', async () => {
+        localStorage.setItem('cart_items', JSON.stringify([makeItem()]));
+        await store.dispatch(loadCart());
+
+        renderLayoutAt('/foods');
+
+        const cartPill = screen.getByRole('link', { name: /cart,/i });
+        expect(cartPill).toHaveClass('bg-selected');
+        expect(cartPill).not.toHaveClass('bg-primary');
+
+        // The single crimson order-level action is the checkout commit.
+        const checkout = screen.getAllByRole('button', { name: t('orderSidebar.checkout') });
+        expect(checkout.length).toBeGreaterThan(0);
+        expect(checkout[0]).toHaveClass('bg-primary');
+    });
 });

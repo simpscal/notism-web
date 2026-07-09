@@ -102,12 +102,12 @@ function ClientToolbarMobile({ user, onLogout, onOpenOrder }: ClientToolbarMobil
                     type='button'
                     onClick={onOpenOrder}
                     aria-label={t('orderSidebar.openOrder')}
-                    className='inline-flex h-10 items-center gap-2 rounded-full bg-primary px-3.5 text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
+                    className='inline-flex h-10 items-center gap-2 rounded-full bg-selected px-3.5 text-selected-foreground shadow-sm transition-colors hover:bg-selected/90'
                 >
                     <span className='relative'>
                         <ShoppingCart className='size-5' aria-hidden />
                         {cartItemCount > 0 && (
-                            <span className='absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-primary-foreground text-[10px] font-bold text-primary'>
+                            <span className='absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-selected-foreground text-[10px] font-bold text-selected'>
                                 {cartItemCount > 99 ? '99+' : cartItemCount}
                             </span>
                         )}

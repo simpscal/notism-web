@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import ClientToolbarDesktop from './components/client-toolbar-desktop';
 import ClientToolbarMobile from './components/client-toolbar-mobile';
+import FrameDecoration from './components/frame-decoration';
 import OrderSidebar from './components/order-sidebar';
 
 import { authApi } from '@/apis';
@@ -31,23 +32,26 @@ function ClientLayout() {
     }, []);
 
     return (
-        <div className='relative flex h-screen w-full overflow-hidden bg-muted'>
-            <div className='relative z-10 flex min-h-0 w-full flex-1 items-stretch'>
-                <div className='flex h-full w-full flex-col gap-3 bg-muted p-3 lg:gap-4 lg:p-4'>
-                    <ClientToolbarDesktop user={user} onLogout={handleLogout} />
-                    <ClientToolbarMobile user={user} onLogout={handleLogout} onOpenOrder={handleOpenOrder} />
+        // Dark ambient frame (decoration only) → one large-radius light shell that
+        // floats over it and holds the pinned toolbar + independently scrolling
+        // content zone + persistent order sidebar.
+        <div className='relative h-screen w-full overflow-hidden bg-frame p-2 sm:p-3'>
+            <FrameDecoration />
 
-                    <div className='flex min-h-0 flex-1 gap-3 lg:gap-4'>
-                        <main className='flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.5rem] border border-border bg-background'>
-                            <div className='min-h-0 flex-1 overflow-y-auto'>
-                                <HeldRefundReminderBannerContainer />
-                                <RefundPaidBannerStack />
-                                <Outlet />
-                            </div>
-                        </main>
+            <div className='relative z-10 flex h-full min-h-0 w-full flex-col gap-3 overflow-hidden rounded-[2rem] bg-muted p-3 shadow-[0_4px_20px_rgba(0,0,0,0.05)] lg:gap-4 lg:p-4'>
+                <ClientToolbarDesktop user={user} onLogout={handleLogout} />
+                <ClientToolbarMobile user={user} onLogout={handleLogout} onOpenOrder={handleOpenOrder} />
 
-                        <OrderSidebar open={orderDrawerOpen} onOpenChange={setOrderDrawerOpen} />
-                    </div>
+                <div className='flex min-h-0 flex-1 gap-3 lg:gap-4'>
+                    <main className='flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.5rem] border border-border bg-background'>
+                        <div className='min-h-0 flex-1 overflow-y-auto'>
+                            <HeldRefundReminderBannerContainer />
+                            <RefundPaidBannerStack />
+                            <Outlet />
+                        </div>
+                    </main>
+
+                    <OrderSidebar open={orderDrawerOpen} onOpenChange={setOrderDrawerOpen} />
                 </div>
             </div>
         </div>
