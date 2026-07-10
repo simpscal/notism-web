@@ -454,24 +454,32 @@ function ClusterError({ title, description }: { title: string; description: stri
 // on the app's neutral canvas (bg-muted):
 //
 //   canvas (fills the viewport, flex column, bg-muted)
-//     → sticky admin-nav placeholder (pinned top, page padding)
+//     → admin-nav placeholder — TOP on desktop (lg+), BOTTOM on mobile
 //     → scrollable body: white content panel (hairline)
 //        → white metric cards (hairline, no shadow)
 //
+// The nav placeholder is a flex sibling reordered by breakpoint: on lg+ it is
+// `order-first` (pinned top); below lg it is `order-last`, so the nav sits at
+// the bottom of the viewport (thumb-reachable). The scroll body carries extra
+// bottom padding on mobile so the bottom bar never crowds its content.
+//
 // The canvas fills the viewport; only the body scrolls (single scrollbar); the
-// nav region stays pinned. Sizing uses min-h / flex, never fixed heights.
+// nav region keeps its place at the top/bottom edge. Sizing uses min-h / flex,
+// never fixed heights.
 // ---------------------------------------------------------------------------
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
-            {/* Admin nav — owned by AdminAppShell; a muted sticky placeholder here */}
-            <div className='shrink-0 px-4 pt-4 sm:px-6 sm:pt-6'>
+            {/* Admin nav — owned by AdminAppShell; a muted placeholder here.
+                TOP on desktop (lg:order-first), BOTTOM on mobile (order-last). */}
+            <div className='order-last shrink-0 px-4 pb-4 sm:px-6 sm:pb-6 lg:order-first lg:pb-0 lg:pt-6'>
                 <AdminNavPlaceholder />
             </div>
 
-            {/* Scrollable body — the only scroll region, edge-to-edge on the canvas */}
-            <div className='min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+            {/* Scrollable body — the only scroll region, edge-to-edge on the canvas.
+                Extra bottom padding on mobile keeps the bottom nav clear of content. */}
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-8 sm:px-6 sm:pt-6 sm:pb-8 lg:pb-6'>
                 {/* Content panel — a surface level, not a floating panel: hairline only,
                     NO shadow (theme §4 reserves the soft shadow for floating panels). */}
                 <div className='mx-auto w-full max-w-7xl rounded-3xl border bg-card p-6 sm:p-10'>
@@ -511,8 +519,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — the full dashboard on-theme: the sticky admin-nav placeholder pinned above
- * a scrollable body, today's-sales metric cards (revenue in crimson), the
+ * Default — the full dashboard on-theme: the admin-nav placeholder (top on
+ * desktop, bottom on mobile) beside a scrollable body, today's-sales metric
+ * cards (revenue in crimson), the
  * status-bearing "orders by status" cluster (each state carries a consistent
  * colour AND a word label), and revenue-over-time with a word-based granularity
  * toggle. Every cluster is a large-radius card with a clear eyebrow → heading →

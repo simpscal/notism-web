@@ -19,15 +19,17 @@ import { NavBar, NavBarActions, NavBarBrand, NavBarItem, NavBarNav } from '@/com
 //     flows directly on the canvas, never inside a rounded panel;
 //   • a FLOATING rounded toolbar (the shared NavBar) is the ONE raised element:
 //     detached, inset from the layout edges, carrying its own radius + a single
-//     soft shadow, pinned above the full-bleed content (brand left · nav-tab pill
-//     row center where the active item is a BLACK pill with a white icon+label ·
-//     actions right: search + language + theme + avatar + a crimson Cart
-//     affordance);
+//     soft shadow, over the full-bleed content — pinned at the TOP on desktop
+//     (lg+) and at the BOTTOM on mobile via responsive flex ordering (brand left ·
+//     nav-tab pill row center where the active item is a BLACK pill with a white
+//     icon+label · actions right: search + language + theme + avatar + a crimson
+//     Cart affordance);
 //   • two-tone hierarchy: BLACK carries structural/contextual controls (nav tabs);
 //     CRIMSON is reserved for prices and the Cart CTA;
-//   • beneath the pinned toolbar a FULL-BLEED content zone scrolls independently;
-//     there is no persistent order sidebar and no order drawer. The shell fills
-//     the viewport — only the content zone scrolls, no page scroll;
+//   • a FULL-BLEED content zone scrolls independently beside the pinned toolbar
+//     (below it on desktop, above it on mobile); there is no persistent order
+//     sidebar and no order drawer. The shell fills the viewport — only the content
+//     zone scrolls, no page scroll;
 //   • the Cart affordance is a ROUTE LINK to the existing /cart (CartReview)
 //     surface — it no longer opens a sidebar or drawer. Desktop shows a crimson
 //     Cart pill; mobile shows a condensed crimson cart button. A small item-count
@@ -71,10 +73,10 @@ const NAV_ITEMS: NavItem[] = [
 // ---------------------------------------------------------------------------
 // App canvas — FULL-BLEED. No frame backdrop, no enclosing floating shell. A
 // single edge-to-edge column on the app's neutral canvas (bg-muted): the pinned
-// floating toolbar at top over an independently scrolling content zone. The
-// toolbar is the only raised element; the content flows directly on the canvas,
-// never inside a rounded shell. Fixed to the viewport height so only the content
-// zone scrolls (no page scroll).
+// floating toolbar (top on desktop, bottom on mobile) over an independently
+// scrolling content zone. The toolbar is the only raised element; the content
+// flows directly on the canvas, never inside a rounded shell. Fixed to the
+// viewport height so only the content zone scrolls (no page scroll).
 // ---------------------------------------------------------------------------
 
 function AppCanvas({ children, className }: { children: ReactNode; className?: string }) {
@@ -230,24 +232,29 @@ function ShellTopbar({ activeNav }: { activeNav: string }) {
 
 // ---------------------------------------------------------------------------
 // The shell — a full-bleed column on the app's neutral canvas. The floating
-// rounded toolbar (the shared NavBar) is pinned at top, inset from the edges via
-// its wrapping row. Beneath it, an edge-to-edge content zone scrolls
-// independently — the content flows directly on the canvas, not inside a rounded
-// shell or white panel. The toolbar condenses responsively (Storybook viewport
-// drives the breakpoint) so the desktop + mobile behaviour is real. No
-// page-level scrollbar — only the content zone scrolls. No order sidebar/drawer.
+// rounded toolbar (the shared NavBar) is pinned at the top on desktop and at the
+// bottom on mobile via responsive flex ordering, inset from the edges via its
+// wrapping row. Alongside it an edge-to-edge content zone scrolls independently —
+// the content flows directly on the canvas, not inside a rounded shell or white
+// panel, and gains bottom padding on mobile so it never sits under the bottom
+// toolbar. The toolbar condenses responsively (Storybook viewport drives the
+// breakpoint) so the desktop + mobile behaviour is real. No page-level scrollbar
+// — only the content zone scrolls. No order sidebar/drawer.
 // ---------------------------------------------------------------------------
 
 function ConsumerAppShell({ activeNav = 'home' }: { activeNav?: string }) {
     return (
         <AppCanvas>
-            {/* Pinned floating toolbar — inset from the layout edges, outside the scroll zone */}
-            <div className='shrink-0 px-4 pt-4 lg:px-6 lg:pt-6'>
+            {/* Floating toolbar — inset from the layout edges, outside the scroll zone.
+                Responsive order pins it at the BOTTOM on mobile (order-last, inset via
+                pb) and at the TOP on lg+ (order-first, inset via pt). */}
+            <div className='order-last shrink-0 px-4 pb-4 pt-0 lg:order-first lg:px-6 lg:pb-0 lg:pt-6'>
                 <ShellTopbar activeNav={activeNav} />
             </div>
 
-            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell */}
-            <main className='flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell.
+                Extra bottom padding on mobile keeps content clear of the bottom toolbar. */}
+            <main className='order-first flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-6 pt-4 sm:px-6 sm:pt-6 lg:order-last lg:pb-6'>
                 <ContentZonePlaceholder />
             </main>
         </AppCanvas>
@@ -270,27 +277,19 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default — the consumer shell on desktop: a full-bleed, edge-to-edge layout on
- * the app's neutral canvas — no frame backdrop, no enclosing floating shell. The
- * shared NavBar floats as a detached rounded toolbar, inset from the layout edges
- * with its own radius + one soft shadow (brand · centered nav-tab pills with a
- * black active pill · search + language + theme + avatar + a crimson Cart pill),
- * pinned above an independently scrolling, edge-to-edge content zone. There is no
- * persistent order sidebar — the Cart pill routes to /cart (CartReview).
+ * Default — the single responsive consumer shell: a full-bleed, edge-to-edge
+ * layout on the app's neutral canvas — no frame backdrop, no enclosing floating
+ * shell. The shared NavBar floats as a detached rounded toolbar, inset from the
+ * layout edges with its own radius + one soft shadow (brand · centered nav-tab
+ * pills with a black active pill · search + language + theme + avatar + a crimson
+ * Cart pill), over an independently scrolling, edge-to-edge content zone. The
+ * toolbar is pinned at the TOP on desktop (lg+) and at the BOTTOM on mobile, where
+ * it condenses to brand + a crimson cart button; content gains bottom padding so
+ * it never sits under the bottom toolbar. There is no persistent order sidebar —
+ * the Cart affordance routes to /cart (CartReview). Resize the Storybook viewport
+ * across the `lg` breakpoint to see both arrangements.
  */
 export const Default: Story = {
-    name: 'Default — Desktop Shell, Full-Bleed Content',
-    render: () => <ConsumerAppShell activeNav='home' />,
-};
-
-/**
- * Mobile — the full-bleed shell condenses: the floating rounded toolbar narrows
- * to brand + a crimson cart button that routes to /cart, still inset with its own
- * radius + soft shadow over the edge-to-edge content zone, which scrolls
- * independently. No order drawer.
- */
-export const Mobile: Story = {
-    name: 'Mobile — Condensed Toolbar, Full-Bleed Content',
-    parameters: { viewport: { defaultViewport: 'mobile1' } },
+    name: 'Default — Responsive Shell, Full-Bleed Content',
     render: () => <ConsumerAppShell activeNav='home' />,
 };

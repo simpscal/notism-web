@@ -143,18 +143,22 @@ const LINES: CartLine[] = [
 // ---------------------------------------------------------------------------
 // App shell — FULL-BLEED. No dark ambient frame, no enclosing floating shell: a
 // single edge-to-edge column on the app's neutral canvas (bg-muted). The
-// floating rounded toolbar is pinned at the top (inset from the edges, riding
-// above the content); only the body below scrolls, so there is a single
-// scrollbar and no clipping. Elevation climbs one gentle step at a time (canvas
-// → panels → cards); no heavy shadows or rings.
+// floating rounded toolbar is pinned at the TOP on desktop (lg+) and at the
+// BOTTOM on mobile (below lg) — reachable by thumb — via responsive flex
+// ordering (toolbar order-last lg:order-first). It stays inset from the edges,
+// riding above the content; only the body scrolls, so there is a single
+// scrollbar and no clipping. The scroll body carries extra bottom padding on
+// mobile so the bottom-pinned toolbar never overlaps content. Elevation climbs
+// one gentle step at a time (canvas → panels → cards); no heavy shadows or rings.
 // ---------------------------------------------------------------------------
 
 function AppShell({ cartCount, children }: { cartCount: number; children: React.ReactNode }) {
     return (
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
             <Toolbar cartCount={cartCount} />
-            {/* The only scroll region — the toolbar above stays pinned. */}
-            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
+            {/* The only scroll region — the toolbar stays pinned (top on desktop,
+                bottom on mobile). pb keeps the bottom bar clear of content on mobile. */}
+            <div className='order-first min-h-0 flex-1 overflow-y-auto pb-24 lg:order-last lg:pb-0'>{children}</div>
         </div>
     );
 }
@@ -167,7 +171,8 @@ function AppShell({ cartCount, children }: { cartCount: number; children: React.
 // centre (the active tab is a real navigation selection — a white pill + crimson
 // icon/label via NavBarItem's aria-current, never a Button in a selected style) ·
 // actions slot right (search + crimson Cart pill). Condenses on mobile, staying a
-// rounded floating bar.
+// rounded floating bar. It rides at the TOP on desktop (lg+) and at the BOTTOM on
+// mobile (order-last lg:order-first), keeping its style + insets in both spots.
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS = [
@@ -179,7 +184,7 @@ const NAV_ITEMS = [
 
 function Toolbar({ cartCount }: { cartCount: number }) {
     return (
-        <NavBar className='z-40 m-3 shrink-0 gap-3 bg-card/95 backdrop-blur sm:m-4'>
+        <NavBar className='z-40 order-last m-3 shrink-0 gap-3 bg-card/95 backdrop-blur sm:m-4 lg:order-first'>
             {/* Brand — mark + wordmark carry the accent RED as identity (theme §2); nav/Cart pills stay black. */}
             <NavBarBrand className='pl-1 pr-1 sm:pr-2'>
                 <span className='flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground'>
@@ -682,7 +687,8 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Default — the cart with lines. A floating rounded toolbar is pinned at the top
- * of the full-bleed app canvas; the cart body scrolls beneath it. Each order line is
+ * of the full-bleed app canvas on desktop and at the bottom on mobile; the cart
+ * body scrolls beside it. Each order line is
  * a white card (hairline, no shadow) on the white lines panel, with a circular
  * thumbnail; every line price and the running total read in crimson; the
  * circular −/+ steppers and the selection checkbox read black; a single crimson

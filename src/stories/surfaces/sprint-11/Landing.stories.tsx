@@ -1,17 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import {
-    ArrowRight,
-    Clock3,
-    Flame,
-    Leaf,
-    Menu as MenuIcon,
-    Search,
-    ShieldCheck,
-    Sparkles,
-    Star,
-    Truck,
-    UtensilsCrossed,
-} from 'lucide-react';
+import { ArrowRight, Flame, Leaf, Search, ShieldCheck, Sparkles, Star, Truck, UtensilsCrossed } from 'lucide-react';
 import React from 'react';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/accordion';
@@ -23,6 +11,11 @@ import { Separator } from '@/components/separator';
 
 // ---------------------------------------------------------------------------
 // SURFACE — Landing ("/") restyled to DESIGN_THEME.md (sprint 11, story: landing).
+//
+// ONE responsive story renders the whole surface across breakpoints. The single
+// floating rounded nav toolbar is pinned at the TOP on desktop (lg+) and at the
+// BOTTOM of the viewport on mobile (below lg); content carries bottom padding on
+// mobile so it is never overlapped by the bottom-pinned bar. Desktop is unchanged.
 //
 // Business functionality is UNCHANGED from src/pages/landing/*. The same
 // sections, the same copy, the same flow (marketing landing → sign-up / browse
@@ -136,8 +129,9 @@ function Panel({ className = '', children }: { className?: string; children: Rea
 // ---------------------------------------------------------------------------
 // Top nav — the shared consumer NavBar so the landing chrome matches the rest of
 // the client. It is the one floating rounded element: a detached bar inset from
-// the canvas edges (margin all around, never full-bleed) that stays pinned as the
-// full-width content scrolls beneath it. Brand slot (left), a
+// the canvas edges (margin all around, never full-bleed). It rides as a sticky
+// bar pinned at the TOP on desktop (lg+); on mobile (below lg) the same toolbar is
+// fixed to the BOTTOM of the viewport as a bottom action bar. Brand slot (left), a
 // single-select nav region (center), and a trailing actions slot (right). The
 // current nav item is expressed as a real navigation selection via NavBarItem
 // `active` (aria-current) — never a Button in a selected style. Auth actions stay
@@ -146,7 +140,7 @@ function Panel({ className = '', children }: { className?: string; children: Rea
 
 function TopNav() {
     return (
-        <div className='sticky top-3 z-30 px-4 pt-4 sm:px-6'>
+        <div className='fixed inset-x-0 bottom-0 z-30 px-3 pb-3 lg:sticky lg:inset-x-auto lg:bottom-auto lg:top-3 lg:px-6 lg:pb-0 lg:pt-4'>
             <NavBar className='mx-auto max-w-6xl bg-card/90 backdrop-blur-md'>
                 <NavBarBrand>
                     <span className='flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
@@ -513,49 +507,25 @@ function LandingFooter() {
 }
 
 // ---------------------------------------------------------------------------
-// Mobile bottom bar — the live landing's bottom toolbar, re-cast as a floating
-// rounded bar (condensed, never full-bleed): brand + single action + menu. The
-// action is idle black, not crimson.
-// ---------------------------------------------------------------------------
-
-function MobileBottomBar() {
-    return (
-        <div className='sticky bottom-3 z-30 px-3 pb-1'>
-            <div className='mx-auto flex h-14 items-center justify-between rounded-full border border-border/70 bg-card/90 pl-4 pr-2 shadow-sm backdrop-blur'>
-                <span className='text-base font-semibold tracking-tight text-primary'>Notism</span>
-                <div className='flex items-center gap-2'>
-                    <Button size='sm' className='rounded-full'>
-                        Log in
-                    </Button>
-                    <button
-                        aria-label='Open navigation menu'
-                        className='flex size-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground'
-                    >
-                        <MenuIcon className='size-5' />
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ---------------------------------------------------------------------------
 // App canvas — FULL-BLEED. Content flows edge-to-edge directly on the app's
 // neutral canvas (bg-muted): no dark ambient frame, no enclosing floating
 // rounded shell. Sections keep their own centered max-width + page padding, and
 // the toolbar is the one floating rounded element pinned above the full-width
-// content. The page scrolls as one clean column (document scroll).
+// content. The page scrolls as one clean column (document scroll). Extra bottom
+// padding on mobile clears the bottom-pinned nav toolbar; desktop keeps pb-4.
 // ---------------------------------------------------------------------------
 
 function AppCanvas({ children }: { children: React.ReactNode }) {
-    return <div className='min-h-screen w-full bg-muted pb-4'>{children}</div>;
+    return <div className='min-h-screen w-full bg-muted pb-24 lg:pb-4'>{children}</div>;
 }
 
 // ---------------------------------------------------------------------------
-// Full page compositions
+// Full page composition — one responsive layout. The floating rounded TopNav
+// pins to the top on desktop (lg+) and to the bottom of the viewport on mobile;
+// the canvas carries extra bottom padding on mobile so content is never overlapped.
 // ---------------------------------------------------------------------------
 
-function LandingDesktop() {
+function LandingPage() {
     return (
         <AppCanvas>
             <TopNav />
@@ -567,43 +537,6 @@ function LandingDesktop() {
                 <FinalCta />
                 <LandingFooter />
             </main>
-        </AppCanvas>
-    );
-}
-
-function LandingMobile() {
-    return (
-        <AppCanvas>
-            <div className='flex min-h-screen flex-col'>
-                {/* Floating condensed consumer NavBar — never full-bleed on mobile. */}
-                <div className='sticky top-2 z-30 px-3 pt-3'>
-                    <NavBar className='mx-auto h-14 bg-card/90 backdrop-blur'>
-                        <NavBarBrand>
-                            <span className='flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground'>
-                                <UtensilsCrossed className='size-3.5' />
-                            </span>
-                            <span className='text-base font-semibold tracking-tight text-primary'>Notism</span>
-                        </NavBarBrand>
-                        <NavBarActions>
-                            <span className='inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground'>
-                                <Clock3 className='size-3.5' />
-                                Open now
-                            </span>
-                        </NavBarActions>
-                    </NavBar>
-                </div>
-
-                <main className='flex-1'>
-                    <Hero />
-                    <TrustSection />
-                    <FeaturesSection />
-                    <FaqSection />
-                    <FinalCta />
-                    <LandingFooter />
-                </main>
-
-                <MobileBottomBar />
-            </div>
         </AppCanvas>
     );
 }
@@ -624,27 +557,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default (desktop) — the full landing page full-bleed on the app's neutral
- * canvas (bg-muted): no dark ambient frame, no enclosing floating shell, just
- * the pinned floating toolbar riding above edge-to-edge content. Food-as-hero
- * imagery throughout; exactly one crimson order-level primary ("Start ordering")
- * leading into the ordering flow; every other action is idle/black. All original
- * sections and copy preserved.
+ * Default — the single responsive landing page, full-bleed on the app's neutral
+ * canvas (bg-muted): no dark ambient frame, no enclosing floating shell, just the
+ * one floating rounded nav toolbar riding above edge-to-edge content. The toolbar
+ * is pinned at the TOP on desktop (lg+) and at the BOTTOM of the viewport on
+ * mobile (below lg), with content bottom padding so nothing is overlapped.
+ * Food-as-hero imagery throughout; exactly one crimson order-level primary
+ * ("Start ordering") leading into the ordering flow; every other action is
+ * idle/black. All original sections and copy preserved.
  */
-export const Desktop: Story = {
-    render: () => <LandingDesktop />,
-};
-
-/**
- * Mobile — the same landing, full-bleed within the small viewport: content runs
- * edge-to-edge on the app canvas (no frame, no enclosing shell) with a compact
- * floating top bar, single-column stacked sections, and the floating bottom
- * action bar from the live landing. Still exactly one crimson primary (the hero
- * CTA).
- */
-export const Mobile: Story = {
-    parameters: {
-        viewport: { defaultViewport: 'mobile1' },
-    },
-    render: () => <LandingMobile />,
+export const Default: Story = {
+    render: () => <LandingPage />,
 };

@@ -89,11 +89,16 @@ interface OrderCardData {
 }
 
 // ---------------------------------------------------------------------------
-// Floating top nav — the shared, domain-blind NavBar (consumer variant). Brand
+// Floating nav — the shared, domain-blind NavBar (consumer variant). Brand
 // left · nav-items region center (the active tab is a real navigation selection
 // via NavBarItem aria-current, never a Button in a selected style) · actions
 // right (search + a Cart CTA). Deliberately monochrome so red stays reserved for
 // the order total.
+//
+// Responsive placement: the toolbar sits at the TOP on desktop (lg+) and is
+// pinned to the BOTTOM of the viewport on mobile (below lg) — a thumb-reachable
+// bottom bar. This is done purely with flex ordering (order-last lg:order-first)
+// within the Shell's flex column; its rounded style + insets are preserved.
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS: { key: string; label: string; icon: LucideIcon; active?: boolean }[] = [

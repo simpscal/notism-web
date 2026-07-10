@@ -632,8 +632,9 @@ function AppToolbar() {
 /**
  * The on-theme app shell: FULL-BLEED — no dark ambient frame, no enclosing
  * floating light-gray shell. A single edge-to-edge column on the app's neutral
- * canvas (bg-muted). The toolbar is pinned and floats above; only the content
- * zone scrolls (flex + min-h-0). The settings section switcher is a real Tabs
+ * canvas (bg-muted). The toolbar floats and is pinned — at the TOP on desktop
+ * (lg+) and at the BOTTOM of the viewport on mobile (responsive flex order); only
+ * the content zone scrolls (flex + min-h-0). The settings section switcher is a real Tabs
  * primitive (vertical orientation): the rail is its tablist, the pane its active
  * tabpanel.
  */
@@ -646,13 +647,17 @@ function SettingsShell({
 }) {
     return (
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
-            {/* Pinned floating toolbar — inset from the layout edges, outside the scroll zone. */}
-            <div className='shrink-0 px-3 pt-3 sm:px-6 sm:pt-6'>
+            {/* Pinned floating toolbar — inset from the layout edges, outside the scroll
+                zone. TOP on desktop (lg+); on mobile it moves to the BOTTOM of the
+                viewport via responsive flex order (order-last lg:order-first), keeping its
+                floating style + insets (top inset at lg, bottom inset on mobile). */}
+            <div className='order-last shrink-0 px-3 pb-3 sm:px-6 sm:pb-6 lg:order-first lg:pb-0 lg:pt-6'>
                 <AppToolbar />
             </div>
 
-            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell. */}
-            <div className='min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell.
+                Extra bottom padding on mobile keeps the bottom bar clear of content. */}
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-4 sm:px-6 sm:pb-8 sm:pt-6 lg:pb-6'>
                 <div className='mx-auto w-full max-w-5xl'>
                     <div className='mb-5 space-y-1 px-1'>
                         <Eyebrow>Account</Eyebrow>

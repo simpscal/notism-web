@@ -322,6 +322,11 @@ function FinalCta({ method, onPlaceOrder }: { method: PaymentMethod; onPlaceOrde
 // nav-items region centre (the active tab is a real navigation selection via
 // NavBarItem's aria-current — a white pill w/ crimson icon+label, never a Button
 // in a "selected" style) · actions slot right (search + the black Cart pill).
+//
+// Responsive placement: TOP of the viewport on desktop (lg+), pinned to the
+// BOTTOM on mobile (below lg). Achieved via responsive flex ordering on the
+// wrapper (order-last lg:order-first) inside the column shell; the toolbar's own
+// style + insets are preserved in both positions.
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS = [
@@ -334,7 +339,7 @@ const NAV_ITEMS = [
 
 function Toolbar() {
     return (
-        <div className='shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
+        <div className='order-last shrink-0 px-3 pt-3 pb-3 sm:px-4 sm:pt-4 sm:pb-4 lg:order-first lg:pb-0'>
             <NavBar>
                 <NavBarBrand>
                     <span className='flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground'>
@@ -384,9 +389,11 @@ function CheckoutProgressPlaceholder() {
 // ---------------------------------------------------------------------------
 // Checkout shell — FULL-BLEED / edge-to-edge on the app's neutral canvas
 // (bg-muted): no dark ambient frame, no enclosing floating light shell. The
-// floating rounded toolbar is pinned at top and the Final CTA at the bottom,
-// over an independently scrolling single-column content zone. The form is a
-// SINGLE COLUMN, max ~40rem, labels above fields (§4, §6).
+// floating rounded toolbar sits at the TOP on desktop (lg+) and is pinned to the
+// BOTTOM on mobile (below lg) via responsive flex ordering; the place-order CTA
+// scrolls inline with the content in both cases. The content scroll zone carries
+// extra bottom padding on mobile so the bottom bar never overlaps it. The form is
+// a SINGLE COLUMN, max ~40rem, labels above fields (§4, §6).
 // ---------------------------------------------------------------------------
 
 interface CheckoutSurfaceProps {
@@ -417,13 +424,14 @@ function CheckoutSurface({
 
     return (
         // Full-bleed canvas — no dark frame, no enclosing floating shell. Content
-        // flows edge-to-edge on the app's neutral canvas; this is the single scroll
-        // container (toolbar pinned top; the place-order CTA scrolls with the content).
+        // flows edge-to-edge on the app's neutral canvas; the single scroll region +
+        // the toolbar are ordered so the toolbar is top on desktop, bottom on mobile.
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
             <Toolbar />
 
-            {/* Scroll region — only the single-column content scrolls here. */}
-            <div className='min-h-0 flex-1 overflow-y-auto px-3 pb-6 sm:px-4'>
+            {/* Scroll region — only the single-column content scrolls here. Extra
+                bottom padding on mobile keeps the bottom-pinned toolbar clear of it. */}
+            <div className='order-first min-h-0 flex-1 overflow-y-auto px-3 pb-24 sm:px-4 lg:order-last lg:pb-6'>
                 <div className='mx-auto max-w-[40rem] pt-4 sm:pt-5'>
                     {/* White form panel: hairline + one soft shadow. */}
                     <div className='space-y-8 rounded-[1.5rem] border border-border/70 bg-background p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sm:p-7'>

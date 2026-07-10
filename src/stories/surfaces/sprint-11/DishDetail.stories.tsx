@@ -41,8 +41,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 //     edges and riding above the full-bleed content. Brand left, nav centre (the
 //     active tab is a real navigation selection via NavBarItem's aria-current — a
 //     white pill with a crimson icon + label, never a Button in a selected
-//     style), search + the Cart action right. Pinned above the scroll zone;
-//     condensed on mobile.
+//     style), search + the Cart action right. Pinned at the TOP on desktop
+//     (lg+); on mobile (below lg) it drops to the BOTTOM of the viewport via
+//     responsive flex ordering (same style + insets). Condensed on mobile.
 //   • Scrolling — the canvas fills the viewport; only the content zone scrolls
 //     within it; the toolbar stays pinned. No double scrollbars.
 //   • Item detail — one large dish image is the single focus, one
@@ -166,8 +167,9 @@ const NAV_ITEMS: NavItem[] = [
 // ---------------------------------------------------------------------------
 // App canvas — FULL-BLEED. No dark ambient frame, no enclosing floating shell.
 // A single edge-to-edge column on the app's neutral canvas (bg-muted): pinned
-// floating toolbar at top over an independently scrolling content zone. Fixed to
-// the viewport so only the content zone does the scrolling.
+// floating toolbar (TOP on desktop, BOTTOM on mobile via flex ordering) over an
+// independently scrolling content zone. Fixed to the viewport so only the
+// content zone does the scrolling.
 // ---------------------------------------------------------------------------
 
 function AppCanvas({ children }: { children: React.ReactNode }) {
@@ -182,12 +184,13 @@ function AppCanvas({ children }: { children: React.ReactNode }) {
 // is a real navigation selection — a white pill w/ crimson icon+label via
 // NavBarItem's aria-current, never a Button in a selected style) · actions slot
 // right (search + the Cart action). Nav collapses on mobile; the bar stays a
-// floating pill.
+// floating pill. Rides at the TOP on desktop (lg:order-first) and pins to the
+// BOTTOM of the viewport on mobile (order-last) — style + insets preserved.
 // ---------------------------------------------------------------------------
 
 function ShellTopbar({ activeNav = 'main' }: { activeNav?: string }) {
     return (
-        <div className='shrink-0 p-3 sm:p-4'>
+        <div className='order-last shrink-0 p-3 sm:p-4 lg:order-first'>
             <NavBar>
                 <NavBarBrand>
                     <span className='px-1 text-lg font-bold tracking-tight text-primary'>Notism</span>
@@ -226,14 +229,17 @@ function ShellTopbar({ activeNav = 'main' }: { activeNav?: string }) {
 
 // ---------------------------------------------------------------------------
 // Shell — a full-bleed column on the app's neutral canvas. Holds the pinned
-// floating toolbar plus a single edge-to-edge scrolling content zone.
+// floating toolbar (top on desktop, bottom on mobile) plus a single
+// edge-to-edge scrolling content zone. On mobile the scroll zone carries a
+// little bottom padding so its content clears the bottom toolbar; the sticky
+// Add-to-order bar stacks just above that toolbar.
 // ---------------------------------------------------------------------------
 
 function DishShell({ children }: { children: React.ReactNode }) {
     return (
         <AppCanvas>
             <ShellTopbar />
-            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
+            <div className='min-h-0 flex-1 overflow-y-auto pb-4 lg:pb-0'>{children}</div>
         </AppCanvas>
     );
 }

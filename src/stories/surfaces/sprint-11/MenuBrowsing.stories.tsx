@@ -396,11 +396,16 @@ function MenuEmpty({ onClearFilters }: { onClearFilters: () => void }) {
 // renders the shared `NavBar`). This surface only redesigns
 // the menu content zone, so the toolbar is a pinned, muted placeholder here
 // (dashed, mono label) — never reimplemented per-surface.
+//
+// Placement: pinned at the TOP on desktop (`lg+`) but at the BOTTOM on mobile
+// (thumb-reachable bottom bar). Driven by responsive flex ordering in the column
+// shell (`order-last lg:order-first`) — the toolbar's style + insets are
+// unchanged; only its position in the column flips.
 // ---------------------------------------------------------------------------
 
 function TopNavPlaceholder() {
     return (
-        <div className='sticky top-0 z-20 m-3 flex h-14 shrink-0 items-center justify-center rounded-full border border-dashed border-muted-foreground/30 bg-background/60 sm:m-4'>
+        <div className='sticky bottom-0 z-20 order-last m-3 flex h-14 shrink-0 items-center justify-center rounded-full border border-dashed border-muted-foreground/30 bg-background/60 sm:m-4 lg:bottom-auto lg:top-0 lg:order-first'>
             <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
                 consumer top nav placeholder
             </span>
@@ -463,17 +468,20 @@ function MenuContent({
 // ---------------------------------------------------------------------------
 // App shell — FULL-BLEED / edge-to-edge on the app's neutral canvas (bg-muted):
 // NO dark ambient frame, NO enclosing floating light shell. A single column
-// fills the viewport: the nav placeholder is pinned at the top and the menu
-// content zone scrolls beneath it (sensible page padding), so there is a single
-// scroll region and no clipping. The content flows directly on the canvas, never
-// inside a rounded floating shell.
+// fills the viewport: the nav placeholder is pinned at the TOP on desktop
+// (`lg+`) and at the BOTTOM on mobile (via the toolbar's `order-last
+// lg:order-first`), while the menu content zone scrolls in the remaining space,
+// so there is a single scroll region and no clipping. On mobile the scroll area
+// carries extra bottom padding (`pb-28`) so the bottom bar never overlaps the
+// last cards; it resets to the desktop inset at `lg`. The content flows directly
+// on the canvas, never inside a rounded floating shell.
 // ---------------------------------------------------------------------------
 
 function MenuShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
             <TopNavPlaceholder />
-            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-1 sm:px-6 sm:pb-8'>{children}</div>
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-1 sm:px-6 lg:pb-8'>{children}</div>
         </div>
     );
 }

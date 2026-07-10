@@ -565,12 +565,15 @@ function OrdersBoardSkeleton() {
 // ---------------------------------------------------------------------------
 // Nav placeholder — the admin top nav is owned by AdminAppShell, not
 // re-implemented per surface. A sticky, dashed, pinned bar stands in for it here
-// (matching the sibling AdminOrderDetail / AdminRefunds surfaces).
+// (matching the sibling AdminOrderDetail / AdminRefunds surfaces). It is pinned
+// to the TOP on desktop (lg+) and to the BOTTOM on mobile: responsive flex order
+// (order-last on mobile, order-first on lg+) reorders it within the OrdersShell
+// column, and responsive sticky (bottom-0 on mobile, top-0 on lg+) pins it there.
 // ---------------------------------------------------------------------------
 
 function NavPlaceholder() {
     return (
-        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
+        <div className='sticky bottom-0 z-20 order-last shrink-0 px-3 pt-3 sm:px-4 sm:pt-4 lg:top-0 lg:order-first'>
             <div className='flex h-14 items-center justify-center rounded-full border border-dashed border-border bg-card/60'>
                 <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
                     admin top nav placeholder
@@ -592,11 +595,13 @@ function NavPlaceholder() {
 function OrdersShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
-            {/* Pinned nav placeholder — the admin top nav is owned by AdminAppShell. */}
+            {/* Pinned nav placeholder — the admin top nav is owned by AdminAppShell.
+                Top on desktop (lg+), bottom on mobile via its own responsive order + sticky. */}
             <NavPlaceholder />
 
-            {/* Edge-to-edge content zone — the board scrolls independently on the canvas. */}
-            <div className='flex min-h-0 flex-1 flex-col gap-5 overflow-hidden px-4 py-4 sm:px-6 sm:py-6'>
+            {/* Edge-to-edge content zone — the board scrolls independently on the canvas.
+                Extra bottom padding on mobile (max-lg) clears the bottom-pinned nav bar. */}
+            <div className='flex min-h-0 flex-1 flex-col gap-5 overflow-hidden px-4 py-4 max-lg:pb-24 sm:px-6 sm:py-6'>
                 {children}
             </div>
         </div>

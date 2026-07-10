@@ -236,13 +236,15 @@ function StatusBadge({ status }: { status: RefundStatus }) {
 // ---------------------------------------------------------------------------
 // Nav placeholder — the admin top nav is owned by the AdminAppShell (which
 // carries the shared NavBar); this surface does not re-implement
-// it. It renders as a labelled, muted, dashed sticky bar pinned at the top of
-// the shell — consistent with sibling AdminOrderDetail.
+// it. It renders as a labelled, muted, dashed sticky bar: pinned at the TOP on
+// desktop (lg+) and at the BOTTOM on mobile (responsive flex order + sticky
+// inset), preserving its style + insets — consistent with sibling
+// AdminOrderDetail.
 // ---------------------------------------------------------------------------
 
 function NavPlaceholder() {
     return (
-        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-5 sm:pt-5'>
+        <div className='order-last lg:order-first sticky bottom-0 lg:top-0 z-20 shrink-0 px-3 pt-3 sm:px-5 sm:pt-5'>
             <div className='bg-card/60 flex h-14 items-center justify-center rounded-full border border-dashed border-border'>
                 <span className='text-muted-foreground/60 font-mono text-[10px] uppercase tracking-widest'>
                     admin top nav placeholder
@@ -255,10 +257,12 @@ function NavPlaceholder() {
 // ---------------------------------------------------------------------------
 // Shell — FULL-BLEED. No dark ambient frame, no enclosing floating light shell.
 // A single edge-to-edge column on the app's neutral canvas (bg-muted): the nav
-// placeholder is pinned at the top and only the refunds content scrolls beneath
-// it (single scroll region, no double scrollbars). White floating surfaces
-// (list panel, cards, dialogs) flow directly on the canvas, never inside a
-// rounded shell.
+// placeholder is pinned at the TOP on desktop (lg+) and at the BOTTOM on mobile
+// (responsive flex order), and only the refunds content scrolls beside it
+// (single scroll region, no double scrollbars). On mobile the content carries
+// bottom padding so the pinned bottom bar never overlaps it. White floating
+// surfaces (list panel, cards, dialogs) flow directly on the canvas, never
+// inside a rounded shell.
 // ---------------------------------------------------------------------------
 
 function AdminShell({ children }: { children: React.ReactNode }) {
@@ -266,8 +270,8 @@ function AdminShell({ children }: { children: React.ReactNode }) {
         <div className='bg-muted flex h-screen w-full flex-col overflow-hidden'>
             <NavPlaceholder />
 
-            {/* Only the refunds content scrolls */}
-            <div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
+            {/* Only the refunds content scrolls; bottom padding on mobile clears the pinned bottom nav */}
+            <div className='min-h-0 flex-1 overflow-y-auto pb-24 lg:pb-0'>{children}</div>
         </div>
     );
 }

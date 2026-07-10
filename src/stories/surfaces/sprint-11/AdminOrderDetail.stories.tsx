@@ -227,12 +227,14 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 // ---------------------------------------------------------------------------
 // Placeholder — unchanged shell regions this sprint does not touch. The nav
 // variant is a sticky, dashed, pinned bar (the admin top nav is owned by the
-// AdminAppShell, not re-implemented here).
+// AdminAppShell, not re-implemented here). It pins to the TOP on desktop (lg+)
+// and to the BOTTOM on mobile (below lg) via responsive flex ordering + a
+// responsive sticky inset, preserving its style + insets.
 // ---------------------------------------------------------------------------
 
 function NavPlaceholder() {
     return (
-        <div className='sticky top-0 z-20 shrink-0 px-3 pt-3 sm:px-4 sm:pt-4'>
+        <div className='sticky bottom-0 z-20 order-last shrink-0 px-3 pt-3 sm:px-4 sm:pt-4 lg:order-first lg:bottom-auto lg:top-0'>
             <div className='flex h-14 items-center justify-center rounded-full border border-dashed border-border bg-card/60'>
                 <span className='font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60'>
                     admin top nav placeholder
@@ -510,8 +512,9 @@ function PaymentStatusPanel({
 // shell: the order-detail body flows edge-to-edge directly on the app's neutral
 // canvas (bg-muted) with sensible page padding, closed to a comfortable reading
 // width. The admin top nav (owned by AdminAppShell) is a pinned dashed
-// placeholder at the top; the body scrolls beneath it in a single scroll region
-// (no double scrollbars).
+// placeholder — top on desktop (lg+), bottom on mobile (below lg); the body
+// scrolls in a single scroll region (no double scrollbars) and carries extra
+// bottom padding on mobile so the bottom bar never overlaps the content.
 // ---------------------------------------------------------------------------
 
 function AdminOrderDetailSurface({ body }: { body: React.ReactNode }) {
@@ -519,7 +522,7 @@ function AdminOrderDetailSurface({ body }: { body: React.ReactNode }) {
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
             <NavPlaceholder />
 
-            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-4 sm:px-6 sm:pt-6'>
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-28 pt-4 sm:px-6 sm:pt-6 lg:pb-8'>
                 <div className='mx-auto w-full max-w-5xl'>{body}</div>
             </div>
         </div>

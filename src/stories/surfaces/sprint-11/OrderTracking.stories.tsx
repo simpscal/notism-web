@@ -690,23 +690,28 @@ function ActionRail({ order }: { order: OrderFixture }) {
 // ---------------------------------------------------------------------------
 // Order-tracking shell — FULL-BLEED. NO dark ambient frame, NO enclosing floating
 // shell: a single edge-to-edge column on the app's neutral canvas (bg-muted). The
-// floating toolbar is pinned at top, inset from the layout edges, above an
-// independently scrolling content zone so tracking content scrolls beneath the
-// pinned chrome (no double scrollbars) and flows directly on the canvas — never
-// inside a rounded shell or white panel. The checkout trust/progress bar is
-// unchanged chrome → labelled placeholder.
+// floating toolbar is pinned at the TOP on desktop (lg+) and pinned at the BOTTOM
+// on mobile (below lg) — via responsive flex ordering (order-last lg:order-first)
+// in this h-screen flex column — while keeping its style + edge insets. The
+// content zone scrolls independently between the fixed chrome (no double
+// scrollbars) and flows directly on the canvas — never inside a rounded shell or
+// white panel; on mobile it carries extra bottom padding so the bottom-pinned bar
+// never overlaps content. The checkout trust/progress bar is unchanged chrome →
+// labelled placeholder.
 // ---------------------------------------------------------------------------
 
 function OrderTrackingShell({ children }: { children: React.ReactNode }) {
     return (
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
-            {/* Pinned floating toolbar — inset from the layout edges, above the scroll. */}
-            <div className='shrink-0 px-4 pt-4 sm:px-6 sm:pt-6'>
+            {/* Pinned floating toolbar — top on desktop, bottom on mobile (flex order),
+                inset from the layout edges, outside the independently scrolling zone. */}
+            <div className='order-last shrink-0 px-4 pb-4 pt-2 sm:px-6 sm:pb-6 lg:order-first lg:pb-0 lg:pt-6'>
                 <Toolbar />
             </div>
 
-            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell. */}
-            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-6 sm:px-6'>
+            {/* Independently scrolling, edge-to-edge content zone — no enclosing shell.
+                Extra bottom padding on mobile clears the bottom-pinned toolbar. */}
+            <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-8 sm:px-6 lg:pb-6'>
                 {/* Hero band */}
                 <div className='px-1 pb-2 pt-4'>
                     <Button variant='ghost' size='sm' className='-ml-2 mb-3 rounded-full text-muted-foreground'>
