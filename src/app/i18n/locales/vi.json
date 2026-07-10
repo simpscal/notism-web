@@ -173,17 +173,6 @@
             "browseFoods": "Duyệt thực phẩm"
         }
     },
-    "orderSidebar": {
-        "title": "Đơn hàng của tôi",
-        "openOrder": "Mở đơn hàng",
-        "checkout": "Thanh toán",
-        "browseMenu": "Xem thực đơn",
-        "removeItem": "Xóa {{name}}",
-        "empty": {
-            "title": "Đơn hàng của bạn đang trống",
-            "description": "Thêm một món từ thực đơn và nó sẽ xuất hiện ở đây."
-        }
-    },
     "nav": {
         "home": "Trang chủ",
         "dashboard": "Bảng điều khiển",

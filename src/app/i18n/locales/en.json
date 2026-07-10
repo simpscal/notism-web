@@ -173,17 +173,6 @@
             "browseFoods": "Browse foods"
         }
     },
-    "orderSidebar": {
-        "title": "My order",
-        "openOrder": "Open order",
-        "checkout": "Checkout",
-        "browseMenu": "Browse the menu",
-        "removeItem": "Remove {{name}}",
-        "empty": {
-            "title": "Your order is empty",
-            "description": "Add a dish from the menu and it will show up here."
-        }
-    },
     "nav": {
         "home": "Home",
         "dashboard": "Dashboard",

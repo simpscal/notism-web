@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { formatVnd, getDisplayName, getInitials } from '@/app/utils';
+import { getDisplayName, getInitials } from '@/app/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
 import {
     DropdownMenu,
@@ -17,21 +17,19 @@ import {
 } from '@/components/dropdown-menu';
 import { NavBar, NavBarActions, NavBarBrand } from '@/components/nav-bar';
 import { useAppSelector } from '@/core/hooks';
-import { selectCartTotalItems, selectSelectedCartTotalPrice } from '@/store/cart';
+import { selectCartTotalItems } from '@/store/cart';
 
 interface ClientToolbarMobileProps {
     user: UserProfileModel | null;
     onLogout: () => void;
-    onOpenOrder: () => void;
 }
 
-// Condensed mobile toolbar: the same floating NavBar, narrowed to the brand, the
-// account affordance, and a brand crimson order button that keeps the running
-// total reachable and opens the order drawer (the sidebar's mobile collapse).
-function ClientToolbarMobile({ user, onLogout, onOpenOrder }: ClientToolbarMobileProps) {
+// Condensed mobile toolbar: the same floating NavBar (fixed bottom bar), narrowed
+// to the brand, the account affordance, and a brand crimson cart button that
+// navigates to the /cart page and carries a running item-count badge.
+function ClientToolbarMobile({ user, onLogout }: ClientToolbarMobileProps) {
     const { t } = useTranslation();
     const cartItemCount = useAppSelector(selectCartTotalItems);
-    const selectedTotalPrice = useAppSelector(selectSelectedCartTotalPrice);
 
     const displayName = user ? getDisplayName(user) : null;
     const initials = user ? getInitials(user) : 'U';
@@ -98,10 +96,9 @@ function ClientToolbarMobile({ user, onLogout, onOpenOrder }: ClientToolbarMobil
                     </Link>
                 )}
 
-                <button
-                    type='button'
-                    onClick={onOpenOrder}
-                    aria-label={t('orderSidebar.openOrder')}
+                <Link
+                    to={`/${ROUTES.CART}`}
+                    aria-label={`Cart, ${cartItemCount} items`}
                     className='inline-flex h-10 items-center gap-2 rounded-full bg-primary px-3.5 text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
                 >
                     <span className='relative'>
@@ -112,8 +109,8 @@ function ClientToolbarMobile({ user, onLogout, onOpenOrder }: ClientToolbarMobil
                             </span>
                         )}
                     </span>
-                    <span className='text-sm font-semibold tabular-nums'>{formatVnd(selectedTotalPrice)}</span>
-                </button>
+                    <span className='text-sm font-semibold'>{t('nav.cart')}</span>
+                </Link>
             </NavBarActions>
         </NavBar>
     );
