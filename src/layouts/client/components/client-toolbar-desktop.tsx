@@ -27,10 +27,6 @@ interface ClientToolbarDesktopProps {
     onLogout: () => void;
 }
 
-// Desktop consumer toolbar rebuilt on the shared, domain-blind NavBar: brand
-// slot (crimson wordmark) · centered nav-tab region (active tab = the one "you
-// are here" accent) · actions slot (language, theme, account, and the brand
-// crimson Cart pill that anchors the persistent order sidebar).
 function ClientToolbarDesktop({ user, onLogout }: ClientToolbarDesktopProps) {
     const { t } = useTranslation();
     const location = useLocation();

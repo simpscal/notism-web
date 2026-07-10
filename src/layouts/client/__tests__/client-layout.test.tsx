@@ -1,16 +1,14 @@
 import { screen } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ClientLayout from '../client-layout';
 
-import i18n from '@/app/i18n/i18n';
+import { i18nReady } from '@/app/i18n/i18n';
 import { store } from '@/store';
 import { loadCart } from '@/store/cart/cart.thunks';
 import { resetStore } from '@/store/root.actions';
 import { renderWithProviders } from '@/test/utils';
-
-const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
@@ -37,6 +35,12 @@ const makeItem = () => ({
     isSelected: true,
 });
 
+// i18n loads its locale bundle asynchronously; the toolbars call useTranslation
+// and suspend until it resolves, so wait for it before rendering the shell.
+beforeAll(async () => {
+    await i18nReady;
+});
+
 beforeEach(() => {
     store.dispatch(resetStore());
     localStorage.clear();
@@ -60,7 +64,7 @@ function renderLayoutAt(path: string) {
 }
 
 describe('ClientLayout shell', () => {
-    it('renders the routed Outlet content alongside the persistent order sidebar', async () => {
+    it('renders the toolbars and the routed Outlet content', async () => {
         localStorage.setItem('cart_items', JSON.stringify([makeItem()]));
         await store.dispatch(loadCart());
 
@@ -68,9 +72,11 @@ describe('ClientLayout shell', () => {
 
         // The child route still mounts through the <Outlet>.
         expect(screen.getByText('routed page body')).toBeInTheDocument();
-        // The order sidebar is mounted persistently and reads the cart.
-        expect(screen.getAllByText(t('orderSidebar.title')).length).toBeGreaterThan(0);
-        expect(screen.getByText('Pho')).toBeInTheDocument();
+        // Desktop + mobile toolbars each expose a cart affordance that routes to
+        // /cart; there is no persistent order sidebar in the shell.
+        const cartLinks = screen.getAllByRole('link', { name: /cart/i });
+        expect(cartLinks.length).toBeGreaterThan(0);
+        cartLinks.forEach(link => expect(link).toHaveAttribute('href', '/cart'));
     });
 
     it('keeps routing unchanged across consumer routes', () => {
