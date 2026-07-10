@@ -24,9 +24,6 @@ interface ClientToolbarMobileProps {
     onLogout: () => void;
 }
 
-// Condensed mobile toolbar: the same floating NavBar (fixed bottom bar), narrowed
-// to the brand, the account affordance, and a brand crimson cart button that
-// navigates to the /cart page and carries a running item-count badge.
 function ClientToolbarMobile({ user, onLogout }: ClientToolbarMobileProps) {
     const { t } = useTranslation();
     const cartItemCount = useAppSelector(selectCartTotalItems);
