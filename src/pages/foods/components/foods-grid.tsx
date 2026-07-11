@@ -67,7 +67,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
         return (
             <div className={GRID_CLASSES}>
                 {Array.from({ length: PAGE_SIZE }).map((_, index) => (
-                    <Skeleton key={index} className='aspect-[4/5] w-full rounded-[20px]' />
+                    <Skeleton key={index} className='aspect-[4/5] w-full rounded-xl' />
                 ))}
             </div>
         );

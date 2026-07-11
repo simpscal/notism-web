@@ -33,7 +33,7 @@ function FoodCard({ food }: FoodCardProps) {
             disabled={!food.isAvailable}
             onClick={handleSelect}
             aria-label={`${food.name}, ${formatVnd(effectivePrice)}, ${action}`}
-            className='group bg-background focus-visible:ring-primary relative flex aspect-[4/5] w-full flex-col justify-end overflow-hidden rounded-[20px] border border-black/[0.06] text-left transition-shadow duration-200 ease-out hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-80'
+            className='group bg-background focus-visible:ring-primary relative flex aspect-[4/5] w-full flex-col justify-end overflow-hidden rounded-xl border border-black/[0.06] text-left transition-shadow duration-200 ease-out hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-80'
         >
             <FoodImage
                 src={food.imageUrl}
