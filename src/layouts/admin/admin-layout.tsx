@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import AdminToolbarDesktop from './components/admin-toolbar-desktop';
-import AdminToolbarMobile from './components/admin-toolbar-mobile';
+import { AdminToolbarMobileBottom, AdminToolbarMobileTop } from './components/admin-toolbar-mobile';
 
 import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
@@ -29,15 +29,23 @@ function AdminLayout() {
     }, [dispatch, navigate]);
 
     return (
-        // Ambient dark frame → large-radius light shell → pinned NavBar toolbar
-        // above an independently scrolling, table-oriented content zone.
-        <div className='relative h-screen w-full overflow-hidden bg-frame p-2 sm:p-3'>
-            <div className='relative z-10 flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[2rem] bg-muted shadow-[0_4px_20px_rgba(0,0,0,0.05)]'>
+        // Full-bleed shell on the neutral canvas: floating rounded chrome (desktop
+        // NavBar / mobile strips) inset from the edges, hovering over an
+        // independently scrolling, table-oriented content zone.
+        <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
+            <div className='hidden shrink-0 px-4 pt-4 lg:block lg:px-6 lg:pt-6'>
                 <AdminToolbarDesktop user={user} onLogout={handleLogout} liveFeedStatus={liveFeedStatus} />
-                <AdminToolbarMobile user={user} onLogout={handleLogout} liveFeedStatus={liveFeedStatus} />
-                <main className='min-h-0 flex-1 overflow-y-auto'>
-                    <Outlet />
-                </main>
+            </div>
+            <div className='shrink-0 px-3 pt-3 lg:hidden'>
+                <AdminToolbarMobileTop liveFeedStatus={liveFeedStatus} />
+            </div>
+
+            <main className='min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6'>
+                <Outlet />
+            </main>
+
+            <div className='shrink-0 px-3 pb-3 lg:hidden'>
+                <AdminToolbarMobileBottom user={user} onLogout={handleLogout} />
             </div>
         </div>
     );

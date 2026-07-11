@@ -92,4 +92,14 @@ describe('AdminToolbarDesktop', () => {
 
         expect(getByI18nText('admin.newOrder.feed.connecting')).toBeInTheDocument();
     });
+
+    it('renders the NavBar as a floating bar with the soft shadow, not a flat edge-pinned strip', () => {
+        renderToolbar();
+
+        const bar = document.querySelector('[data-slot="nav-bar"]');
+        expect(bar?.className).toMatch(/shadow-\[0_4px_20px_rgba\(0,0,0,0\.05\)\]/);
+        expect(bar?.className).not.toMatch(/(?:^|\s)border-b(?:\s|$)/);
+        expect(bar?.className).not.toMatch(/rounded-none/);
+        expect(bar?.className).not.toMatch(/shadow-none/);
+    });
 });
