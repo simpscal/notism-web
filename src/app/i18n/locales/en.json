@@ -917,12 +917,17 @@
         "empty": {
             "title": "No dishes found",
             "description": "We couldn't find any dishes matching your criteria.",
-            "clearFilters": "Clear all filters"
+            "clearFilters": "Clear all filters",
+            "showAll": "Show all dishes"
         },
         "card": {
             "outOfStock": "Out of Stock",
             "add": "Add",
-            "addedToCart": "{{name}} added to cart!"
+            "addedToCart": "{{name}} added to cart!",
+            "viewDish": "view dish"
+        },
+        "menu": {
+            "title": "Meal category"
         }
     },
     "foodDetail": {

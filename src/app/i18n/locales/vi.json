@@ -917,12 +917,17 @@
         "empty": {
             "title": "Không tìm thấy món nào",
             "description": "Chúng tôi không thể tìm thấy bất kỳ món nào phù hợp với tiêu chí của bạn.",
-            "clearFilters": "Xóa tất cả bộ lọc"
+            "clearFilters": "Xóa tất cả bộ lọc",
+            "showAll": "Xem tất cả món"
         },
         "card": {
             "outOfStock": "Hết hàng",
             "add": "Thêm",
-            "addedToCart": "{{name}} đã được thêm vào giỏ hàng!"
+            "addedToCart": "{{name}} đã được thêm vào giỏ hàng!",
+            "viewDish": "xem món"
+        },
+        "menu": {
+            "title": "Danh mục món ăn"
         }
     },
     "foodDetail": {
