@@ -28,9 +28,6 @@ interface AdminToolbarMobileBottomProps {
     onLogout: () => void;
 }
 
-// Floating top strip — brand + Admin badge and the portal-wide live new-order
-// feed pill, kept visible on every route. A detached rounded bar (no flat
-// edge-pinned strip); the nav itself lives in the bottom bar.
 function AdminToolbarMobileTop({ liveFeedStatus }: AdminToolbarMobileTopProps) {
     return (
         <header className='z-30 flex h-14 shrink-0 items-center justify-between rounded-full border border-border bg-card px-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] lg:hidden'>
@@ -47,10 +44,6 @@ function AdminToolbarMobileTop({ liveFeedStatus }: AdminToolbarMobileTopProps) {
     );
 }
 
-// Floating bottom nav bar — the first four icon+label nav shortcuts plus the
-// account affordance, pinned within thumb reach. A detached rounded bar; the
-// active shortcut is a real navigation selection (aria-current) promoted to the
-// ink accent. No order sidebar.
 function AdminToolbarMobileBottom({ user, onLogout }: AdminToolbarMobileBottomProps) {
     const { t } = useTranslation();
 

@@ -16,9 +16,6 @@ function AdminLayout() {
     const dispatch = useAppDispatch();
     const user = useAppSelector(state => state.user.user);
 
-    // Portal-wide live new-order feed (story #274): subscribed once at the admin
-    // shell so the connection persists across navigation and alerts surface on
-    // every admin route. Torn down only when staff leave the portal entirely.
     const { status: liveFeedStatus } = useNewOrderAlerts();
 
     const handleLogout = useCallback(async () => {
@@ -29,9 +26,6 @@ function AdminLayout() {
     }, [dispatch, navigate]);
 
     return (
-        // Full-bleed shell on the neutral canvas: floating rounded chrome (desktop
-        // NavBar / mobile strips) inset from the edges, hovering over an
-        // independently scrolling, table-oriented content zone.
         <div className='flex h-screen w-full flex-col overflow-hidden bg-muted'>
             <div className='hidden shrink-0 px-4 pt-4 lg:block lg:px-6 lg:pt-6'>
                 <AdminToolbarDesktop user={user} onLogout={handleLogout} liveFeedStatus={liveFeedStatus} />
