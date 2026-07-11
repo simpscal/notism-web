@@ -84,4 +84,20 @@ describe('ClientLayout shell', () => {
 
         expect(screen.getByText('routed page body')).toBeInTheDocument();
     });
+
+    it('pins the mobile toolbar as a bottom bar below the content on mobile', () => {
+        const { container } = renderLayoutAt('/foods');
+
+        // The mobile toolbar (lg:hidden) is ordered last so it sits at the bottom
+        // of the viewport column on mobile; the desktop toolbar (lg:flex) is not.
+        const mobileToolbar = container.querySelector('[data-slot="nav-bar"].lg\\:hidden');
+        expect(mobileToolbar).not.toBeNull();
+        expect(mobileToolbar).toHaveClass('order-last');
+
+        // Content is ordered first on mobile so it renders above the bottom bar,
+        // and clears the bar (does not scroll underneath it).
+        const main = container.querySelector('main');
+        expect(main).toHaveClass('order-first');
+        expect(main).toHaveClass('lg:order-last');
+    });
 });

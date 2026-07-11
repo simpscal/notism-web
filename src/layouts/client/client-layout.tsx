@@ -30,7 +30,7 @@ function ClientLayout() {
                     <ClientToolbarDesktop user={user} onLogout={handleLogout} />
                     <ClientToolbarMobile user={user} onLogout={handleLogout} />
 
-                    <main className='flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.5rem] border border-border bg-background'>
+                    <main className='order-first flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.5rem] border border-border bg-background lg:order-last'>
                         <div className='min-h-0 flex-1 overflow-y-auto'>
                             <HeldRefundReminderBannerContainer />
                             <RefundPaidBannerStack />
