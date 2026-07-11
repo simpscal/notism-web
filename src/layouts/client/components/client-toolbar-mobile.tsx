@@ -32,7 +32,7 @@ function ClientToolbarMobile({ user, onLogout }: ClientToolbarMobileProps) {
     const initials = user ? getInitials(user) : 'U';
 
     return (
-        <NavBar className='shrink-0 lg:hidden'>
+        <NavBar className='order-last shrink-0 shadow-soft lg:hidden'>
             <NavBarBrand>
                 <Link to={`/${ROUTES.FOODS.LIST}`} className='pl-1 text-lg font-extrabold tracking-tight text-primary'>
                     Notism
