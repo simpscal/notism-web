@@ -5,11 +5,11 @@ import { useInView } from 'react-intersection-observer';
 import { FoodSortOption } from '../enums';
 
 import FoodCard from './food-card';
-import FoodCardSkeleton from './food-card-skeleton';
 import FoodsEmpty from './foods-empty';
 
 import { FOOD_QUERY_KEYS, foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
+import { Skeleton } from '@/components/skeleton';
 import Spinner from '@/components/spinner';
 
 interface FoodsGridProps {
@@ -67,7 +67,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
         return (
             <div className={GRID_CLASSES}>
                 {Array.from({ length: PAGE_SIZE }).map((_, index) => (
-                    <FoodCardSkeleton key={index} />
+                    <Skeleton key={index} className='aspect-[4/5] w-full rounded-[20px]' />
                 ))}
             </div>
         );
