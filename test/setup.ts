@@ -15,6 +15,34 @@ class ResizeObserverMock {
 
 globalThis.ResizeObserver = globalThis.ResizeObserver ?? (ResizeObserverMock as unknown as typeof ResizeObserver);
 
+class IntersectionObserverMock {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+        return [];
+    }
+}
+
+globalThis.IntersectionObserver =
+    globalThis.IntersectionObserver ?? (IntersectionObserverMock as unknown as typeof IntersectionObserver);
+
+// jsdom ships no matchMedia; embla-carousel (dish-detail image) and the theme
+// media queries call it. Provide a default no-match implementation unless a test
+// has already installed its own.
+if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
+    window.matchMedia = ((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+    })) as unknown as typeof window.matchMedia;
+}
+
 if (typeof Element !== 'undefined') {
     Element.prototype.hasPointerCapture = Element.prototype.hasPointerCapture ?? (() => false);
     Element.prototype.setPointerCapture = Element.prototype.setPointerCapture ?? (() => undefined);

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CheckCircle2, Minus, Package, Plus, ShoppingCart, Utensils } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Package, ShoppingBag, Utensils } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -18,6 +18,8 @@ import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
 import Banner from '@/components/banner';
 import { Button } from '@/components/button';
+import QuantityStepper from '@/components/quantity-stepper';
+import { Separator } from '@/components/separator';
 import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 
@@ -147,9 +149,10 @@ function FoodDetail() {
                     {t('foodDetail.backToMenu')}
                 </Link>
 
-                {/* Success Banner */}
+                {/* Success Banner — add-to-order feedback animates in 150–250ms
+                    ease-out (motion-safe only → instant under reduced motion) */}
                 {cartAdded && (
-                    <div className='mb-6'>
+                    <div className='mb-6 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-1 motion-safe:duration-200 motion-safe:ease-out'>
                         <Banner
                             variant='success'
                             icon={<CheckCircle2 className='h-5 w-5' />}
@@ -188,58 +191,53 @@ function FoodDetail() {
 
                     {/* Details Section */}
                     <div className='flex flex-col'>
-                        {/* Category */}
-                        <span className='mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-primary'>
+                        {/* Category eyebrow — muted UPPERCASE (crimson is reserved for the price) */}
+                        <span className='mb-3 inline-block text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground'>
                             {food.category}
                         </span>
 
-                        {/* Title */}
-                        <h1 className='mb-2 text-4xl font-bold leading-tight text-foreground lg:text-5xl xl:text-6xl'>
+                        {/* One display-weight title */}
+                        <h1 className='text-[2rem] font-bold leading-tight tracking-tight text-foreground sm:text-[2.5rem]'>
                             {food.name}
                         </h1>
 
-                        <hr className='border-border my-6' />
-
                         {/* Description */}
-                        <p className='mb-6 text-base leading-relaxed text-muted-foreground'>{food.description}</p>
+                        <p className='mt-4 text-base leading-relaxed text-muted-foreground'>{food.description}</p>
 
                         {/* Meta info */}
-                        <div className='mb-6 flex flex-wrap gap-3'>
-                            <div className='flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium'>
-                                <Package className='h-4 w-4' />
-                                <span>{food.quantityUnit}</span>
-                            </div>
-                            <div className='flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium'>
-                                <Utensils className='h-4 w-4' />
-                                <span>{t('foodDetail.available', { qty: food.stockQuantity })}</span>
-                            </div>
+                        <div className='mt-5 flex flex-wrap gap-2'>
+                            <Badge variant='secondary' className='gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+                                <Package className='h-3.5 w-3.5' />
+                                {food.quantityUnit}
+                            </Badge>
+                            <Badge variant='secondary' className='gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+                                <Utensils className='h-3.5 w-3.5' />
+                                {t('foodDetail.available', { qty: food.stockQuantity })}
+                            </Badge>
                         </div>
 
-                        {/* Price */}
-                        <hr className='border-border mb-6' />
-                        <div className='mb-8'>
+                        {/* Price — the single loudest crimson element on the surface */}
+                        <div className='mt-6'>
                             {hasSavings && (
-                                <span className='mb-2 block text-base text-muted-foreground line-through'>
+                                <span className='mb-1 block text-base text-muted-foreground line-through'>
                                     {formatVnd(food.price)}
                                 </span>
                             )}
                             {selectedSurcharge > 0 && (
                                 <span className='mb-1 block text-sm text-muted-foreground'>
-                                    Base {formatVnd(effectivePrice)} + surcharge {formatVnd(selectedSurcharge)}
+                                    {t('foodDetail.priceBase', {
+                                        base: formatVnd(effectivePrice),
+                                        surcharge: formatVnd(selectedSurcharge),
+                                    })}
                                 </span>
                             )}
                             <div className='flex items-baseline gap-3'>
-                                <span className='font-sans text-6xl font-bold text-primary tabular-nums'>
+                                <span className='text-3xl font-bold tabular-nums text-primary'>
                                     {formatVnd(displayedPrice)}
                                 </span>
                                 {hasSavings && (
-                                    <span className='rounded-full bg-destructive/20 px-3 py-1 text-sm font-semibold text-destructive'>
+                                    <Badge variant='secondary' className='rounded-full text-xs font-semibold'>
                                         {t('cart.saveBadge', { amount: formatVnd(food.price - effectivePrice) })}
-                                    </span>
-                                )}
-                                {selectedSurcharge > 0 && (
-                                    <Badge variant='secondary' className='text-xs'>
-                                        +{formatVnd(selectedSurcharge)}
                                     </Badge>
                                 )}
                             </div>
@@ -247,60 +245,52 @@ function FoodDetail() {
 
                         {/* Customisation Section */}
                         {hasCustomisations && (
-                            <div className='mb-8'>
+                            <>
+                                <Separator className='my-7' />
                                 <FoodCustomisationSection
                                     customisations={food.customisations}
                                     selections={selections}
                                     onChange={handleSelectionChange}
                                 />
-                            </div>
+                            </>
                         )}
 
-                        {/* Quantity & Add to Cart — sticky on mobile, static on sm+ */}
-                        <div className='sticky bottom-0 z-10 border-t bg-background py-4 sm:static sm:border-t-0 sm:py-0'>
+                        {/* Quantity & always-visible Add control — sticky on mobile, static on sm+ */}
+                        <div className='sticky bottom-0 z-10 mt-8 border-t border-border bg-background pt-5 pb-1 sm:static sm:border-t-0 sm:pb-0'>
                             <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
-                                {/* Quantity Selector */}
-                                <div className='flex items-center justify-between rounded-full bg-muted px-1 py-1 shrink-0 h-10'>
-                                    <Button
-                                        variant='ghost'
-                                        size='icon'
-                                        className='h-8 w-8 rounded-full'
-                                        onClick={handleDecrement}
-                                        disabled={quantity <= 1}
-                                    >
-                                        <Minus className='h-4 w-4' />
-                                    </Button>
-                                    <span className='w-10 text-center text-sm font-bold text-foreground'>
-                                        {quantity}
-                                    </span>
-                                    <Button
-                                        variant='ghost'
-                                        size='icon'
-                                        className='h-8 w-8 rounded-full'
-                                        onClick={handleIncrement}
-                                        disabled={quantity >= food.stockQuantity}
-                                    >
-                                        <Plus className='h-4 w-4' />
-                                    </Button>
-                                </div>
+                                {/* Quantity — shared circular −/+ stepper */}
+                                <QuantityStepper
+                                    value={quantity}
+                                    onDecrement={handleDecrement}
+                                    onIncrement={handleIncrement}
+                                    min={1}
+                                    max={food.stockQuantity}
+                                    label={t('foodDetail.quantityLabel')}
+                                    decrementLabel={t('foodDetail.decreaseQuantity')}
+                                    incrementLabel={t('foodDetail.increaseQuantity')}
+                                    className='shrink-0'
+                                />
 
-                                {/* Add to Cart Button */}
+                                {/* Add to order — BLACK split-pill: total left | divider | label right */}
                                 <Button
-                                    variant='default'
-                                    size='lg'
+                                    type='button'
                                     disabled={!food.isAvailable || !allRequiredMet}
-                                    className='w-full rounded-full sm:flex-1'
                                     onClick={handleAddToCart}
+                                    className='h-14 w-full gap-0 rounded-full bg-selected p-0 text-base text-selected-foreground transition-transform hover:bg-selected/90 motion-safe:duration-200 motion-safe:ease-out motion-safe:active:scale-[0.98] sm:flex-1'
                                 >
-                                    <ShoppingCart className='h-5 w-5 shrink-0' />
-                                    <span className='truncate'>
-                                        {t('foodDetail.addToCart', { price: formatVnd(displayedPrice * quantity) })}
+                                    <span className='flex h-full items-center px-6 font-bold tabular-nums'>
+                                        {formatVnd(displayedPrice * quantity)}
+                                    </span>
+                                    <span className='h-7 w-px shrink-0 bg-selected-foreground/25' aria-hidden />
+                                    <span className='flex h-full flex-1 items-center justify-center gap-2 px-6 font-semibold'>
+                                        <ShoppingBag className='h-5 w-5' />
+                                        {t('foodDetail.addToOrder')}
                                     </span>
                                 </Button>
                             </div>
 
                             {!allRequiredMet && requiredIds.length > 0 && (
-                                <p className='mt-2 text-xs text-muted-foreground'>
+                                <p className='mt-3 text-xs text-muted-foreground'>
                                     {t('foodDetail.selectAllRequired')}
                                 </p>
                             )}

@@ -4,9 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { CustomisationGroupModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import { Badge } from '@/components/badge';
-import { Label } from '@/components/label';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
-import { Separator } from '@/components/separator';
+import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
 
 interface FoodCustomisationSectionProps {
     customisations: CustomisationGroupModel[];
@@ -19,53 +17,49 @@ function FoodCustomisationSection({ customisations, selections, onChange }: Food
 
     const handleValueChange = useCallback(
         (id: string) => (value: string) => {
-            onChange(id, value);
+            // Guard the empty value so re-clicking a chosen pill can't clear a
+            // required single-select group.
+            if (value) {
+                onChange(id, value);
+            }
         },
         [onChange]
     );
 
     return (
-        <div className='space-y-6'>
-            <div className='flex items-center gap-2'>
-                <Separator className='flex-1' />
-                <span className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-                    {t('foodDetail.customiseYourOrder')}
-                </span>
-                <Separator className='flex-1' />
-            </div>
-
+        <div className='space-y-7'>
             {customisations.map(cust => (
-                <div key={cust.id} className='space-y-2'>
+                <div key={cust.id} className='space-y-3'>
+                    {/* Group header — UPPERCASE eyebrow + optional Required tag */}
                     <div className='flex items-center gap-2'>
-                        <Label className='text-sm font-semibold'>{cust.label}</Label>
+                        <span className='text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground'>
+                            {cust.label}
+                        </span>
                         {cust.required && (
-                            <Badge variant='secondary' className='text-xs'>
+                            <Badge variant='secondary' className='rounded-full px-2 py-0 text-[10px] font-medium'>
                                 {t('foodDetail.required')}
                             </Badge>
                         )}
                     </div>
-                    <RadioGroup
+
+                    {/* Single-select black-pill row: muted track, chosen pill fills solid black */}
+                    <ToggleGroup
+                        type='single'
+                        variant='segmented'
                         value={selections[cust.id] ?? ''}
                         onValueChange={handleValueChange(cust.id)}
-                        className='grid gap-2'
+                        aria-label={cust.label}
+                        className='flex-wrap'
                     >
                         {cust.options.map(opt => (
-                            <Label
-                                key={opt.value}
-                                className='flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5 font-normal'
-                            >
-                                <RadioGroupItem value={opt.value} />
-                                <span className='flex flex-1 items-center justify-between text-sm'>
-                                    <span>{opt.label}</span>
-                                    {opt.surcharge ? (
-                                        <span className='text-xs font-semibold text-primary'>
-                                            +{formatVnd(opt.surcharge)}
-                                        </span>
-                                    ) : null}
-                                </span>
-                            </Label>
+                            <ToggleGroupItem key={opt.value} value={opt.value} className='h-11 gap-1.5 px-5'>
+                                <span className='font-medium'>{opt.label}</span>
+                                {opt.surcharge ? (
+                                    <span className='text-xs opacity-70'>+{formatVnd(opt.surcharge)}</span>
+                                ) : null}
+                            </ToggleGroupItem>
                         ))}
-                    </RadioGroup>
+                    </ToggleGroup>
                 </div>
             ))}
         </div>

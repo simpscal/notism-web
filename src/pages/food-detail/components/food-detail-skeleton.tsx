@@ -15,32 +15,41 @@ function FoodDetailSkeleton() {
 
                     {/* Details skeleton */}
                     <div className='flex flex-col space-y-6'>
-                        {/* Category chip */}
-                        <Skeleton className='h-4 w-24' />
+                        {/* Category eyebrow */}
+                        <Skeleton className='h-4 w-20' />
 
                         {/* Title */}
-                        <Skeleton className='h-12 w-3/4' />
+                        <Skeleton className='h-10 w-3/4' />
 
                         {/* Description lines */}
                         <div className='space-y-2'>
-                            <Skeleton className='h-4 w-full' />
                             <Skeleton className='h-4 w-full' />
                             <Skeleton className='h-4 w-3/4' />
                         </div>
 
                         {/* Meta pills */}
-                        <div className='flex flex-wrap gap-3'>
-                            <Skeleton className='h-8 w-28 rounded-full' />
-                            <Skeleton className='h-8 w-28 rounded-full' />
+                        <div className='flex flex-wrap gap-2'>
+                            <Skeleton className='h-7 w-24 rounded-full' />
+                            <Skeleton className='h-7 w-24 rounded-full' />
                         </div>
 
                         {/* Price */}
-                        <Skeleton className='h-14 w-48' />
+                        <Skeleton className='h-9 w-40' />
+
+                        {/* Segmented option row */}
+                        <div className='space-y-3'>
+                            <Skeleton className='h-4 w-16' />
+                            <div className='flex flex-wrap gap-2'>
+                                <Skeleton className='h-11 w-24 rounded-full' />
+                                <Skeleton className='h-11 w-24 rounded-full' />
+                                <Skeleton className='h-11 w-24 rounded-full' />
+                            </div>
+                        </div>
 
                         {/* CTA row */}
                         <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
-                            <Skeleton className='h-10 w-32 rounded-full' />
-                            <Skeleton className='h-10 flex-1 rounded-full' />
+                            <Skeleton className='h-12 w-36 rounded-full' />
+                            <Skeleton className='h-14 flex-1 rounded-full' />
                         </div>
                     </div>
                 </div>
