@@ -1,22 +1,16 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { memo, useCallback, useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { memo, useEffect, useMemo } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { toast } from 'sonner';
 
 import { FoodSortOption } from '../enums';
-import { FoodItemViewModel } from '../models';
 
 import FoodCard from './food-card';
 import FoodCardSkeleton from './food-card-skeleton';
 import FoodsEmpty from './foods-empty';
 
-import { CartItemModel, FOOD_QUERY_KEYS, foodApi } from '@/apis';
+import { FOOD_QUERY_KEYS, foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
-import { formatVnd } from '@/app/utils';
 import Spinner from '@/components/spinner';
-import { useCart } from '@/features/cart';
-import { getFoodPricing } from '@/features/food';
 
 interface FoodsGridProps {
     category: string | null;
@@ -26,9 +20,9 @@ interface FoodsGridProps {
     onClearFilters: () => void;
 }
 
+const GRID_CLASSES = 'grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4';
+
 function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilters }: FoodsGridProps) {
-    const { t } = useTranslation();
-    const { addToCart } = useCart();
     const { ref: loadMoreRef, inView } = useInView();
 
     const sortParams = useMemo(() => {
@@ -58,7 +52,6 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     const totalCount = data?.pages[0]?.totalCount ?? 0;
 
     const foods = useMemo(() => data?.pages.flatMap(page => page.items) ?? [], [data?.pages]);
-    const hasFilters = useMemo(() => !!category || !!keyword, [category, keyword]);
 
     useEffect(() => {
         onTotalCountChange?.(totalCount);
@@ -70,34 +63,9 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    const handleAddToCart = useCallback(
-        async (food: FoodItemViewModel) => {
-            const { effectivePrice } = getFoodPricing(food.price, food.discountPrice);
-            const cartItem: Omit<CartItemModel, 'quantity'> = {
-                id: food.id,
-                name: food.name,
-                description: food.description,
-                price: food.price,
-                discountPrice: food.discountPrice,
-                imageUrl: food.imageUrl,
-                category: food.category,
-                stockQuantity: food.stockQuantity,
-                quantityUnit: food.quantityUnit,
-                customisations: [],
-                totalSurcharge: 0,
-            };
-
-            await addToCart(cartItem, 1);
-            toast.success(t('foods.card.addedToCart', { name: food.name }), {
-                description: formatVnd(effectivePrice),
-            });
-        },
-        [addToCart]
-    );
-
     if (isLoading) {
         return (
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-6 xl:gap-6'>
+            <div className={GRID_CLASSES}>
                 {Array.from({ length: PAGE_SIZE }).map((_, index) => (
                     <FoodCardSkeleton key={index} />
                 ))}
@@ -106,18 +74,17 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     }
 
     if (foods.length === 0) {
-        return <FoodsEmpty onClearFilters={onClearFilters} hasFilters={hasFilters} />;
+        return <FoodsEmpty onClearFilters={onClearFilters} />;
     }
 
     return (
         <>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-6 xl:gap-6'>
+            <div className={GRID_CLASSES}>
                 {foods.map(food => (
-                    <FoodCard key={food.id} food={food} onAddToCart={handleAddToCart} />
+                    <FoodCard key={food.id} food={food} />
                 ))}
             </div>
 
-            {/* Load More Trigger */}
             {hasNextPage && (
                 <div ref={loadMoreRef} className='mt-6 flex justify-center sm:mt-8 lg:mt-10'>
                     {isFetchingNextPage && <Spinner size='md' />}

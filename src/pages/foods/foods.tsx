@@ -1,19 +1,20 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 
-import { FoodsControlBar, FoodsGrid, FoodsHeroSection } from './components';
+import { FoodsCategoryFilter, FoodsGrid, FoodsSortControl } from './components';
 import { FoodSortOption } from './enums';
 
 import { ListItemModel } from '@/app/models';
 import { useAppSelector } from '@/core/hooks';
 
 function Foods() {
+    const { t } = useTranslation();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const selectedCategory = searchParams.get('category');
     const keyword = searchParams.get('keyword') || '';
 
-    const [searchInput, setSearchInput] = useState(keyword);
     const [totalCount, setTotalCount] = useState(0);
     const [sortBy, setSortBy] = useState<FoodSortOption>('default');
 
@@ -22,22 +23,6 @@ function Foods() {
         () => storeCategories.map(c => ({ value: c.id, label: c.name })),
         [storeCategories]
     );
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (searchInput !== keyword) {
-                const params = new URLSearchParams(searchParams);
-                if (searchInput) {
-                    params.set('keyword', searchInput);
-                } else {
-                    params.delete('keyword');
-                }
-                setSearchParams(params);
-            }
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [searchInput, keyword, searchParams, setSearchParams]);
 
     const handleCategoryChange = useCallback(
         (category: string | null) => {
@@ -53,7 +38,6 @@ function Foods() {
     );
 
     const handleClearFilters = useCallback(() => {
-        setSearchInput('');
         setSearchParams(new URLSearchParams());
     }, [setSearchParams]);
 
@@ -67,20 +51,31 @@ function Foods() {
 
     return (
         <div className='bg-background'>
-            <FoodsHeroSection searchInput={searchInput} onSearchChange={setSearchInput} />
+            <header className='bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-0 z-10 border-b border-border px-4 pb-3 pt-4 backdrop-blur sm:px-6'>
+                <div className='flex items-center justify-between gap-3'>
+                    <div className='min-w-0'>
+                        <h1 className='truncate text-lg font-bold text-foreground sm:text-xl'>
+                            {t('foods.menu.title')}
+                        </h1>
+                        <p className='text-sm text-muted-foreground'>
+                            <span className='font-semibold text-foreground'>{totalCount}</span>{' '}
+                            {totalCount === 1 ? t('foods.toolbar.dishFound') : t('foods.toolbar.dishesFound')}
+                        </p>
+                    </div>
 
-            <div className='container mx-auto max-w-7xl px-4 py-6 sm:py-8 lg:py-10'>
-                <FoodsControlBar
-                    categories={categories}
-                    selectedCategory={selectedCategory}
-                    sortBy={sortBy}
-                    keyword={keyword}
-                    totalCount={totalCount}
-                    onCategoryChange={handleCategoryChange}
-                    onSortChange={handleSortChange}
-                    onClearFilters={handleClearFilters}
-                />
+                    <FoodsSortControl sortBy={sortBy} onSortChange={handleSortChange} />
+                </div>
 
+                <div className='mt-3'>
+                    <FoodsCategoryFilter
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        onCategoryChange={handleCategoryChange}
+                    />
+                </div>
+            </header>
+
+            <div className='px-4 py-5 sm:px-6 sm:py-6'>
                 <FoodsGrid
                     category={selectedCategory}
                     keyword={keyword}
