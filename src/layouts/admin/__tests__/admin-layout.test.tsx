@@ -75,4 +75,20 @@ describe('AdminLayout', () => {
 
         expect(getAllByI18nText('admin.newOrder.feed.connecting').length).toBeGreaterThanOrEqual(1);
     });
+
+    it('renders a full-bleed shell with no ambient frame or enclosing content shell', () => {
+        const { container } = renderWithProviders(
+            <Routes>
+                <Route element={<AdminLayout />}>
+                    <Route path={`/${ROUTES.ADMIN.DASHBOARD}`} element={<div>dashboard page body</div>} />
+                </Route>
+            </Routes>,
+            { initialEntries: [`/${ROUTES.ADMIN.DASHBOARD}`] }
+        );
+
+        const shell = container.firstElementChild;
+        expect(shell?.className).toMatch(/bg-muted/);
+        expect(shell?.className).not.toMatch(/bg-frame/);
+        expect(container.querySelector('.rounded-\\[2rem\\]')).toBeNull();
+    });
 });

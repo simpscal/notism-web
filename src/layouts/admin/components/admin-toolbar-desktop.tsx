@@ -41,10 +41,6 @@ interface AdminToolbarDesktopProps {
     liveFeedStatus: NotificationStatus;
 }
 
-// Desktop admin toolbar rebuilt on the shared, domain-blind NavBar: brand +
-// Admin badge (left) · icon+label nav with the active route promoted to the
-// ink active pill via NavBarItem's aria-current (centre) · the portal-wide live
-// new-order feed pill, theme toggle and account controls (right).
 function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDesktopProps) {
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
@@ -71,7 +67,7 @@ function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDes
     }, [isDark, setTheme]);
 
     return (
-        <NavBar className='z-30 hidden h-16 shrink-0 rounded-none border-0 border-b bg-card px-4 shadow-none lg:flex lg:rounded-none lg:px-6'>
+        <NavBar className='z-30 hidden h-16 shrink-0 px-4 shadow-soft lg:flex lg:px-6'>
             <NavBarBrand className='pl-1'>
                 <Link
                     to={`/${ROUTES.HOME}`}
