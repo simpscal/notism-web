@@ -67,7 +67,7 @@ function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDes
     }, [isDark, setTheme]);
 
     return (
-        <NavBar className='z-30 hidden h-16 shrink-0 px-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] lg:flex lg:px-6'>
+        <NavBar className='z-30 hidden h-16 shrink-0 px-4 shadow-soft lg:flex lg:px-6'>
             <NavBarBrand className='pl-1'>
                 <Link
                     to={`/${ROUTES.HOME}`}

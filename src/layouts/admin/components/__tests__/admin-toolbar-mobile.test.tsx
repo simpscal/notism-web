@@ -69,7 +69,7 @@ describe('AdminToolbarMobileBottom', () => {
             initialEntries: [`/${ROUTES.ADMIN.DASHBOARD}`],
         });
 
-        const bar = container.querySelector('div');
+        const bar = container.querySelector('header');
         expect(bar?.className).toMatch(/rounded-full/);
         expect(bar?.className).not.toMatch(/(?:^|\s)border-t(?:\s|$)/);
         expect(bar?.className).not.toMatch(/order-last/);

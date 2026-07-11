@@ -97,7 +97,7 @@ describe('AdminToolbarDesktop', () => {
         renderToolbar();
 
         const bar = document.querySelector('[data-slot="nav-bar"]');
-        expect(bar?.className).toMatch(/shadow-\[0_4px_20px_rgba\(0,0,0,0\.05\)\]/);
+        expect(bar?.className).toMatch(/(?:^|\s)shadow-soft(?:\s|$)/);
         expect(bar?.className).not.toMatch(/(?:^|\s)border-b(?:\s|$)/);
         expect(bar?.className).not.toMatch(/rounded-none/);
         expect(bar?.className).not.toMatch(/shadow-none/);
