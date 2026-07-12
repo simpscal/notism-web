@@ -97,16 +97,16 @@ describe('FoodDetail — on-theme dish surface', () => {
         expect(eyebrow).toHaveClass('text-muted-foreground');
     });
 
-    it('renders the dish price as the loudest crimson element at display scale', async () => {
+    it('renders the dish price in bold ink at display scale (crimson is reserved for the CTA)', async () => {
         renderDetail();
 
         await screen.findByRole('heading', { name: DISH.name });
 
         // The unit price and the Add total coincide before any selection, so pick
-        // the crimson display-scale element specifically.
+        // the display-scale price element specifically.
         const price = screen.getAllByText(formatVnd(DISH.price)).find(el => el.classList.contains('text-3xl'));
         expect(price).toBeDefined();
-        expect(price).toHaveClass('text-primary');
+        expect(price).toHaveClass('text-foreground');
     });
 
     it('shows the loading skeleton while fetching', () => {

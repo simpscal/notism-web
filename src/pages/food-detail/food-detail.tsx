@@ -191,7 +191,7 @@ function FoodDetail() {
 
                     {/* Details Section */}
                     <div className='flex flex-col'>
-                        {/* Category eyebrow — muted UPPERCASE (crimson is reserved for the price) */}
+                        {/* Category eyebrow — muted UPPERCASE (crimson is reserved for the commit CTA) */}
                         <span className='mb-3 inline-block text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground'>
                             {food.category}
                         </span>
@@ -216,7 +216,7 @@ function FoodDetail() {
                             </Badge>
                         </div>
 
-                        {/* Price — the single loudest crimson element on the surface */}
+                        {/* Price — bold ink; crimson is reserved for the commit CTA */}
                         <div className='mt-6'>
                             {hasSavings && (
                                 <span className='mb-1 block text-base text-muted-foreground line-through'>
@@ -232,7 +232,7 @@ function FoodDetail() {
                                 </span>
                             )}
                             <div className='flex items-baseline gap-3'>
-                                <span className='text-3xl font-bold tabular-nums text-primary'>
+                                <span className='text-3xl font-bold tabular-nums text-foreground'>
                                     {formatVnd(displayedPrice)}
                                 </span>
                                 {hasSavings && (
@@ -271,17 +271,17 @@ function FoodDetail() {
                                     className='shrink-0'
                                 />
 
-                                {/* Add to order — BLACK split-pill: total left | divider | label right */}
+                                {/* Add to order — CRIMSON split-pill (the one loudest red action): total left | divider | label right */}
                                 <Button
                                     type='button'
                                     disabled={!food.isAvailable || !allRequiredMet}
                                     onClick={handleAddToCart}
-                                    className='h-14 w-full gap-0 rounded-full bg-selected p-0 text-base text-selected-foreground transition-transform hover:bg-selected/90 motion-safe:duration-200 motion-safe:ease-out motion-safe:active:scale-[0.98] sm:flex-1'
+                                    className='h-14 w-full gap-0 rounded-full bg-primary p-0 text-base text-primary-foreground transition-transform hover:bg-primary/90 motion-safe:duration-200 motion-safe:ease-out motion-safe:active:scale-[0.98] sm:flex-1'
                                 >
                                     <span className='flex h-full items-center px-6 font-bold tabular-nums'>
                                         {formatVnd(displayedPrice * quantity)}
                                     </span>
-                                    <span className='h-7 w-px shrink-0 bg-selected-foreground/25' aria-hidden />
+                                    <span className='h-7 w-px shrink-0 bg-primary-foreground/25' aria-hidden />
                                     <span className='flex h-full flex-1 items-center justify-center gap-2 px-6 font-semibold'>
                                         <ShoppingBag className='h-5 w-5' />
                                         {t('foodDetail.addToOrder')}
