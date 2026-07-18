@@ -163,5 +163,14 @@ export default tseslint.config(
         rules: {
             'no-restricted-syntax': 'off',
         },
+    },
+    {
+        // The hand-rolled service worker runs in a ServiceWorkerGlobalScope, not a
+        // browser window — it needs `self`/`caches`/`clients`/`skipWaiting`/etc., not
+        // window globals.
+        files: ['public/sw.js'],
+        languageOptions: {
+            globals: globals.serviceworker,
+        },
     }
 );

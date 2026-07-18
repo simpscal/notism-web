@@ -65,23 +65,27 @@ jobs:
 
             - name: Upload to S3
               run: |
-                  # Upload static assets (CSS/JS) with long cache
+                  # Upload static assets (CSS/JS) with long cache, excluding sw.js — the
+                  # service worker must never be pinned behind a long-lived cache, or
+                  # browsers/CDN would keep serving a stale one across deploys.
                   # Using sync with --delete ensures zero-downtime: files are uploaded first, then removed
                   aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} \
                     --exclude "*" \
                     --include "*.css" \
                     --include "*.js" \
                     --include "*.map" \
+                    --exclude "sw.js" \
                     --cache-control "public, max-age=31536000, immutable" \
                     --metadata-directive REPLACE \
                     --delete
 
-                  # Upload HTML and other files with no cache
+                  # Upload HTML, sw.js, and other files with no cache
                   # --delete only removes files that don't exist in source, preventing downtime
                   aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }} \
                     --exclude "*.css" \
                     --exclude "*.js" \
                     --exclude "*.map" \
+                    --include "sw.js" \
                     --cache-control "no-cache, no-store, must-revalidate" \
                     --metadata-directive REPLACE \
                     --delete
@@ -91,6 +95,6 @@ jobs:
               run: |
                   aws cloudfront create-invalidation \
                     --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-                    --paths "/index.html" \
+                    --paths "/index.html" "/sw.js" \
                     --query 'Invalidation.Id' \
                     --output text
