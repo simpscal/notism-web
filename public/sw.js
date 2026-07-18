@@ -6,9 +6,7 @@
 // caches on activate) and the correct cross-origin API origin to intercept.
 //
 // This file runs as a classic (non-module) service worker, so it cannot `import`
-// from `src/**`. Its cache-first / stale-while-revalidate / cache-trim logic is
-// unit-tested in its pure-function mirror at `src/app/utils/service-worker.utils.ts`
-// — keep both in sync when the caching strategy changes.
+// from `src/**` and has no unit test coverage.
 
 const CACHE_VERSION = '__BUILD_ID__';
 const API_ORIGIN = '__API_ORIGIN__';
