@@ -51,30 +51,23 @@ async function cacheFirst(request, cacheName) {
     return response;
 }
 
-async function staleWhileRevalidate(request, cacheName, maxEntries) {
+async function networkFirst(request, cacheName, maxEntries) {
     const cache = await caches.open(cacheName);
-    const cached = await cache.match(request);
 
-    const revalidate = fetch(request)
-        .then(async response => {
-            if (response.ok) {
-                await cache.put(request, response.clone());
-                await trimCache(cache, maxEntries);
-            }
-            return response;
-        })
-        .catch(() => undefined);
-
-    if (cached) {
-        return cached;
+    try {
+        const response = await fetch(request);
+        if (response.ok) {
+            await cache.put(request, response.clone());
+            await trimCache(cache, maxEntries);
+        }
+        return response;
+    } catch (error) {
+        const cached = await cache.match(request);
+        if (cached) {
+            return cached;
+        }
+        throw error;
     }
-
-    const networkResponse = await revalidate;
-    if (networkResponse) {
-        return networkResponse;
-    }
-
-    throw new Error('Network request failed and no cached response is available');
 }
 
 self.addEventListener('install', () => {
@@ -113,7 +106,7 @@ self.addEventListener('fetch', event => {
     }
 
     if (isApiRequest(url)) {
-        event.respondWith(staleWhileRevalidate(request, API_CACHE, API_CACHE_MAX_ENTRIES));
+        event.respondWith(networkFirst(request, API_CACHE, API_CACHE_MAX_ENTRIES));
         return;
     }
 
