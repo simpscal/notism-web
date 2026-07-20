@@ -49,4 +49,10 @@ Promise.all([enableMocking(), i18nReady]).then(() => {
             </Provider>
         </StrictMode>
     );
+
+    // Prod-only: never runs in dev, so it never collides with MSW's own
+    // /mockServiceWorker.js registration.
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
+        navigator.serviceWorker.register('/sw.js');
+    }
 });
