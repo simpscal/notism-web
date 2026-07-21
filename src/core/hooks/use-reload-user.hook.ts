@@ -55,6 +55,11 @@ export function useReloadUser() {
     return {
         user,
         isLoading: query.isLoading,
-        isInitialized: isAuthInitialized,
+        // SSR never runs the effects above (React doesn't run effects during
+        // server rendering), so `isAuthInitialized` would stay `false` forever and
+        // block landing content behind `App`'s loading gate. There is no session to
+        // check server-side anyway (guarded `tokenManagerUtils` always reports no
+        // token there), so resolve immediately instead.
+        isInitialized: typeof window === 'undefined' ? true : isAuthInitialized,
     };
 }

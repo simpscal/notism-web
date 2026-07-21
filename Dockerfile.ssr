@@ -1,0 +1,48 @@
+# Builds and runs the landing-page SSR server (refactor #334). Serves `/` server-rendered
+# and falls back to the static SPA shell for every other route. Standalone image — a
+# sibling infra PR provisions the actual deploy target; this just needs to run anywhere:
+#
+#   docker build -f Dockerfile.ssr -t notism-web-ssr .
+#   docker run -p 3000:3000 notism-web-ssr
+#   curl http://localhost:3000/
+
+FROM oven/bun:1.1-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat
+
+COPY package.json bun.lockb ./
+# `--ignore-scripts`: skips the `prepare` (husky) script — there's no `.git` in this
+# build context (see `.dockerignore`) for it to hook into.
+RUN bun install --frozen-lockfile --ignore-scripts
+
+COPY . .
+
+# Builds the client + SSR bundles directly with Vite, skipping the `tsc -b` project-wide
+# typecheck that `build:client`/`build:ssr` normally run first — that typecheck also covers
+# `test/` + every `__tests__/` folder (tsconfig.app.json), which the root `.dockerignore`
+# (shared with the plain dev `Dockerfile`, which never typechecks) excludes from this build
+# context. Type safety is already enforced by CI's `bun run build`/`bun run test` outside
+# Docker; this image only needs valid build output.
+RUN bunx vite build --outDir dist/client && VITE_SSR_BUILD=true bunx vite build --ssr src/entry-server.tsx --outDir dist/server
+
+FROM oven/bun:1.1-alpine AS runner
+
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+COPY package.json bun.lockb ./
+RUN bun install --frozen-lockfile --production --ignore-scripts
+
+COPY --from=builder /app/dist/client ./dist/client
+COPY --from=builder /app/dist/server ./dist/server
+COPY server.ts ./
+
+EXPOSE 3000
+
+CMD ["bun", "run", "server.ts"]
