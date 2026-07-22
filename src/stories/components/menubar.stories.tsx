@@ -9,7 +9,7 @@ import {
     MenubarSeparator,
     MenubarShortcut,
     MenubarTrigger,
-} from '@/components/menubar';
+} from '@/uis/menubar';
 
 const meta = {
     title: 'Components/Navigation/Menubar',

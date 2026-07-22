@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Label } from '@/components/label';
-import { Textarea } from '@/components/textarea';
+import { Label } from '@/uis/label';
+import { Textarea } from '@/uis/textarea';
 
 const meta = {
     title: 'Components/Inputs/Textarea',

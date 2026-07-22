@@ -8,15 +8,15 @@ import { CartEmpty, CartItem } from './components';
 import { CartItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/card';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
 import { useAppSelector, useAppDispatch, useDebouncedCallback } from '@/core/hooks';
 import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar } from '@/features/order';
 import { selectCartItems, selectCartIsInitialized, setItemSelection } from '@/store/cart';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/uis/card';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
 
 const QUANTITY_DEBOUNCE_MS = 400;
 

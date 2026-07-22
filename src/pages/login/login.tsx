@@ -12,14 +12,14 @@ import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { UserRoleEnum } from '@/app/enums';
 import { createPasswordSchema } from '@/app/utils/password-validation.utils';
-import { Button } from '@/components/button';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import GoogleLogo from '@/components/google-logo';
-import { Input } from '@/components/input';
-import { PasswordInput } from '@/components/password-input';
-import { Separator } from '@/components/separator';
 import { useAppDispatch } from '@/core/hooks';
 import { setAuth, setOauthReturnUrl } from '@/store/auth';
+import { Button } from '@/uis/button';
+import { Field, FieldError, FieldLabel } from '@/uis/field';
+import GoogleLogo from '@/uis/google-logo';
+import { Input } from '@/uis/input';
+import { PasswordInput } from '@/uis/password-input';
+import { Separator } from '@/uis/separator';
 
 type LoginFormValues = {
     email: string;

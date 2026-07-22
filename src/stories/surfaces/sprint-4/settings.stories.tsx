@@ -3,15 +3,15 @@ import { Camera, CreditCard, Mail, MapPin, Palette, Phone, RefreshCw, Trash2, Up
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
-import { Button } from '@/components/button';
-import { Card } from '@/components/card';
-import ErrorState from '@/components/error-state';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
-import { Label } from '@/components/label';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
-import { Separator } from '@/components/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
+import { Button } from '@/uis/button';
+import { Card } from '@/uis/card';
+import ErrorState from '@/uis/error-state';
+import { Field, FieldError, FieldLabel } from '@/uis/field';
+import { Input } from '@/uis/input';
+import { Label } from '@/uis/label';
+import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
+import { Separator } from '@/uis/separator';
 import {
     Sidebar,
     SidebarContent,
@@ -24,9 +24,9 @@ import {
     SidebarMenuItem,
     SidebarProvider,
     SidebarTrigger,
-} from '@/components/sidebar';
-import { Skeleton } from '@/components/skeleton';
-import { Toaster } from '@/components/sonner';
+} from '@/uis/sidebar';
+import { Skeleton } from '@/uis/skeleton';
+import { Toaster } from '@/uis/sonner';
 
 // ---------------------------------------------------------------------------
 // Settings — Sprint 4 (Settings UI polish & layout redesign — REVISION 2)
@@ -48,7 +48,7 @@ import { Toaster } from '@/components/sonner';
 //
 // Save confirmation uses the live sonner toast pattern: toast.success(...).
 // Validation errors stay inline beneath the field. Everything composes ONLY
-// inventory components from src/components/.
+// inventory components from src/uis/.
 // ---------------------------------------------------------------------------
 
 type SectionId = 'profile' | 'appearance' | 'payment';

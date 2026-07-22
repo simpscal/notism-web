@@ -2,7 +2,7 @@ import { Search, ShieldCheck, Truck, UtensilsCrossed } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Card } from '@/components/card';
+import { Card } from '@/uis/card';
 
 function LandingFeaturesSection() {
     const { t } = useTranslation();

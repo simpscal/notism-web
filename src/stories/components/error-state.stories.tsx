@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import ErrorState from '@/components/error-state';
+import { Button } from '@/uis/button';
+import ErrorState from '@/uis/error-state';
 
 const meta = {
     title: 'Components/Display/ErrorState',

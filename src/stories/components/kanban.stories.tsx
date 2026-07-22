@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Badge } from '@/components/badge';
-import { Card, CardContent } from '@/components/card';
-import Kanban, { type KanbanColumn } from '@/components/kanban';
+import { Badge } from '@/uis/badge';
+import { Card, CardContent } from '@/uis/card';
+import Kanban, { type KanbanColumn } from '@/uis/kanban';
 
 interface Task {
     id: string;

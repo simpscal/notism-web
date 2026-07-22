@@ -3,8 +3,8 @@ import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import ErrorState from '@/components/error-state';
+import { Button } from '@/uis/button';
+import ErrorState from '@/uis/error-state';
 
 const DEFAULT_MESSAGE = 'Failed to load food details. Please try again later or go back to the foods list.';
 

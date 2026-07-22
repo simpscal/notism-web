@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CheckCircle2, ShoppingCart, Star } from 'lucide-react';
 import React from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
-import { Input } from '@/components/input';
-import { Separator } from '@/components/separator';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/uis/card';
+import { Input } from '@/uis/input';
+import { Separator } from '@/uis/separator';
 
 // ---------------------------------------------------------------------------
 // Emerald green token delta — applied directly to the global token file

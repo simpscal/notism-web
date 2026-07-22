@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AppRoutes from './app.routes';
-import Spinner from './components/spinner';
 import { loadCart } from './store/cart';
 import { loadCategories } from './store/food';
+import Spinner from './uis/spinner';
 
 import { navigationUtils } from '@/app/utils/navigation.utils';
-import { Toaster } from '@/components/sonner';
 import { useAppDispatch, useReloadUser } from '@/core/hooks';
+import { Toaster } from '@/uis/sonner';
 
 function App() {
     const dispatch = useAppDispatch();

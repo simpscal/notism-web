@@ -12,7 +12,7 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from '@/components/pagination';
+} from '@/uis/pagination';
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
     return (

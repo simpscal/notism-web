@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { cn } from '@/app/utils/tailwind.utils';
-import { Button } from '@/components/button';
-import { Label } from '@/components/label';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { useTheme } from '@/core/contexts/theme.context';
+import { Button } from '@/uis/button';
+import { Label } from '@/uis/label';
+import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
 
 type ThemeValue = 'light' | 'dark' | 'system';
 

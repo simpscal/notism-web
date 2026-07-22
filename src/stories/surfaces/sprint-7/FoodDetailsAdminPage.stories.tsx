@@ -2,15 +2,15 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { Input } from '@/components/input';
-import { Label } from '@/components/label';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
-import { Switch } from '@/components/switch';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { Input } from '@/uis/input';
+import { Label } from '@/uis/label';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
+import { Switch } from '@/uis/switch';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/uis/table';
 
 // ---------------------------------------------------------------------------
 // Utilities

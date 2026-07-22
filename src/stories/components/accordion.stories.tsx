@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/uis/accordion';
 
 const meta = {
     title: 'Components/Display/Accordion',

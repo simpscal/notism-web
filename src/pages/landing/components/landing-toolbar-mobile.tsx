@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/sheet';
+import { Button } from '@/uis/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/uis/sheet';
 
 interface LandingToolbarMobileProps {
     isAuthenticated: boolean;

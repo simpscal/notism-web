@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Search, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/uis/input-group';
 
 const meta = {
     title: 'Components/Inputs/InputGroup',

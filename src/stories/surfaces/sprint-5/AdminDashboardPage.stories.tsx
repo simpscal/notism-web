@@ -16,9 +16,9 @@ import {
 import React from 'react';
 import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent } from '@/components/card';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent } from '@/uis/card';
 import {
     ChartContainer,
     ChartLegend,
@@ -26,11 +26,11 @@ import {
     ChartTooltip,
     ChartTooltipContent,
     type ChartConfig,
-} from '@/components/chart';
-import ErrorState from '@/components/error-state';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
-import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
+} from '@/uis/chart';
+import ErrorState from '@/uis/error-state';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
+import { ToggleGroup, ToggleGroupItem } from '@/uis/toggle-group';
 
 // ---------------------------------------------------------------------------
 // Utilities

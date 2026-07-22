@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { Card, CardContent } from '@/components/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/carousel';
+import { Card, CardContent } from '@/uis/card';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/uis/carousel';
 
 const meta = {
     title: 'Components/Display/Carousel',

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, Line, LineChart, XAxis, YAxis } from 'recharts';
 
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/uis/chart';
 
 const barData = [
     { month: 'Jan', desktop: 186, mobile: 80 },

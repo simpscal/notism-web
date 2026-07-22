@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
+import { Button } from '@/uis/button';
 
 function FoodDetailEmpty() {
     const { t } = useTranslation();

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { DayPicker } from 'react-day-picker';
 
 import { cn } from '@/app/utils/tailwind.utils';
-import { buttonVariants } from '@/components/button';
+import { buttonVariants } from '@/uis/button';
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: React.ComponentProps<typeof DayPicker>) {
     return (

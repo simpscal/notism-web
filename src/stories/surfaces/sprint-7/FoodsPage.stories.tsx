@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ArrowUpDown, UtensilsCrossed, X } from 'lucide-react';
 import React from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardFooter } from '@/components/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { Skeleton } from '@/components/skeleton';
-import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardFooter } from '@/uis/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import { Skeleton } from '@/uis/skeleton';
+import { ToggleGroup, ToggleGroupItem } from '@/uis/toggle-group';
 
 // ---------------------------------------------------------------------------
 // Fixture data

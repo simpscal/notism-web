@@ -2,8 +2,8 @@ import * as React from 'react';
 import { memo } from 'react';
 
 import { cn } from '@/app/utils/index';
-import { Button } from '@/components/button';
-import { Input } from '@/components/input';
+import { Button } from '@/uis/button';
+import { Input } from '@/uis/input';
 
 const INPUT_GROUP_INPUT = 'InputGroupInput';
 const INPUT_GROUP_ADDON = 'InputGroupAddon';

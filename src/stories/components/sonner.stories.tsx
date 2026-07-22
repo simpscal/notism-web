@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/button';
-import { Toaster } from '@/components/sonner';
+import { Button } from '@/uis/button';
+import { Toaster } from '@/uis/sonner';
 
 function SonnerDemo() {
     const { t } = useTranslation();

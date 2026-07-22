@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CreditCard, Keyboard, LifeBuoy, LogOut, Settings, User, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
+import { Button } from '@/uis/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuShortcut,
     DropdownMenuTrigger,
-} from '@/components/dropdown-menu';
+} from '@/uis/dropdown-menu';
 
 const meta = {
     title: 'Components/Navigation/DropdownMenu',

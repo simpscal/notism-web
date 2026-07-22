@@ -1,10 +1,10 @@
 import { memo, useCallback } from 'react';
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/dialog';
-import { Field, FieldLabel } from '@/components/field';
-import { Label } from '@/components/label';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { useTheme } from '@/core/contexts/theme.context';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { Field, FieldLabel } from '@/uis/field';
+import { Label } from '@/uis/label';
+import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
 
 interface ClientSettingsDialogProps {
     open: boolean;

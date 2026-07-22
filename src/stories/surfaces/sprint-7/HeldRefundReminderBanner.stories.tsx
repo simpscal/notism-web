@@ -3,9 +3,9 @@ import { ChevronRight, Landmark } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 
-import Banner from '@/components/banner';
-import { Button } from '@/components/button';
-import { Toaster } from '@/components/sonner';
+import Banner from '@/uis/banner';
+import { Button } from '@/uis/button';
+import { Toaster } from '@/uis/sonner';
 
 // ---------------------------------------------------------------------------
 // Implementation reference — story 260 (held-refund bank-details reminder banner).
@@ -31,7 +31,7 @@ import { Toaster } from '@/components/sonner';
 //     settings/payment; once the customer saves their bank details and the held
 //     refund proceeds, the banner no longer appears; no held refund → no banner.
 //
-// Built on the existing Banner component (src/components/banner.tsx). Banner's
+// Built on the existing Banner component (src/uis/banner.tsx). Banner's
 // variant union is success | error | info (no `warning`), so we use it as the
 // structural base and apply the global --warning palette via className (Banner
 // merges className AFTER the variant styles, so the warning tones win) — matching

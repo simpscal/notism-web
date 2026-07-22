@@ -9,7 +9,7 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
-} from '@/components/navigation-menu';
+} from '@/uis/navigation-menu';
 
 const meta = {
     title: 'Components/Navigation/NavigationMenu',

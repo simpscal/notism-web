@@ -7,10 +7,10 @@ import { FoodItemViewModel } from '../models';
 
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Card, CardFooter } from '@/components/card';
 import { getFoodPricing } from '@/features/food';
 import { FoodImage } from '@/features/food/components';
+import { Button } from '@/uis/button';
+import { Card, CardFooter } from '@/uis/card';
 
 interface FoodCardProps {
     food: FoodItemViewModel;

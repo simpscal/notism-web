@@ -9,12 +9,13 @@ import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminOrdersModel } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
-import ErrorState from '@/components/error-state';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import Spinner from '@/components/spinner';
+import { DELIVERY_STATUS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
+import { Button } from '@/uis/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/uis/dropdown-menu';
+import ErrorState from '@/uis/error-state';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/uis/input-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import Spinner from '@/uis/spinner';
 import {
     SortableTableHead,
     Table,
@@ -25,8 +26,7 @@ import {
     TableRow,
     TablePagination,
     useTableSort,
-} from '@/components/table';
-import { DELIVERY_STATUS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
+} from '@/uis/table';
 
 const EMPTY_STATE_COL_SPAN = 8;
 

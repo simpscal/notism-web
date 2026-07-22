@@ -14,8 +14,8 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
-import { Button } from '@/components/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
+import { Button } from '@/uis/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,9 +23,9 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/dropdown-menu';
-import { Separator } from '@/components/separator';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/sheet';
+} from '@/uis/dropdown-menu';
+import { Separator } from '@/uis/separator';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/uis/sheet';
 
 // ---------------------------------------------------------------------------
 // Types & fixtures

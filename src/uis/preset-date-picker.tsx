@@ -6,10 +6,10 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
-import { Button } from '@/components/button';
-import { Calendar } from '@/components/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
+import { Button } from '@/uis/button';
+import { Calendar } from '@/uis/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/uis/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
 
 export function DatePickerWithPresets() {
     const { t } = useTranslation();

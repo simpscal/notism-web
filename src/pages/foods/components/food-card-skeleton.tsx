@@ -1,7 +1,7 @@
 import { memo } from 'react';
 
-import { Card, CardFooter } from '@/components/card';
-import { Skeleton } from '@/components/skeleton';
+import { Card, CardFooter } from '@/uis/card';
+import { Skeleton } from '@/uis/skeleton';
 
 function FoodCardSkeleton() {
     return (

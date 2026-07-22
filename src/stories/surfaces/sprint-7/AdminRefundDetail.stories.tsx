@@ -18,15 +18,15 @@ import {
 import React from 'react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import ErrorState from '@/components/error-state';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
-import { Toaster } from '@/components/sonner';
-import Spinner from '@/components/spinner';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import ErrorState from '@/uis/error-state';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
+import { Toaster } from '@/uis/sonner';
+import Spinner from '@/uis/spinner';
 
 // ---------------------------------------------------------------------------
 // Implementation reference — stories 244 (approve) + 247 (retry), admin refund

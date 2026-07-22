@@ -3,11 +3,11 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import ErrorState from '@/components/error-state';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
 import { toNFormatGuid, buildSepayQrUrl } from '@/features/order';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import ErrorState from '@/uis/error-state';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
 
 interface RefundVietQrCardProps {
     refundId: string;

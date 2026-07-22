@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 
 import type { CustomisationGroupModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
-import { Badge } from '@/components/badge';
-import { Label } from '@/components/label';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
-import { Separator } from '@/components/separator';
+import { Badge } from '@/uis/badge';
+import { Label } from '@/uis/label';
+import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
+import { Separator } from '@/uis/separator';
 
 interface FoodCustomisationSectionProps {
     customisations: CustomisationGroupModel[];

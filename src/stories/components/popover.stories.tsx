@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Input } from '@/components/input';
-import { Label } from '@/components/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
+import { Button } from '@/uis/button';
+import { Input } from '@/uis/input';
+import { Label } from '@/uis/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/uis/popover';
 
 const meta = {
     title: 'Components/Utilities/Popover',

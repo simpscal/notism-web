@@ -14,9 +14,9 @@ import FoodsEmpty from './foods-empty';
 import { CartItemModel, FOOD_QUERY_KEYS, foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import Spinner from '@/components/spinner';
 import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
+import Spinner from '@/uis/spinner';
 
 interface FoodsGridProps {
     category: string | null;

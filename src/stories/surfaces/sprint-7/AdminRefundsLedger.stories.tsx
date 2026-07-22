@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AlertTriangle, CheckCircle2, Clock, Eye, Moon, RotateCcw, type LucideIcon } from 'lucide-react';
 import React from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import ErrorState from '@/components/error-state';
-import { Skeleton } from '@/components/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
-import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import ErrorState from '@/uis/error-state';
+import { Skeleton } from '@/uis/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/uis/table';
+import { Tabs, TabsList, TabsTrigger } from '@/uis/tabs';
 
 // ---------------------------------------------------------------------------
 // Implementation reference — story 245 (Refunds ledger), admin reconcile view.

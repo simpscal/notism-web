@@ -16,15 +16,15 @@ import {
 
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import ErrorState from '@/components/error-state';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
-import Spinner from '@/components/spinner';
 import { useAppDispatch } from '@/core/hooks';
 import { addCategory, removeCategory, updateCategory } from '@/store/food';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/uis/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import ErrorState from '@/uis/error-state';
+import { Field, FieldError, FieldLabel } from '@/uis/field';
+import { Input } from '@/uis/input';
+import Spinner from '@/uis/spinner';
 
 function AdminCategoryDetail() {
     const { t } = useTranslation();

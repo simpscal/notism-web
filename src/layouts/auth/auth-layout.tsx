@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, Outlet } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { LanguageSwitcher } from '@/components/language-switcher';
+import { LanguageSwitcher } from '@/uis/language-switcher';
 
 function AuthLayout() {
     const { t } = useTranslation();

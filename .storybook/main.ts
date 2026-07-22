@@ -19,7 +19,7 @@ const config: StorybookConfig = {
             resolve: {
                 alias: {
                     '@': resolve(__dirname, '../src'),
-                    '@/components': resolve(__dirname, '../src/components'),
+                    '@/uis': resolve(__dirname, '../src/uis'),
                     '@/utils': resolve(__dirname, '../src/app/utils'),
                     '@/enums': resolve(__dirname, '../src/app/enums'),
                     '@/constants': resolve(__dirname, '../src/app/constants'),

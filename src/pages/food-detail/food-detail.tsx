@@ -15,11 +15,11 @@ import {
 import { CartItemCustomisationModel, CartItemModel, FOOD_QUERY_KEYS, foodApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { Badge } from '@/components/badge';
-import Banner from '@/components/banner';
-import { Button } from '@/components/button';
 import { useCart } from '@/features/cart';
 import { getFoodPricing } from '@/features/food';
+import { Badge } from '@/uis/badge';
+import Banner from '@/uis/banner';
+import { Button } from '@/uis/button';
 
 function FoodDetail() {
     const { t } = useTranslation();

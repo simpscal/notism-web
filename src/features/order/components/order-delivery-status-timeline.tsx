@@ -5,8 +5,8 @@ import { DELIVERY_STATUS } from '../constants';
 import { DeliveryStatusEnum } from '../enums';
 
 import type { OrderDeliveryStatusTimingModel } from '@/apis';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
-import Timeline from '@/components/timeline';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/uis/card';
+import Timeline from '@/uis/timeline';
 
 export interface OrderDeliveryStatusTimelineProps {
     deliveryStatus: string;

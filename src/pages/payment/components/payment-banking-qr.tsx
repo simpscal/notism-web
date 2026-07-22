@@ -3,10 +3,10 @@ import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
 import { buildSepayQrUrl } from '@/features/order';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
 
 interface PaymentBankingQrProps {
     bankCode: string;

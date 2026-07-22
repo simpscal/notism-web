@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
 
 function LandingHeroSection() {
     const { t } = useTranslation();

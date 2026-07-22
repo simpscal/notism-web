@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import { Skeleton } from '@/components/skeleton';
+import { Skeleton } from '@/uis/skeleton';
 
 function FoodDetailSkeleton() {
     return (

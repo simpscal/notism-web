@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Label } from '@/components/label';
-import { Switch } from '@/components/switch';
+import { Label } from '@/uis/label';
+import { Switch } from '@/uis/switch';
 
 const meta = {
     title: 'Components/Inputs/Switch',

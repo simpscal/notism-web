@@ -14,10 +14,10 @@ import {
 import React from 'react';
 import { toast, Toaster as SonnerToaster } from 'sonner';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Toaster } from '@/components/sonner';
-import Spinner from '@/components/spinner';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Toaster } from '@/uis/sonner';
+import Spinner from '@/uis/spinner';
 
 // ---------------------------------------------------------------------------
 // Implementation reference — story 274 (live in-app new-order alert), AMENDED
@@ -43,7 +43,7 @@ import Spinner from '@/components/spinner';
 //     while the portal shell is mounted; see the "Portal Closed" story).
 //
 // SURFACE = the portal-wide live order-status element: the Sonner alert region
-// (toast.custom, src/components/sonner.tsx — same primitive as the Sprint 6
+// (toast.custom, src/uis/sonner.tsx — same primitive as the Sprint 6
 // payment-status toast and Sprint 7 refund-routing toast) + the connection-
 // status pill (connecting | live | disconnected) in the portal top-bar. BOTH
 // belong to the shell. Individual admin PAGE bodies are unchanged by this

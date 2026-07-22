@@ -4,13 +4,13 @@ import { PanelLeftIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Input } from '@/components/input';
-import { Separator } from '@/components/separator';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/sheet';
-import { Skeleton } from '@/components/skeleton';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 import { useIsMobile } from '@/core/hooks/use-mobile';
+import { Button } from '@/uis/button';
+import { Input } from '@/uis/input';
+import { Separator } from '@/uis/separator';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/uis/sheet';
+import { Skeleton } from '@/uis/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/uis/tooltip';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

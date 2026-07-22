@@ -6,9 +6,9 @@ import { toast } from 'sonner';
 
 import { oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import Spinner from '@/components/spinner';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { setAuth, setOauthReturnUrl } from '@/store/auth';
+import Spinner from '@/uis/spinner';
 
 function OAuthCallback() {
     const { t } = useTranslation();

@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import AdminRefundsTable from './components/admin-refunds-table';
 
 import { ROUTES } from '@/app/constants';
-import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { RefundStatusEnum } from '@/features/order';
+import { Tabs, TabsList, TabsTrigger } from '@/uis/tabs';
 
 const STATUS_FILTER_ALL = 'all';
 

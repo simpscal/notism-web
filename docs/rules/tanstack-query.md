@@ -285,7 +285,7 @@ const queryClient = new QueryClient({
 
 #### Component-Level Error Handling
 
-When a query fails (`isError` from `useQuery`), show a dedicated error UI instead of rendering broken or empty content. Use the **ErrorState** component from `@/components/error-state` and follow the patterns in [Showing Error State UI](#showing-error-state-ui) (Component Conventions).
+When a query fails (`isError` from `useQuery`), show a dedicated error UI instead of rendering broken or empty content. Use the **ErrorState** component from `@/uis/error-state` and follow the patterns in [Showing Error State UI](#showing-error-state-ui) (Component Conventions).
 
 #### Mutation Error Handling
 

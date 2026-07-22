@@ -2,7 +2,7 @@ import { Search } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/uis/input-group';
 
 interface FoodsHeroSectionProps {
     searchInput: string;

@@ -4,12 +4,12 @@ import { useTranslation } from 'react-i18next';
 
 import { QUANTITY_UNIT_OPTIONS, type FoodFormValues } from '../models';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { Switch } from '@/components/switch';
 import { useAppSelector } from '@/core/hooks';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/uis/card';
+import { Field, FieldError, FieldLabel } from '@/uis/field';
+import { Input } from '@/uis/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import { Switch } from '@/uis/switch';
 
 interface FoodDetailFormProps {
     onSubmit: (values: FoodFormValues) => void;

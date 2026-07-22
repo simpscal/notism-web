@@ -3,8 +3,8 @@ import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
-import { Button } from '@/components/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
+import { Button } from '@/uis/button';
 
 interface UserProfileAvatarProps {
     avatarUrl: string | null;

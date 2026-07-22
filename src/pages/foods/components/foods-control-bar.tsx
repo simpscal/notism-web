@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { FoodSortOption } from '../enums';
 
 import { ListItemModel } from '@/app/models';
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { ToggleGroup, ToggleGroupItem } from '@/components/toggle-group';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import { ToggleGroup, ToggleGroupItem } from '@/uis/toggle-group';
 
 interface FoodsControlBarProps {
     categories: ListItemModel[];

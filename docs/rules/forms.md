@@ -89,10 +89,10 @@ import { Controller } from 'react-hook-form';
 
 ## Displaying Errors
 
-Use `<FieldError>` from `@/components/field` — never render inline `<span>` or `<p>` elements for field errors.
+Use `<FieldError>` from `@/uis/field` — never render inline `<span>` or `<p>` elements for field errors.
 
 ```typescript
-import { FieldError } from '@/components/field';
+import { FieldError } from '@/uis/field';
 
 <Input
     {...form.register('email')}
@@ -146,9 +146,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { Button } from '@/components/button';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
+import { Button } from '@/uis/button';
+import { Field, FieldError, FieldLabel } from '@/uis/field';
+import { Input } from '@/uis/input';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email'),

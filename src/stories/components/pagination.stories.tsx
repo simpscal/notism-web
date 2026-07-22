@@ -8,7 +8,7 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from '@/components/pagination';
+} from '@/uis/pagination';
 
 const meta = {
     title: 'Components/Navigation/Pagination',

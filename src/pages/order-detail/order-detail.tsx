@@ -9,8 +9,6 @@ import { OrderActionCard, OrderDetailError, OrderItemsCard } from './components'
 
 import { ORDER_QUERY_KEYS, orderApi, USER_QUERY_KEYS, userApi } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
-import { Button } from '@/components/button';
-import Spinner from '@/components/spinner';
 import {
     OrderCheckoutProgress,
     OrderCheckoutTrustBar,
@@ -21,6 +19,8 @@ import {
     BankingPaymentConfirmedPanel,
     PaymentStatusEnum,
 } from '@/features/order';
+import { Button } from '@/uis/button';
+import Spinner from '@/uis/spinner';
 
 function OrderDetail() {
     const { t, i18n } = useTranslation();

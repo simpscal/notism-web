@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 import type { OrderItemModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Separator } from '@/components/separator';
 import { FoodImage, getFoodPricing } from '@/features/food';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Separator } from '@/uis/separator';
 
 interface OrderItemsCardProps {
     items: OrderItemModel[];

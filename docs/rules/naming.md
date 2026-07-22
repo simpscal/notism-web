@@ -468,7 +468,7 @@ export function useAuth() {
 **Example**:
 
 ```typescript
-// components/ui/button.tsx
+// uis/button.tsx
 export function Button({
   className,
   variant,
@@ -776,7 +776,7 @@ VITE_APP_NAME=Notism
 
 - **kebab-case** for all folder names
 - Use descriptive names that indicate the folder's purpose
-- Follow the layer structure: `features/`, `core/`, `shared/`, `components/`, `pages/`, `layouts/`
+- Follow the layer structure: `features/`, `core/`, `shared/`, `uis/`, `pages/`, `layouts/`
 
 **Example**:
 
@@ -803,7 +803,7 @@ src/
 │   │   ├── data/
 │   ├── landing/
 │   │   ├── components/
-├── components/
+├── uis/
 │   ├── ui/
 │   └── icon/
 └── layouts/

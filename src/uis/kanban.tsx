@@ -15,7 +15,7 @@ import { memo, ReactNode, useCallback, useEffect, useRef, useState } from 'react
 import { useInView } from 'react-intersection-observer';
 
 import { cn } from '@/app/utils/tailwind.utils';
-import Spinner from '@/components/spinner';
+import Spinner from '@/uis/spinner';
 
 /** How long a column stays visually emphasised after `isHighlighted` rises, before it auto-fades. */
 export const HIGHLIGHT_DURATION_MS = 3000;

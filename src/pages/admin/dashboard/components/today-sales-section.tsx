@@ -6,12 +6,12 @@ import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts';
 
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { formatVnd } from '@/app/utils/currency.utils';
-import { Button } from '@/components/button';
-import { Card, CardContent } from '@/components/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/chart';
-import ErrorState from '@/components/error-state';
-import { Skeleton } from '@/components/skeleton';
 import { getTodayWindowUtc } from '@/pages/admin/dashboard/utils';
+import { Button } from '@/uis/button';
+import { Card, CardContent } from '@/uis/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/uis/chart';
+import ErrorState from '@/uis/error-state';
+import { Skeleton } from '@/uis/skeleton';
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
     return <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>{children}</h2>;

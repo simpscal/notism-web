@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FoodSortOption } from '../enums';
 
 import { ListItemModel } from '@/app/models';
-import { Button } from '@/components/button';
+import { Button } from '@/uis/button';
 
 interface FoodsSidebarProps {
     categories: ListItemModel[];

@@ -20,8 +20,8 @@ import { ADMIN_QUERY_KEYS, adminApi, storageApi } from '@/apis';
 import type { AdminFoodDetailImageModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { PresignedUrlUploadEnum } from '@/app/enums';
-import { Button } from '@/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
+import { Button } from '@/uis/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
 
 const IS_CREATE_MODE_ID = 'new';
 

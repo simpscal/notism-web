@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
+import { Button } from '@/uis/button';
 import {
     Dialog,
     DialogContent,
@@ -10,9 +10,9 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/dialog';
-import { Input } from '@/components/input';
-import { Label } from '@/components/label';
+} from '@/uis/dialog';
+import { Input } from '@/uis/input';
+import { Label } from '@/uis/label';
 
 const meta = {
     title: 'Components/Utilities/Dialog',

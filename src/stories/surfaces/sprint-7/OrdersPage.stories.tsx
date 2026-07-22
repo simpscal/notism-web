@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ClipboardList, ShoppingBag, StickyNote } from 'lucide-react';
 import React from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
 
 // ---------------------------------------------------------------------------
 // Utilities

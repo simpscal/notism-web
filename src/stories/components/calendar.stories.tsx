@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 
-import { Calendar } from '@/components/calendar';
+import { Calendar } from '@/uis/calendar';
 
 const meta = {
     title: 'Components/Inputs/Calendar',

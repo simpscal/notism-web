@@ -11,12 +11,6 @@ import { ORDER_QUERY_KEYS, orderApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import ErrorState from '@/components/error-state';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
 import {
     DELIVERY_STATUS,
     DeliveryStatusEnum,
@@ -24,6 +18,12 @@ import {
     toCustomerRefundStatus,
     type DeliveryStatusConfig,
 } from '@/features/order';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import ErrorState from '@/uis/error-state';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
 
 const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
     const step = DELIVERY_STATUS.find(s => s.key === status);

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Badge } from '@/components/badge';
+import { Badge } from '@/uis/badge';
 
 const meta = {
     title: 'Components/Display/Badge',

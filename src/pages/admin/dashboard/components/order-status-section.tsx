@@ -8,8 +8,8 @@ import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { DashboardOrderStatusSummaryModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import { Card, CardContent } from '@/components/card';
+import { Button } from '@/uis/button';
+import { Card, CardContent } from '@/uis/card';
 import {
     ChartContainer,
     ChartLegend,
@@ -17,9 +17,9 @@ import {
     ChartTooltip,
     ChartTooltipContent,
     type ChartConfig,
-} from '@/components/chart';
-import ErrorState from '@/components/error-state';
-import { Skeleton } from '@/components/skeleton';
+} from '@/uis/chart';
+import ErrorState from '@/uis/error-state';
+import { Skeleton } from '@/uis/skeleton';
 
 type OrderStatusBucketKey = keyof DashboardOrderStatusSummaryModel;
 

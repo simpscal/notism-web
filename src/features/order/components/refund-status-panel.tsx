@@ -8,8 +8,8 @@ import { toCustomerRefundStatus } from '../utils';
 import RefundStatusBadge from './refund-status-badge';
 
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Separator } from '@/components/separator';
+import { Button } from '@/uis/button';
+import { Separator } from '@/uis/separator';
 
 interface RefundStatusPanelProps {
     status: string;

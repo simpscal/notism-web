@@ -9,12 +9,12 @@ import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminFoodsModel } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
-import ErrorState from '@/components/error-state';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
-import Spinner from '@/components/spinner';
+import { Button } from '@/uis/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/uis/dropdown-menu';
+import ErrorState from '@/uis/error-state';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/uis/input-group';
+import Spinner from '@/uis/spinner';
 import {
     SortableTableHead,
     Table,
@@ -25,7 +25,7 @@ import {
     TableRow,
     TablePagination,
     useTableSort,
-} from '@/components/table';
+} from '@/uis/table';
 
 const DESCRIPTION_MAX_LENGTH = 50;
 

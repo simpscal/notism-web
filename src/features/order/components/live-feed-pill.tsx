@@ -2,9 +2,9 @@ import { WifiOff } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import Spinner from '@/components/spinner';
 import { NotificationStatus } from '@/core/hooks';
+import { Button } from '@/uis/button';
+import Spinner from '@/uis/spinner';
 
 interface LiveFeedPillProps {
     status: NotificationStatus;

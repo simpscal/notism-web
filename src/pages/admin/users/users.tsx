@@ -9,12 +9,13 @@ import { toast } from 'sonner';
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminUsersModel } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
-import ErrorState from '@/components/error-state';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
-import Spinner from '@/components/spinner';
+import { useAppSelector } from '@/core/hooks/use-redux.hook';
+import { Button } from '@/uis/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/uis/dropdown-menu';
+import ErrorState from '@/uis/error-state';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/uis/input-group';
+import Spinner from '@/uis/spinner';
 import {
     SortableTableHead,
     Table,
@@ -25,8 +26,7 @@ import {
     TableRow,
     TablePagination,
     useTableSort,
-} from '@/components/table';
-import { useAppSelector } from '@/core/hooks/use-redux.hook';
+} from '@/uis/table';
 
 function AdminUsers() {
     const { t } = useTranslation();

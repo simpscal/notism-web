@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { RefundStatusEnum } from '../enums';
 
-import { Badge, type BadgeProps } from '@/components/badge';
-import Spinner from '@/components/spinner';
+import { Badge, type BadgeProps } from '@/uis/badge';
+import Spinner from '@/uis/spinner';
 
 interface RefundStatusBadgeProps {
     status: RefundStatusEnum;

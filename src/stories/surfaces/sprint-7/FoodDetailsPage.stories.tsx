@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ArrowLeft, CheckCircle2, Minus, Package, Plus, ShoppingCart, Utensils } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Label } from '@/components/label';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Label } from '@/uis/label';
+import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
 
 // ---------------------------------------------------------------------------
 // Utilities

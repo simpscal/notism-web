@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
+import { Button } from '@/uis/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/uis/tooltip';
 
 const meta = {
     title: 'Components/Utilities/Tooltip',

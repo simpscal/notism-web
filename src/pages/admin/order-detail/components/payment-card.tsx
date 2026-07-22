@@ -1,13 +1,13 @@
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
 import { PAYMENT_STATUS_OPTIONS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
 
 interface PaymentCardProps {
     paymentStatus: string;

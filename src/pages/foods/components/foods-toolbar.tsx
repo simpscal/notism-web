@@ -2,8 +2,8 @@ import { SlidersHorizontal, X } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
 
 interface FoodsToolbarProps {
     totalCount: number;

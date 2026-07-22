@@ -1,8 +1,8 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import Spinner from '@/components/spinner';
+import { Button } from '@/uis/button';
+import Spinner from '@/uis/spinner';
 
 interface OrdersLoadMoreProps {
     isFetchingNextPage: boolean;

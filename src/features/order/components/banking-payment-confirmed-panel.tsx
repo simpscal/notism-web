@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
-import { Badge } from '@/components/badge';
+import { Badge } from '@/uis/badge';
 
 interface BankingPaymentConfirmedPanelProps {
     totalAmount: number;

@@ -3,11 +3,11 @@ import { ChangeEvent, memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/card';
-import { Input } from '@/components/input';
-import { Label } from '@/components/label';
-import { Textarea } from '@/components/textarea';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/uis/card';
+import { Input } from '@/uis/input';
+import { Label } from '@/uis/label';
+import { Textarea } from '@/uis/textarea';
 
 interface PaymentDeliveryFormProps {
     savedAddress: string | null | undefined;

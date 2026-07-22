@@ -8,9 +8,9 @@ import AdminOrderCard from './admin-order-card';
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminOrderModel, AdminOrdersModel } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
-import Kanban, { KanbanColumn } from '@/components/kanban';
-import Spinner from '@/components/spinner';
 import { DELIVERY_STATUS } from '@/features/order';
+import Kanban, { KanbanColumn } from '@/uis/kanban';
+import Spinner from '@/uis/spinner';
 
 interface AdminOrdersKanbanProps {
     onOrderClick: (slugId: string) => void;

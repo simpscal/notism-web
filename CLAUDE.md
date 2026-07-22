@@ -38,7 +38,7 @@ src/
   apis/             # API layer, one folder per domain:
     [domain]/       #   {domain}.api.ts (fetchers), .request/.response.ts (wire types),
                     #   .model.ts (mapped *Model), .mapper.ts, .constant.ts (ENDPOINTS + QUERY_KEYS)
-  components/       # Reusable UI components (shadcn/ui)
+  uis/              # Reusable UI components (shadcn/ui)
     [feature]/      # Feature-specific components
     ui/             # Base components (button, card, dialog, etc.)
   core/             # Hooks, contexts, route guards
@@ -53,7 +53,7 @@ src/
 
 | Alias          | Path                 |
 | -------------- | -------------------- |
-| `@/components` | `src/components/`    |
+| `@/uis`        | `src/uis/`           |
 | `@/constants`  | `src/app/constants/` |
 | `@/hooks`      | `src/core/hooks/`    |
 | `@/contexts`   | `src/core/contexts/` |

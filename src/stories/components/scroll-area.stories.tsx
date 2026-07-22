@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { ScrollArea } from '@/components/scroll-area';
-import { Separator } from '@/components/separator';
+import { ScrollArea } from '@/uis/scroll-area';
+import { Separator } from '@/uis/separator';
 
 const tags = Array.from({ length: 50 }).map((_, i) => `v1.2.0-beta.${i + 1}`);
 

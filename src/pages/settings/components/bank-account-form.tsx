@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { Button } from '@/components/button';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
-import Spinner from '@/components/spinner';
+import { Button } from '@/uis/button';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/uis/field';
+import { Input } from '@/uis/input';
+import Spinner from '@/uis/spinner';
 
 export type BankAccountFormVariant = 'admin' | 'customer';
 

@@ -7,9 +7,9 @@ import { toast } from 'sonner';
 import BankAccountForm, { BankAccountFormValues, BankAccountFormVariant } from './bank-account-form';
 
 import { ORDER_QUERY_KEYS, userApi, USER_QUERY_KEYS } from '@/apis';
-import { Button } from '@/components/button';
-import ErrorState from '@/components/error-state';
-import { Skeleton } from '@/components/skeleton';
+import { Button } from '@/uis/button';
+import ErrorState from '@/uis/error-state';
+import { Skeleton } from '@/uis/skeleton';
 
 const COPY_PREFIX: Record<BankAccountFormVariant, string> = {
     admin: 'settings.payment',

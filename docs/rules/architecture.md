@@ -158,7 +158,7 @@ graph TD
 │   ├── 📁 auth/
 │   └── ...
 │
-├── 📁 components/   # Reusable UI components
+├── 📁 uis/          # Reusable UI components
 │   ├── 📁 __tests__/ # Shared component unit tests
 │   ├── 📄 button.tsx
 │   ├── 📄 input.tsx
@@ -474,7 +474,7 @@ These files serve as canonical examples of each pattern. When implementing a new
 | **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration                                |
 | **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant                        |
 | **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                                        |
-| **Shared UI Component**     | `src/components/` — shadcn/ui-based reusable components                                               |
+| **Shared UI Component**     | `src/uis/` — shadcn/ui-based reusable components                                                      |
 | **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic                         |
 | **Hook-adjacent Utility**   | `src/core/hooks/lazy-with-preload.hook.ts` — React.lazy wrapper consumed by a hook, not a hook itself |
 | **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern                            |

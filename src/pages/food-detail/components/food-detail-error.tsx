@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import ErrorState from '@/components/error-state';
+import { Button } from '@/uis/button';
+import ErrorState from '@/uis/error-state';
 
 function FoodDetailError() {
     const { t } = useTranslation();

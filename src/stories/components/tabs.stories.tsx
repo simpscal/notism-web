@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
-import { Input } from '@/components/input';
-import { Label } from '@/components/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/tabs';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/uis/card';
+import { Input } from '@/uis/input';
+import { Label } from '@/uis/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/uis/tabs';
 
 const meta = {
     title: 'Components/Navigation/Tabs',

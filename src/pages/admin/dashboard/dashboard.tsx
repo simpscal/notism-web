@@ -6,7 +6,7 @@ import OrderStatusSection from './components/order-status-section';
 import RevenueSection from './components/revenue-section';
 import TodaySalesSection from './components/today-sales-section';
 
-import { Separator } from '@/components/separator';
+import { Separator } from '@/uis/separator';
 
 function formatTodayLabel(): string {
     return new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });

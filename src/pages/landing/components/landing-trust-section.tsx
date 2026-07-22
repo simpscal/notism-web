@@ -1,9 +1,9 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Card, CardContent } from '@/components/card';
-import { Separator } from '@/components/separator';
 import { OrderCheckoutTrustBar } from '@/features/order/components';
+import { Card, CardContent } from '@/uis/card';
+import { Separator } from '@/uis/separator';
 
 function LandingTrustSection() {
     const { t } = useTranslation();

@@ -4,9 +4,9 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { Button } from '@/components/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/form';
-import { Input } from '@/components/input';
+import { Button } from '@/uis/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/uis/form';
+import { Input } from '@/uis/input';
 
 function FormDemo() {
     const { t } = useTranslation();

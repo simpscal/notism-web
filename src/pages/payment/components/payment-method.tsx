@@ -2,8 +2,8 @@ import { Banknote, CreditCard } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { PaymentMethodEnum } from '@/features/order';
+import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
 
 interface PaymentMethodProps {
     value: PaymentMethodEnum;

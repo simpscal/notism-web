@@ -2,15 +2,15 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Banknote, CheckCircle2, CreditCard, MapPin, Pencil, ShieldCheck } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/card';
-import { Input } from '@/components/input';
-import { Label } from '@/components/label';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
-import { Textarea } from '@/components/textarea';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/uis/card';
+import { Input } from '@/uis/input';
+import { Label } from '@/uis/label';
+import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
+import { Textarea } from '@/uis/textarea';
 
 // ---------------------------------------------------------------------------
 // Utilities

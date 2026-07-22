@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { HeldRefundModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
-import Banner from '@/components/banner';
+import Banner from '@/uis/banner';
 
 interface HeldRefundReminderBannerProps {
     held: HeldRefundModel[];

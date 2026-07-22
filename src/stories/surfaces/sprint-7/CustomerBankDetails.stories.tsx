@@ -3,11 +3,11 @@ import { CreditCard, Palette, RefreshCw, User } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/button';
-import { Card } from '@/components/card';
-import ErrorState from '@/components/error-state';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
+import { Button } from '@/uis/button';
+import { Card } from '@/uis/card';
+import ErrorState from '@/uis/error-state';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/uis/field';
+import { Input } from '@/uis/input';
 import {
     Sidebar,
     SidebarContent,
@@ -20,10 +20,10 @@ import {
     SidebarMenuItem,
     SidebarProvider,
     SidebarTrigger,
-} from '@/components/sidebar';
-import { Skeleton } from '@/components/skeleton';
-import { Toaster } from '@/components/sonner';
-import Spinner from '@/components/spinner';
+} from '@/uis/sidebar';
+import { Skeleton } from '@/uis/skeleton';
+import { Toaster } from '@/uis/sonner';
+import Spinner from '@/uis/spinner';
 
 // ---------------------------------------------------------------------------
 // Implementation reference — story 254 (customer captures their bank/payment

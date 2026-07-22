@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { CartItemModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent } from '@/components/card';
-import { Separator } from '@/components/separator';
 import { getFoodPricing } from '@/features/food';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent } from '@/uis/card';
+import { Separator } from '@/uis/separator';
 
 export type PaymentSuccessMethod = 'cod' | 'banking';
 

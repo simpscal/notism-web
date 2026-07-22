@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Separator } from '@/components/separator';
+import { Separator } from '@/uis/separator';
 
 const meta = {
     title: 'Components/Layout/Separator',

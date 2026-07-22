@@ -401,15 +401,15 @@ function BadProductCard({ product }) {
 
 ##### Customizing Component Color Styles
 
-**Rule: Avoid customizing color, border, shadow, or background styles for components in `@/components/`.**
+**Rule: Avoid customizing color, border, shadow, or background styles for components in `@/uis/`.**
 
-Components in the `@/components/` directory (like `Button`, `Card`, `Badge`, etc.) are part of the design system and should maintain consistent styling. Custom color styles break design system consistency and make it harder to maintain a cohesive UI.
+Components in the `@/uis/` directory (like `Button`, `Card`, `Badge`, etc.) are part of the design system and should maintain consistent styling. Custom color styles break design system consistency and make it harder to maintain a cohesive UI.
 
 ```javascript
 // ❌ Bad: Customizing color styles on design system components
-import { Button } from '@/components/button';
-import { Card } from '@/components/card';
-import { Badge } from '@/components/badge';
+import { Button } from '@/uis/button';
+import { Card } from '@/uis/card';
+import { Badge } from '@/uis/badge';
 
 function FoodCard() {
     return (
@@ -421,9 +421,9 @@ function FoodCard() {
 }
 
 // ✅ Good: Use component variants and default styling
-import { Button } from '@/components/button';
-import { Card } from '@/components/card';
-import { Badge } from '@/components/badge';
+import { Button } from '@/uis/button';
+import { Card } from '@/uis/card';
+import { Badge } from '@/uis/badge';
 
 function FoodCard() {
     return (
@@ -447,7 +447,7 @@ function FoodCard() {
 - ✅ Use component variants (e.g., `variant='primary'`, `variant='outline'`)
 - ✅ Use component size props (e.g., `size='sm'`, `size='lg'`)
 - ✅ Rely on the design system's default styling
-- ✅ If customization is needed, extend the component in `@/components/` with a new variant
+- ✅ If customization is needed, extend the component in `@/uis/` with a new variant
 - ✅ Use layout/spacing classes (e.g., `gap-4`, `p-6`, `mb-4`) which are acceptable
 
 **Exceptions:**
@@ -497,7 +497,7 @@ function SuccessMessage() {
 }
 
 // ✅ Better: Using design system components with semantic variants
-import { Alert, AlertDescription } from '@/components/alert';
+import { Alert, AlertDescription } from '@/uis/alert';
 
 function ErrorMessage() {
     return (
@@ -552,7 +552,7 @@ function ErrorMessage() {
 
 ### Showing Error State UI
 
-When a query fails (`isError` from `useQuery`), show a dedicated error UI instead of rendering broken or empty content. Use the shared **ErrorState** component from `@/components/error-state` so error presentation is consistent across the app.
+When a query fails (`isError` from `useQuery`), show a dedicated error UI instead of rendering broken or empty content. Use the shared **ErrorState** component from `@/uis/error-state` so error presentation is consistent across the app.
 
 **Rule: Use the `ErrorState` component for API-failure error UIs.** Customize the message and icon via props; avoid duplicating error layout and styles in page-specific components.
 

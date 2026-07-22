@@ -8,11 +8,6 @@ import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminOrderDetailModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import ErrorState from '@/components/error-state';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
 import {
     OrderDeliveryStatusTimeline,
     OrderHeader,
@@ -21,6 +16,11 @@ import {
     PaymentStatusEnum,
 } from '@/features/order';
 import { PaymentCard } from '@/pages/admin/order-detail/components';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import ErrorState from '@/uis/error-state';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
 
 function AdminOrderDetail() {
     const { t, i18n } = useTranslation();

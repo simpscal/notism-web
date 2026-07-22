@@ -1,9 +1,9 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { CarouselApi } from '@/components/carousel';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/carousel';
 import { FoodImage } from '@/features/food/components';
+import type { CarouselApi } from '@/uis/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/uis/carousel';
 
 interface FoodDetailImageSectionProps {
     imageUrls: string[];

@@ -2,9 +2,9 @@ import { Copy } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Separator } from '@/components/separator';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Separator } from '@/uis/separator';
 
 interface TransferRecordCardProps {
     paidDate: string;

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/uis/accordion';
 
 function LandingFaqSection() {
     const { t } = useTranslation();

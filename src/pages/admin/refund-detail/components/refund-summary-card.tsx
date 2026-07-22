@@ -2,9 +2,9 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Separator } from '@/components/separator';
 import { RefundStatusBadge, RefundStatusEnum } from '@/features/order';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Separator } from '@/uis/separator';
 
 interface RefundSummaryCardProps {
     id: string;

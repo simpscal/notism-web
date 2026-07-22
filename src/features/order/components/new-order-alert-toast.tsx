@@ -3,9 +3,9 @@ import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Toast } from '@/components/toast';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Toast } from '@/uis/toast';
 
 export interface NewOrderAlertData {
     /** Stable order id — used as the toast id so each order alert is distinct. */

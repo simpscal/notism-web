@@ -6,11 +6,11 @@ import AdminOrdersKanban from '../admin-orders-kanban';
 
 import type { AdminOrdersModel } from '@/apis';
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
-import { HIGHLIGHT_DURATION_MS } from '@/components/kanban';
 import { DeliveryStatusEnum } from '@/features/order';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
+import { HIGHLIGHT_DURATION_MS } from '@/uis/kanban';
 
 vi.mock('react-intersection-observer', () => ({
     useInView: () => ({ ref: vi.fn(), inView: false }),

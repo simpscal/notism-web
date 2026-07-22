@@ -8,15 +8,15 @@ import { toast } from 'sonner';
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminCategoriesModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/dropdown-menu';
-import ErrorState from '@/components/error-state';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/input-group';
-import Spinner from '@/components/spinner';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table';
 import { useAppDispatch } from '@/core/hooks';
 import { removeCategory } from '@/store/food';
+import { Button } from '@/uis/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/uis/dropdown-menu';
+import ErrorState from '@/uis/error-state';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/uis/input-group';
+import Spinner from '@/uis/spinner';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/uis/table';
 
 function AdminCategories() {
     const { t } = useTranslation();

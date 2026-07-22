@@ -2,13 +2,13 @@ import { Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import Spinner from '@/components/spinner';
 import { AdminRouteGuard, AuthRouteGuard, ResetPasswordRouteGuard } from '@/core/guards';
 import { lazyWithPreload, PreloadableComponent, useIdlePreload } from '@/core/hooks';
 import { AdminLayout } from '@/layouts/admin';
 import { AuthLayout } from '@/layouts/auth';
 import { ClientLayout } from '@/layouts/client';
 import { OAuthCallbackRouteGuard } from '@/pages/oauth-callback/guards';
+import Spinner from '@/uis/spinner';
 
 // Client pages
 const Landing = lazyWithPreload(() => import('@/pages/landing').then(m => ({ default: m.Landing })));

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Bold, Italic, Underline } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Toggle } from '@/components/toggle';
+import { Toggle } from '@/uis/toggle';
 
 const meta = {
     title: 'Components/Inputs/Toggle',

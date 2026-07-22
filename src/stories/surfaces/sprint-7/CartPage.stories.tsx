@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ArrowRight, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/uis/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
 
 // ---------------------------------------------------------------------------
 // Utilities

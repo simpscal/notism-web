@@ -3,9 +3,9 @@ import { memo, useCallback } from 'react';
 
 import type { AdminOrderModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
-import { Badge } from '@/components/badge';
-import { Card, CardContent } from '@/components/card';
 import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
+import { Badge } from '@/uis/badge';
+import { Card, CardContent } from '@/uis/card';
 
 interface AdminOrderCardProps {
     order: AdminOrderModel;

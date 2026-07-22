@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/resizable';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/uis/resizable';
 
 const meta = {
     title: 'Components/Layout/Resizable',

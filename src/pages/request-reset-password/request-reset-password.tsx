@@ -8,9 +8,9 @@ import { z } from 'zod';
 
 import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import { Input } from '@/components/input';
+import { Button } from '@/uis/button';
+import { Field, FieldError, FieldLabel } from '@/uis/field';
+import { Input } from '@/uis/input';
 
 function RequestResetPassword() {
     const { t } = useTranslation();

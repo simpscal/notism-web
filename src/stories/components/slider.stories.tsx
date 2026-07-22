@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { Slider } from '@/components/slider';
+import { Slider } from '@/uis/slider';
 
 const meta = {
     title: 'Components/Inputs/Slider',

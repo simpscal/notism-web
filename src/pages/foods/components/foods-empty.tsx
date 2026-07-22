@@ -2,7 +2,7 @@ import { UtensilsCrossed } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
+import { Button } from '@/uis/button';
 
 interface FoodsEmptyProps {
     onClearFilters: () => void;

@@ -7,11 +7,11 @@ import { Link } from 'react-router-dom';
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import ErrorState from '@/components/error-state';
-import { Skeleton } from '@/components/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TablePagination, TableRow } from '@/components/table';
 import { RefundStatusBadge, RefundStatusEnum } from '@/features/order';
+import { Button } from '@/uis/button';
+import ErrorState from '@/uis/error-state';
+import { Skeleton } from '@/uis/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TablePagination, TableRow } from '@/uis/table';
 
 const EMPTY_STATE_COL_SPAN = 7;
 const SKELETON_ROWS = [1, 2, 3, 4, 5];

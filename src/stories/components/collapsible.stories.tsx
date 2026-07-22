@@ -3,8 +3,8 @@ import { ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/collapsible';
+import { Button } from '@/uis/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/uis/collapsible';
 
 const meta = {
     title: 'Components/Layout/Collapsible',

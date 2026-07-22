@@ -4,9 +4,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/app/utils/tailwind.utils';
-import { Button } from '@/components/button';
-import { Calendar } from '@/components/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
+import { Button } from '@/uis/button';
+import { Calendar } from '@/uis/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/uis/popover';
 
 export function DatePickerDemo() {
     const { t } = useTranslation();

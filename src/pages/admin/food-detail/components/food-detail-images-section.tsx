@@ -2,8 +2,8 @@ import { ImagePlus, Trash2 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/uis/card';
 
 interface FoodDetailImagesSectionProps {
     foodName: string;

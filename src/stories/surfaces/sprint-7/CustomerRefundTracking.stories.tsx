@@ -2,13 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CheckCircle2, Clock, Copy, Landmark, TriangleAlert } from 'lucide-react';
 import React from 'react';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
-import Spinner from '@/components/spinner';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
+import Spinner from '@/uis/spinner';
 
 // ---------------------------------------------------------------------------
 // Implementation reference — stories 242, 243, 246 (customer order tracking).

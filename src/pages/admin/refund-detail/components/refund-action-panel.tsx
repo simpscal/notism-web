@@ -2,10 +2,10 @@ import { RotateCcw } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import Spinner from '@/components/spinner';
 import { RefundStatusEnum } from '@/features/order';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import Spinner from '@/uis/spinner';
 
 interface RefundActionPanelProps {
     status: string;

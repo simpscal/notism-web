@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
+import { Button } from '@/uis/button';
 import {
     Drawer,
     DrawerClose,
@@ -11,7 +11,7 @@ import {
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger,
-} from '@/components/drawer';
+} from '@/uis/drawer';
 
 const meta = {
     title: 'Components/Utilities/Drawer',

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { DatePickerWithRange } from '@/components/date-range-picker';
+import { DatePickerWithRange } from '@/uis/date-range-picker';
 
 const meta = {
     title: 'Components/Inputs/DateRangePicker',

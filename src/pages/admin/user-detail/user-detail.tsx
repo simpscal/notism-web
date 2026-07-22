@@ -18,15 +18,15 @@ import {
 
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import ErrorState from '@/components/error-state';
-import { Field, FieldError, FieldLabel } from '@/components/field';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { Separator } from '@/components/separator';
-import Spinner from '@/components/spinner';
 import { useAppSelector } from '@/core/hooks/use-redux.hook';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/uis/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import ErrorState from '@/uis/error-state';
+import { Field, FieldError, FieldLabel } from '@/uis/field';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import { Separator } from '@/uis/separator';
+import Spinner from '@/uis/spinner';
 
 function AdminUserDetail() {
     const { t } = useTranslation();

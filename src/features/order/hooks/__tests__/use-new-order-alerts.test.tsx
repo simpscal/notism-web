@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { SharedNotification } from '@/app/models';
-import { Toaster } from '@/components/sonner';
 import { NotificationStatus } from '@/core/hooks';
 import { useNewOrderAlerts } from '@/features/order/hooks/use-new-order-alerts';
 import { renderWithProviders } from '@/test/utils';
+import { Toaster } from '@/uis/sonner';
 
 const navigateMock = vi.fn();
 

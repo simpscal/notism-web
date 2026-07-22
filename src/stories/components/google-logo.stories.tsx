@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import GoogleLogo from '@/components/google-logo';
+import GoogleLogo from '@/uis/google-logo';
 
 const meta = {
     title: 'Components/Display/GoogleLogo',

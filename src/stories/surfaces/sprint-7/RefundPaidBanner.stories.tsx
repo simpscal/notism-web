@@ -3,9 +3,9 @@ import { CheckCircle2 } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 
-import Banner from '@/components/banner';
-import { Button } from '@/components/button';
-import { Toaster } from '@/components/sonner';
+import Banner from '@/uis/banner';
+import { Button } from '@/uis/button';
+import { Toaster } from '@/uis/sonner';
 
 // ---------------------------------------------------------------------------
 // Implementation reference — story 246 (refund-paid notification banner).
@@ -30,7 +30,7 @@ import { Toaster } from '@/components/sonner';
 // behind-the-scenes Failed/retrying transfer is NEVER surfaced — so this banner
 // only ever announces the Paid (terminal, customer-visible) transition.
 //
-// Built on the existing Banner component (src/components/banner.tsx): success
+// Built on the existing Banner component (src/uis/banner.tsx): success
 // variant, leading icon, clickable message region, and the built-in dismiss (X)
 // via onClose. The rest of the app below the banner is a labelled placeholder so
 // the reviewer sees the banner as a top-of-app element in real page context.

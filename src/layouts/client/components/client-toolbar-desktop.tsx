@@ -7,8 +7,11 @@ import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { useLanguageToggle } from '@/app/i18n/use-language-toggle';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
-import { Button } from '@/components/button';
+import { useTheme } from '@/core/contexts/theme.context';
+import { useAppSelector } from '@/core/hooks';
+import { selectCartTotalItems } from '@/store/cart';
+import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
+import { Button } from '@/uis/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,10 +19,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/dropdown-menu';
-import { useTheme } from '@/core/contexts/theme.context';
-import { useAppSelector } from '@/core/hooks';
-import { selectCartTotalItems } from '@/store/cart';
+} from '@/uis/dropdown-menu';
 
 interface ClientToolbarDesktopProps {
     user: UserProfileModel | null;

@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CheckCircle2, Package, StickyNote } from 'lucide-react';
 
-import { Badge } from '@/components/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
+import { Badge } from '@/uis/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
 
 // ---------------------------------------------------------------------------
 // Utilities

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CheckCircle, Package, Truck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import Timeline from '@/components/timeline';
+import Timeline from '@/uis/timeline';
 
 const timelineItems = [
     {

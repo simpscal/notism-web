@@ -1,5 +1,5 @@
-import { Separator } from '@/components/separator';
-import { Skeleton } from '@/components/skeleton';
+import { Separator } from '@/uis/separator';
+import { Skeleton } from '@/uis/skeleton';
 
 export default function FoodDetailSkeleton() {
     return (

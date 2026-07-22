@@ -3,7 +3,7 @@ import { type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
 import { cn } from '@/app/utils/tailwind.utils';
-import { toggleVariants } from '@/components/toggle';
+import { toggleVariants } from '@/uis/toggle';
 
 const ToggleGroupContext = React.createContext<VariantProps<typeof toggleVariants>>({
     size: 'default',

@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { CartItemModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
 import { cn } from '@/app/utils/tailwind.utils';
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card } from '@/components/card';
-import { Checkbox } from '@/components/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
 import { getFoodPricing } from '@/features/food';
 import { FoodImage } from '@/features/food/components';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card } from '@/uis/card';
+import { Checkbox } from '@/uis/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
 
 interface CartItemProps {
     item: CartItemModel;

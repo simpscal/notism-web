@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Menu, UtensilsCrossed, X } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { Button } from '@/components/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/sheet';
+import { Button } from '@/uis/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/uis/sheet';
 
 // ---------------------------------------------------------------------------
 // Shared placeholder block

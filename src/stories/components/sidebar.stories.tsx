@@ -15,7 +15,7 @@ import {
     SidebarMenuItem,
     SidebarProvider,
     SidebarTrigger,
-} from '@/components/sidebar';
+} from '@/uis/sidebar';
 
 const navItems = [
     { titleKey: 'storybook.sidebar.dashboard', url: '#', icon: Home },

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Loader2, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
+import { Button } from '@/uis/button';
 
 const meta = {
     title: 'Components/Inputs/Button',

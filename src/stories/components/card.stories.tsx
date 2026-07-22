@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/card';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/uis/card';
 
 const meta = {
     title: 'Components/Layout/Card',

@@ -6,7 +6,10 @@ import { Link, NavLink } from 'react-router-dom';
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
+import { useTheme } from '@/core/contexts/theme.context';
+import { useAppSelector } from '@/core/hooks';
+import { selectCartTotalItems } from '@/store/cart';
+import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,10 +17,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/dropdown-menu';
-import { useTheme } from '@/core/contexts/theme.context';
-import { useAppSelector } from '@/core/hooks';
-import { selectCartTotalItems } from '@/store/cart';
+} from '@/uis/dropdown-menu';
 
 interface ClientToolbarMobileProps {
     user: UserProfileModel | null;

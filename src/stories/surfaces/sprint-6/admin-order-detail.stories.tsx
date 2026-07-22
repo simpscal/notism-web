@@ -3,14 +3,14 @@ import { ArrowLeft, StickyNote } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/select';
-import { Separator } from '@/components/separator';
-import { Toaster } from '@/components/sonner';
-import Spinner from '@/components/spinner';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
+import { Separator } from '@/uis/separator';
+import { Toaster } from '@/uis/sonner';
+import Spinner from '@/uis/spinner';
 
 /** Copy shown when a payment-status change fails (toast + revert). */
 const SAVE_FAILED_MESSAGE = 'Couldn’t update the payment status. Please try again.';
@@ -87,7 +87,7 @@ const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
 //     it is the only OUTLINED badge, so shape differs too.
 //
 // NOTE FOR IMPLEMENTATION: there is no `warning` Badge variant in
-// src/components/badge.tsx today (variants: default, secondary, destructive,
+// src/uis/badge.tsx today (variants: default, secondary, destructive,
 // outline, success). The Refunded look below is composed with utility classes
 // over the `outline` variant using the existing `--warning` design token. See
 // <confirmations> — implementation should either add a `warning` Badge variant

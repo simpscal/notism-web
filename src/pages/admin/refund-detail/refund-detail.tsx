@@ -17,12 +17,12 @@ import { ROUTES } from '@/app/constants';
 import { NotificationType } from '@/app/enums';
 import { type SharedNotification } from '@/app/models';
 import { formatVnd } from '@/app/utils';
-import { Button } from '@/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import ErrorState from '@/components/error-state';
-import Spinner from '@/components/spinner';
 import { useNotifications } from '@/core/hooks';
 import { RefundStatusEnum } from '@/features/order';
+import { Button } from '@/uis/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import ErrorState from '@/uis/error-state';
+import Spinner from '@/uis/spinner';
 
 function AdminRefundDetail() {
     const { t, i18n } = useTranslation();

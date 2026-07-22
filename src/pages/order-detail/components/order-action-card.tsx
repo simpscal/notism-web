@@ -6,11 +6,6 @@ import { Link } from 'react-router-dom';
 import type { RefundSummaryModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/dialog';
-import Spinner from '@/components/spinner';
 import {
     DELIVERY_STATUS,
     DeliveryStatusEnum,
@@ -18,6 +13,11 @@ import {
     shouldShowRefundRequest,
     type DeliveryStatusConfig,
 } from '@/features/order';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
+import Spinner from '@/uis/spinner';
 
 const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
     const step = DELIVERY_STATUS.find(s => s.key === status);

@@ -2,7 +2,7 @@ import { AlertTriangle } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
 
 interface RefundFailureCardProps {
     reason: string;

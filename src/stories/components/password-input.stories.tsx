@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useTranslation } from 'react-i18next';
 
-import { Label } from '@/components/label';
-import { PasswordInput } from '@/components/password-input';
+import { Label } from '@/uis/label';
+import { PasswordInput } from '@/uis/password-input';
 
 const meta = {
     title: 'Components/Inputs/PasswordInput',

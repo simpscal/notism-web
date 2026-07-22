@@ -6,9 +6,12 @@ import { Link, NavLink } from 'react-router-dom';
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/avatar';
-import { Badge } from '@/components/badge';
-import { Button } from '@/components/button';
+import { useTheme } from '@/core/contexts/theme.context';
+import { NotificationStatus } from '@/core/hooks';
+import LiveFeedPill from '@/features/order/components/live-feed-pill';
+import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
+import { Badge } from '@/uis/badge';
+import { Button } from '@/uis/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -16,10 +19,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/dropdown-menu';
-import { useTheme } from '@/core/contexts/theme.context';
-import { NotificationStatus } from '@/core/hooks';
-import LiveFeedPill from '@/features/order/components/live-feed-pill';
+} from '@/uis/dropdown-menu';
 
 interface AdminToolbarDesktopProps {
     user: UserProfileModel | null;

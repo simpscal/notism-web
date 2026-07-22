@@ -3,7 +3,7 @@ import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
-import Banner from '@/components/banner';
+import Banner from '@/uis/banner';
 
 export interface RefundPaidBannerData {
     refundId: string;

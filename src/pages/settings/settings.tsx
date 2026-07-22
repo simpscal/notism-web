@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { Card } from '@/components/card';
+import { Card } from '@/uis/card';
 import {
     Sidebar,
     SidebarContent,
@@ -17,7 +17,7 @@ import {
     SidebarMenuItem,
     SidebarProvider,
     SidebarTrigger,
-} from '@/components/sidebar';
+} from '@/uis/sidebar';
 
 type SettingsSectionId = 'profile' | 'appearance' | 'payment';
 
