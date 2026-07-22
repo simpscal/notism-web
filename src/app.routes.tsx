@@ -158,6 +158,8 @@ function AppRoutes() {
                     </Route>
                 </Route>
 
+                <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
+
                 {/* 404 - Not Found */}
                 <Route path='*' element={<NotFoundPage />} />
             </Routes>

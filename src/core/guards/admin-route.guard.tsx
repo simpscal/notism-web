@@ -1,9 +1,9 @@
 import { memo, useMemo } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
+import { ROUTES } from '@/app/constants';
 import { UserRoleEnum } from '@/app/enums';
 import { useAppSelector } from '@/core/hooks';
-import NotFoundPage from '@/pages/not-found';
 
 function AdminRouteGuard() {
     const user = useAppSelector(state => state.user.user);
@@ -13,7 +13,7 @@ function AdminRouteGuard() {
     }, [user?.role]);
 
     if (!isAdmin) {
-        return <NotFoundPage />;
+        return <Navigate to={`/${ROUTES.NOT_FOUND}`} replace />;
     }
 
     return <Outlet />;

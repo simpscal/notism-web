@@ -20,6 +20,7 @@ export const ROUTES = {
     CART: 'cart',
     PAYMENT: 'payment',
     DELIVERY_STATUS: 'delivery-status',
+    NOT_FOUND: 'not-found',
     ORDERS: {
         LIST: 'orders',
         DETAIL: (slugId: string) => `orders/${slugId}`,

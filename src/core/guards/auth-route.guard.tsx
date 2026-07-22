@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 import { useAppSelector } from '../hooks';
 
-import NotFoundPage from '@/pages/not-found';
+import { ROUTES } from '@/app/constants';
 
 interface AuthRouteGuardProps {
     mode?: 'authenticated' | 'anonymous';
@@ -17,14 +17,14 @@ export function AuthRouteGuard({ mode = 'anonymous' }: AuthRouteGuardProps = {})
 
     if (mode === 'anonymous') {
         if (userSnapshot) {
-            return <NotFoundPage />;
+            return <Navigate to={`/${ROUTES.NOT_FOUND}`} replace />;
         }
 
         return <Outlet />;
     }
 
     if (!userSnapshot) {
-        return <NotFoundPage />;
+        return <Navigate to={`/${ROUTES.NOT_FOUND}`} replace />;
     }
 
     return <Outlet />;
