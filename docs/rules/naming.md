@@ -77,6 +77,7 @@ This document defines the naming conventions used throughout the React applicati
 
 - Pattern: `use-{purpose}.hook.ts`
 - Examples: `use-auth.hook.ts`, `use-local-storage.hook.ts`, `use-api.hook.ts`
+- Hook-adjacent helper consumed by a hook (not a hook itself, no `use-` prefix): `{purpose}.hook.ts` — e.g. `lazy-with-preload.hook.ts` backing `use-idle-preload.hook.ts`. Still lives in `hooks/`, keeps the `.hook.ts` suffix.
 
 **Contexts**:
 

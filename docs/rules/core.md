@@ -73,6 +73,17 @@ class ApiClient {
 export const apiClient = new ApiClient(import.meta.env.VITE_API_URL);
 ```
 
+### Hook-Adjacent Utility
+
+```typescript
+// core/hooks/lazy-with-preload.hook.ts
+// Not a hook — a React.lazy wrapper consumed by use-idle-preload.hook.ts. Lives in hooks/
+// alongside the hook it backs, keeping the .hook.ts suffix without the use- prefix.
+export function lazyWithPreload<T extends ComponentType<unknown>>(
+    factory: () => Promise<{ default: T }>
+): PreloadableComponent<T> { ... }
+```
+
 ### Auth Hook
 
 ```typescript

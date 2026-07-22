@@ -1,3 +1,4 @@
+export * from './lazy-with-preload.hook';
 export * from './use-debounced-callback.hook';
 export * from './use-idle-preload.hook';
 export * from './use-input.hook';

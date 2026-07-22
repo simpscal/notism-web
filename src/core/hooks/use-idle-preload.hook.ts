@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { PreloadableComponent } from '@/app/routing/lazy-with-preload';
+import { PreloadableComponent } from './lazy-with-preload.hook';
 
 type IdleCallbackWindow = Window & {
     requestIdleCallback?: (callback: () => void) => number;

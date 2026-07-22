@@ -391,7 +391,7 @@ React-specific shared resources for hooks, contexts, and guards.
 
 **Contents:**
 
-- **hooks/**: Reusable React hooks
+- **hooks/**: Reusable React hooks, plus hook-adjacent React utilities they depend on (non-hook helpers, no `use-` prefix, e.g. `lazy-with-preload.hook.ts` backing `use-idle-preload.hook.ts`)
 - **contexts/**: React context providers
 - **guards/**: Route guards and authentication wrappers
 
@@ -468,14 +468,15 @@ store → features (models only), app
 
 These files serve as canonical examples of each pattern. When implementing a new feature, follow these as templates:
 
-| Pattern                     | Reference File(s)                                                              |
-| --------------------------- | ------------------------------------------------------------------------------ |
-| **Feature Module**          | `src/features/food/` — hooks, components, feature-only ViewModels              |
-| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration         |
-| **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant |
-| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                 |
-| **Shared UI Component**     | `src/components/` — shadcn/ui-based reusable components                        |
-| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic  |
-| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern     |
+| Pattern                     | Reference File(s)                                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Feature Module**          | `src/features/food/` — hooks, components, feature-only ViewModels                                     |
+| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration                                |
+| **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant                        |
+| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                                        |
+| **Shared UI Component**     | `src/components/` — shadcn/ui-based reusable components                                               |
+| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic                         |
+| **Hook-adjacent Utility**   | `src/core/hooks/lazy-with-preload.hook.ts` — React.lazy wrapper consumed by a hook, not a hook itself |
+| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern                            |
 
 Use these as templates: examine the full folder structure, naming conventions, import order, component memoization, and state management patterns from these examples.
