@@ -69,9 +69,7 @@ src/
 | Create any new file (component, hook, util, model, slice, test, context, guard, api)       | `docs/rules/naming.md`                 |
 | Create/edit any `.tsx` component; add Tailwind classes; handle JSX events                  | `docs/rules/components.md`             |
 | Add `useQuery`/`useMutation`/`useInfiniteQuery`; fetch data in `features/**` or `pages/**` | `docs/rules/tanstack-query.md`         |
-| Add/edit a file under `src/pages/**` or `src/features/**`                                  | `docs/rules/pages-and-features.md`     |
 | Create/edit a Redux slice under `src/store/**`; use `useAppSelector`/`useAppDispatch`      | `docs/rules/store.md`                  |
-| Create/edit a file under `src/core/hooks\|contexts\|guards/**`                             | `docs/rules/core.md`                   |
 | Build a form; use `useForm`/`zodResolver`/`Controller`/`<Field>`/Zod schema                | `docs/rules/forms.md`                  |
 | Add a user-visible string; edit `src/app/i18n/locales/*.json`; use `useTranslation`/`t()`  | `docs/rules/i18n.md`                   |
 | Implement or change the OAuth login flow                                                   | `docs/integration-flows/oauth-flow.md` |
