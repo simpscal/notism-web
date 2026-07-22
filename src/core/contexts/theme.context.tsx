@@ -32,7 +32,15 @@ export function ThemeProvider({
     storageKey = 'vite-ui-theme',
     ...props
 }: ThemeProviderProps) {
-    const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem(storageKey) as Theme) || defaultTheme);
+    const [theme, setTheme] = useState<Theme>(() => {
+        // SSR has no `window`/`localStorage` — always render with the default theme there;
+        // the browser reconciles to the persisted preference on hydration.
+        if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
+            return defaultTheme;
+        }
+
+        return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
+    });
 
     useEffect(() => {
         const root = window.document.documentElement;

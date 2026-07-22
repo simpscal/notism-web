@@ -12,21 +12,27 @@ export type RootState = {
     food: IFoodState;
 };
 
-export const store = configureStore({
-    reducer: {
-        auth: authReducer,
-        user: userReducer,
-        cart: cartReducer,
-        food: foodReducer,
-    },
-    middleware: getDefaultMiddleware =>
-        getDefaultMiddleware({
-            serializableCheck: {
-                ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
-            },
-        }),
-    devTools: import.meta.env.DEV,
-});
+// Factory so SSR can instantiate a fresh store per request — a module-level singleton
+// would leak state (auth, cart, etc.) across concurrent requests on the server.
+export function createStore() {
+    return configureStore({
+        reducer: {
+            auth: authReducer,
+            user: userReducer,
+            cart: cartReducer,
+            food: foodReducer,
+        },
+        middleware: getDefaultMiddleware =>
+            getDefaultMiddleware({
+                serializableCheck: {
+                    ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+                },
+            }),
+        devTools: import.meta.env.DEV,
+    });
+}
+
+export const store = createStore();
 
 export type AppDispatch = typeof store.dispatch;
 export type Store = typeof store;

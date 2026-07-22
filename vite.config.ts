@@ -50,6 +50,11 @@ function swVersionStamp(mode: string): Plugin {
     };
 }
 
+// Opt-in only — set by the `build:ssr` script's server-build step. Never set for the
+// existing `build`/`build:dev`/`build:prod`/`preview` scripts, so their output is
+// byte-for-byte unaffected by the SSR addition.
+const isSsrBuild = process.env.VITE_SSR_BUILD === 'true';
+
 export default defineConfig(({ mode }) => ({
     plugins: [
         react(),
@@ -65,6 +70,7 @@ export default defineConfig(({ mode }) => ({
         // Fires Vite's chunk-size warning well before a chunk creeps back toward the
         // pre-code-split 1.6 MB monolith.
         chunkSizeWarningLimit: 350,
+        ...(isSsrBuild ? { ssr: 'src/entry-server.tsx' } : {}),
     },
     resolve: {
         alias: {

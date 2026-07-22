@@ -1,0 +1,132 @@
+name: Deploy SSR Server to AWS EC2
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'server.ts'
+            - 'src/entry-server.tsx'
+            - 'src/entry-server.types.ts'
+            - 'src/entry-client.tsx'
+            - 'Dockerfile.ssr'
+            - 'docker-compose.ssr.yml'
+            - 'vite.config.ts'
+            - 'tsconfig*.json'
+            - 'package.json'
+            - 'bun.lockb'
+            - '.github/workflows/deploy-ssr.yml'
+    workflow_dispatch:
+
+env:
+    IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+    build-and-push:
+        name: Build and Push SSR Image to ECR
+        runs-on: ubuntu-latest
+        environment: prod
+        timeout-minutes: 15
+        permissions:
+            id-token: write
+            contents: read
+        outputs:
+            ecr-registry: ${{ steps.ecr-login.outputs.registry }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  role-to-assume: ${{ secrets.SSR_AWS_ROLE_TO_ASSUME }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v4
+
+            - name: Login to Amazon ECR
+              id: ecr-login
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Build and push image
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: Dockerfile.ssr
+                  platforms: linux/arm64
+                  push: true
+                  tags: |
+                      ${{ steps.ecr-login.outputs.registry }}/${{ secrets.SSR_ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                      ${{ steps.ecr-login.outputs.registry }}/${{ secrets.SSR_ECR_REPOSITORY }}:latest
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+    deploy-ec2:
+        name: Deploy SSR Server to EC2
+        needs: build-and-push
+        runs-on: ubuntu-latest
+        environment: prod
+        timeout-minutes: 10
+        permissions:
+            id-token: write
+            contents: read
+        steps:
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  role-to-assume: ${{ secrets.SSR_AWS_ROLE_TO_ASSUME }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Ensure EC2 is running
+              run: |
+                  aws ec2 start-instances --region "${{ secrets.AWS_REGION }}" --instance-ids ${{ secrets.SSR_EC2_INSTANCE_ID }}
+                  aws ec2 wait instance-running --region "${{ secrets.AWS_REGION }}" --instance-ids ${{ secrets.SSR_EC2_INSTANCE_ID }}
+
+            - name: Checkout compose file
+              uses: actions/checkout@v4
+              with:
+                  sparse-checkout: |
+                      docker-compose.ssr.yml
+                  sparse-checkout-cone-mode: false
+
+            - name: Prepare deploy files
+              env:
+                  ECR_REGISTRY: ${{ needs.build-and-push.outputs.ecr-registry }}
+                  ECR_REPOSITORY: ${{ secrets.SSR_ECR_REPOSITORY }}
+              run: |
+                  mkdir -p .deploy
+                  cp docker-compose.ssr.yml .deploy/docker-compose.yml
+                  printf 'SSR_IMAGE=%s/%s:%s\n' "$ECR_REGISTRY" "$ECR_REPOSITORY" "$IMAGE_TAG" > .deploy/.env
+
+            - name: Deploy to EC2 via SSH
+              env:
+                  EC2_HOST: ${{ secrets.SSR_EC2_HOST }}
+                  EC2_USER: ${{ secrets.SSR_EC2_USER }}
+                  EC2_SSH_KEY: ${{ secrets.SSR_EC2_SSH_PRIVATE_KEY }}
+                  AWS_REGION: ${{ secrets.AWS_REGION }}
+                  ECR_REGISTRY: ${{ needs.build-and-push.outputs.ecr-registry }}
+              run: |
+                  SSH_KEY_PATH="$HOME/.ssh/deploy_key.pem"
+                  SSH_OPTS="-i $SSH_KEY_PATH -o StrictHostKeyChecking=accept-new"
+                  REMOTE="${EC2_USER:-ec2-user}@$EC2_HOST"
+
+                  mkdir -p ~/.ssh
+                  printf '%s\n' "$EC2_SSH_KEY" | sed 's/\r$//' > "$SSH_KEY_PATH"
+                  chmod 600 "$SSH_KEY_PATH"
+                  ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+                  ssh $SSH_OPTS "$REMOTE" "sudo mkdir -p /opt/notism-ssr && sudo chown \$(id -u):\$(id -g) /opt/notism-ssr"
+                  scp $SSH_OPTS .deploy/.env .deploy/docker-compose.yml "$REMOTE:/opt/notism-ssr/"
+
+                  ssh $SSH_OPTS "$REMOTE" << REMOTE_SCRIPT
+                  set -e
+                  aws ecr get-login-password --region "$AWS_REGION" | \
+                    sudo docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+                  cd /opt/notism-ssr
+                  sudo docker compose --env-file .env up -d --pull always
+                  sudo docker image prune -af
+
+                  echo "SSR server deployed and running."
+                  REMOTE_SCRIPT

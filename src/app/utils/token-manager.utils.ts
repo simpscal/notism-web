@@ -1,22 +1,44 @@
 import { TOKEN_KEYS } from '@/app/constants';
 
+// SSR has no `window`/`localStorage` — every method below falls back to a no-op
+// (writes) or `null` (reads) there instead of throwing.
+const hasLocalStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+
 export const tokenManagerUtils = {
-    getToken: () => localStorage.getItem(TOKEN_KEYS.ACCESS_TOKEN),
+    getToken: () => (hasLocalStorage() ? localStorage.getItem(TOKEN_KEYS.ACCESS_TOKEN) : null),
 
-    setToken: (token: string) => localStorage.setItem(TOKEN_KEYS.ACCESS_TOKEN, token),
+    setToken: (token: string) => {
+        if (hasLocalStorage()) {
+            localStorage.setItem(TOKEN_KEYS.ACCESS_TOKEN, token);
+        }
+    },
 
-    removeToken: () => localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN),
+    removeToken: () => {
+        if (hasLocalStorage()) {
+            localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN);
+        }
+    },
 
     clearAll: () => {
+        if (!hasLocalStorage()) return;
+
         localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN);
         localStorage.removeItem(TOKEN_KEYS.XSRF_TOKEN);
     },
 
-    getXsrfToken: () => localStorage.getItem(TOKEN_KEYS.XSRF_TOKEN),
+    getXsrfToken: () => (hasLocalStorage() ? localStorage.getItem(TOKEN_KEYS.XSRF_TOKEN) : null),
 
-    setXsrfToken: (token: string) => localStorage.setItem(TOKEN_KEYS.XSRF_TOKEN, token),
+    setXsrfToken: (token: string) => {
+        if (hasLocalStorage()) {
+            localStorage.setItem(TOKEN_KEYS.XSRF_TOKEN, token);
+        }
+    },
 
-    removeXsrfToken: () => localStorage.removeItem(TOKEN_KEYS.XSRF_TOKEN),
+    removeXsrfToken: () => {
+        if (hasLocalStorage()) {
+            localStorage.removeItem(TOKEN_KEYS.XSRF_TOKEN);
+        }
+    },
 
     isTokenExpired: (token: string) => {
         if (!token) return true;
