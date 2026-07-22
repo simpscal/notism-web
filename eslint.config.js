@@ -38,18 +38,18 @@ export default tseslint.config(
                 {
                     selector: 'JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > ArrowFunctionExpression',
                     message:
-                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/uis.md.',
                 },
                 {
                     selector: 'JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > FunctionExpression',
                     message:
-                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                        'No inline logic in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/uis.md.',
                 },
                 {
                     selector:
                         "JSXAttribute[name.name=/^on[A-Z]/] > JSXExpressionContainer > CallExpression[callee.property.name='bind']",
                     message:
-                        'No inline .bind in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/components.md.',
+                        'No inline .bind in JSX event attributes — extract a named handler (or curried factory) and reference it. See docs/rules/uis.md.',
                 },
             ],
             ...reactRefresh.configs.recommended.rules,

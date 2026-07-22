@@ -67,7 +67,7 @@ src/
 | ------------------------------------------------------------------------------------------ | -------------------------------------- |
 | Add/move a file between `src/` layers, or import across layer boundaries                   | `docs/rules/architecture.md`           |
 | Create any new file (component, hook, util, model, slice, test, context, guard, api)       | `docs/rules/naming.md`                 |
-| Create/edit any `.tsx` component; add Tailwind classes; handle JSX events                  | `docs/rules/components.md`             |
+| Create/edit any `.tsx` component; add Tailwind classes; handle JSX events                  | `docs/rules/uis.md`                    |
 | Add `useQuery`/`useMutation`/`useInfiniteQuery`; fetch data in `features/**` or `pages/**` | `docs/rules/tanstack-query.md`         |
 | Create/edit a Redux slice under `src/store/**`; use `useAppSelector`/`useAppDispatch`      | `docs/rules/store.md`                  |
 | Build a form; use `useForm`/`zodResolver`/`Controller`/`<Field>`/Zod schema                | `docs/rules/forms.md`                  |

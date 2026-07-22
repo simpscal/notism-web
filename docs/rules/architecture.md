@@ -10,7 +10,7 @@
 - [Folder Responsibilities](#folder-responsibilities)
     - [APIs Folder](#apis-folder)
     - [App Folder](#app-folder)
-    - [Components Folder](#components-folder)
+    - [Uis Folder](#uis-folder)
     - [Layout Folder](#layouts-folder)
     - [Pages Folder](#pages-folder)
     - [Features Folder](#features-folder)
@@ -26,7 +26,7 @@
 1. **layouts** - Layout components that provide structural containers for pages
 2. **pages** - Complete application pages with page-specific business logic and route mapping
 3. **features** - Shared business logic, ViewModels, and features used across the application
-4. **components** - Reusable UI components
+4. **uis** - Reusable UI components
 5. **core** - React-specific shared resources (hooks, contexts, guards)
 6. **store** - Global application state management
 7. **apis** - API client + one folder per domain (fetchers, wire types, mapped models, mappers, endpoints, query keys)
@@ -41,7 +41,7 @@ graph TD
     Layouts[layouts]
     Pages[pages]
     Features[features]
-    Components[components]
+    Uis[uis]
     Core[core]
     Store[store]
     APIs[apis]
@@ -49,7 +49,7 @@ graph TD
 
     Layouts -->|imports| Pages
     Layouts -->|imports| Features
-    Layouts -->|imports| Components
+    Layouts -->|imports| Uis
     Layouts -->|imports| Core
     Layouts -->|imports| Store
     Layouts -->|imports| APIs
@@ -57,20 +57,20 @@ graph TD
 
     Pages -.->|imports layout store| Layouts
     Pages -->|imports| Features
-    Pages -->|imports| Components
+    Pages -->|imports| Uis
     Pages -->|imports| Core
     Pages -->|imports| Store
     Pages -->|imports| APIs
     Pages -->|imports| App
 
-    Features -->|imports| Components
+    Features -->|imports| Uis
     Features -->|imports| Core
     Features -->|imports| Store
     Features -->|imports| APIs
     Features -->|imports| App
 
-    Components -->|imports| Core
-    Components -->|imports| App
+    Uis -->|imports| Core
+    Uis -->|imports| App
 
     Core -->|imports| APIs
     Core -->|imports| App
@@ -83,7 +83,7 @@ graph TD
     style Layouts fill:#f5ffe1
     style Pages fill:#fff4e1
     style Features fill:#ffe1f5
-    style Components fill:#e1ffe1
+    style Uis fill:#e1ffe1
     style Core fill:#f5e1ff
     style Store fill:#e1ffff
     style APIs fill:#ffe1e1
@@ -198,10 +198,10 @@ graph TD
 ## Import Rules
 
 ```text
-layouts    → pages, features, components, core, store, apis, app
-pages      → layouts (store only), features, components, core, store, apis, app
-features   → components, core, store, apis, app
-components → core, app
+layouts    → pages, features, uis, core, store, apis, app
+pages      → layouts (store only), features, uis, core, store, apis, app
+features   → uis, core, store, apis, app
+uis        → core, app
 core       → apis, app
 store      → apis (models only), app
 apis       → app
@@ -264,7 +264,7 @@ Contains application-wide configurations, static assets, constants, enums, utili
 
 ---
 
-### Components Folder
+### Uis Folder
 
 Pure UI components without business logic.
 
@@ -326,7 +326,7 @@ Complete page components that compose features and components. Pages can contain
 
 **Rules:**
 
-- Can import from `features`, `components`, `core`, `store`, `apis`, and `app`
+- Can import from `features`, `uis`, `core`, `store`, `apis`, and `app`
 - Page-specific components can be defined locally in the page folder
 - Reusable business logic should be moved to `features`
 
@@ -365,7 +365,7 @@ Business logic, ViewModels, and feature-specific components that are **shared ac
 
 **Rules:**
 
-- Can import from `components`, `core`, `store`, `apis`, and `app`
+- Can import from `uis`, `core`, `store`, `apis`, and `app`
 - Should contain logic that is reused across multiple pages
 - Page-specific logic should remain in the page folder
 
@@ -452,7 +452,7 @@ Global application state management using Redux Toolkit. The store manages appli
     - **Global Store** (`src/store/`): State shared across multiple pages (auth, user, theme, etc.)
     - **Page Store** (`src/pages/{page}/store/`): Page-specific state that is only used within that page
 
-8. **Import Rules**: Store can import from `features` (models only) and `app`. Store should NOT import from `pages`, `components`, or `core`.
+8. **Import Rules**: Store can import from `features` (models only) and `app`. Store should NOT import from `pages`, `uis`, or `core`.
 
 9. **Cross-Slice Actions**: Store slices can dispatch actions from other slices, but must ensure unidirectional flow to prevent circular dependencies.
 
