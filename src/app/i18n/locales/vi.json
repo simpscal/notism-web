@@ -28,6 +28,12 @@
         "tomorrow": "Ngày mai",
         "inThreeDays": "Trong 3 ngày",
         "inAWeek": "Trong một tuần",
+        "liveFeedPill": {
+            "connecting": "Đang kết nối…",
+            "live": "Trực tuyến",
+            "disconnected": "Mất kết nối",
+            "reconnect": "Kết nối lại"
+        },
         "apiErrors": {
             "badRequest": "Yêu cầu không hợp lệ",
             "badRequestDescription": "Yêu cầu không hợp lệ. Vui lòng kiểm tra lại thông tin đầu vào.",

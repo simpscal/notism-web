@@ -18,8 +18,6 @@ import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { useTheme } from '@/core/contexts/theme.context';
-import { NotificationStatus } from '@/core/hooks';
-import LiveFeedPill from '@/features/order/components/live-feed-pill';
 import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
 import {
     DropdownMenu,
@@ -29,14 +27,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/uis/dropdown-menu';
+import LiveFeedPill, { type LiveFeedPillLabels, type LiveFeedStatus } from '@/uis/live-feed-pill';
 
 interface AdminToolbarMobileProps {
     user: UserProfileModel | null;
     onLogout: () => void;
-    liveFeedStatus: NotificationStatus;
+    liveFeedStatus: LiveFeedStatus;
+    liveFeedLabels: LiveFeedPillLabels;
 }
 
-function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobileProps) {
+function AdminToolbarMobile({ user, onLogout, liveFeedStatus, liveFeedLabels }: AdminToolbarMobileProps) {
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
 
@@ -53,7 +53,7 @@ function AdminToolbarMobile({ user, onLogout, liveFeedStatus }: AdminToolbarMobi
         <>
             {/* Sticky top strip — live new-order feed status (portal-shell surface, story #274) */}
             <header className='sticky top-0 z-50 flex h-12 items-center justify-end border-b bg-background px-4 lg:hidden'>
-                <LiveFeedPill status={liveFeedStatus} />
+                <LiveFeedPill status={liveFeedStatus} labels={liveFeedLabels} />
             </header>
 
             {/* Fixed bottom bar */}

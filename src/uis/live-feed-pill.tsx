@@ -2,32 +2,46 @@ import { WifiOff } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { NotificationStatus } from '@/core/hooks';
 import { Button } from '@/uis/button';
 import Spinner from '@/uis/spinner';
 
+export type LiveFeedStatus = 'connecting' | 'live' | 'disconnected';
+
+export interface LiveFeedPillLabels {
+    connecting: string;
+    live: string;
+    disconnected: string;
+    reconnect: string;
+}
+
 interface LiveFeedPillProps {
-    status: NotificationStatus;
+    status: LiveFeedStatus;
+    labels?: Partial<LiveFeedPillLabels>;
     onReconnect?: () => void;
 }
 
-function LiveFeedPill({ status, onReconnect }: LiveFeedPillProps) {
+function LiveFeedPill({ status, labels, onReconnect }: LiveFeedPillProps) {
     const { t } = useTranslation();
 
-    if (status === NotificationStatus.Connecting) {
+    const connectingLabel = labels?.connecting ?? t('common.liveFeedPill.connecting');
+    const liveLabel = labels?.live ?? t('common.liveFeedPill.live');
+    const disconnectedLabel = labels?.disconnected ?? t('common.liveFeedPill.disconnected');
+    const reconnectLabel = labels?.reconnect ?? t('common.liveFeedPill.reconnect');
+
+    if (status === 'connecting') {
         return (
             <span className='inline-flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1.5 text-xs font-medium text-muted-foreground'>
                 <Spinner size='xs' />
-                {t('admin.newOrder.feed.connecting')}
+                {connectingLabel}
             </span>
         );
     }
 
-    if (status === NotificationStatus.Disconnected) {
+    if (status === 'disconnected') {
         return (
             <span className='inline-flex items-center gap-2 rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1.5 text-xs font-medium text-destructive'>
                 <WifiOff className='h-3.5 w-3.5' aria-hidden />
-                {t('admin.newOrder.feed.disconnected')}
+                {disconnectedLabel}
                 {onReconnect && (
                     <Button
                         size='sm'
@@ -35,7 +49,7 @@ function LiveFeedPill({ status, onReconnect }: LiveFeedPillProps) {
                         className='h-6 px-2 text-xs text-destructive hover:bg-destructive/15 hover:text-destructive'
                         onClick={onReconnect}
                     >
-                        {t('admin.newOrder.feed.reconnect')}
+                        {reconnectLabel}
                     </Button>
                 )}
             </span>
@@ -48,7 +62,7 @@ function LiveFeedPill({ status, onReconnect }: LiveFeedPillProps) {
                 <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-success/60' />
                 <span className='relative inline-flex h-2 w-2 rounded-full bg-success' />
             </span>
-            {t('admin.newOrder.feed.live')}
+            {liveLabel}
         </span>
     );
 }

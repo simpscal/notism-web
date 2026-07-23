@@ -28,6 +28,12 @@
         "tomorrow": "Tomorrow",
         "inThreeDays": "In 3 days",
         "inAWeek": "In a week",
+        "liveFeedPill": {
+            "connecting": "Connecting…",
+            "live": "Live",
+            "disconnected": "Disconnected",
+            "reconnect": "Reconnect"
+        },
         "apiErrors": {
             "badRequest": "Bad Request",
             "badRequestDescription": "The request was invalid. Please check your input.",

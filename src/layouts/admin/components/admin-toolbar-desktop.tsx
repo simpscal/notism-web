@@ -7,8 +7,6 @@ import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { useTheme } from '@/core/contexts/theme.context';
-import { NotificationStatus } from '@/core/hooks';
-import LiveFeedPill from '@/features/order/components/live-feed-pill';
 import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
 import { Badge } from '@/uis/badge';
 import { Button } from '@/uis/button';
@@ -20,14 +18,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/uis/dropdown-menu';
+import LiveFeedPill, { type LiveFeedPillLabels, type LiveFeedStatus } from '@/uis/live-feed-pill';
 
 interface AdminToolbarDesktopProps {
     user: UserProfileModel | null;
     onLogout: () => void;
-    liveFeedStatus: NotificationStatus;
+    liveFeedStatus: LiveFeedStatus;
+    liveFeedLabels: LiveFeedPillLabels;
 }
 
-function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDesktopProps) {
+function AdminToolbarDesktop({ user, onLogout, liveFeedStatus, liveFeedLabels }: AdminToolbarDesktopProps) {
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
 
@@ -92,7 +92,7 @@ function AdminToolbarDesktop({ user, onLogout, liveFeedStatus }: AdminToolbarDes
                 {/* Right — controls */}
                 <div className='flex flex-1 items-center justify-end gap-2'>
                     {/* Live new-order feed status — portal-shell surface (story #274) */}
-                    <LiveFeedPill status={liveFeedStatus} />
+                    <LiveFeedPill status={liveFeedStatus} labels={liveFeedLabels} />
 
                     {/* Theme toggle */}
                     <button

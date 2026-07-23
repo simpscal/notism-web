@@ -13,4 +13,3 @@ export { default as PaymentStatusBadge } from './payment-status-badge';
 export { default as BankingPaymentConfirmedPanel } from './banking-payment-confirmed-panel';
 export { default as NewOrderAlertToast } from './new-order-alert-toast';
 export type { NewOrderAlertData } from './new-order-alert-toast';
-export { default as LiveFeedPill } from './live-feed-pill';

@@ -5,8 +5,9 @@ import AdminToolbarMobile from '../admin-toolbar-mobile';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { NotificationStatus } from '@/core/hooks';
+import i18n from '@/app/i18n/i18n';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
+import { type LiveFeedStatus } from '@/uis/live-feed-pill';
 
 const USER: UserProfileModel = {
     id: '1',
@@ -17,15 +18,28 @@ const USER: UserProfileModel = {
     role: 'admin',
 };
 
+const LIVE_FEED_LABELS = {
+    connecting: i18n.t('admin.newOrder.feed.connecting'),
+    live: i18n.t('admin.newOrder.feed.live'),
+    disconnected: i18n.t('admin.newOrder.feed.disconnected'),
+    reconnect: i18n.t('admin.newOrder.feed.reconnect'),
+};
+
 function renderToolbar({
     initialPath = `/${ROUTES.ADMIN.DASHBOARD}`,
-    liveFeedStatus = NotificationStatus.Live,
-}: { initialPath?: string; liveFeedStatus?: NotificationStatus } = {}) {
+    liveFeedStatus = 'live',
+}: { initialPath?: string; liveFeedStatus?: LiveFeedStatus } = {}) {
     const onLogout = vi.fn();
 
-    renderWithProviders(<AdminToolbarMobile user={USER} onLogout={onLogout} liveFeedStatus={liveFeedStatus} />, {
-        initialEntries: [initialPath],
-    });
+    renderWithProviders(
+        <AdminToolbarMobile
+            user={USER}
+            onLogout={onLogout}
+            liveFeedStatus={liveFeedStatus}
+            liveFeedLabels={LIVE_FEED_LABELS}
+        />,
+        { initialEntries: [initialPath] }
+    );
 
     return { onLogout };
 }
@@ -61,13 +75,13 @@ describe('AdminToolbarMobile', () => {
     });
 
     it('renders the live new-order feed pill in the toolbar', () => {
-        renderToolbar({ liveFeedStatus: NotificationStatus.Live });
+        renderToolbar({ liveFeedStatus: 'live' });
 
         expect(getByI18nText('admin.newOrder.feed.live')).toBeInTheDocument();
     });
 
     it('reflects the disconnected live-feed status in the pill', () => {
-        renderToolbar({ liveFeedStatus: NotificationStatus.Disconnected });
+        renderToolbar({ liveFeedStatus: 'disconnected' });
 
         expect(getByI18nText('admin.newOrder.feed.disconnected')).toBeInTheDocument();
     });
