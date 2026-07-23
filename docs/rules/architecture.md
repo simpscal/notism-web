@@ -55,7 +55,6 @@ graph TD
     Layouts -->|imports| APIs
     Layouts -->|imports| App
 
-    Pages -.->|imports layout store| Layouts
     Pages -->|imports| Features
     Pages -->|imports| Uis
     Pages -->|imports| Core
@@ -69,13 +68,10 @@ graph TD
     Features -->|imports| APIs
     Features -->|imports| App
 
-    Uis -->|imports| Core
-    Uis -->|imports| App
-
     Core -->|imports| APIs
     Core -->|imports| App
 
-    Store -->|imports| Features
+    Store -->|imports| APIs
     Store -->|imports| App
 
     APIs -->|imports| App
@@ -95,10 +91,10 @@ graph TD
 - **Downward dependencies only**: Higher layers can import from lower layers, but not the reverse
 - **No circular dependencies**: Each layer must maintain a clear dependency hierarchy
 - **Layouts is top-most**: Layouts can import pages for routing configuration
-- **Pages can access layout store**: Pages can only import the store from layouts, not other layout artifacts
 - **Store is accessible**: `layouts`, `pages`, and `features` can access the global store
 - **APIs is per-domain**: All API calls, wire types, mapped models, endpoints, and query keys live under `apis/<domain>/`
 - **App is foundational**: All layers can depend on `app` (configs, constants, enums, utils), but `app` has no dependencies
+- **Uis has no dependencies**: `uis` is pure presentational components and does not import from any other layer
 
 ---
 
@@ -147,6 +143,10 @@ graph TD
 │   │   ├── 📁 components/
 │   │   │   ├── 📁 __tests__/ # Feature component tests
 │   │   │   └── ...
+│   │   └── ...
+│   ├── 📁 cart/
+│   │   ├── 📁 store/      # Feature-owned Redux slice (registered via src/store/index.ts)
+│   │   ├── 📁 hooks/
 │   │   └── ...
 │   └── ...
 │
@@ -199,9 +199,9 @@ graph TD
 
 ```text
 layouts    → pages, features, uis, core, store, apis, app
-pages      → layouts (store only), features, uis, core, store, apis, app
+pages      → features, uis, core, store, apis, app
 features   → uis, core, store, apis, app
-uis        → core, app
+uis        → (no imports from other layers)
 core       → apis, app
 store      → apis (models only), app
 apis       → app
@@ -278,7 +278,7 @@ Pure UI components without business logic.
 
 **Rules:**
 
-- Can only import from `core` and `app`
+- Cannot import from any other layer (no `core`, `app`, `apis`, etc.)
 - Should not contain any business logic
 - Should be stateless or contain only UI-related state
 
@@ -298,16 +298,6 @@ Layout components that provide structural containers for pages.
 - Similar to components - no business logic
 - Focus on structural concerns (header, footer, sidebar, content area)
 - May contain navigation components
-
-**Layout Store:**
-
-Layouts can have their own store at `src/layouts/{layout}/store/` for layout-specific state management.
-
-**Layout Store Access Rules:**
-
-- If a layout has a store, only the **top-most page component** matching the route can access that layout's store
-- Child components within the page should NOT directly access the layout store
-- Data from layout store should be passed down via props to child components
 
 ---
 
@@ -366,8 +356,13 @@ Business logic, ViewModels, and feature-specific components that are **shared ac
 **Rules:**
 
 - Can import from `uis`, `core`, `store`, `apis`, and `app`
+- May import from a sibling feature when domain coupling requires it (e.g. the `cart` feature depends on `food`'s pricing util) — keep this the exception, not the default
 - Should contain logic that is reused across multiple pages
 - Page-specific logic should remain in the page folder
+
+**Feature Store:**
+
+A feature can own Redux state at `src/features/{feature}/store/` (slice, thunks, selectors) when that state is cross-cutting enough to live in the global root reducer but conceptually belongs to the feature — e.g. `features/cart/store/`, `features/food/store/`. The global store (`src/store/**`) must never import from `features`; the sole exception is the root composition file `src/store/index.ts`, which registers each feature-owned reducer into `configureStore` purely as wiring, not business logic.
 
 **ViewModel Pattern:**
 
@@ -452,14 +447,14 @@ Global application state management using Redux Toolkit. The store manages appli
     - **Global Store** (`src/store/`): State shared across multiple pages (auth, user, theme, etc.)
     - **Page Store** (`src/pages/{page}/store/`): Page-specific state that is only used within that page
 
-8. **Import Rules**: Store can import from `features` (models only) and `app`. Store should NOT import from `pages`, `uis`, or `core`.
+8. **Import Rules**: Store can import from `apis` (models only) and `app`. Store should NOT import from `pages`, `features`, `uis`, or `core`. The root store composition file (`src/store/index.ts`) is the sole exception, since it must register reducers owned by feature-level stores (see Features Folder → Feature Store) — everywhere else in `src/store/**`, including cross-slice orchestration in thunks, must stay features-free.
 
 9. **Cross-Slice Actions**: Store slices can dispatch actions from other slices, but must ensure unidirectional flow to prevent circular dependencies.
 
 **Store Layer Dependencies:**
 
 ```text
-store → features (models only), app
+store → apis (models only), app
 ```
 
 ---
@@ -468,15 +463,16 @@ store → features (models only), app
 
 These files serve as canonical examples of each pattern. When implementing a new feature, follow these as templates:
 
-| Pattern                     | Reference File(s)                                                                                     |
-| --------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Feature Module**          | `src/features/food/` — hooks, components, feature-only ViewModels                                     |
-| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration                                |
-| **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant                        |
-| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                                        |
-| **Shared UI Component**     | `src/uis/` — shadcn/ui-based reusable components                                                      |
-| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic                         |
-| **Hook-adjacent Utility**   | `src/core/hooks/lazy-with-preload.hook.ts` — React.lazy wrapper consumed by a hook, not a hook itself |
-| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern                            |
+| Pattern                     | Reference File(s)                                                                                        |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Feature Module**          | `src/features/food/` — hooks, components, feature-only ViewModels                                        |
+| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration                                   |
+| **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant                           |
+| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                                           |
+| **Feature Store**           | `src/features/cart/store/` — feature-owned slice registered into the root store via `src/store/index.ts` |
+| **Shared UI Component**     | `src/uis/` — shadcn/ui-based reusable components                                                         |
+| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic                            |
+| **Hook-adjacent Utility**   | `src/core/hooks/lazy-with-preload.hook.ts` — React.lazy wrapper consumed by a hook, not a hook itself    |
+| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern                               |
 
 Use these as templates: examine the full folder structure, naming conventions, import order, component memoization, and state management patterns from these examples.

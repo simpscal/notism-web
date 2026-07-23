@@ -1,14 +1,14 @@
 import { http, HttpResponse } from 'msw';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { resetStore } from '../../root.actions';
-import { setUser } from '../../user/user.slice';
 import { selectCartItems, selectSelectedCartTotalPrice } from '../cart.selectors';
 import { loadCart, updateItemQuantity } from '../cart.thunks';
 
 import { CART_ENDPOINTS } from '@/apis/cart/cart.constant';
 import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
+import { resetStore } from '@/store/root.actions';
+import { setUser } from '@/store/user/user.slice';
 import { server } from '@/test/server';
 
 const CART_URL = buildUrl(CART_ENDPOINTS.BASE);

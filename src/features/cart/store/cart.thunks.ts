@@ -104,3 +104,8 @@ export const syncCartItems = createAsyncThunk('cart/syncCartItems', async (_, { 
 
     return { synced: true };
 });
+
+export const syncCartAfterAuth = createAsyncThunk('cart/syncCartAfterAuth', async (_, { dispatch }) => {
+    await dispatch(syncCartItems()).unwrap();
+    dispatch(loadCart());
+});

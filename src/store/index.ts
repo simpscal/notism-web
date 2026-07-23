@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer, { type IAuthState } from './auth/auth.slice';
-import cartReducer, { type ICartState } from './cart/cart.slice';
-import foodReducer, { type IFoodState } from './food/food.slice';
 import userReducer, { type IUserState } from './user/user.slice';
+
+import cartReducer, { type ICartState } from '@/features/cart/store/cart.slice';
+import foodReducer, { type IFoodState } from '@/features/food/store/food.slice';
 
 export type RootState = {
     auth: IAuthState;

@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { resetStore } from '../root.actions';
-
 import { loadCategories } from './food.thunks';
+
+import { resetStore } from '@/store/root.actions';
 
 export interface CategoryViewModel {
     id: string;

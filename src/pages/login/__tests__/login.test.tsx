@@ -24,13 +24,13 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-// setAuth dispatches cart sync network calls; stub it to an inert resolved thunk
+// syncCartAfterAuth issues cart sync network calls; stub it to an inert resolved thunk
 // so the test isolates the post-login redirect decision.
-vi.mock('@/store/auth', async () => {
-    const actual = await vi.importActual<typeof import('@/store/auth')>('@/store/auth');
+vi.mock('@/features/cart', async () => {
+    const actual = await vi.importActual<typeof import('@/features/cart')>('@/features/cart');
     return {
         ...actual,
-        setAuth: vi.fn(() => () => ({ unwrap: () => Promise.resolve() })),
+        syncCartAfterAuth: vi.fn(() => () => ({ unwrap: () => Promise.resolve() })),
     };
 });
 

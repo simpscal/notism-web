@@ -9,7 +9,7 @@ import { useLanguageToggle } from '@/app/i18n/use-language-toggle';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useAppSelector } from '@/core/hooks';
-import { selectCartTotalItems } from '@/store/cart';
+import { selectCartTotalItems } from '@/features/cart/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
 import { Button } from '@/uis/button';
 import {

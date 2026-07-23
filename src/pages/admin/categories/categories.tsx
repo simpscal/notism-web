@@ -9,7 +9,7 @@ import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminCategoriesModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { useAppDispatch } from '@/core/hooks';
-import { removeCategory } from '@/store/food';
+import { removeCategory } from '@/features/food/store';
 import { Button } from '@/uis/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/uis/dropdown-menu';

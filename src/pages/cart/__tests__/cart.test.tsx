@@ -7,9 +7,9 @@ import Cart from '../cart';
 
 import { CART_ENDPOINTS } from '@/apis/cart/cart.constant';
 import i18n from '@/app/i18n/i18n';
+import { loadCart } from '@/features/cart/store/cart.thunks';
 import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
-import { loadCart } from '@/store/cart/cart.thunks';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user/user.slice';
 import { server } from '@/test/server';

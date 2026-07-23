@@ -13,6 +13,7 @@ import { ROUTES } from '@/app/constants';
 import { UserRoleEnum } from '@/app/enums';
 import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { useAppDispatch } from '@/core/hooks';
+import { syncCartAfterAuth } from '@/features/cart';
 import { setAuth, setOauthReturnUrl } from '@/store/auth';
 import { Button } from '@/uis/button';
 import { Field, FieldError, FieldLabel } from '@/uis/field';
@@ -44,6 +45,7 @@ function Login() {
         mutationFn: authApi.login,
         onSuccess: async data => {
             await dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
+            await dispatch(syncCartAfterAuth()).unwrap();
 
             toast.success(t('auth.loginSuccess'));
             const returnUrl = searchParams.get('returnUrl');

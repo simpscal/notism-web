@@ -8,7 +8,7 @@ import { ROUTES } from '@/app/constants';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useAppSelector } from '@/core/hooks';
-import { selectCartTotalItems } from '@/store/cart';
+import { selectCartTotalItems } from '@/features/cart/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
 import {
     DropdownMenu,

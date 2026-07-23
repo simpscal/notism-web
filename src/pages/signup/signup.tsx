@@ -11,6 +11,7 @@ import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { useAppDispatch } from '@/core/hooks';
+import { syncCartAfterAuth } from '@/features/cart';
 import { setAuth } from '@/store/auth';
 import { Button } from '@/uis/button';
 import { Field, FieldError, FieldLabel } from '@/uis/field';
@@ -45,6 +46,7 @@ function Signup() {
         mutationFn: authApi.signup,
         onSuccess: data => {
             dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
+            dispatch(syncCartAfterAuth());
             toast.success(t('auth.signupSuccess'));
             navigate(`/${ROUTES.SETTINGS.PROFILE}`);
         },

@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
 
+import { addItem, removeItem, replaceItemCustomisations, updateItemQuantity } from '../store/cart.thunks';
+
 import { CartItemModel } from '@/apis';
 import { useAppDispatch } from '@/core/hooks';
-import { addItem, removeItem, replaceItemCustomisations, updateItemQuantity } from '@/store/cart/cart.thunks';
 
 export function useCart() {
     const dispatch = useAppDispatch();

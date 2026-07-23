@@ -1,7 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { resetStore } from '../root.actions';
-
 import {
     addItem,
     clearItems,
@@ -13,6 +11,7 @@ import {
 } from './cart.thunks';
 
 import { CartItemModel } from '@/apis';
+import { resetStore } from '@/store/root.actions';
 
 const CART_STORAGE_KEY = 'cart_items';
 

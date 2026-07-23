@@ -8,10 +8,10 @@ import Payment from '../payment';
 import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
 import { NotificationType } from '@/app/enums';
 import i18n from '@/app/i18n/i18n';
+import { loadCart } from '@/features/cart/store';
 import { getFoodPricing } from '@/features/food';
 import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
-import { loadCart } from '@/store/cart';
 import { server } from '@/test/server';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
 

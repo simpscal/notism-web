@@ -19,8 +19,8 @@ vi.mock('@/features/order', async importOriginal => {
     };
 });
 
-vi.mock('@/store/cart', async importOriginal => {
-    const original = await importOriginal<typeof import('@/store/cart')>();
+vi.mock('@/features/cart/store', async importOriginal => {
+    const original = await importOriginal<typeof import('@/features/cart/store')>();
     return {
         ...original,
         selectCartIsInitialized: () => true,

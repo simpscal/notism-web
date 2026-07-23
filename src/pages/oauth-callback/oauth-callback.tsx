@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { syncCartAfterAuth } from '@/features/cart';
 import { setAuth, setOauthReturnUrl } from '@/store/auth';
 import Spinner from '@/uis/spinner';
 
@@ -23,6 +24,7 @@ function OAuthCallback() {
             oauthApi.handleOAuthCallback(provider, data),
         onSuccess: data => {
             dispatch(setAuth({ token: data.token, user: data.user })).unwrap();
+            dispatch(syncCartAfterAuth());
         },
     });
 

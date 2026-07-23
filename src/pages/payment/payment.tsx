@@ -13,14 +13,14 @@ import { ROUTES } from '@/app/constants/routes.constant';
 import { NotificationType } from '@/app/enums';
 import { type SharedNotification } from '@/app/models';
 import { useAppDispatch, useAppSelector, useNotifications } from '@/core/hooks';
-import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import {
     loadCart,
     selectCartItems,
     selectCartIsInitialized,
     selectSelectedCartItems,
     selectSelectedCartTotalPrice,
-} from '@/store/cart';
+} from '@/features/cart/store';
+import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
 import { updateUser } from '@/store/user/user.slice';
 import { Button } from '@/uis/button';
 import { Card, CardContent } from '@/uis/card';

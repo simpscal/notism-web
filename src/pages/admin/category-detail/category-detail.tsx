@@ -17,7 +17,7 @@ import {
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { useAppDispatch } from '@/core/hooks';
-import { addCategory, removeCategory, updateCategory } from '@/store/food';
+import { addCategory, removeCategory, updateCategory } from '@/features/food/store';
 import { Button } from '@/uis/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/uis/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
