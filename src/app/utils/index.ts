@@ -1,4 +1,5 @@
 export * from './currency.utils';
+export * from './event-emitter.utils';
 export * from './navigation.utils';
 export * from './password-validation.utils';
 export * from './tailwind.utils';

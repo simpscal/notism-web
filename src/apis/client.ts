@@ -4,9 +4,8 @@ import { toast } from 'sonner';
 
 import { AUTH_ENDPOINTS } from './auth/auth.constant';
 
-import { ROUTES, TOKEN_KEYS } from '@/app/constants';
-import { tokenManagerUtils } from '@/app/utils';
-import { navigationUtils } from '@/app/utils/navigation.utils';
+import { APP_EVENTS, TOKEN_KEYS } from '@/app/constants';
+import { eventEmitterUtils, tokenManagerUtils } from '@/app/utils';
 
 export interface ApiResponse<T = any> {
     data: T;
@@ -324,7 +323,7 @@ export class ApiClient {
 
     private _handleTokenError(): never {
         tokenManagerUtils.clearAll();
-        navigationUtils.navigate(`/${ROUTES.AUTH.LOGIN}`, { replace: true });
+        eventEmitterUtils.emit(APP_EVENTS.UNAUTHORIZED);
 
         throw new Error('Unauthorized: please log in again');
     }
