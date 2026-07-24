@@ -1,15 +1,16 @@
 import { Button } from './button';
 
-import { useLanguageToggle } from '@/app/i18n/use-language-toggle';
+type LanguageSwitcherProps = {
+    currentLanguage: string;
+    onToggleLanguage: () => void;
+};
 
-export function LanguageSwitcher() {
-    const { currentLanguage, toggleLanguage } = useLanguageToggle();
-
+export function LanguageSwitcher({ currentLanguage, onToggleLanguage }: LanguageSwitcherProps) {
     return (
         <Button
             variant='ghost'
             size='sm'
-            onClick={toggleLanguage}
+            onClick={onToggleLanguage}
             className='text-xs font-medium'
             title={`Current language: ${currentLanguage.toUpperCase()}`}
         >

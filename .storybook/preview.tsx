@@ -5,8 +5,8 @@ import React, { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
 import '../src/app/assets/styles/index.css';
-import i18n from '../src/app/i18n/i18n';
 import { ThemeProvider } from '../src/core/contexts/theme.context';
+import i18n from '../src/core/i18n/i18n';
 
 const queryClient = new QueryClient({
     defaultOptions: {

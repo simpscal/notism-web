@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import Payment from '../payment';
 
 import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { getByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';

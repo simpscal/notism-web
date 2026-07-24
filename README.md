@@ -103,10 +103,10 @@ This project uses [Mock Service Worker (MSW)](https://mswjs.io/) to mock API end
 This project supports multiple languages via **i18next**:
 
 - **Supported locales**: English (`en`), Vietnamese (`vi`)
-- **Translation files**: `src/app/i18n/locales/`
+- **Translation files**: `src/core/i18n/locales/`
 - **Language detection**: Reads from `localStorage`, falls back to browser language, then `en`
 
-To add or update translations, edit the JSON files in `src/app/i18n/locales/` and ensure all keys are present in every locale file.
+To add or update translations, edit the JSON files in `src/core/i18n/locales/` and ensure all keys are present in every locale file.
 
 ---
 

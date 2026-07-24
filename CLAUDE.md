@@ -71,7 +71,7 @@ src/
 | Add `useQuery`/`useMutation`/`useInfiniteQuery`; fetch data in `features/**` or `pages/**` | `docs/rules/tanstack-query.md`         |
 | Create/edit a Redux slice under `src/store/**`; use `useAppSelector`/`useAppDispatch`      | `docs/rules/store.md`                  |
 | Build a form; use `useForm`/`zodResolver`/`Controller`/`<Field>`/Zod schema                | `docs/rules/forms.md`                  |
-| Add a user-visible string; edit `src/app/i18n/locales/*.json`; use `useTranslation`/`t()`  | `docs/rules/i18n.md`                   |
+| Add a user-visible string; edit `src/core/i18n/locales/*.json`; use `useTranslation`/`t()` | `docs/rules/i18n.md`                   |
 | Implement or change the OAuth login flow                                                   | `docs/integration-flows/oauth-flow.md` |
 
 ## CI/CD

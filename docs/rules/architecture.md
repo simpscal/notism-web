@@ -27,7 +27,7 @@
 2. **pages** - Complete application pages with page-specific business logic and route mapping
 3. **features** - Shared business logic, feature models, and feature components used across the application
 4. **uis** - Reusable UI components
-5. **core** - React-specific shared resources (hooks, contexts, guards, notification transport)
+5. **core** - React-specific shared resources, plus standalone self-contained modules with no feature owner (hooks, contexts, guards; e.g. notification transport)
 6. **store** - Global application state management
 7. **apis** - API client + one folder per domain (fetchers, wire types, mapped models, mappers, endpoints, query keys)
 8. **app** - Application configuration, assets, constants, enums, and utilities
@@ -119,7 +119,6 @@ graph TD
 │   ├── 📁 configs/  # App, API, routes configuration
 │   ├── 📁 constants/# Application constants
 │   ├── 📁 types/    # TypeScript enums and types (folder renamed from `enums/`; files use the `.type.ts` suffix)
-│   ├── 📁 i18n/     # i18next setup and locale translation files (en, vi)
 │   ├── 📁 utils/    # Utility functions
 │   │   └── 📁 __tests__/ # Utility unit tests
 │   └── 📁 styles/   # Global styles
@@ -169,12 +168,17 @@ graph TD
 │   ├── 📁 hooks/
 │   ├── 📁 contexts/
 │   ├── 📁 guards/
-│   └── 📁 notification/ # Real-time notification transport (flat, no subfolders)
-│       ├── 📄 use-notifications.hook.ts
-│       ├── 📄 notification.model.ts
-│       ├── 📄 notification.type.ts
-│       ├── 📄 hubs.constant.ts
-│       └── 📄 index.ts
+│   ├── 📁 notification/ # Standalone module instance (flat, no subfolders)
+│   │   ├── 📄 use-notifications.hook.ts
+│   │   ├── 📄 notification.model.ts
+│   │   ├── 📄 notification.type.ts
+│   │   ├── 📄 hubs.constant.ts
+│   │   └── 📄 index.ts
+│   └── 📁 i18n/     # Standalone module instance (flat, no subfolders)
+│       ├── 📄 i18n.ts
+│       ├── 📄 locale-loader.ts
+│       ├── 📄 use-language-toggle.hook.ts
+│       └── 📁 locales/ # en.json, vi.json
 │
 ├── 📁 store/        # Global application state management
 │   ├── 📁 auth/     # Authentication state slice
@@ -250,14 +254,13 @@ All API-related code, organized **one folder per domain** under `apis/<domain>/`
 
 ### App Folder
 
-Contains application-wide configurations, static assets, constants, enums, utilities, and i18n setup.
+Contains application-wide configurations, static assets, constants, enums, and utilities.
 
 **Contents:**
 
 - **configs/**: Application, API, and routes configuration
 - **constants/**: Application-wide constants (API endpoints, keys, etc.)
 - **types/**: TypeScript enums and types for type-safe values (folder renamed from `enums/`; files use the `.type.ts` suffix — `enum` and `type` share one naming/filing convention, see naming.md)
-- **i18n/**: i18next initialization (`i18n.ts`) and locale translation files (`locales/en.json`, `locales/vi.json`)
 - **utils/**: Pure utility functions (no React dependencies); unit tests live in `utils/__tests__/`
 - **assets/**: Static assets (images, fonts, icons)
 - **styles/**: Global CSS styles
@@ -388,22 +391,22 @@ If you just need an endpoint's shape, import its `*Model` from `@/apis` directly
 
 ### Core Folder
 
-React-specific shared resources for hooks, contexts, and guards.
+React-specific shared resources for hooks, contexts, and guards, plus standalone self-contained modules that don't have a single business-logic owner and don't fit any of those three buckets.
 
 **Contents:**
 
 - **hooks/**: Reusable React hooks, plus hook-adjacent React utilities they depend on (non-hook helpers, no `use-` prefix, e.g. `lazy-with-preload.hook.ts` backing `use-idle-preload.hook.ts`)
 - **contexts/**: React context providers
 - **guards/**: Route guards and authentication wrappers
-- **notification/**: Real-time notification transport — the SignalR connection hook plus its payload model, type, and endpoint constant, as one flat, un-nested folder (no subfolders, unlike `features/{x}/`). Contains no business logic — payload shapes are data only, the hook is pure connection plumbing. `layouts`, `pages`, and `features` may all import from it directly (`use-notifications.hook.ts`, `notification.model.ts`, `notification.type.ts`, `hubs.constant.ts`, `index.ts`)
+- **Standalone modules**: A domain with no single feature owner (its data/logic isn't specific to one `features/{x}/`) and no fit in `hooks/contexts/guards` gets its own flat, un-nested subfolder `core/<domain>/` (no nested subfolders, unlike `features/{x}/`), holding whatever mix of hook/model/type/constant the domain needs. Contains no business logic — payload/data shapes are data only, any hook is pure plumbing. `layouts`, `pages`, and `features` may all import from it directly. Current examples: `notification/` (real-time SignalR transport) and `i18n/` (i18next setup — its `initReactI18next` wiring and `use-language-toggle.hook.ts` hook are React-specific, so it doesn't fit `app`).
 
 **Core Layer Dependencies (Higher can depend on Lower):**
 
 ```text
-guards       → hooks, contexts, apis, app
-contexts     → hooks, apis, app
-hooks        → apis, app
-notification → app
+guards             → hooks, contexts, apis, app
+contexts           → hooks, apis, app
+hooks              → apis, app
+<standalone module> → app   (e.g. notification → app, i18n → app)
 ```
 
 **Rules:**
@@ -471,17 +474,17 @@ store → apis (models only), app
 
 These files serve as canonical examples of each pattern. When implementing a new feature, follow these as templates:
 
-| Pattern                     | Reference File(s)                                                                                        |
-| --------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Feature Module**          | `src/features/food/` — hooks, components, feature-only models                                            |
-| **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration                                   |
-| **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant                           |
-| **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                                           |
-| **Feature Store**           | `src/features/cart/store/` — feature-owned slice registered into the root store via `src/store/index.ts` |
-| **Shared UI Component**     | `src/uis/` — shadcn/ui-based reusable components                                                         |
-| **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic                            |
-| **Hook-adjacent Utility**   | `src/core/hooks/lazy-with-preload.hook.ts` — React.lazy wrapper consumed by a hook, not a hook itself    |
-| **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern                               |
-| **Notification Layer**      | `src/core/notification/` — flat subfolder of `core`, SignalR hook + shared payload model/enum/constant   |
+| Pattern                          | Reference File(s)                                                                                                                                   |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Feature Module**               | `src/features/food/` — hooks, components, feature-only models                                                                                       |
+| **Page with Data Fetching**      | `src/pages/profile/` — page-specific components and data orchestration                                                                              |
+| **API Module**                   | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant                                                                      |
+| **Redux Slice**                  | `src/store/auth/` — slice definition, typed hooks, and actions                                                                                      |
+| **Feature Store**                | `src/features/cart/store/` — feature-owned slice registered into the root store via `src/store/index.ts`                                            |
+| **Shared UI Component**          | `src/uis/` — shadcn/ui-based reusable components                                                                                                    |
+| **Custom Hook**                  | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic                                                                       |
+| **Hook-adjacent Utility**        | `src/core/hooks/lazy-with-preload.hook.ts` — React.lazy wrapper consumed by a hook, not a hook itself                                               |
+| **Context Provider**             | `src/core/contexts/theme.context.tsx` — context setup and provider pattern                                                                          |
+| **Standalone Module (examples)** | `src/core/notification/` — SignalR hook + shared payload model/enum/constant; `src/core/i18n/` — i18next init + locale files + language-toggle hook |
 
 Use these as templates: examine the full folder structure, naming conventions, import order, component memoization, and state management patterns from these examples.

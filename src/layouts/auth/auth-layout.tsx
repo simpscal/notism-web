@@ -3,14 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { Link, Outlet } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
+import { useLanguageToggle } from '@/core/i18n/use-language-toggle.hook';
 import { LanguageSwitcher } from '@/uis/language-switcher';
 
 function AuthLayout() {
     const { t } = useTranslation();
+    const { currentLanguage, toggleLanguage } = useLanguageToggle();
     return (
         <div className='min-h-screen w-screen overflow-y-auto bg-background'>
             <div className='absolute right-4 top-4 md:right-6 md:top-6'>
-                <LanguageSwitcher />
+                <LanguageSwitcher currentLanguage={currentLanguage} onToggleLanguage={toggleLanguage} />
             </div>
             <div className='mx-auto flex min-h-screen flex-col items-stretch lg:flex-row'>
                 <section className='relative hidden w-full flex-1 items-center justify-center overflow-hidden lg:block lg:w-1/2'>

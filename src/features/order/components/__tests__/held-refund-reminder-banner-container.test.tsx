@@ -7,7 +7,7 @@ import HeldRefundReminderBannerContainer from '../held-refund-reminder-banner-co
 
 import type { HeldRefundResponseModel } from '@/apis';
 import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';

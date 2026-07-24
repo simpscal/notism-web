@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import Cart from '../cart';
 
 import { CART_ENDPOINTS } from '@/apis/cart/cart.constant';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { loadCart } from '@/features/cart/store/cart.thunks';
 import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import NewOrderAlertToast, { type NewOrderAlertData } from '../new-order-alert-toast';
 
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { renderWithProviders } from '@/test/utils';
 
 const dismissMock = vi.fn();

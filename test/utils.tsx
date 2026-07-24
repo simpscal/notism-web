@@ -5,8 +5,8 @@ import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 
-import i18n from '@/app/i18n/i18n';
 import { ThemeProvider } from '@/core/contexts/theme.context';
+import i18n from '@/core/i18n/i18n';
 import { store } from '@/store';
 
 type I18nTextOptions = Record<string, unknown>;

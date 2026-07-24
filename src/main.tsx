@@ -6,8 +6,8 @@ import { Provider } from 'react-redux';
 import './app/assets/styles/index.css';
 import { BrowserRouter } from 'react-router-dom';
 
-import { i18nReady } from './app/i18n/i18n';
 import App from './app.tsx';
+import { i18nReady } from './core/i18n/i18n';
 import { store } from './store';
 
 import { ThemeProvider } from '@/core/contexts';

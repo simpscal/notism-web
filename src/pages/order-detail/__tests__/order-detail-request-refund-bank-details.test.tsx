@@ -7,7 +7,7 @@ import OrderDetail from '../order-detail';
 
 import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
 import { USER_ENDPOINTS } from '@/apis/user/user.constant';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';

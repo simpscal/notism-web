@@ -9,8 +9,8 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { Settings } from '..';
 
 import { UserProfileModel } from '@/apis';
-import i18n from '@/app/i18n/i18n';
 import { UserRoleType } from '@/app/types';
+import i18n from '@/core/i18n/i18n';
 import { store } from '@/store';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user';

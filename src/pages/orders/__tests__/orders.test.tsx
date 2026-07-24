@@ -7,7 +7,7 @@ import Orders from '../orders';
 
 import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
 import { PAGE_SIZE } from '@/app/constants';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { findByI18nText, getAllByI18nText, getByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';

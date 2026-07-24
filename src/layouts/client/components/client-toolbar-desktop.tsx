@@ -5,10 +5,10 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { useLanguageToggle } from '@/app/i18n/use-language-toggle';
 import { cn, getDisplayName, getInitials } from '@/app/utils';
 import { useTheme } from '@/core/contexts/theme.context';
 import { useAppSelector } from '@/core/hooks';
+import { useLanguageToggle } from '@/core/i18n/use-language-toggle.hook';
 import { selectCartTotalItems } from '@/features/cart/store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/uis/avatar';
 import { Button } from '@/uis/button';

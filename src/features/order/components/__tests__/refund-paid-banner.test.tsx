@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import RefundPaidBanner, { type RefundPaidBannerData } from '../refund-paid-banner';
 
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);

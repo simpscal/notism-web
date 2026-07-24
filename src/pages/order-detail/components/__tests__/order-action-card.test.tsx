@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import OrderActionCard, { type OrderActionCardProps } from '../order-action-card';
 
 import type { RefundSummaryModel } from '@/apis';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { DeliveryStatusType, PaymentMethodType } from '@/features/order';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
 

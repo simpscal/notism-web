@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import SettingsAppearanceSection from '../components/settings-appearance-section';
 
-import i18n from '@/app/i18n/i18n';
 import { ThemeProvider } from '@/core/contexts/theme.context';
+import i18n from '@/core/i18n/i18n';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const successToast = vi.fn();

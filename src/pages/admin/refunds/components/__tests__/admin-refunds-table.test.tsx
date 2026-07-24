@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import AdminRefundsTable from '../admin-refunds-table';
 
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { findByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';

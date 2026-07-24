@@ -5,7 +5,7 @@ import AdminToolbarMobile from '../admin-toolbar-mobile';
 
 import { UserProfileModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
 import { type LiveFeedStatus } from '@/uis/live-feed-pill';
 

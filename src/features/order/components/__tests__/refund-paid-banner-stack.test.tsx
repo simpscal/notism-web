@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import RefundPaidBannerStack from '../refund-paid-banner-stack';
 
-import i18n from '@/app/i18n/i18n';
+import i18n from '@/core/i18n/i18n';
 import type { SharedNotification } from '@/core/notification';
 import { queryByI18nText, renderWithProviders } from '@/test/utils';
 
