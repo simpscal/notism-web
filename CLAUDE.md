@@ -42,7 +42,7 @@ src/
     [feature]/      # Feature-specific components
     ui/             # Base components (button, card, dialog, etc.)
   core/             # Hooks, contexts, route guards
-  features/        # Feature business logic (feature-only ViewModels)
+  features/        # Feature business logic (feature-only models)
   layouts/          # AdminLayout, AuthLayout, ClientLayout
   pages/            # Page components + routing
   store/            # Redux slices (auth, cart, food, user)

@@ -25,7 +25,7 @@
 
 1. **layouts** - Layout components that provide structural containers for pages
 2. **pages** - Complete application pages with page-specific business logic and route mapping
-3. **features** - Shared business logic, ViewModels, and features used across the application
+3. **features** - Shared business logic, feature models, and feature components used across the application
 4. **uis** - Reusable UI components
 5. **core** - React-specific shared resources (hooks, contexts, guards)
 6. **store** - Global application state management
@@ -137,7 +137,7 @@ graph TD
 │
 ├── 📁 features/     # Business logic and features
 │   ├── 📁 user/
-│   │   ├── 📁 models/     # ViewModels — feature-layer-only models (NOT mapped from API)
+│   │   ├── 📁 models/     # Feature models — UI-only/composed types, not mapped from API
 │   │   │   ├── 📄 user.model.ts
 │   │   │   └── 📄 index.ts
 │   │   ├── 📁 components/
@@ -231,7 +231,7 @@ All API-related code, organized **one folder per domain** under `apis/<domain>/`
 
 - **`*Model`** (api layer): the mapped, UI-facing type. This is what app layers consume (via the `@/apis` barrel).
 - **`*ResponseModel`** / **`*RequestModel`** (api layer, internal): raw wire types. Must NOT be imported outside `src/apis/**` — consume the mapped `*Model` or call the api function instead (enforced by eslint).
-- **`*ViewModel`** lives in the **feature layer**, never here — see naming.md.
+- Feature-owned models live in the **feature layer** (`features/{domain}/models/`), never here — see naming.md.
 
 **Rules:**
 
@@ -344,11 +344,11 @@ For complex page-specific state that needs to be managed with Redux, create a pa
 
 ### Features Folder
 
-Business logic, ViewModels, and feature-specific components that are **shared across the application**. Features accommodate reusable business logic that can be used by multiple pages or components.
+Business logic, feature models, and feature-specific components that are **shared across the application**. Features accommodate reusable business logic that can be used by multiple pages or components.
 
 **Responsibilities:**
 
-- **ViewModels**: Define feature-layer-only ViewModels — UI-state or data composed/derived in the feature, NOT a 1:1 map of an API response (those are `*Model`s at the api layer)
+- **Feature models**: Define feature-owned models — UI-state or data composed/derived in the feature, NOT a 1:1 map of an API response (those are `*Model`s at the api layer)
 - **Shared Business Logic**: Accommodate business logic that is reused across multiple pages or components
 - **Reusable Components**: Feature-specific components that can be composed in different pages
 - **Business Rules**: Implement business rules and validation logic that applies to the feature
@@ -364,14 +364,14 @@ Business logic, ViewModels, and feature-specific components that are **shared ac
 
 A feature can own Redux state at `src/features/{feature}/store/` (slice, thunks, selectors) when that state is cross-cutting enough to live in the global root reducer but conceptually belongs to the feature — e.g. `features/cart/store/`, `features/food/store/`. The global store (`src/store/**`) must never import from `features`; the sole exception is the root composition file `src/store/index.ts`, which registers each feature-owned reducer into `configureStore` purely as wiring, not business logic.
 
-**ViewModel Pattern:**
+**Feature Model Pattern:**
 
-A `ViewModel` is a model owned by the feature layer. Mapping an API response is **not** a feature concern — the mapper at the api layer produces a `*Model`. Reach for a `ViewModel` only when:
+A feature model is a `*Model` owned by the feature layer. Mapping an API response is **not** a feature concern — the mapper at the api layer produces a `*Model`. Reach for a feature model only when:
 
 - the shape is UI-only state with no API counterpart, or
 - it composes/derives data from one or more api `*Model`s into something no single endpoint returns.
 
-If you just need an endpoint's shape, import its `*Model` from `@/apis` directly — do not wrap it in a feature ViewModel.
+If you just need an endpoint's shape, import its `*Model` from `@/apis` directly — do not wrap it in a feature model.
 
 **Encapsulation:**
 
@@ -465,7 +465,7 @@ These files serve as canonical examples of each pattern. When implementing a new
 
 | Pattern                     | Reference File(s)                                                                                        |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Feature Module**          | `src/features/food/` — hooks, components, feature-only ViewModels                                        |
+| **Feature Module**          | `src/features/food/` — hooks, components, feature-only models                                            |
 | **Page with Data Fetching** | `src/pages/profile/` — page-specific components and data orchestration                                   |
 | **API Module**              | `src/apis/order/` — per-domain api, wire types, mapped model, mapper, constant                           |
 | **Redux Slice**             | `src/store/auth/` — slice definition, typed hooks, and actions                                           |

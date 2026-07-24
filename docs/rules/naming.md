@@ -260,7 +260,7 @@ const handleUserDeleted = (userId: string) => {
     // Handle user deletion
 };
 
-const handlePeriodClick = (period: PeriodViewModel) => {
+const handlePeriodClick = (period: PeriodModel) => {
     setSelectedPeriodId(period.id);
 };
 
@@ -314,7 +314,7 @@ export function useTheme() {
 
 ```typescript
 const [user, setUser] = useState<IUser | null>(null);
-const [periods, setPeriods] = useState<PeriodViewModel[]>([]);
+const [periods, setPeriods] = useState<PeriodModel[]>([]);
 const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(null);
 const [isLoading, setIsLoading] = useState(false);
 const [hasError, setHasError] = useState(false);
@@ -559,7 +559,7 @@ export const tokenManagerUtils = {
 };
 
 // utils/timeline.utils.ts
-export function calculateTimelineGaps(periods: PeriodResponseModel[]): PeriodViewModel[] {
+export function calculateTimelineGaps(periods: PeriodResponseModel[]): PeriodModel[] {
     // ...
 }
 
@@ -617,7 +617,7 @@ export const userApi = {
     - `ResponseModel` — raw API response wire type. **Api layer**, in `apis/{domain}/{domain}.response.ts`. Internal — never imported outside `src/apis/**`.
     - `RequestModel` — API request payload. **Api layer**, in `apis/{domain}/{domain}.request.ts`.
     - `Model` — the mapped, UI-facing type produced by a mapper from a `ResponseModel`. **Api layer**, in `apis/{domain}/{domain}.model.ts`. This is what app layers consume (via the `@/apis` barrel).
-    - `ViewModel` — a model composed in the **feature layer** that is NOT mapped from an API response (UI-only state, derived/combined data). Lives in `features/{domain}/models/`. If a model is just a transform of a response, it is a `Model` at the api layer — not a `ViewModel`.
+    - Feature model — a `Model` owned by the **feature layer** that is NOT mapped from an API response (UI-only state, derived/combined data). Lives in `features/{domain}/models/`. If a model is just a transform of a response, it is a `Model` at the api layer — keep it there.
 - File naming: `{entity}.model.ts`
 
 **Example**:
@@ -645,9 +645,9 @@ export interface OrderModel {
 // apis/order/order.mapper.ts
 export function toOrder(response: OrderResponseModel): OrderModel { ... }
 
-// features/cart/models/cart-summary.model.ts — feature-layer-only ViewModel
+// features/cart/models/cart-summary.model.ts — feature-layer-only model
 // (composed in the feature, not a 1:1 map of any API response)
-export interface CartSummaryViewModel {
+export interface CartSummaryModel {
     itemCount: number;
     subtotal: number;
     estimatedDelivery: string;
@@ -708,7 +708,7 @@ export default authSlice.reducer;
 
 ```typescript
 // Public functions
-export function calculateTimelineGaps(periods: PeriodResponseModel[]): PeriodViewModel[] {
+export function calculateTimelineGaps(periods: PeriodResponseModel[]): PeriodModel[] {
     // ...
 }
 
@@ -815,23 +815,23 @@ src/
 
 ### Quick Reference
 
-| Type                | Convention                   | Example                                   |
-| ------------------- | ---------------------------- | ----------------------------------------- |
-| **Files**           | kebab-case                   | `user-profile.tsx`, `auth.service.ts`     |
-| **Components**      | PascalCase                   | `UserCard`, `HeroSection`                 |
-| **Component Props** | PascalCase + `Props`         | `UserCardProps`, `HeroSectionProps`       |
-| **Types**           | PascalCase (+ `Type` suffix) | `UserRoleType`, `Theme`                   |
-| **Enums**           | PascalCase + `Enum`          | `StatusEnum`                              |
-| **Models**          | PascalCase + `Model` suffix  | `PeriodViewModel`, `UserProfileViewModel` |
-| **Hooks**           | camelCase, `use` prefix      | `useAuth`, `useInput`                     |
-| **Functions**       | camelCase                    | `calculateGaps`, `formatDate`             |
-| **Event Handlers**  | camelCase, `handle` prefix   | `handleSubmit`, `handleClick`             |
-| **State**           | camelCase                    | `user`, `isLoading`, `selectedPeriodId`   |
-| **Setters**         | `set` + PascalCase           | `setUser`, `setIsLoading`                 |
-| **APIs**            | camelCase + `Api`            | `timelineApi`, `userApi`                  |
-| **Services**        | camelCase + `Service`        | `authService`                             |
-| **Utils**           | camelCase + `Utils`          | `tokenManagerUtils`                       |
-| **Constants**       | UPPERCASE_SNAKE_CASE         | `PAGE_SIZE`, `TOKEN_KEY`                  |
-| **Refs**            | camelCase + `Ref`            | `modalRef`, `inputRef`                    |
-| **Contexts**        | PascalCase + `Context`       | `AuthContext`, `ThemeProviderContext`     |
-| **Folders**         | kebab-case                   | `user-profile/`, `auth/`                  |
+| Type                | Convention                   | Example                                 |
+| ------------------- | ---------------------------- | --------------------------------------- |
+| **Files**           | kebab-case                   | `user-profile.tsx`, `auth.service.ts`   |
+| **Components**      | PascalCase                   | `UserCard`, `HeroSection`               |
+| **Component Props** | PascalCase + `Props`         | `UserCardProps`, `HeroSectionProps`     |
+| **Types**           | PascalCase (+ `Type` suffix) | `UserRoleType`, `Theme`                 |
+| **Enums**           | PascalCase + `Enum`          | `StatusEnum`                            |
+| **Models**          | PascalCase + `Model` suffix  | `PeriodModel`, `UserProfileModel`       |
+| **Hooks**           | camelCase, `use` prefix      | `useAuth`, `useInput`                   |
+| **Functions**       | camelCase                    | `calculateGaps`, `formatDate`           |
+| **Event Handlers**  | camelCase, `handle` prefix   | `handleSubmit`, `handleClick`           |
+| **State**           | camelCase                    | `user`, `isLoading`, `selectedPeriodId` |
+| **Setters**         | `set` + PascalCase           | `setUser`, `setIsLoading`               |
+| **APIs**            | camelCase + `Api`            | `timelineApi`, `userApi`                |
+| **Services**        | camelCase + `Service`        | `authService`                           |
+| **Utils**           | camelCase + `Utils`          | `tokenManagerUtils`                     |
+| **Constants**       | UPPERCASE_SNAKE_CASE         | `PAGE_SIZE`, `TOKEN_KEY`                |
+| **Refs**            | camelCase + `Ref`            | `modalRef`, `inputRef`                  |
+| **Contexts**        | PascalCase + `Context`       | `AuthContext`, `ThemeProviderContext`   |
+| **Folders**         | kebab-case                   | `user-profile/`, `auth/`                |
