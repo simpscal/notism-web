@@ -6,7 +6,7 @@ import AdminOrdersKanban from '../admin-orders-kanban';
 
 import type { AdminOrdersModel } from '@/apis';
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
-import { DeliveryStatusEnum } from '@/features/order';
+import { DeliveryStatusType } from '@/features/order';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
@@ -38,7 +38,7 @@ describe('AdminOrdersKanban — transient status highlight', () => {
         renderWithProviders(
             <AdminOrdersKanban
                 onOrderClick={vi.fn()}
-                highlightedStatuses={[DeliveryStatusEnum.Preparing, DeliveryStatusEnum.OnTheWay]}
+                highlightedStatuses={[DeliveryStatusType.Preparing, DeliveryStatusType.OnTheWay]}
             />
         );
 
@@ -77,7 +77,7 @@ describe('AdminOrdersKanban — transient status highlight', () => {
             renderWithProviders(
                 <AdminOrdersKanban
                     onOrderClick={vi.fn()}
-                    highlightedStatuses={[DeliveryStatusEnum.Preparing, DeliveryStatusEnum.OnTheWay]}
+                    highlightedStatuses={[DeliveryStatusType.Preparing, DeliveryStatusType.OnTheWay]}
                 />
             );
 
@@ -100,7 +100,7 @@ describe('AdminOrdersKanban — transient status highlight', () => {
             const scrollSpy = vi.spyOn(Element.prototype, 'scrollIntoView');
 
             renderWithProviders(
-                <AdminOrdersKanban onOrderClick={vi.fn()} highlightedStatuses={[DeliveryStatusEnum.Preparing]} />
+                <AdminOrdersKanban onOrderClick={vi.fn()} highlightedStatuses={[DeliveryStatusType.Preparing]} />
             );
 
             await vi.waitFor(() => {

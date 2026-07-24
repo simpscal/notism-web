@@ -1,4 +1,4 @@
-export enum AuthTypeEnum {
+export enum AuthType {
     Email = 'email',
     OAuth = 'oauth',
 }

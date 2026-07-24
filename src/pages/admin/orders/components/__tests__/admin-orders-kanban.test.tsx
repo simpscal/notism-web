@@ -6,7 +6,7 @@ import AdminOrdersKanban from '../admin-orders-kanban';
 
 import { ADMIN_QUERY_KEYS, type AdminOrderModel, type AdminOrdersModel } from '@/apis';
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
-import { DeliveryStatusEnum, PaymentStatusEnum } from '@/features/order';
+import { DeliveryStatusType, PaymentStatusType } from '@/features/order';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { createTestQueryClient, renderWithProviders } from '@/test/utils';
@@ -32,8 +32,8 @@ const paidOrder: AdminOrderModel = {
     userEmail: 'paid@example.com',
     userName: 'Paid User',
     totalAmount: 99.99,
-    deliveryStatus: DeliveryStatusEnum.Placed,
-    paymentStatus: PaymentStatusEnum.Paid,
+    deliveryStatus: DeliveryStatusType.Placed,
+    paymentStatus: PaymentStatusType.Paid,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     totalItems: 2,
@@ -47,8 +47,8 @@ const emptyColumn: AdminOrdersModel = { items: [], totalCount: 0 };
 // simulating the backend bug that triggered this issue.
 const apiUpdateResponse: AdminOrderModel = {
     ...paidOrder,
-    deliveryStatus: DeliveryStatusEnum.Preparing,
-    paymentStatus: PaymentStatusEnum.Unpaid, // backend returns wrong paymentStatus
+    deliveryStatus: DeliveryStatusType.Preparing,
+    paymentStatus: PaymentStatusType.Unpaid, // backend returns wrong paymentStatus
 };
 
 function setupKanbanHandlers(placedItems: AdminOrderModel[] = [paidOrder]) {
@@ -56,7 +56,7 @@ function setupKanbanHandlers(placedItems: AdminOrderModel[] = [paidOrder]) {
         http.get(KANBAN_URL, ({ request }) => {
             const url = new URL(request.url);
             const status = url.searchParams.get('status');
-            if (status === DeliveryStatusEnum.Placed) {
+            if (status === DeliveryStatusType.Placed) {
                 return HttpResponse.json({ items: placedItems, totalCount: placedItems.length });
             }
             return HttpResponse.json(emptyColumn);
@@ -87,8 +87,8 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
             expect(screen.getByText('#ORD-PAID-001')).toBeInTheDocument();
         });
 
-        const sourceKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusEnum.Placed, { paymentStatus: undefined });
-        const targetKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusEnum.Preparing, { paymentStatus: undefined });
+        const sourceKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusType.Placed, { paymentStatus: undefined });
+        const targetKey = ADMIN_QUERY_KEYS.kanban(DeliveryStatusType.Preparing, { paymentStatus: undefined });
 
         // Seed the target column as empty so we can check it after
         queryClient.setQueryData(targetKey, {
@@ -105,7 +105,7 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
 
         // The original order must be in the source cache with its correct paymentStatus
         expect(originalOrder).toBeDefined();
-        expect(originalOrder!.paymentStatus).toBe(PaymentStatusEnum.Paid);
+        expect(originalOrder!.paymentStatus).toBe(PaymentStatusType.Paid);
 
         // Apply the fix: merge original fields, only take deliveryStatus from API response
         const mergedOrder: AdminOrderModel = originalOrder
@@ -113,28 +113,28 @@ describe('AdminOrdersKanban — drag status preservation (bug #203)', () => {
             : apiUpdateResponse;
 
         // paymentStatus must be preserved from the original, not overwritten by the API response
-        expect(mergedOrder.paymentStatus).toBe(PaymentStatusEnum.Paid);
-        expect(mergedOrder.deliveryStatus).toBe(DeliveryStatusEnum.Preparing);
+        expect(mergedOrder.paymentStatus).toBe(PaymentStatusType.Paid);
+        expect(mergedOrder.deliveryStatus).toBe(DeliveryStatusType.Preparing);
     });
 
     it('does not reset paymentStatus to unpaid when API response has wrong paymentStatus', () => {
         // Verify that the merge logic never propagates the wrong paymentStatus from the API response
         const originalPaidOrder: AdminOrderModel = {
             ...paidOrder,
-            paymentStatus: PaymentStatusEnum.Paid,
+            paymentStatus: PaymentStatusType.Paid,
         };
 
         const buggyApiResponse: AdminOrderModel = {
             ...originalPaidOrder,
-            deliveryStatus: DeliveryStatusEnum.OnTheWay,
-            paymentStatus: PaymentStatusEnum.Unpaid, // API incorrectly returns unpaid
+            deliveryStatus: DeliveryStatusType.OnTheWay,
+            paymentStatus: PaymentStatusType.Unpaid, // API incorrectly returns unpaid
         };
 
         // The fix: merge original fields, only take deliveryStatus from API
         const mergedOrder = { ...originalPaidOrder, deliveryStatus: buggyApiResponse.deliveryStatus };
 
-        expect(mergedOrder.paymentStatus).toBe(PaymentStatusEnum.Paid);
-        expect(mergedOrder.deliveryStatus).toBe(DeliveryStatusEnum.OnTheWay);
+        expect(mergedOrder.paymentStatus).toBe(PaymentStatusType.Paid);
+        expect(mergedOrder.deliveryStatus).toBe(DeliveryStatusType.OnTheWay);
     });
 
     it('falls back to the API response when the original order is not found in cache', () => {

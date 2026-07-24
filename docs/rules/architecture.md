@@ -127,7 +127,7 @@ graph TD
 │   ├── 📁 assets/   # Images, fonts, icons
 │   ├── 📁 configs/  # App, API, routes configuration
 │   ├── 📁 constants/# Application constants
-│   ├── 📁 enums/    # TypeScript enums
+│   ├── 📁 types/    # TypeScript enums and types (folder renamed from `enums/`; files use the `.type.ts` suffix)
 │   ├── 📁 i18n/     # i18next setup and locale translation files (en, vi)
 │   ├── 📁 utils/    # Utility functions
 │   │   └── 📁 __tests__/ # Utility unit tests
@@ -187,7 +187,7 @@ graph TD
 ├── 📁 notification/ # Real-time notification transport (flat, one folder — see Notification Folder)
 │   ├── 📄 use-notifications.hook.ts
 │   ├── 📄 notification.model.ts
-│   ├── 📄 notification.enum.ts
+│   ├── 📄 notification.type.ts
 │   ├── 📄 hubs.constant.ts
 │   └── 📄 index.ts
 │
@@ -267,7 +267,7 @@ Contains application-wide configurations, static assets, constants, enums, utili
 
 - **configs/**: Application, API, and routes configuration
 - **constants/**: Application-wide constants (API endpoints, keys, etc.)
-- **enums/**: TypeScript enums for type-safe values
+- **types/**: TypeScript enums and types for type-safe values (folder renamed from `enums/`; files use the `.type.ts` suffix — `enum` and `type` share one naming/filing convention, see naming.md)
 - **i18n/**: i18next initialization (`i18n.ts`) and locale translation files (`locales/en.json`, `locales/vi.json`)
 - **utils/**: Pure utility functions (no React dependencies); unit tests live in `utils/__tests__/`
 - **assets/**: Static assets (images, fonts, icons)
@@ -484,7 +484,7 @@ Real-time notification transport: the SignalR connection hook plus its payload m
 
 - **use-notifications.hook.ts**: SignalR connection lifecycle, reconnect handling, live-feed status
 - **notification.model.ts**: `SharedNotification` discriminated union + payload interfaces (payment, refund, new-order)
-- **notification.enum.ts**: `NotificationType`
+- **notification.type.ts**: `NotificationType`
 - **hubs.constant.ts**: `HUBS` endpoint map
 - **index.ts**: barrel re-export of all four
 

@@ -1,25 +1,25 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PaymentStatusEnum } from '@/features/order';
+import { PaymentStatusType } from '@/features/order';
 import { Badge } from '@/uis/badge';
 
 interface PaymentStatusBadgeProps {
-    paymentStatus: PaymentStatusEnum;
+    paymentStatus: PaymentStatusType;
 }
 
 function PaymentStatusBadge({ paymentStatus }: PaymentStatusBadgeProps) {
     const { t } = useTranslation();
 
-    if (paymentStatus === PaymentStatusEnum.Paid) {
+    if (paymentStatus === PaymentStatusType.Paid) {
         return <Badge variant='success'>{t('payment.statuses.paid')}</Badge>;
     }
 
-    if (paymentStatus === PaymentStatusEnum.Failed) {
+    if (paymentStatus === PaymentStatusType.Failed) {
         return <Badge variant='destructive'>{t('payment.statuses.failed')}</Badge>;
     }
 
-    if (paymentStatus === PaymentStatusEnum.Refunded) {
+    if (paymentStatus === PaymentStatusType.Refunded) {
         return <Badge variant='warning'>{t('payment.statuses.refunded')}</Badge>;
     }
 

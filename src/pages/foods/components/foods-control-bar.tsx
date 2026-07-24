@@ -2,7 +2,7 @@ import { ArrowUpDown, X } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FoodSortOption } from '../enums';
+import { FoodSortOption } from '../types';
 
 import { ListItemModel } from '@/app/models';
 import { Badge } from '@/uis/badge';

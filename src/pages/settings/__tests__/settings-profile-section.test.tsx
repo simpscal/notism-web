@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import SettingsProfileSection from '../components/settings-profile-section';
 
 import { USER_ENDPOINTS } from '@/apis/user/user.constant';
-import { UserRoleEnum } from '@/app/enums';
+import { UserRoleType } from '@/app/types';
 import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
 import { setUser } from '@/store/user';
@@ -32,7 +32,7 @@ function seedUser() {
             lastName: 'Nguyen',
             email: 'mai@example.com',
             avatarUrl: null,
-            role: UserRoleEnum.User,
+            role: UserRoleType.User,
         })
     );
 }

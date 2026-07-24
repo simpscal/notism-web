@@ -1,4 +1,4 @@
-export enum RefundStatusEnum {
+export enum RefundStatusType {
     Pending = 'pending',
     Processing = 'processing',
     Paid = 'paid',

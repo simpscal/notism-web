@@ -7,7 +7,7 @@ import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
-import { RefundStatusEnum } from '@/features/order';
+import { RefundStatusType } from '@/features/order';
 import { buildUrl } from '@/mocks/utils';
 import type { SharedNotification } from '@/notification';
 import { server } from '@/test/server';
@@ -54,7 +54,7 @@ function makeRefund(overrides: Partial<AdminRefundDetailResponseModel> = {}): Ad
         orderId: 'ord-1',
         orderSlugId: 'A1B2C3',
         amount: 485_000,
-        status: RefundStatusEnum.Pending,
+        status: RefundStatusType.Pending,
         createdAt: '2026-06-13T10:40:00Z',
         paidAt: null,
         transferReference: null,
@@ -115,7 +115,7 @@ describe('AdminRefundDetail page', () => {
         server.use(
             http.get(DETAIL_URL, () =>
                 HttpResponse.json(
-                    makeRefund({ status: approved ? RefundStatusEnum.Processing : RefundStatusEnum.Pending })
+                    makeRefund({ status: approved ? RefundStatusType.Processing : RefundStatusType.Pending })
                 )
             )
         );
@@ -123,7 +123,7 @@ describe('AdminRefundDetail page', () => {
             http.post(APPROVE_URL, () => {
                 approveSpy();
                 approved = true;
-                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }), { status: 202 });
+                return HttpResponse.json(makeRefund({ status: RefundStatusType.Processing }), { status: 202 });
             })
         );
 
@@ -146,7 +146,7 @@ describe('AdminRefundDetail page', () => {
         server.use(
             http.post(APPROVE_URL, () => {
                 approveSpy();
-                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }), { status: 202 });
+                return HttpResponse.json(makeRefund({ status: RefundStatusType.Processing }), { status: 202 });
             })
         );
 
@@ -166,7 +166,7 @@ describe('AdminRefundDetail page', () => {
             http.get(DETAIL_URL, () =>
                 HttpResponse.json(
                     makeRefund({
-                        status: RefundStatusEnum.Paid,
+                        status: RefundStatusType.Paid,
                         paidAt: '2026-06-13T14:27:00Z',
                         transferReference: 'VCB-TRF-20260613-0099431',
                     })
@@ -185,7 +185,7 @@ describe('AdminRefundDetail page', () => {
         const reason = 'Beneficiary account number rejected by the receiving bank.';
         server.use(
             http.get(DETAIL_URL, () =>
-                HttpResponse.json(makeRefund({ status: RefundStatusEnum.Failed, failureReason: reason }))
+                HttpResponse.json(makeRefund({ status: RefundStatusType.Failed, failureReason: reason }))
             )
         );
 
@@ -198,7 +198,7 @@ describe('AdminRefundDetail page', () => {
     it('renders the retry action for a failed refund', async () => {
         server.use(
             http.get(DETAIL_URL, () =>
-                HttpResponse.json(makeRefund({ status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }))
+                HttpResponse.json(makeRefund({ status: RefundStatusType.Failed, failureReason: 'Bank rejected.' }))
             )
         );
 
@@ -208,7 +208,7 @@ describe('AdminRefundDetail page', () => {
     });
 
     it('does not render the retry action for a paid refund', async () => {
-        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Paid }))));
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusType.Paid }))));
 
         renderPage();
 
@@ -217,7 +217,7 @@ describe('AdminRefundDetail page', () => {
     });
 
     it('does not render the retry action for a pending refund', async () => {
-        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Pending }))));
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusType.Pending }))));
 
         renderPage();
 
@@ -226,7 +226,7 @@ describe('AdminRefundDetail page', () => {
     });
 
     it('does not render the retry action for a processing refund', async () => {
-        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }))));
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusType.Processing }))));
 
         renderPage();
 
@@ -243,8 +243,8 @@ describe('AdminRefundDetail page', () => {
                 HttpResponse.json(
                     makeRefund(
                         retried
-                            ? { status: RefundStatusEnum.Processing }
-                            : { status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }
+                            ? { status: RefundStatusType.Processing }
+                            : { status: RefundStatusType.Failed, failureReason: 'Bank rejected.' }
                     )
                 )
             )
@@ -253,7 +253,7 @@ describe('AdminRefundDetail page', () => {
             http.post(RETRY_URL, () => {
                 retrySpy();
                 retried = true;
-                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }), { status: 202 });
+                return HttpResponse.json(makeRefund({ status: RefundStatusType.Processing }), { status: 202 });
             })
         );
 
@@ -274,7 +274,7 @@ describe('AdminRefundDetail page', () => {
             http.get(DETAIL_URL, () =>
                 HttpResponse.json(
                     makeRefund({
-                        status: RefundStatusEnum.Processing,
+                        status: RefundStatusType.Processing,
                         bankCode: 'VCB',
                         accountNumber: '1023456789',
                         accountHolderName: 'Nguyen Van A',
@@ -294,7 +294,7 @@ describe('AdminRefundDetail page', () => {
             http.get(DETAIL_URL, () =>
                 HttpResponse.json(
                     makeRefund({
-                        status: RefundStatusEnum.Processing,
+                        status: RefundStatusType.Processing,
                         bankCode: null,
                         accountNumber: null,
                         accountHolderName: null,
@@ -311,7 +311,7 @@ describe('AdminRefundDetail page', () => {
     });
 
     it('does not show the VietQR card for a pending refund', async () => {
-        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusEnum.Pending }))));
+        server.use(http.get(DETAIL_URL, () => HttpResponse.json(makeRefund({ status: RefundStatusType.Pending }))));
 
         renderPage();
 
@@ -324,7 +324,7 @@ describe('AdminRefundDetail page', () => {
             http.get(DETAIL_URL, () =>
                 HttpResponse.json(
                     makeRefund({
-                        status: RefundStatusEnum.Paid,
+                        status: RefundStatusType.Paid,
                         paidAt: '2026-06-13T14:27:00Z',
                         transferReference: 'VCB-TRF-20260613-0099431',
                     })
@@ -341,7 +341,7 @@ describe('AdminRefundDetail page', () => {
     it('does not show the VietQR card for a failed refund', async () => {
         server.use(
             http.get(DETAIL_URL, () =>
-                HttpResponse.json(makeRefund({ status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }))
+                HttpResponse.json(makeRefund({ status: RefundStatusType.Failed, failureReason: 'Bank rejected.' }))
             )
         );
 
@@ -356,13 +356,13 @@ describe('AdminRefundDetail page', () => {
         const retrySpy = vi.fn();
         server.use(
             http.get(DETAIL_URL, () =>
-                HttpResponse.json(makeRefund({ status: RefundStatusEnum.Failed, failureReason: 'Bank rejected.' }))
+                HttpResponse.json(makeRefund({ status: RefundStatusType.Failed, failureReason: 'Bank rejected.' }))
             )
         );
         server.use(
             http.post(RETRY_URL, () => {
                 retrySpy();
-                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }), { status: 202 });
+                return HttpResponse.json(makeRefund({ status: RefundStatusType.Processing }), { status: 202 });
             })
         );
 
@@ -393,11 +393,11 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
                 HttpResponse.json(
                     paid
                         ? makeRefund({
-                              status: RefundStatusEnum.Paid,
+                              status: RefundStatusType.Paid,
                               paidAt: '2026-06-13T14:27:00Z',
                               transferReference: 'VCB-TRF-20260613-0099431',
                           })
-                        : makeRefund({ status: RefundStatusEnum.Processing })
+                        : makeRefund({ status: RefundStatusType.Processing })
                 )
             )
         );
@@ -425,8 +425,8 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
             http.get(DETAIL_URL, () =>
                 HttpResponse.json(
                     failed
-                        ? makeRefund({ status: RefundStatusEnum.Failed, failureReason: reason })
-                        : makeRefund({ status: RefundStatusEnum.Processing })
+                        ? makeRefund({ status: RefundStatusType.Failed, failureReason: reason })
+                        : makeRefund({ status: RefundStatusType.Processing })
                 )
             )
         );
@@ -454,13 +454,13 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
                 if (refetched) {
                     return HttpResponse.json(
                         makeRefund({
-                            status: RefundStatusEnum.Paid,
+                            status: RefundStatusType.Paid,
                             paidAt: '2026-06-13T14:27:00Z',
                             transferReference: 'VCB-TRF-20260613-0099431',
                         })
                     );
                 }
-                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }));
+                return HttpResponse.json(makeRefund({ status: RefundStatusType.Processing }));
             })
         );
 
@@ -488,13 +488,13 @@ describe('AdminRefundDetail — live refund-status-changed updates', () => {
                 if (refetched) {
                     return HttpResponse.json(
                         makeRefund({
-                            status: RefundStatusEnum.Paid,
+                            status: RefundStatusType.Paid,
                             paidAt: '2026-06-13T14:27:00Z',
                             transferReference: 'VCB-TRF-20260613-0099431',
                         })
                     );
                 }
-                return HttpResponse.json(makeRefund({ status: RefundStatusEnum.Processing }));
+                return HttpResponse.json(makeRefund({ status: RefundStatusType.Processing }));
             })
         );
 

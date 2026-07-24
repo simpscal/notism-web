@@ -9,7 +9,7 @@ import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import type { AdminOrdersModel } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { DELIVERY_STATUS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
+import { DELIVERY_STATUS, PaymentStatusBadge, PaymentStatusType } from '@/features/order';
 import { Button } from '@/uis/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/uis/dropdown-menu';
 import ErrorState from '@/uis/error-state';
@@ -238,7 +238,7 @@ function AdminOrdersTable({ onOrderClick, paymentStatus }: AdminOrdersTableProps
                                         </TableCell>
                                         <TableCell>
                                             <PaymentStatusBadge
-                                                paymentStatus={order.paymentStatus as PaymentStatusEnum}
+                                                paymentStatus={order.paymentStatus as PaymentStatusType}
                                             />
                                         </TableCell>
                                         <TableCell className='text-right'>

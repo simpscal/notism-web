@@ -19,7 +19,7 @@ import { foodFormSchema, getDefaultFormValues, type FoodFormValues } from './mod
 import { ADMIN_QUERY_KEYS, adminApi, storageApi } from '@/apis';
 import type { AdminFoodDetailImageModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { PresignedUrlUploadEnum } from '@/app/enums';
+import { PresignedUrlUploadType } from '@/app/types';
 import { Button } from '@/uis/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
 
@@ -110,7 +110,7 @@ function AdminFoodDetail() {
         mutationFn: async (files: File[]): Promise<string[]> => {
             const keys: string[] = [];
             for (const file of files) {
-                const presigned = await storageApi.getPresignedUrl(file.name, file.type, PresignedUrlUploadEnum.Food);
+                const presigned = await storageApi.getPresignedUrl(file.name, file.type, PresignedUrlUploadType.Food);
                 await storageApi.uploadToPresignedUrl(presigned.uploadUrl, file);
                 keys.push(presigned.fileKey);
             }

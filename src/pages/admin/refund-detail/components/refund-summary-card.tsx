@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatVnd } from '@/app/utils';
-import { RefundStatusBadge, RefundStatusEnum } from '@/features/order';
+import { RefundStatusBadge, RefundStatusType } from '@/features/order';
 import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
 import { Separator } from '@/uis/separator';
 
@@ -39,7 +39,7 @@ function RefundSummaryCard({ id, orderSlugId, amount, status, createdDate }: Ref
             <CardContent className='space-y-3'>
                 <div className='flex items-center justify-between'>
                     <span className='text-sm text-muted-foreground'>{t('admin.refundDetail.status')}</span>
-                    <RefundStatusBadge status={status as RefundStatusEnum} />
+                    <RefundStatusBadge status={status as RefundStatusType} />
                 </div>
                 <Separator />
                 <SummaryRow label={t('admin.refundDetail.refundId')}>

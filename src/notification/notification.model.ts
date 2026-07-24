@@ -1,4 +1,4 @@
-import { NotificationType } from './notification.enum';
+import { NotificationType } from './notification.type';
 
 export interface PaymentNotificationPayload {
     type: typeof NotificationType.Success | typeof NotificationType.Failure;

@@ -1,4 +1,4 @@
-export enum DeliveryStatusEnum {
+export enum DeliveryStatusType {
     Placed = 'orderPlaced',
     Preparing = 'preparing',
     OnTheWay = 'onTheWay',

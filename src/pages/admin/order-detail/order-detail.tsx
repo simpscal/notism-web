@@ -11,9 +11,9 @@ import { formatVnd } from '@/app/utils';
 import {
     OrderDeliveryStatusTimeline,
     OrderHeader,
-    PaymentMethodEnum,
+    PaymentMethodType,
     BankingPaymentConfirmedPanel,
-    PaymentStatusEnum,
+    PaymentStatusType,
 } from '@/features/order';
 import { PaymentCard } from '@/pages/admin/order-detail/components';
 import { Button } from '@/uis/button';
@@ -102,8 +102,8 @@ function AdminOrderDetail() {
         );
     }
 
-    const isPaid = order.paymentStatus === PaymentStatusEnum.Paid;
-    const bankingPaymentConfirmed = order.paymentMethod === PaymentMethodEnum.Banking && isPaid;
+    const isPaid = order.paymentStatus === PaymentStatusType.Paid;
+    const bankingPaymentConfirmed = order.paymentMethod === PaymentMethodType.Banking && isPaid;
 
     return (
         <div className='container mx-auto px-4 py-8'>

@@ -2,7 +2,7 @@ import { RotateCcw } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { RefundStatusEnum } from '@/features/order';
+import { RefundStatusType } from '@/features/order';
 import { Button } from '@/uis/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
 import Spinner from '@/uis/spinner';
@@ -17,7 +17,7 @@ interface RefundActionPanelProps {
 function RefundActionPanel({ status, isBusy, onApprove, onRetry }: RefundActionPanelProps) {
     const { t } = useTranslation();
 
-    if (status === RefundStatusEnum.Pending) {
+    if (status === RefundStatusType.Pending) {
         return (
             <Card>
                 <CardHeader>
@@ -40,7 +40,7 @@ function RefundActionPanel({ status, isBusy, onApprove, onRetry }: RefundActionP
         );
     }
 
-    if (status === RefundStatusEnum.Processing) {
+    if (status === RefundStatusType.Processing) {
         return (
             <Card>
                 <CardContent className='flex items-center gap-3 py-6' role='status' aria-live='polite'>
@@ -54,7 +54,7 @@ function RefundActionPanel({ status, isBusy, onApprove, onRetry }: RefundActionP
         );
     }
 
-    if (status === RefundStatusEnum.Failed) {
+    if (status === RefundStatusType.Failed) {
         return (
             <Card>
                 <CardHeader>

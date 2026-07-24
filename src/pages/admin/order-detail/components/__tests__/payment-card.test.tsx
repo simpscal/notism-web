@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import PaymentCard from '../payment-card';
 
-import { PaymentStatusEnum } from '@/features/order';
+import { PaymentStatusType } from '@/features/order';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 interface RenderOverrides {
@@ -16,7 +16,7 @@ interface RenderOverrides {
 function renderCard(overrides: RenderOverrides = {}) {
     const onConfirm = vi.fn();
     const props = {
-        paymentStatus: PaymentStatusEnum.Unpaid as string,
+        paymentStatus: PaymentStatusType.Unpaid as string,
         paymentMethod: 'card',
         isPending: false,
         onConfirm,
@@ -44,7 +44,7 @@ async function pickStatus(user: ReturnType<typeof userEvent.setup>, optionLabel:
 
 describe('PaymentCard', () => {
     it('renders the current payment-status badge and the method in the default state', () => {
-        renderCard({ paymentStatus: PaymentStatusEnum.Paid, paymentMethod: 'card' });
+        renderCard({ paymentStatus: PaymentStatusType.Paid, paymentMethod: 'card' });
 
         expect(currentBadgeText()).toBe('Paid');
         expect(screen.getByText('card')).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe('PaymentCard', () => {
 
     it('does NOT open the dialog or call onConfirm when re-selecting the current status', async () => {
         const user = userEvent.setup();
-        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusType.Unpaid });
 
         await pickStatus(user, 'Pending Payment');
 
@@ -63,7 +63,7 @@ describe('PaymentCard', () => {
 
     it('opens the confirmation dialog when a different status is selected', async () => {
         const user = userEvent.setup();
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+        renderCard({ paymentStatus: PaymentStatusType.Unpaid });
 
         await pickStatus(user, 'Paid');
 
@@ -73,7 +73,7 @@ describe('PaymentCard', () => {
 
     it('confirms the change: calls onConfirm with the picked status', async () => {
         const user = userEvent.setup();
-        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusType.Unpaid });
 
         await pickStatus(user, 'Paid');
         const dialog = await screen.findByRole('dialog');
@@ -85,7 +85,7 @@ describe('PaymentCard', () => {
 
     it('does not call onConfirm and keeps the current status when the dialog is cancelled', async () => {
         const user = userEvent.setup();
-        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusEnum.Unpaid });
+        const { onConfirm } = renderCard({ paymentStatus: PaymentStatusType.Unpaid });
 
         await pickStatus(user, 'Paid');
         const dialog = await screen.findByRole('dialog');
@@ -97,7 +97,7 @@ describe('PaymentCard', () => {
     });
 
     it('shows the saving label and disables the Select while pending', () => {
-        renderCard({ paymentStatus: PaymentStatusEnum.Unpaid, isPending: true });
+        renderCard({ paymentStatus: PaymentStatusType.Unpaid, isPending: true });
 
         expect(getByI18nText('admin.orders.paymentStatus.saving')).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /update payment status/i })).toBeDisabled();
@@ -105,7 +105,7 @@ describe('PaymentCard', () => {
 
     it('renders the Unpaid option as "Pending Payment"', async () => {
         const user = userEvent.setup();
-        renderCard({ paymentStatus: PaymentStatusEnum.Paid });
+        renderCard({ paymentStatus: PaymentStatusType.Paid });
 
         const trigger = screen.getByRole('combobox', { name: /update payment status/i });
         await user.click(trigger);
@@ -117,7 +117,7 @@ describe('PaymentCard', () => {
 
     it('renders Refunded as a selectable option', async () => {
         const user = userEvent.setup();
-        renderCard({ paymentStatus: PaymentStatusEnum.Paid });
+        renderCard({ paymentStatus: PaymentStatusType.Paid });
 
         const trigger = screen.getByRole('combobox', { name: /update payment status/i });
         await user.click(trigger);

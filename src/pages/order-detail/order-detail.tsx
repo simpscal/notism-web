@@ -14,10 +14,10 @@ import {
     OrderCheckoutTrustBar,
     OrderDeliveryStatusTimeline,
     OrderHeader,
-    PaymentMethodEnum,
+    PaymentMethodType,
     shouldShowRefundRequest,
     BankingPaymentConfirmedPanel,
-    PaymentStatusEnum,
+    PaymentStatusType,
 } from '@/features/order';
 import { Button } from '@/uis/button';
 import Spinner from '@/uis/spinner';
@@ -111,7 +111,7 @@ function OrderDetail() {
     }
 
     const bankingPaymentConfirmed =
-        order.paymentMethod === PaymentMethodEnum.Banking && order.paymentStatus === PaymentStatusEnum.Paid;
+        order.paymentMethod === PaymentMethodType.Banking && order.paymentStatus === PaymentStatusType.Paid;
 
     return (
         <div className='bg-background'>

@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { FoodsControlBar, FoodsGrid, FoodsHeroSection } from './components';
-import { FoodSortOption } from './enums';
+import { FoodSortOption } from './types';
 
 import { ListItemModel } from '@/app/models';
 import { useAppSelector } from '@/core/hooks';

@@ -1,4 +1,4 @@
-export enum PaymentStatusEnum {
+export enum PaymentStatusType {
     Unpaid = 'unpaid',
     Paid = 'paid',
     Failed = 'failed',

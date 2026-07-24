@@ -10,7 +10,7 @@ import { z } from 'zod';
 
 import { authApi, oauthApi, OAuthProviderType } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { UserRoleEnum } from '@/app/enums';
+import { UserRoleType } from '@/app/types';
 import { createPasswordSchema } from '@/app/utils/password-validation.utils';
 import { useAppDispatch } from '@/core/hooks';
 import { syncCartAfterAuth } from '@/features/cart';
@@ -51,7 +51,7 @@ function Login() {
             const returnUrl = searchParams.get('returnUrl');
             if (returnUrl) {
                 navigate(decodeURIComponent(returnUrl), { replace: true });
-            } else if (data.user.role === UserRoleEnum.Admin) {
+            } else if (data.user.role === UserRoleType.Admin) {
                 navigate(`/${ROUTES.ADMIN.DASHBOARD}`);
             } else {
                 navigate(`/${ROUTES.SETTINGS.PROFILE}`);

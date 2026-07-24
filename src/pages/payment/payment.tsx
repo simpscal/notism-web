@@ -18,7 +18,7 @@ import {
     selectSelectedCartItems,
     selectSelectedCartTotalPrice,
 } from '@/features/cart/store';
-import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodEnum } from '@/features/order';
+import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodType } from '@/features/order';
 import { NotificationType, type SharedNotification, useNotifications } from '@/notification';
 import { updateUser } from '@/store/user/user.slice';
 import { Button } from '@/uis/button';
@@ -37,7 +37,7 @@ function Payment() {
     const user = useAppSelector(state => state.user.user);
     const userLocation = user?.location;
 
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CashOnDelivery);
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(PaymentMethodType.CashOnDelivery);
     const [bankingCheckout, setBankingCheckout] = useState(false);
     const [confirmedSlugId, setConfirmedSlugId] = useState<string | null>(null);
     const [checkoutId, setCheckoutId] = useState<string | null>(null);
@@ -94,8 +94,8 @@ function Payment() {
 
     const handlePaymentMethodChange = useCallback(
         (value: string) => {
-            setPaymentMethod(value as PaymentMethodEnum);
-            if (value === PaymentMethodEnum.Banking && !bankingCheckout) {
+            setPaymentMethod(value as PaymentMethodType);
+            if (value === PaymentMethodType.Banking && !bankingCheckout) {
                 createBankingCheckout({
                     cartItemIds: selectedItems.map(i => i.id),
                     totalAmount: totalPrice,
@@ -218,10 +218,10 @@ function Payment() {
                             totalPrice={totalPrice}
                             disabled={isCreatingOrder}
                             onPlaceOrder={handleCodPlaceOrder}
-                            showPlaceOrderButton={paymentMethod === PaymentMethodEnum.CashOnDelivery}
+                            showPlaceOrderButton={paymentMethod === PaymentMethodType.CashOnDelivery}
                         />
 
-                        {paymentMethod === PaymentMethodEnum.Banking &&
+                        {paymentMethod === PaymentMethodType.Banking &&
                             (isCheckoutError ? (
                                 <Card>
                                     <CardContent>

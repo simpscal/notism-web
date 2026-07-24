@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { ADMIN_QUERY_KEYS, adminApi } from '@/apis';
 import { PAGE_SIZE, ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { RefundStatusBadge, RefundStatusEnum } from '@/features/order';
+import { RefundStatusBadge, RefundStatusType } from '@/features/order';
 import { Button } from '@/uis/button';
 import ErrorState from '@/uis/error-state';
 import { Skeleton } from '@/uis/skeleton';
@@ -140,7 +140,7 @@ function AdminRefundsTable({ onRefundClick, status }: AdminRefundsTableProps) {
                                     </TableCell>
                                     <TableCell className='font-semibold'>{formatVnd(refund.amount)}</TableCell>
                                     <TableCell>
-                                        <RefundStatusBadge status={refund.status as RefundStatusEnum} />
+                                        <RefundStatusBadge status={refund.status as RefundStatusType} />
                                     </TableCell>
                                     <TableCell>
                                         {refund.transferReference ? (

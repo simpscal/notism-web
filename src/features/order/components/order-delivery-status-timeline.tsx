@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DELIVERY_STATUS } from '../constants';
-import { DeliveryStatusEnum } from '../enums';
+import { DeliveryStatusType } from '../types';
 
 import type { OrderDeliveryStatusTimingModel } from '@/apis';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/uis/card';
@@ -19,7 +19,7 @@ function OrderDeliveryStatusTimeline({
 }: OrderDeliveryStatusTimelineProps) {
     const { t } = useTranslation();
     const currentStepIndex = useMemo(() => {
-        const enumValue = deliveryStatus as DeliveryStatusEnum;
+        const enumValue = deliveryStatus as DeliveryStatusType;
         return DELIVERY_STATUS.findIndex(step => step.key === enumValue);
     }, [deliveryStatus]);
 
@@ -30,10 +30,10 @@ function OrderDeliveryStatusTimeline({
                 const isCurrent = index === currentStepIndex;
 
                 let completedAt: string | null = null;
-                if (step.key === DeliveryStatusEnum.Placed) completedAt = timing.orderPlacedCompletedAt;
-                if (step.key === DeliveryStatusEnum.Preparing) completedAt = timing.preparingCompletedAt;
-                if (step.key === DeliveryStatusEnum.OnTheWay) completedAt = timing.onTheWayCompletedAt;
-                if (step.key === DeliveryStatusEnum.Delivered) completedAt = timing.deliveredCompletedAt;
+                if (step.key === DeliveryStatusType.Placed) completedAt = timing.orderPlacedCompletedAt;
+                if (step.key === DeliveryStatusType.Preparing) completedAt = timing.preparingCompletedAt;
+                if (step.key === DeliveryStatusType.OnTheWay) completedAt = timing.onTheWayCompletedAt;
+                if (step.key === DeliveryStatusType.Delivered) completedAt = timing.deliveredCompletedAt;
 
                 return {
                     title: t(step.label),

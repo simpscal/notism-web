@@ -7,7 +7,7 @@ import { Login } from '..';
 
 import { AUTH_ENDPOINTS } from '@/apis/auth/auth.constant';
 import { ROUTES } from '@/app/constants';
-import { UserRoleEnum } from '@/app/enums';
+import { UserRoleType } from '@/app/types';
 import { buildUrl } from '@/mocks/utils';
 import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
@@ -36,7 +36,7 @@ vi.mock('@/features/cart', async () => {
 
 const LOGIN_URL = buildUrl(AUTH_ENDPOINTS.LOGIN);
 
-const buildAuthResponse = (role: UserRoleEnum) => ({
+const buildAuthResponse = (role: UserRoleType) => ({
     token: 'token-123',
     user: {
         id: '1',
@@ -68,7 +68,7 @@ describe('Login redirect after sign-in', () => {
     });
 
     it('redirects an admin user to the admin dashboard', async () => {
-        server.use(http.post(LOGIN_URL, () => HttpResponse.json(buildAuthResponse(UserRoleEnum.Admin))));
+        server.use(http.post(LOGIN_URL, () => HttpResponse.json(buildAuthResponse(UserRoleType.Admin))));
 
         renderWithProviders(<Login />);
         await submitLogin();
@@ -79,7 +79,7 @@ describe('Login redirect after sign-in', () => {
     });
 
     it('redirects a non-admin user to settings profile', async () => {
-        server.use(http.post(LOGIN_URL, () => HttpResponse.json(buildAuthResponse(UserRoleEnum.User))));
+        server.use(http.post(LOGIN_URL, () => HttpResponse.json(buildAuthResponse(UserRoleType.User))));
 
         renderWithProviders(<Login />);
         await submitLogin();
@@ -91,7 +91,7 @@ describe('Login redirect after sign-in', () => {
 
     it('honors an existing returnUrl over the role-based destination', async () => {
         searchParamsValue = 'returnUrl=%2Fcart';
-        server.use(http.post(LOGIN_URL, () => HttpResponse.json(buildAuthResponse(UserRoleEnum.Admin))));
+        server.use(http.post(LOGIN_URL, () => HttpResponse.json(buildAuthResponse(UserRoleType.Admin))));
 
         renderWithProviders(<Login />);
         await submitLogin();

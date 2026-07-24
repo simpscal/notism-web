@@ -15,7 +15,7 @@ import {
 import { ADMIN_QUERY_KEYS, adminApi, type RefundDetailModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { RefundStatusEnum } from '@/features/order';
+import { RefundStatusType } from '@/features/order';
 import { NotificationType, type SharedNotification, useNotifications } from '@/notification';
 import { Button } from '@/uis/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
@@ -179,7 +179,7 @@ function AdminRefundDetail() {
 
             <div className='grid gap-6 lg:grid-cols-[1.4fr_1fr]'>
                 <div className='space-y-6'>
-                    {refund.status === RefundStatusEnum.Processing && (
+                    {refund.status === RefundStatusType.Processing && (
                         <RefundVietQrCard
                             refundId={refund.id}
                             amount={refund.amount}
@@ -195,10 +195,10 @@ function AdminRefundDetail() {
                         status={refund.status}
                         createdDate={createdDate}
                     />
-                    {refund.status === RefundStatusEnum.Paid && refund.transferReference && (
+                    {refund.status === RefundStatusType.Paid && refund.transferReference && (
                         <TransferRecordCard paidDate={paidDate} transferReference={refund.transferReference} />
                     )}
-                    {refund.status === RefundStatusEnum.Failed && refund.failureReason && (
+                    {refund.status === RefundStatusType.Failed && refund.failureReason && (
                         <RefundFailureCard reason={refund.failureReason} />
                     )}
                 </div>
@@ -207,7 +207,7 @@ function AdminRefundDetail() {
                     <RefundActionPanel
                         status={refund.status}
                         isBusy={
-                            refund.status === RefundStatusEnum.Failed
+                            refund.status === RefundStatusType.Failed
                                 ? retryMutation.isPending
                                 : approveMutation.isPending
                         }

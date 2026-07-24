@@ -1,4 +1,4 @@
-import { SortOrderEnum } from '@/app/enums';
+import { SortOrderType } from '@/app/types';
 
 export interface UpdateOrderDeliveryStatusRequestModel {
     deliveryStatus: string;
@@ -16,7 +16,7 @@ export interface GetAdminUsersRequestModel {
     skip?: number;
     take?: number;
     sortBy?: string;
-    sortOrder?: SortOrderEnum;
+    sortOrder?: SortOrderType;
     keyword?: string;
 }
 
@@ -24,7 +24,7 @@ export interface GetAdminOrdersRequestModel {
     skip?: number;
     take?: number;
     sortBy?: string;
-    sortOrder?: SortOrderEnum;
+    sortOrder?: SortOrderType;
     keyword?: string;
     paymentStatus?: string;
 }
@@ -76,7 +76,7 @@ export interface GetAdminFoodsRequestModel {
     category?: string;
     isAvailable?: boolean;
     sortBy?: string;
-    sortOrder?: SortOrderEnum;
+    sortOrder?: SortOrderType;
 }
 
 export interface AdminFoodImageRequestModel {

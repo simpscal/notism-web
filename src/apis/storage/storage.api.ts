@@ -6,10 +6,10 @@ import { STORAGE_ENDPOINTS } from './storage.constant';
 import { toPresignedUrl } from './storage.mapper';
 import { PresignedUrlResponseModel } from './storage.response';
 
-import { PresignedUrlUploadEnum } from '@/app/enums';
+import { PresignedUrlUploadType } from '@/app/types';
 
 export const storageApi = {
-    getPresignedUrl: async (filename: string, contentType: string, presignedUrlType: PresignedUrlUploadEnum) => {
+    getPresignedUrl: async (filename: string, contentType: string, presignedUrlType: PresignedUrlUploadType) => {
         const response = await apiClient.post<PresignedUrlResponseModel>(
             STORAGE_ENDPOINTS.PRESIGNED_URL_UPLOAD(presignedUrlType),
             {

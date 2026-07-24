@@ -9,8 +9,8 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { Settings } from '..';
 
 import { UserProfileModel } from '@/apis';
-import { UserRoleEnum } from '@/app/enums';
 import i18n from '@/app/i18n/i18n';
+import { UserRoleType } from '@/app/types';
 import { store } from '@/store';
 import { resetStore } from '@/store/root.actions';
 import { setUser } from '@/store/user';
@@ -32,7 +32,7 @@ function mockMatchMedia(isMobile: boolean) {
     });
 }
 
-function buildUser(role: UserRoleEnum): UserProfileModel {
+function buildUser(role: UserRoleType): UserProfileModel {
     return {
         id: '1',
         firstName: 'Mai',
@@ -44,11 +44,11 @@ function buildUser(role: UserRoleEnum): UserProfileModel {
 }
 
 function renderSettings({
-    role = UserRoleEnum.User,
+    role = UserRoleType.User,
     initialPath = '/settings/profile',
     isMobile = false,
 }: {
-    role?: UserRoleEnum;
+    role?: UserRoleType;
     initialPath?: string;
     isMobile?: boolean;
 } = {}) {
@@ -129,19 +129,19 @@ describe('Settings shell', () => {
     });
 
     it('shows the Payment nav item for non-admin (customer) users', () => {
-        renderSettings({ role: UserRoleEnum.User, initialPath: '/settings/profile' });
+        renderSettings({ role: UserRoleType.User, initialPath: '/settings/profile' });
 
         expect(screen.getByRole('link', { name: /payment/i })).toBeInTheDocument();
     });
 
     it('shows the Payment nav item for admin users', () => {
-        renderSettings({ role: UserRoleEnum.Admin, initialPath: '/settings/profile' });
+        renderSettings({ role: UserRoleType.Admin, initialPath: '/settings/profile' });
 
         expect(screen.getByRole('link', { name: /payment/i })).toBeInTheDocument();
     });
 
     it('navigates to a section when its nav link is clicked', async () => {
-        renderSettings({ role: UserRoleEnum.Admin, initialPath: '/settings/profile' });
+        renderSettings({ role: UserRoleType.Admin, initialPath: '/settings/profile' });
 
         await userEvent.click(screen.getByRole('link', { name: /appearance/i }));
 

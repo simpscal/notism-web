@@ -2,13 +2,13 @@ import { AlertTriangle, CheckCircle2, Clock, type LucideIcon } from 'lucide-reac
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { RefundStatusEnum } from '../enums';
+import { RefundStatusType } from '../types';
 
 import { Badge, type BadgeProps } from '@/uis/badge';
 import Spinner from '@/uis/spinner';
 
 interface RefundStatusBadgeProps {
-    status: RefundStatusEnum;
+    status: RefundStatusType;
 }
 
 interface RefundStatusMeta {
@@ -17,16 +17,16 @@ interface RefundStatusMeta {
     variant: BadgeProps['variant'];
 }
 
-const STATUS_META: Record<Exclude<RefundStatusEnum, RefundStatusEnum.Processing>, RefundStatusMeta> = {
-    [RefundStatusEnum.Pending]: { label: 'order.refund.statuses.pending', icon: Clock, variant: 'warning' },
-    [RefundStatusEnum.Paid]: { label: 'order.refund.statuses.paid', icon: CheckCircle2, variant: 'success' },
-    [RefundStatusEnum.Failed]: { label: 'order.refund.statuses.failed', icon: AlertTriangle, variant: 'destructive' },
+const STATUS_META: Record<Exclude<RefundStatusType, RefundStatusType.Processing>, RefundStatusMeta> = {
+    [RefundStatusType.Pending]: { label: 'order.refund.statuses.pending', icon: Clock, variant: 'warning' },
+    [RefundStatusType.Paid]: { label: 'order.refund.statuses.paid', icon: CheckCircle2, variant: 'success' },
+    [RefundStatusType.Failed]: { label: 'order.refund.statuses.failed', icon: AlertTriangle, variant: 'destructive' },
 };
 
 function RefundStatusBadge({ status }: RefundStatusBadgeProps) {
     const { t } = useTranslation();
 
-    if (status === RefundStatusEnum.Processing) {
+    if (status === RefundStatusType.Processing) {
         return (
             <Badge variant='secondary' className='gap-1'>
                 <Spinner size='sm' />

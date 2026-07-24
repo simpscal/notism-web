@@ -57,8 +57,7 @@ This document defines the naming conventions used throughout the React applicati
 
 **Enums**:
 
-- Pattern: `{domain}.enums.ts`
-- Examples: `user.enums.ts`, `notification.enums.ts`, `status.enums.ts`
+- Follows the [Types](#types) pattern below (`{domain}.type.ts`) — no separate Enum file pattern.
 
 **Models**:
 
@@ -170,23 +169,15 @@ const MAX_RETRY_ATTEMPTS = 3;
 
 ## Enums
 
-**Convention**:
+TypeScript `enum` declarations use the same naming and file convention as [Types](#types) below — there is no separate `Enum` suffix or file pattern. `enum` is still a valid choice for a fixed set of values; only its name and file follow the Types convention.
 
-- **PascalCase**
-- Suffixed with `Enum`
 - Enum values use **PascalCase** for keys and appropriate casing for values
 
 **Example**:
 
 ```typescript
-// notification.enums.ts
-enum StatusEnum {
-    Pending = 'pending',
-    Approved = 'approved',
-    Rejected = 'rejected',
-}
-
-enum UserRoleEnum {
+// user-role.type.ts
+enum UserRoleType {
     Admin = 'admin',
     User = 'user',
     Guest = 'guest',
@@ -200,12 +191,13 @@ enum UserRoleEnum {
 - **PascalCase**
 - Can be suffixed with `Type` for clarity, but not required for simple types
 - Use descriptive names that indicate the type's purpose
+- File pattern: `{domain}.type.ts`
 
 **Example**:
 
 ```typescript
-// user.types.ts
-type UserRoleType = 'admin' | 'user' | 'guest';
+// food.type.ts
+type FoodSortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc';
 type Theme = 'dark' | 'light' | 'system';
 type RequestInterceptor = (config: RequestConfig) => Promise<RequestConfig> | RequestConfig;
 type ResponseInterceptor = (response: Response) => Promise<Response> | Response;
@@ -815,23 +807,23 @@ src/
 
 ### Quick Reference
 
-| Type                | Convention                   | Example                                 |
-| ------------------- | ---------------------------- | --------------------------------------- |
-| **Files**           | kebab-case                   | `user-profile.tsx`, `auth.service.ts`   |
-| **Components**      | PascalCase                   | `UserCard`, `HeroSection`               |
-| **Component Props** | PascalCase + `Props`         | `UserCardProps`, `HeroSectionProps`     |
-| **Types**           | PascalCase (+ `Type` suffix) | `UserRoleType`, `Theme`                 |
-| **Enums**           | PascalCase + `Enum`          | `StatusEnum`                            |
-| **Models**          | PascalCase + `Model` suffix  | `PeriodModel`, `UserProfileModel`       |
-| **Hooks**           | camelCase, `use` prefix      | `useAuth`, `useInput`                   |
-| **Functions**       | camelCase                    | `calculateGaps`, `formatDate`           |
-| **Event Handlers**  | camelCase, `handle` prefix   | `handleSubmit`, `handleClick`           |
-| **State**           | camelCase                    | `user`, `isLoading`, `selectedPeriodId` |
-| **Setters**         | `set` + PascalCase           | `setUser`, `setIsLoading`               |
-| **APIs**            | camelCase + `Api`            | `timelineApi`, `userApi`                |
-| **Services**        | camelCase + `Service`        | `authService`                           |
-| **Utils**           | camelCase + `Utils`          | `tokenManagerUtils`                     |
-| **Constants**       | UPPERCASE_SNAKE_CASE         | `PAGE_SIZE`, `TOKEN_KEY`                |
-| **Refs**            | camelCase + `Ref`            | `modalRef`, `inputRef`                  |
-| **Contexts**        | PascalCase + `Context`       | `AuthContext`, `ThemeProviderContext`   |
-| **Folders**         | kebab-case                   | `user-profile/`, `auth/`                |
+| Type                | Convention                       | Example                                 |
+| ------------------- | -------------------------------- | --------------------------------------- |
+| **Files**           | kebab-case                       | `user-profile.tsx`, `auth.service.ts`   |
+| **Components**      | PascalCase                       | `UserCard`, `HeroSection`               |
+| **Component Props** | PascalCase + `Props`             | `UserCardProps`, `HeroSectionProps`     |
+| **Types**           | PascalCase (+ `Type` suffix)     | `UserRoleType`, `Theme`                 |
+| **Enums**           | Same as Types (no `Enum` suffix) | `UserRoleType` (an `enum`)              |
+| **Models**          | PascalCase + `Model` suffix      | `PeriodModel`, `UserProfileModel`       |
+| **Hooks**           | camelCase, `use` prefix          | `useAuth`, `useInput`                   |
+| **Functions**       | camelCase                        | `calculateGaps`, `formatDate`           |
+| **Event Handlers**  | camelCase, `handle` prefix       | `handleSubmit`, `handleClick`           |
+| **State**           | camelCase                        | `user`, `isLoading`, `selectedPeriodId` |
+| **Setters**         | `set` + PascalCase               | `setUser`, `setIsLoading`               |
+| **APIs**            | camelCase + `Api`                | `timelineApi`, `userApi`                |
+| **Services**        | camelCase + `Service`            | `authService`                           |
+| **Utils**           | camelCase + `Utils`              | `tokenManagerUtils`                     |
+| **Constants**       | UPPERCASE_SNAKE_CASE             | `PAGE_SIZE`, `TOKEN_KEY`                |
+| **Refs**            | camelCase + `Ref`                | `modalRef`, `inputRef`                  |
+| **Contexts**        | PascalCase + `Context`           | `AuthContext`, `ThemeProviderContext`   |
+| **Folders**         | kebab-case                       | `user-profile/`, `auth/`                |

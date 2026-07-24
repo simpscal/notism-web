@@ -3,7 +3,7 @@ import { memo, useCallback } from 'react';
 
 import type { AdminOrderModel } from '@/apis';
 import { formatVnd } from '@/app/utils';
-import { PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
+import { PaymentStatusBadge, PaymentStatusType } from '@/features/order';
 import { Badge } from '@/uis/badge';
 import { Card, CardContent } from '@/uis/card';
 
@@ -27,7 +27,7 @@ function AdminOrderCard({ order, onOrderClick }: AdminOrderCardProps) {
                             {formatVnd(order.totalAmount)}
                         </Badge>
                     </div>
-                    <PaymentStatusBadge paymentStatus={order.paymentStatus as PaymentStatusEnum} />
+                    <PaymentStatusBadge paymentStatus={order.paymentStatus as PaymentStatusType} />
                     <div className='text-xs text-muted-foreground'>
                         <div>{order.userName}</div>
                         <div>{order.userEmail}</div>

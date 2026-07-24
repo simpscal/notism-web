@@ -9,7 +9,7 @@ import { z } from 'zod';
 import UserProfileAvatar from './user-profile-avatar';
 
 import { storageApi, userApi } from '@/apis';
-import { PresignedUrlUploadEnum } from '@/app/enums';
+import { PresignedUrlUploadType } from '@/app/types';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { updateUser } from '@/store/user/user.slice';
 import { Button } from '@/uis/button';
@@ -68,7 +68,7 @@ function SettingsProfileSection() {
     }, [form]);
 
     const uploadAvatarToStorage = async (file: File): Promise<string | null> => {
-        const presignedData = await storageApi.getPresignedUrl(file.name, file.type, PresignedUrlUploadEnum.Avatar);
+        const presignedData = await storageApi.getPresignedUrl(file.name, file.type, PresignedUrlUploadType.Avatar);
 
         await storageApi.uploadToPresignedUrl(presignedData.uploadUrl, file);
 

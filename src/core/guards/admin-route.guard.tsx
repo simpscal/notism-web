@@ -2,14 +2,14 @@ import { memo, useMemo } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { ROUTES } from '@/app/constants';
-import { UserRoleEnum } from '@/app/enums';
+import { UserRoleType } from '@/app/types';
 import { useAppSelector } from '@/core/hooks';
 
 function AdminRouteGuard() {
     const user = useAppSelector(state => state.user.user);
 
     const isAdmin = useMemo(() => {
-        return user?.role === UserRoleEnum.Admin;
+        return user?.role === UserRoleType.Admin;
     }, [user?.role]);
 
     if (!isAdmin) {

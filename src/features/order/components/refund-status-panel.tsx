@@ -2,7 +2,7 @@ import { Copy } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { RefundStatusEnum } from '../enums';
+import { RefundStatusType } from '../types';
 import { toCustomerRefundStatus } from '../utils';
 
 import RefundStatusBadge from './refund-status-badge';
@@ -21,7 +21,7 @@ interface RefundStatusPanelProps {
 function RefundStatusPanel({ status, amount, sentDate, transferReference }: RefundStatusPanelProps) {
     const { t } = useTranslation();
     const customerStatus = toCustomerRefundStatus(status);
-    const isPaid = customerStatus === RefundStatusEnum.Paid;
+    const isPaid = customerStatus === RefundStatusType.Paid;
 
     const handleCopyReference = useCallback(() => {
         if (!transferReference) return;

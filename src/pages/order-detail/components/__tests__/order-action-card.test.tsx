@@ -6,7 +6,7 @@ import OrderActionCard, { type OrderActionCardProps } from '../order-action-card
 
 import type { RefundSummaryModel } from '@/apis';
 import i18n from '@/app/i18n/i18n';
-import { DeliveryStatusEnum, PaymentMethodEnum } from '@/features/order';
+import { DeliveryStatusType, PaymentMethodType } from '@/features/order';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
@@ -36,9 +36,9 @@ const PAID_REFUND: RefundSummaryModel = {
 const baseProps: OrderActionCardProps = {
     slugId: 'ORD-0001',
     orderDate: '12 June 2026, 09:02',
-    deliveryStatus: DeliveryStatusEnum.Delivered,
+    deliveryStatus: DeliveryStatusType.Delivered,
     totalAmount: 485000,
-    paymentMethod: PaymentMethodEnum.Banking,
+    paymentMethod: PaymentMethodType.Banking,
     deliveredCompletedAt: withinWindow(),
     refund: null,
 };
@@ -54,7 +54,7 @@ describe('OrderActionCard — refund region', () => {
     });
 
     it('shows the action for a delivered cash-on-delivery order within 24h with no refund', () => {
-        renderCard({ paymentMethod: PaymentMethodEnum.CashOnDelivery, onConfirmRefund: vi.fn() });
+        renderCard({ paymentMethod: PaymentMethodType.CashOnDelivery, onConfirmRefund: vi.fn() });
 
         expect(screen.getByRole('button', { name: t('orderDetail.requestRefund') })).toBeInTheDocument();
     });
@@ -66,7 +66,7 @@ describe('OrderActionCard — refund region', () => {
     });
 
     it('hides the action for a not-yet-delivered order', () => {
-        renderCard({ deliveryStatus: DeliveryStatusEnum.Preparing, onConfirmRefund: vi.fn() });
+        renderCard({ deliveryStatus: DeliveryStatusType.Preparing, onConfirmRefund: vi.fn() });
 
         expect(screen.queryByRole('button', { name: t('orderDetail.requestRefund') })).not.toBeInTheDocument();
     });

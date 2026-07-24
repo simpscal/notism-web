@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 
-import { FoodSortOption } from '../enums';
+import { FoodSortOption } from '../types';
 
 import FoodCard from './food-card';
 import FoodCardSkeleton from './food-card-skeleton';

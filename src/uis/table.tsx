@@ -2,7 +2,6 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import * as React from 'react';
 
-import { SortOrderEnum } from '@/app/enums';
 import { cn } from '@/app/utils/tailwind.utils';
 import {
     Pagination,
@@ -13,6 +12,13 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/uis/pagination';
+
+const SortOrder = {
+    Asc: 'asc',
+    Desc: 'desc',
+} as const;
+
+type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
     return (
@@ -208,15 +214,15 @@ const TablePagination = memo(function TablePagination({ page, totalPages, onPage
 
 export function useTableSort<T extends string>(onPageReset?: () => void) {
     const [sortBy, setSortBy] = useState<T | undefined>(undefined);
-    const [sortOrder, setSortOrder] = useState<SortOrderEnum>(SortOrderEnum.Asc);
+    const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.Asc);
 
     const handleSort = useCallback(
         (field: T) => {
             if (sortBy === field) {
-                setSortOrder(sortOrder === SortOrderEnum.Asc ? SortOrderEnum.Desc : SortOrderEnum.Asc);
+                setSortOrder(sortOrder === SortOrder.Asc ? SortOrder.Desc : SortOrder.Asc);
             } else {
                 setSortBy(field);
-                setSortOrder(SortOrderEnum.Asc);
+                setSortOrder(SortOrder.Asc);
             }
             onPageReset?.();
         },
@@ -233,7 +239,7 @@ export function useTableSort<T extends string>(onPageReset?: () => void) {
 interface SortableTableHeadProps extends React.ComponentProps<'th'> {
     field: string;
     sortBy?: string;
-    sortOrder?: SortOrderEnum;
+    sortOrder?: SortOrder;
     onSort: (field: string) => void;
     children: React.ReactNode;
 }
@@ -251,7 +257,7 @@ const SortableTableHead = memo(function SortableTableHead({
         if (sortBy !== field) {
             return <ArrowUpDown className='ml-2 h-4 w-4 text-muted-foreground' />;
         }
-        return sortOrder === SortOrderEnum.Asc ? (
+        return sortOrder === SortOrder.Asc ? (
             <ArrowUp className='ml-2 h-4 w-4' />
         ) : (
             <ArrowDown className='ml-2 h-4 w-4' />
@@ -272,5 +278,6 @@ const SortableTableHead = memo(function SortableTableHead({
     );
 });
 
+export { SortOrder };
 export { SortableTableHead };
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption, TablePagination };

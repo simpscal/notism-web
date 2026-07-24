@@ -13,7 +13,7 @@ import { ROUTES } from '@/app/constants/routes.constant';
 import { formatVnd } from '@/app/utils';
 import {
     DELIVERY_STATUS,
-    DeliveryStatusEnum,
+    DeliveryStatusType,
     RefundStatusBadge,
     toCustomerRefundStatus,
     type DeliveryStatusConfig,
@@ -29,7 +29,7 @@ const getDeliveryStatusInfo = (status: string): DeliveryStatusConfig => {
     const step = DELIVERY_STATUS.find(s => s.key === status);
     return (
         step || {
-            key: status as DeliveryStatusEnum,
+            key: status as DeliveryStatusType,
             label: status,
             icon: Clock,
             colorClass: 'bg-secondary text-secondary-foreground border-secondary/50',

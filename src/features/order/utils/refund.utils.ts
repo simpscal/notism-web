@@ -1,6 +1,6 @@
-import { DeliveryStatusEnum } from '../enums/delivery-status.enum';
-import { PaymentMethodEnum } from '../enums/payment-method.enum';
-import { RefundStatusEnum } from '../enums/refund-status.enum';
+import { DeliveryStatusType } from '../types/delivery-status.type';
+import { PaymentMethodType } from '../types/payment-method.type';
+import { RefundStatusType } from '../types/refund-status.type';
 
 const REFUND_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -12,8 +12,8 @@ interface RefundRequestEligibility {
 }
 
 const REFUND_ELIGIBLE_PAYMENT_METHODS: readonly string[] = [
-    PaymentMethodEnum.Banking,
-    PaymentMethodEnum.CashOnDelivery,
+    PaymentMethodType.Banking,
+    PaymentMethodType.CashOnDelivery,
 ];
 
 /**
@@ -29,7 +29,7 @@ export function shouldShowRefundRequest({
 }: RefundRequestEligibility): boolean {
     if (hasRefund) return false;
     if (!REFUND_ELIGIBLE_PAYMENT_METHODS.includes(paymentMethod)) return false;
-    if (deliveryStatus !== DeliveryStatusEnum.Delivered) return false;
+    if (deliveryStatus !== DeliveryStatusType.Delivered) return false;
     if (!deliveredCompletedAt) return false;
 
     const deliveredAt = new Date(deliveredCompletedAt).getTime();
@@ -42,6 +42,6 @@ export function shouldShowRefundRequest({
  * Customer-visible refund status. The customer only ever sees Pending or Paid
  * (locked sprint-7 decision) — a Failed/Processing refund reads as Pending.
  */
-export function toCustomerRefundStatus(status: string): RefundStatusEnum.Pending | RefundStatusEnum.Paid {
-    return status === RefundStatusEnum.Paid ? RefundStatusEnum.Paid : RefundStatusEnum.Pending;
+export function toCustomerRefundStatus(status: string): RefundStatusType.Pending | RefundStatusType.Paid {
+    return status === RefundStatusType.Paid ? RefundStatusType.Paid : RefundStatusType.Pending;
 }

@@ -4,7 +4,7 @@ import { buildUrl } from '../utils';
 
 import type { AdminOrderResponseModel } from '@/apis';
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
-import { DeliveryStatusEnum, PaymentStatusEnum } from '@/features/order';
+import { DeliveryStatusType, PaymentStatusType } from '@/features/order';
 
 function generateMockOrders(): AdminOrderResponseModel[] {
     const orders: AdminOrderResponseModel[] = [];
@@ -131,10 +131,10 @@ function generateMockOrders(): AdminOrderResponseModel[] {
         },
     ];
     const statuses = [
-        DeliveryStatusEnum.Placed,
-        DeliveryStatusEnum.Preparing,
-        DeliveryStatusEnum.OnTheWay,
-        DeliveryStatusEnum.Delivered,
+        DeliveryStatusType.Placed,
+        DeliveryStatusType.Preparing,
+        DeliveryStatusType.OnTheWay,
+        DeliveryStatusType.Delivered,
     ];
     let orderId = 1;
     const now = Date.now();
@@ -150,13 +150,13 @@ function generateMockOrders(): AdminOrderResponseModel[] {
             const totalAmount = Math.round((totalPrice + Math.random() * 5) * 100) / 100;
             let createdAt: Date;
             let updatedAt: Date;
-            if (status === DeliveryStatusEnum.Placed) {
+            if (status === DeliveryStatusType.Placed) {
                 createdAt = new Date(now - (Math.random() * 4 + 0.5) * 60 * 60 * 1000);
                 updatedAt = createdAt;
-            } else if (status === DeliveryStatusEnum.Preparing) {
+            } else if (status === DeliveryStatusType.Preparing) {
                 createdAt = new Date(now - (Math.random() * 2 + 1) * 60 * 60 * 1000);
                 updatedAt = new Date(now - Math.random() * 60 * 60 * 1000);
-            } else if (status === DeliveryStatusEnum.OnTheWay) {
+            } else if (status === DeliveryStatusType.OnTheWay) {
                 createdAt = new Date(now - (Math.random() * 2 + 2) * 60 * 60 * 1000);
                 updatedAt = new Date(now - Math.random() * 60 * 60 * 1000);
             } else {
@@ -172,7 +172,7 @@ function generateMockOrders(): AdminOrderResponseModel[] {
                 totalAmount,
                 deliveryStatus: status,
                 paymentStatus:
-                    status === DeliveryStatusEnum.Delivered ? PaymentStatusEnum.Paid : PaymentStatusEnum.Unpaid,
+                    status === DeliveryStatusType.Delivered ? PaymentStatusType.Paid : PaymentStatusType.Unpaid,
                 createdAt: createdAt.toISOString(),
                 updatedAt: updatedAt.toISOString(),
                 totalItems: 1,
@@ -192,8 +192,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'john.doe@example.com',
         userName: 'John Doe',
         totalAmount: 45.99,
-        deliveryStatus: DeliveryStatusEnum.Placed,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Placed,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -206,8 +206,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'jane.smith@example.com',
         userName: 'Jane Smith',
         totalAmount: 32.5,
-        deliveryStatus: DeliveryStatusEnum.Preparing,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Preparing,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -220,8 +220,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'bob.johnson@example.com',
         userName: 'Bob Johnson',
         totalAmount: 28.75,
-        deliveryStatus: DeliveryStatusEnum.OnTheWay,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.OnTheWay,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -234,8 +234,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'alice.brown@example.com',
         userName: 'Alice Brown',
         totalAmount: 19.99,
-        deliveryStatus: DeliveryStatusEnum.Delivered,
-        paymentStatus: PaymentStatusEnum.Paid,
+        deliveryStatus: DeliveryStatusType.Delivered,
+        paymentStatus: PaymentStatusType.Paid,
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -248,8 +248,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'charlie.wilson@example.com',
         userName: 'Charlie Wilson',
         totalAmount: 67.45,
-        deliveryStatus: DeliveryStatusEnum.Placed,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Placed,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         totalItems: 3,
@@ -262,8 +262,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'diana.prince@example.com',
         userName: 'Diana Prince',
         totalAmount: 42.97,
-        deliveryStatus: DeliveryStatusEnum.Placed,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Placed,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -276,8 +276,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'edward.norton@example.com',
         userName: 'Edward Norton',
         totalAmount: 55.96,
-        deliveryStatus: DeliveryStatusEnum.Preparing,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Preparing,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -290,8 +290,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'fiona.apple@example.com',
         userName: 'Fiona Apple',
         totalAmount: 38.97,
-        deliveryStatus: DeliveryStatusEnum.Preparing,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Preparing,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -304,8 +304,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'george.martin@example.com',
         userName: 'George Martin',
         totalAmount: 24.98,
-        deliveryStatus: DeliveryStatusEnum.OnTheWay,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.OnTheWay,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -318,8 +318,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'helen.troy@example.com',
         userName: 'Helen Troy',
         totalAmount: 51.96,
-        deliveryStatus: DeliveryStatusEnum.OnTheWay,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.OnTheWay,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -332,8 +332,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'ivan.petrov@example.com',
         userName: 'Ivan Petrov',
         totalAmount: 33.97,
-        deliveryStatus: DeliveryStatusEnum.Delivered,
-        paymentStatus: PaymentStatusEnum.Paid,
+        deliveryStatus: DeliveryStatusType.Delivered,
+        paymentStatus: PaymentStatusType.Paid,
         createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 45 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -346,8 +346,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'julia.roberts@example.com',
         userName: 'Julia Roberts',
         totalAmount: 89.94,
-        deliveryStatus: DeliveryStatusEnum.Delivered,
-        paymentStatus: PaymentStatusEnum.Paid,
+        deliveryStatus: DeliveryStatusType.Delivered,
+        paymentStatus: PaymentStatusType.Paid,
         createdAt: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 32 * 60 * 60 * 1000).toISOString(),
         totalItems: 3,
@@ -360,8 +360,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'karen.white@example.com',
         userName: 'Karen White',
         totalAmount: 28.97,
-        deliveryStatus: DeliveryStatusEnum.Placed,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Placed,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -374,8 +374,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'liam.neeson@example.com',
         userName: 'Liam Neeson',
         totalAmount: 47.96,
-        deliveryStatus: DeliveryStatusEnum.Placed,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Placed,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
         totalItems: 3,
@@ -388,8 +388,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'maria.garcia@example.com',
         userName: 'Maria Garcia',
         totalAmount: 35.97,
-        deliveryStatus: DeliveryStatusEnum.Preparing,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Preparing,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -402,8 +402,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'nathan.drake@example.com',
         userName: 'Nathan Drake',
         totalAmount: 61.95,
-        deliveryStatus: DeliveryStatusEnum.Preparing,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.Preparing,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 50 * 60 * 1000).toISOString(),
         totalItems: 3,
@@ -416,8 +416,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'olivia.wilde@example.com',
         userName: 'Olivia Wilde',
         totalAmount: 41.97,
-        deliveryStatus: DeliveryStatusEnum.OnTheWay,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.OnTheWay,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -430,8 +430,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'peter.parker@example.com',
         userName: 'Peter Parker',
         totalAmount: 76.93,
-        deliveryStatus: DeliveryStatusEnum.OnTheWay,
-        paymentStatus: PaymentStatusEnum.Unpaid,
+        deliveryStatus: DeliveryStatusType.OnTheWay,
+        paymentStatus: PaymentStatusType.Unpaid,
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -444,8 +444,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'quinn.fabray@example.com',
         userName: 'Quinn Fabray',
         totalAmount: 27.98,
-        deliveryStatus: DeliveryStatusEnum.Delivered,
-        paymentStatus: PaymentStatusEnum.Paid,
+        deliveryStatus: DeliveryStatusType.Delivered,
+        paymentStatus: PaymentStatusType.Paid,
         createdAt: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 28 * 60 * 60 * 1000).toISOString(),
         totalItems: 1,
@@ -458,8 +458,8 @@ const mockOrdersTable: AdminOrderResponseModel[] = [
         userEmail: 'rachel.green@example.com',
         userName: 'Rachel Green',
         totalAmount: 44.97,
-        deliveryStatus: DeliveryStatusEnum.Delivered,
-        paymentStatus: PaymentStatusEnum.Paid,
+        deliveryStatus: DeliveryStatusType.Delivered,
+        paymentStatus: PaymentStatusType.Paid,
         createdAt: new Date(Date.now() - 42 * 60 * 60 * 1000).toISOString(),
         updatedAt: new Date(Date.now() - 40 * 60 * 60 * 1000).toISOString(),
         totalItems: 2,
@@ -502,7 +502,7 @@ export const adminOrdersHandlers = [
             userName: 'John Doe',
             totalAmount: 45.99,
             deliveryStatus: body.deliveryStatus,
-            paymentStatus: PaymentStatusEnum.Paid,
+            paymentStatus: PaymentStatusType.Paid,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             totalItems: 0,

@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import SettingsPayment from '../settings-payment';
 
 import { USER_ENDPOINTS } from '@/apis/user/user.constant';
-import { UserRoleEnum } from '@/app/enums';
+import { UserRoleType } from '@/app/types';
 import { buildUrl } from '@/mocks/utils';
 import { store } from '@/store';
 import { resetStore } from '@/store/root.actions';
@@ -33,7 +33,7 @@ beforeEach(() => {
             lastName: 'Nguyen',
             email: 'mai@example.com',
             avatarUrl: null,
-            role: UserRoleEnum.User,
+            role: UserRoleType.User,
         })
     );
 });

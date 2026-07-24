@@ -2,11 +2,11 @@ import { Banknote, CreditCard } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PaymentMethodEnum } from '@/features/order';
+import { PaymentMethodType } from '@/features/order';
 import { RadioGroup, RadioGroupItem } from '@/uis/radio-group';
 
 interface PaymentMethodProps {
-    value: PaymentMethodEnum;
+    value: PaymentMethodType;
     onValueChange: (value: string) => void;
 }
 
@@ -17,10 +17,10 @@ function PaymentMethodComponent({ value, onValueChange }: PaymentMethodProps) {
             <p className='text-sm font-semibold text-foreground'>{t('payment.paymentMethod')}</p>
             <RadioGroup value={value} onValueChange={onValueChange} className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
                 <label
-                    htmlFor={PaymentMethodEnum.CashOnDelivery}
+                    htmlFor={PaymentMethodType.CashOnDelivery}
                     className='flex cursor-pointer items-center gap-4 rounded-xl border px-4 py-4 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5'
                 >
-                    <RadioGroupItem value={PaymentMethodEnum.CashOnDelivery} id={PaymentMethodEnum.CashOnDelivery} />
+                    <RadioGroupItem value={PaymentMethodType.CashOnDelivery} id={PaymentMethodType.CashOnDelivery} />
                     <span className='flex flex-col gap-0.5'>
                         <span className='flex items-center gap-2 text-sm font-semibold'>
                             <Banknote className='h-4 w-4 text-primary' />
@@ -30,10 +30,10 @@ function PaymentMethodComponent({ value, onValueChange }: PaymentMethodProps) {
                     </span>
                 </label>
                 <label
-                    htmlFor={PaymentMethodEnum.Banking}
+                    htmlFor={PaymentMethodType.Banking}
                     className='flex cursor-pointer items-center gap-4 rounded-xl border px-4 py-4 transition-colors hover:bg-muted/40 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5'
                 >
-                    <RadioGroupItem value={PaymentMethodEnum.Banking} id={PaymentMethodEnum.Banking} />
+                    <RadioGroupItem value={PaymentMethodType.Banking} id={PaymentMethodType.Banking} />
                     <span className='flex flex-col gap-0.5'>
                         <span className='flex items-center gap-2 text-sm font-semibold'>
                             <CreditCard className='h-4 w-4 text-primary' />

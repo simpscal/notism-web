@@ -1,4 +1,4 @@
-export enum PaymentMethodEnum {
+export enum PaymentMethodType {
     CashOnDelivery = 'cashOnDelivery',
     Banking = 'banking',
 }

@@ -7,7 +7,7 @@ import AdminOrdersKanban from './components/admin-orders-kanban';
 import AdminOrdersTable from './components/admin-orders-table';
 
 import { ROUTES } from '@/app/constants';
-import { DeliveryStatusEnum, PaymentStatusEnum } from '@/features/order';
+import { DeliveryStatusType, PaymentStatusType } from '@/features/order';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/uis/select';
 import { ToggleGroup, ToggleGroupItem } from '@/uis/toggle-group';
 
@@ -16,10 +16,10 @@ type ViewMode = 'kanban' | 'grid';
 const PAYMENT_STATUS_ALL = 'all';
 
 /** Maps a status bucket key to the delivery statuses it covers in the kanban. */
-const STATUS_BUCKET_TO_DELIVERY_STATUSES: Record<string, DeliveryStatusEnum[]> = {
-    new: [DeliveryStatusEnum.Placed],
-    inProgress: [DeliveryStatusEnum.Preparing, DeliveryStatusEnum.OnTheWay],
-    completed: [DeliveryStatusEnum.Delivered],
+const STATUS_BUCKET_TO_DELIVERY_STATUSES: Record<string, DeliveryStatusType[]> = {
+    new: [DeliveryStatusType.Placed],
+    inProgress: [DeliveryStatusType.Preparing, DeliveryStatusType.OnTheWay],
+    completed: [DeliveryStatusType.Delivered],
 };
 
 function AdminOrders() {
@@ -69,8 +69,8 @@ function AdminOrders() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value={PAYMENT_STATUS_ALL}>{t('common.all')}</SelectItem>
-                                <SelectItem value={PaymentStatusEnum.Paid}>{t('payment.statuses.paid')}</SelectItem>
-                                <SelectItem value={PaymentStatusEnum.Unpaid}>{t('payment.statuses.unpaid')}</SelectItem>
+                                <SelectItem value={PaymentStatusType.Paid}>{t('payment.statuses.paid')}</SelectItem>
+                                <SelectItem value={PaymentStatusType.Unpaid}>{t('payment.statuses.unpaid')}</SelectItem>
                             </SelectContent>
                         </Select>
                         <ToggleGroup type='single' value={viewMode} onValueChange={handleViewModeChange}>

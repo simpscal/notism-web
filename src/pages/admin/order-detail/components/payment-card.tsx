@@ -1,7 +1,7 @@
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PAYMENT_STATUS_OPTIONS, PaymentStatusBadge, PaymentStatusEnum } from '@/features/order';
+import { PAYMENT_STATUS_OPTIONS, PaymentStatusBadge, PaymentStatusType } from '@/features/order';
 import { Button } from '@/uis/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/uis/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
@@ -54,7 +54,7 @@ function PaymentCard({ paymentStatus, paymentMethod, isPending, onConfirm }: Pay
             <CardContent className='space-y-4'>
                 <div className='flex items-center justify-between text-sm'>
                     <span className='text-muted-foreground'>{t('admin.orders.paymentStatus.currentStatus')}</span>
-                    <PaymentStatusBadge paymentStatus={paymentStatus as PaymentStatusEnum} />
+                    <PaymentStatusBadge paymentStatus={paymentStatus as PaymentStatusType} />
                 </div>
                 <div className='flex items-center justify-between text-sm'>
                     <span className='text-muted-foreground'>{t('admin.orders.paymentStatus.method')}</span>

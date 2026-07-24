@@ -1,4 +1,4 @@
-import { AuthTypeEnum } from '@/app/enums';
+import { AuthType } from '@/app/types';
 
 export interface UserProfileModel {
     id: string;
@@ -9,7 +9,7 @@ export interface UserProfileModel {
     role?: string;
     phoneNumber?: string;
     location?: string;
-    authType?: AuthTypeEnum;
+    authType?: AuthType;
 }
 
 export interface BankAccountModel {
