@@ -144,7 +144,7 @@ Project documentation is located in the `docs/` folder:
 | -------------------------------------- | ------------------------------------ |
 | `docs/rules/architecture.md`           | Layer structure and dependency rules |
 | `docs/rules/naming.md`                 | Naming conventions for all layers    |
-| `docs/rules/uis.md`                    | Component conventions and examples   |
+| `docs/rules/components.md`             | Component conventions and examples   |
 | `docs/rules/tanstack-query.md`         | useQuery / useMutation patterns      |
 | `docs/rules/forms.md`                  | React Hook Form + Zod rules          |
 | `docs/rules/i18n.md`                   | Internationalisation rules           |
