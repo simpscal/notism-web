@@ -16,6 +16,7 @@
     - [Features Folder](#features-folder)
     - [Core Folder](#core-folder)
     - [Store Folder](#store-folder)
+    - [Notification Folder](#notification-folder)
 
 ---
 
@@ -29,8 +30,9 @@
 4. **uis** - Reusable UI components
 5. **core** - React-specific shared resources (hooks, contexts, guards)
 6. **store** - Global application state management
-7. **apis** - API client + one folder per domain (fetchers, wire types, mapped models, mappers, endpoints, query keys)
-8. **app** - Application configuration, assets, constants, enums, and utilities
+7. **notification** - Real-time notification transport (SignalR connection hook + shared payload model/enum/constant)
+8. **apis** - API client + one folder per domain (fetchers, wire types, mapped models, mappers, endpoints, query keys)
+9. **app** - Application configuration, assets, constants, enums, and utilities
 
 ### Layer Dependencies Diagram
 
@@ -44,6 +46,7 @@ graph TD
     Uis[uis]
     Core[core]
     Store[store]
+    Notification[notification]
     APIs[apis]
     App[app]
 
@@ -52,6 +55,7 @@ graph TD
     Layouts -->|imports| Uis
     Layouts -->|imports| Core
     Layouts -->|imports| Store
+    Layouts -->|imports| Notification
     Layouts -->|imports| APIs
     Layouts -->|imports| App
 
@@ -59,12 +63,14 @@ graph TD
     Pages -->|imports| Uis
     Pages -->|imports| Core
     Pages -->|imports| Store
+    Pages -->|imports| Notification
     Pages -->|imports| APIs
     Pages -->|imports| App
 
     Features -->|imports| Uis
     Features -->|imports| Core
     Features -->|imports| Store
+    Features -->|imports| Notification
     Features -->|imports| APIs
     Features -->|imports| App
 
@@ -74,6 +80,8 @@ graph TD
     Store -->|imports| APIs
     Store -->|imports| App
 
+    Notification -->|imports| App
+
     APIs -->|imports| App
 
     style Layouts fill:#f5ffe1
@@ -82,6 +90,7 @@ graph TD
     style Uis fill:#e1ffe1
     style Core fill:#f5e1ff
     style Store fill:#e1ffff
+    style Notification fill:#fff1e1
     style APIs fill:#ffe1e1
     style App fill:#e1f5ff
 ```
@@ -175,6 +184,13 @@ graph TD
 │   ├── 📁 user/     # User state slice
 │   └── 📄 index.ts  # Store configuration and root reducer
 │
+├── 📁 notification/ # Real-time notification transport (flat, one folder — see Notification Folder)
+│   ├── 📄 use-notifications.hook.ts
+│   ├── 📄 notification.model.ts
+│   ├── 📄 notification.enum.ts
+│   ├── 📄 hubs.constant.ts
+│   └── 📄 index.ts
+│
 ├── 📄 main.tsx
 └── 📄 app.tsx
 
@@ -198,14 +214,15 @@ graph TD
 ## Import Rules
 
 ```text
-layouts    → pages, features, uis, core, store, apis, app
-pages      → features, uis, core, store, apis, app
-features   → uis, core, store, apis, app
-uis        → (no imports from other layers)
-core       → apis, app
-store      → apis (models only), app
-apis       → app
-app        → (no imports from other layers)
+layouts      → pages, features, uis, core, store, notification, apis, app
+pages        → features, uis, core, store, notification, apis, app
+features     → uis, core, store, notification, apis, app
+uis          → (no imports from other layers)
+core         → apis, app
+store        → apis (models only), app
+notification → app
+apis         → app
+app          → (no imports from other layers)
 ```
 
 ---
@@ -459,6 +476,32 @@ store → apis (models only), app
 
 ---
 
+### Notification Folder
+
+Real-time notification transport: the SignalR connection hook plus its payload model, enum, and endpoint constant, as one flat, un-nested folder (`src/notification/`).
+
+**Contents (flat — no subfolders, unlike `features/{x}/`):**
+
+- **use-notifications.hook.ts**: SignalR connection lifecycle, reconnect handling, live-feed status
+- **notification.model.ts**: `SharedNotification` discriminated union + payload interfaces (payment, refund, new-order)
+- **notification.enum.ts**: `NotificationType`
+- **hubs.constant.ts**: `HUBS` endpoint map
+- **index.ts**: barrel re-export of all four
+
+**Rules:**
+
+- Can only import from `app`
+- Contains no business logic — payload shapes are data only, the hook is pure connection plumbing
+- `layouts`, `pages`, and `features` may all import from it directly
+
+**Notification Layer Dependencies:**
+
+```text
+notification → app
+```
+
+---
+
 ## Reference Implementations
 
 These files serve as canonical examples of each pattern. When implementing a new feature, follow these as templates:
@@ -474,5 +517,6 @@ These files serve as canonical examples of each pattern. When implementing a new
 | **Custom Hook**             | `src/core/hooks/use-auth.hook.ts` — React hook with context or business logic                            |
 | **Hook-adjacent Utility**   | `src/core/hooks/lazy-with-preload.hook.ts` — React.lazy wrapper consumed by a hook, not a hook itself    |
 | **Context Provider**        | `src/core/contexts/theme.context.tsx` — context setup and provider pattern                               |
+| **Notification Layer**      | `src/notification/` — flat foundational layer, SignalR hook + shared payload model/enum/constant         |
 
 Use these as templates: examine the full folder structure, naming conventions, import order, component memoization, and state management patterns from these examples.

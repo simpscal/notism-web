@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RefundPaidBannerStack from '../refund-paid-banner-stack';
 
 import i18n from '@/app/i18n/i18n';
-import type { SharedNotification } from '@/app/models';
+import type { SharedNotification } from '@/notification';
 import { queryByI18nText, renderWithProviders } from '@/test/utils';
 
 const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
@@ -19,7 +19,7 @@ vi.mock('react-router-dom', async () => {
 
 let capturedOnNotification: ((payload: SharedNotification) => void) | undefined;
 
-vi.mock('@/core/hooks/use-notifications.hook', () => ({
+vi.mock('@/notification/use-notifications.hook', () => ({
     useNotifications: (options: { onNotification?: (payload: SharedNotification) => void }) => {
         capturedOnNotification = options.onNotification;
     },

@@ -14,11 +14,9 @@ import {
 
 import { ADMIN_QUERY_KEYS, adminApi, type RefundDetailModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
-import { NotificationType } from '@/app/enums';
-import { type SharedNotification } from '@/app/models';
 import { formatVnd } from '@/app/utils';
-import { useNotifications } from '@/core/hooks';
 import { RefundStatusEnum } from '@/features/order';
+import { NotificationType, type SharedNotification, useNotifications } from '@/notification';
 import { Button } from '@/uis/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/uis/dialog';
 import ErrorState from '@/uis/error-state';

@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AdminLayout from '../admin-layout';
 
 import { ROUTES } from '@/app/constants';
-import { NotificationStatus } from '@/core/hooks';
+import { NotificationStatus } from '@/notification';
 import { getAllByI18nText, renderWithProviders } from '@/test/utils';
 
 const useNewOrderAlertsMock = vi.fn();

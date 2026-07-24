@@ -1,8 +1,9 @@
 import { HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { useEffect, useRef, useState } from 'react';
 
-import { HUBS } from '@/app/constants/hubs.constant';
-import { type SharedNotification } from '@/app/models';
+import { HUBS } from './hubs.constant';
+import { type SharedNotification } from './notification.model';
+
 import { tokenManagerUtils } from '@/app/utils';
 
 export const NotificationStatus = {
