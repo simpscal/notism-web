@@ -7,10 +7,10 @@ import Payment from '../payment';
 
 import { ORDER_ENDPOINTS } from '@/apis/order/order.constant';
 import i18n from '@/app/i18n/i18n';
+import { NotificationType } from '@/core/notification';
 import { loadCart } from '@/features/cart/store';
 import { getFoodPricing } from '@/features/food';
 import { buildUrl } from '@/mocks/utils';
-import { NotificationType } from '@/notification';
 import { store } from '@/store';
 import { server } from '@/test/server';
 import { getByI18nText, renderWithProviders } from '@/test/utils';
@@ -18,8 +18,8 @@ import { getByI18nText, renderWithProviders } from '@/test/utils';
 const t = (key: string) => i18n.t(key);
 
 // Mock SignalR so tests don't attempt real WebSocket connections
-vi.mock('@/notification/use-notifications.hook', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/notification/use-notifications.hook')>();
+vi.mock('@/core/notification/use-notifications.hook', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/core/notification/use-notifications.hook')>();
     return {
         ...actual,
         useNotifications: vi.fn(),
@@ -148,7 +148,7 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('banking payment success shows success screen with Track order button', async () => {
-        const { useNotifications } = await import('@/notification/use-notifications.hook');
+        const { useNotifications } = await import('@/core/notification/use-notifications.hook');
         const mockUseNotifications = vi.mocked(useNotifications);
 
         let capturedCallback:
@@ -193,7 +193,7 @@ describe('Payment — bankingCheckout flow', () => {
     });
 
     it('shows error toast when payment failure notification arrives', async () => {
-        const { useNotifications } = await import('@/notification/use-notifications.hook');
+        const { useNotifications } = await import('@/core/notification/use-notifications.hook');
         const mockUseNotifications = vi.mocked(useNotifications);
 
         let capturedCallback:

@@ -9,8 +9,8 @@ import AdminToolbarMobile from './components/admin-toolbar-mobile';
 import { authApi } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { NotificationStatus } from '@/core/notification';
 import { useNewOrderAlerts } from '@/features/order/hooks/use-new-order-alerts';
-import { NotificationStatus } from '@/notification';
 import { resetStore } from '@/store/root.actions';
 import { type LiveFeedStatus } from '@/uis/live-feed-pill';
 

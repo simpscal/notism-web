@@ -6,7 +6,12 @@ import NewOrderAlertToast from '../components/new-order-alert-toast';
 
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
-import { NotificationType, type SharedNotification, useNotifications, type NotificationStatus } from '@/notification';
+import {
+    NotificationType,
+    type SharedNotification,
+    useNotifications,
+    type NotificationStatus,
+} from '@/core/notification';
 
 export interface UseNewOrderAlertsResult {
     status: NotificationStatus;

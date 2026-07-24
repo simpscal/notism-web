@@ -11,7 +11,7 @@ import {
     type PaidRefundNotification,
     type SharedNotification,
     useNotifications,
-} from '@/notification';
+} from '@/core/notification';
 
 function readDismissedIds(): string[] {
     try {

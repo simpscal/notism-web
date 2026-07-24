@@ -7,9 +7,9 @@ import AdminRefundDetail from '../refund-detail';
 
 import type { AdminRefundDetailResponseModel } from '@/apis';
 import { ADMIN_ENDPOINTS } from '@/apis/admin/admin.constant';
+import type { SharedNotification } from '@/core/notification';
 import { RefundStatusType } from '@/features/order';
 import { buildUrl } from '@/mocks/utils';
-import type { SharedNotification } from '@/notification';
 import { server } from '@/test/server';
 import { findByI18nText, getByI18nText, queryByI18nText, renderWithProviders } from '@/test/utils';
 
@@ -31,8 +31,8 @@ vi.mock('react-router-dom', async importOriginal => {
 // without opening a real WebSocket connection.
 let capturedOnNotification: ((payload: SharedNotification) => void) | undefined;
 
-vi.mock('@/notification/use-notifications.hook', async importOriginal => {
-    const actual = await importOriginal<typeof import('@/notification/use-notifications.hook')>();
+vi.mock('@/core/notification/use-notifications.hook', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/core/notification/use-notifications.hook')>();
     return {
         ...actual,
         useNotifications: (options: { onNotification: (payload: SharedNotification) => void }) => {

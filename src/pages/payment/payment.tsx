@@ -11,6 +11,7 @@ import PaymentBankingQr from './components/payment-banking-qr';
 import { orderApi, userApi, BankAccountModel, CartItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants/routes.constant';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { NotificationType, type SharedNotification, useNotifications } from '@/core/notification';
 import {
     loadCart,
     selectCartItems,
@@ -19,7 +20,6 @@ import {
     selectSelectedCartTotalPrice,
 } from '@/features/cart/store';
 import { OrderCheckoutProgress, OrderCheckoutTrustBar, PaymentMethodType } from '@/features/order';
-import { NotificationType, type SharedNotification, useNotifications } from '@/notification';
 import { updateUser } from '@/store/user/user.slice';
 import { Button } from '@/uis/button';
 import { Card, CardContent } from '@/uis/card';

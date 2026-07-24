@@ -2,8 +2,8 @@ import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { NotificationStatus, type SharedNotification } from '@/core/notification';
 import { useNewOrderAlerts } from '@/features/order/hooks/use-new-order-alerts';
-import { NotificationStatus, type SharedNotification } from '@/notification';
 import { renderWithProviders } from '@/test/utils';
 import { Toaster } from '@/uis/sonner';
 
@@ -17,9 +17,9 @@ vi.mock('react-router-dom', async () => {
 let capturedOnNotification: ((payload: SharedNotification) => void) | undefined;
 let mockStatus: NotificationStatus = NotificationStatus.Live;
 
-vi.mock('@/notification/use-notifications.hook', async () => {
-    const actual = await vi.importActual<typeof import('@/notification/use-notifications.hook')>(
-        '@/notification/use-notifications.hook'
+vi.mock('@/core/notification/use-notifications.hook', async () => {
+    const actual = await vi.importActual<typeof import('@/core/notification/use-notifications.hook')>(
+        '@/core/notification/use-notifications.hook'
     );
     return {
         ...actual,
