@@ -44,7 +44,7 @@ describe('NewOrderAlertToast', () => {
         const onViewOrder = vi.fn();
         renderWithProviders(<NewOrderAlertToast order={ORDER} toastId={TOAST_ID} onViewOrder={onViewOrder} />);
 
-        await userEvent.click(screen.getByRole('button', { name: t('admin.newOrder.viewOrder') }));
+        await userEvent.click(screen.getByRole('button', { name: t('order.newOrderAlert.viewOrder') }));
 
         expect(onViewOrder).toHaveBeenCalledWith(ORDER.orderNumber);
         expect(dismissMock).toHaveBeenCalledWith(TOAST_ID);
@@ -53,7 +53,7 @@ describe('NewOrderAlertToast', () => {
     it('dismisses the toast when the close button is clicked', async () => {
         renderWithProviders(<NewOrderAlertToast order={ORDER} toastId={TOAST_ID} onViewOrder={vi.fn()} />);
 
-        await userEvent.click(screen.getByRole('button', { name: t('admin.newOrder.dismiss') }));
+        await userEvent.click(screen.getByRole('button', { name: t('order.newOrderAlert.dismiss') }));
 
         expect(dismissMock).toHaveBeenCalledWith(TOAST_ID);
     });

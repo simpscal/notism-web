@@ -404,6 +404,15 @@
                 "messageMultiple": "— {{count}} refunds totalling {{amount}} are on hold until we have an account to send them to.",
                 "cta": "Add bank details"
             }
+        },
+        "newOrderAlert": {
+            "title": "New order",
+            "liveBadge": "Live",
+            "meta": "Placed {{placedAt}} · {{itemCount}} · {{total}}",
+            "itemCount_one": "{{count}} item",
+            "itemCount_other": "{{count}} items",
+            "viewOrder": "View order",
+            "dismiss": "Dismiss new-order alert"
         }
     },
     "orderDetail": {
@@ -608,13 +617,6 @@
             }
         },
         "newOrder": {
-            "title": "New order",
-            "liveBadge": "Live",
-            "meta": "Placed {{placedAt}} · {{itemCount}} · {{total}}",
-            "itemCount_one": "{{count}} item",
-            "itemCount_other": "{{count}} items",
-            "viewOrder": "View order",
-            "dismiss": "Dismiss new-order alert",
             "feed": {
                 "connecting": "Connecting to live orders…",
                 "live": "Live orders on",

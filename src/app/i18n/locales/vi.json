@@ -404,6 +404,15 @@
                 "messageMultiple": "— {{count}} khoản hoàn tiền với tổng cộng {{amount}} đang được giữ lại cho đến khi chúng tôi có tài khoản để chuyển vào.",
                 "cta": "Thêm thông tin ngân hàng"
             }
+        },
+        "newOrderAlert": {
+            "title": "Đơn hàng mới",
+            "liveBadge": "Trực tiếp",
+            "meta": "Đặt lúc {{placedAt}} · {{itemCount}} · {{total}}",
+            "itemCount_one": "{{count}} món",
+            "itemCount_other": "{{count}} món",
+            "viewOrder": "Xem đơn hàng",
+            "dismiss": "Đóng thông báo đơn hàng mới"
         }
     },
     "orderDetail": {
@@ -608,13 +617,6 @@
             }
         },
         "newOrder": {
-            "title": "Đơn hàng mới",
-            "liveBadge": "Trực tiếp",
-            "meta": "Đặt lúc {{placedAt}} · {{itemCount}} · {{total}}",
-            "itemCount_one": "{{count}} món",
-            "itemCount_other": "{{count}} món",
-            "viewOrder": "Xem đơn hàng",
-            "dismiss": "Đóng thông báo đơn hàng mới",
             "feed": {
                 "connecting": "Đang kết nối đơn hàng trực tiếp…",
                 "live": "Đơn hàng trực tiếp đang bật",

@@ -44,7 +44,7 @@ function NewOrderAlertToast({ order, toastId, onViewOrder }: NewOrderAlertToastP
     return (
         <Toast
             className='border-primary/30'
-            dismissLabel={t('admin.newOrder.dismiss')}
+            dismissLabel={t('order.newOrderAlert.dismiss')}
             onDismiss={handleDismiss}
             icon={
                 <span className='flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary'>
@@ -53,25 +53,25 @@ function NewOrderAlertToast({ order, toastId, onViewOrder }: NewOrderAlertToastP
             }
         >
             <div className='flex items-center gap-2'>
-                <span className='text-sm font-semibold text-popover-foreground'>{t('admin.newOrder.title')}</span>
+                <span className='text-sm font-semibold text-popover-foreground'>{t('order.newOrderAlert.title')}</span>
                 <Badge variant='success' className='px-1.5 py-0 text-[10px] uppercase tracking-wide'>
-                    {t('admin.newOrder.liveBadge')}
+                    {t('order.newOrderAlert.liveBadge')}
                 </Badge>
             </div>
             <p className='mt-1 truncate font-mono text-sm font-semibold tracking-tight text-foreground'>
                 {order.orderNumber}
             </p>
             <p className='mt-0.5 text-xs text-muted-foreground'>
-                {t('admin.newOrder.meta', {
+                {t('order.newOrderAlert.meta', {
                     placedAt: order.placedAt,
-                    itemCount: t('admin.newOrder.itemCount', { count: order.itemCount }),
+                    itemCount: t('order.newOrderAlert.itemCount', { count: order.itemCount }),
                     total: order.total,
                 })}
             </p>
             <div className='mt-3'>
                 <Button size='sm' variant='outline' className='h-8' onClick={handleViewOrder}>
                     <ExternalLink className='mr-1.5 h-3.5 w-3.5' />
-                    {t('admin.newOrder.viewOrder')}
+                    {t('order.newOrderAlert.viewOrder')}
                 </Button>
             </div>
         </Toast>
