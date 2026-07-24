@@ -5,13 +5,12 @@ import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 
 import { FoodSortOption } from '../enums';
-import { FoodItemViewModel } from '../models';
 
 import FoodCard from './food-card';
 import FoodCardSkeleton from './food-card-skeleton';
 import FoodsEmpty from './foods-empty';
 
-import { CartItemModel, FOOD_QUERY_KEYS, foodApi } from '@/apis';
+import { CartItemModel, FOOD_QUERY_KEYS, FoodItemModel, foodApi } from '@/apis';
 import { PAGE_SIZE } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { useCart } from '@/features/cart';
@@ -71,7 +70,7 @@ function FoodsGrid({ category, keyword, sortBy, onTotalCountChange, onClearFilte
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     const handleAddToCart = useCallback(
-        async (food: FoodItemViewModel) => {
+        async (food: FoodItemModel) => {
             const { effectivePrice } = getFoodPricing(food.price, food.discountPrice);
             const cartItem: Omit<CartItemModel, 'quantity'> = {
                 id: food.id,

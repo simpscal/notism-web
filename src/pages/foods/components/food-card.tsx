@@ -3,8 +3,7 @@ import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { FoodItemViewModel } from '../models';
-
+import { FoodItemModel } from '@/apis';
 import { ROUTES } from '@/app/constants';
 import { formatVnd } from '@/app/utils';
 import { getFoodPricing } from '@/features/food';
@@ -13,8 +12,8 @@ import { Button } from '@/uis/button';
 import { Card, CardFooter } from '@/uis/card';
 
 interface FoodCardProps {
-    food: FoodItemViewModel;
-    onAddToCart?: (food: FoodItemViewModel) => void;
+    food: FoodItemModel;
+    onAddToCart?: (food: FoodItemModel) => void;
 }
 
 function FoodCard({ food, onAddToCart }: FoodCardProps) {
