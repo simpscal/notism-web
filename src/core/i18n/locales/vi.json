@@ -44,7 +44,12 @@
             "serverError": "Lỗi máy chủ",
             "serverErrorDescription": "Đã xảy ra lỗi không mong đợi. Vui lòng thử lại sau.",
             "serviceUnavailable": "Dịch vụ không khả dụng",
-            "serviceUnavailableDescription": "Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau."
+            "serviceUnavailableDescription": "Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau.",
+            "requestFailed": "Yêu cầu thất bại",
+            "requestTimeout": "Yêu cầu hết thời gian chờ",
+            "networkError": "Đã xảy ra lỗi mạng",
+            "sessionRefreshFailed": "Không thể làm mới phiên đăng nhập",
+            "unauthorized": "Không có quyền truy cập: vui lòng đăng nhập lại"
         }
     },
     "auth": {

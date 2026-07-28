@@ -199,7 +199,7 @@ export class ApiClient {
 
         if (!response.ok) {
             const error = {
-                message: (data as any)?.message || response.statusText || 'Request failed',
+                message: (data as any)?.message || response.statusText || i18next.t('common.apiErrors.requestFailed'),
                 status: response.status,
                 data,
             } as ApiError;
@@ -247,7 +247,7 @@ export class ApiClient {
         } catch (error: any) {
             if (error.name === 'AbortError') {
                 const timeoutError: ApiError = {
-                    message: 'Request timeout',
+                    message: i18next.t('common.apiErrors.requestTimeout'),
                     status: 408,
                     data: null,
                 };
@@ -260,7 +260,7 @@ export class ApiClient {
             }
 
             const networkError: ApiError = {
-                message: error.message || 'Network error occurred',
+                message: error.message || i18next.t('common.apiErrors.networkError'),
                 status: 0,
                 data: null,
             };
@@ -270,7 +270,37 @@ export class ApiClient {
     }
 
     /**
-     * Handle token refresh logic
+     * Mint a fresh access token from the httpOnly refresh cookie. Throws on failure
+     * (no valid session) without clearing state or emitting UNAUTHORIZED — callers
+     * that expect to already be authenticated are responsible for reacting to that;
+     * a caller that's merely probing for a session (e.g. on app boot) should not
+     * force a logout side effect just because there was never one to begin with.
+     */
+    async refreshToken(): Promise<void> {
+        const response = await fetch(`${this._baseURL}/${AUTH_ENDPOINTS.REFRESH}`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                [TOKEN_KEYS.XSRF_TOKEN]: tokenManagerUtils.getXsrfToken() || '',
+            },
+            body: undefined,
+        });
+
+        if (!response.ok) {
+            throw new Error(i18next.t('common.apiErrors.sessionRefreshFailed'));
+        }
+
+        const data = await response.json();
+        if (!data.token) {
+            throw new Error(i18next.t('common.apiErrors.sessionRefreshFailed'));
+        }
+
+        tokenManagerUtils.setToken(data.token);
+    }
+
+    /**
+     * Handle token refresh logic for a request that just got a 401 mid-session.
      */
     private async _handleTokenRefresh<T = any>(originalEndpoint: string, originalConfig: RequestConfig): Promise<T> {
         if (this._isRefreshing) {
@@ -287,26 +317,7 @@ export class ApiClient {
         this._isRefreshing = true;
 
         try {
-            const response = await fetch(`${this._baseURL}/${AUTH_ENDPOINTS.REFRESH}`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [TOKEN_KEYS.XSRF_TOKEN]: tokenManagerUtils.getXsrfToken() || '',
-                },
-                body: undefined,
-            });
-
-            if (!response.ok) {
-                this._handleTokenError();
-            }
-
-            const data = await response.json();
-            if (!data.token) {
-                this._handleTokenError();
-            }
-
-            tokenManagerUtils.setToken(data.token);
+            await this.refreshToken();
 
             this._failedQueue.forEach(request => {
                 request.resolve(this._request(request.originalEndpoint, request.originalConfig));
@@ -316,7 +327,11 @@ export class ApiClient {
             this._isRefreshing = false;
 
             return this._request(originalEndpoint, originalConfig);
-        } catch {
+        } catch (error) {
+            this._isRefreshing = false;
+            this._failedQueue.forEach(request => request.reject(error));
+            this._failedQueue = [];
+
             this._handleTokenError();
         }
     }
@@ -325,7 +340,7 @@ export class ApiClient {
         tokenManagerUtils.clearAll();
         eventEmitterUtils.emit(APP_EVENTS.UNAUTHORIZED);
 
-        throw new Error('Unauthorized: please log in again');
+        throw new Error(i18next.t('common.apiErrors.unauthorized'));
     }
 }
 
@@ -381,7 +396,7 @@ apiClient.addResponseInterceptor(async (response: Response) => {
             return response;
         }
 
-        let errorMessage = response.statusText || 'Request failed';
+        let errorMessage = response.statusText || i18next.t('common.apiErrors.requestFailed');
         try {
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {

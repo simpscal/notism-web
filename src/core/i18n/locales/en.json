@@ -44,7 +44,12 @@
             "serverError": "Server Error",
             "serverErrorDescription": "An unexpected error occurred. Please try again later.",
             "serviceUnavailable": "Service Unavailable",
-            "serviceUnavailableDescription": "The service is temporarily unavailable. Please try again later."
+            "serviceUnavailableDescription": "The service is temporarily unavailable. Please try again later.",
+            "requestFailed": "Request failed",
+            "requestTimeout": "Request timeout",
+            "networkError": "Network error occurred",
+            "sessionRefreshFailed": "Unable to refresh session",
+            "unauthorized": "Unauthorized: please log in again"
         }
     },
     "auth": {

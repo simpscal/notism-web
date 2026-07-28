@@ -26,6 +26,10 @@ export const authApi = {
         return apiClient.post(AUTH_ENDPOINTS.LOGOUT);
     },
 
+    refresh: () => {
+        return apiClient.refreshToken();
+    },
+
     reload: async () => {
         const response = await apiClient.get<UserProfileResponseModel>(AUTH_ENDPOINTS.RELOAD);
         return toUserProfile(response);

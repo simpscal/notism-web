@@ -1,14 +1,21 @@
 import { TOKEN_KEYS } from '@/app/constants';
 
+// Access token lives in memory only (never localStorage) so XSS can't read it out of storage.
+let accessToken: string | null = null;
+
 export const tokenManagerUtils = {
-    getToken: () => localStorage.getItem(TOKEN_KEYS.ACCESS_TOKEN),
+    getToken: () => accessToken,
 
-    setToken: (token: string) => localStorage.setItem(TOKEN_KEYS.ACCESS_TOKEN, token),
+    setToken: (token: string) => {
+        accessToken = token;
+    },
 
-    removeToken: () => localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN),
+    removeToken: () => {
+        accessToken = null;
+    },
 
     clearAll: () => {
-        localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN);
+        accessToken = null;
         localStorage.removeItem(TOKEN_KEYS.XSRF_TOKEN);
     },
 

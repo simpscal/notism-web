@@ -14,13 +14,11 @@ function getOauthReturnUrlFromStorage() {
 }
 
 export interface IAuthState {
-    accessToken: string | null;
     isInitialized: boolean;
     oauthReturnUrl: string | null;
 }
 
 const INITIAL_STATE: IAuthState = {
-    accessToken: null,
     isInitialized: false,
     oauthReturnUrl: getOauthReturnUrlFromStorage(),
 };
@@ -29,8 +27,7 @@ const authSlice = createSlice({
     name: 'auth',
     initialState: INITIAL_STATE,
     reducers: {
-        setToken: (state, action: PayloadAction<string>) => {
-            state.accessToken = action.payload;
+        setToken: (_state, action: PayloadAction<string>) => {
             tokenManagerUtils.setToken(action.payload);
         },
 

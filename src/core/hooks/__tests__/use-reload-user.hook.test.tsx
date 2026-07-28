@@ -15,6 +15,7 @@ import { server } from '@/test/server';
 import { renderWithProviders } from '@/test/utils';
 
 const RELOAD_URL = buildUrl(AUTH_ENDPOINTS.RELOAD);
+const REFRESH_URL = buildUrl(AUTH_ENDPOINTS.REFRESH);
 
 const FULL_PROFILE = {
     id: '1',
@@ -38,6 +39,14 @@ const LOGIN_USER = {
     role: 'User',
 };
 
+function mockRefreshSuccess(token = 'token-123') {
+    return http.post(REFRESH_URL, () => HttpResponse.json({ token }));
+}
+
+function mockRefreshFailure() {
+    return http.post(REFRESH_URL, () => new HttpResponse(null, { status: 401 }));
+}
+
 describe('useReloadUser', () => {
     beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
     afterAll(() => server.close());
@@ -53,27 +62,33 @@ describe('useReloadUser', () => {
         tokenManagerUtils.clearAll();
     });
 
-    it('fetches the full profile (with location) on cold start when a token exists but no user is loaded', async () => {
-        server.use(http.get(RELOAD_URL, () => HttpResponse.json(FULL_PROFILE)));
-        tokenManagerUtils.setToken('token-123');
+    it('mints a fresh token via refresh, then fetches the full profile, on cold start', async () => {
+        server.use(
+            mockRefreshSuccess(),
+            http.get(RELOAD_URL, () => HttpResponse.json(FULL_PROFILE))
+        );
 
         renderWithProviders(<ReloadHarness />);
 
         await waitFor(() => {
             expect(store.getState().user.user?.location).toBe(FULL_PROFILE.location);
         });
+        expect(tokenManagerUtils.getToken()).toBe('token-123');
     });
 
-    it('fetches the full profile after first login even though a user (without location) is already in the store', async () => {
+    it('always attempts refresh+reload on mount, even when the store already has a partial user', async () => {
+        // The post-login full-profile refetch itself is handled directly by the
+        // `setAuth` thunk, not by this hook — this only covers what happens if the
+        // hook mounts while the store already has a token + partial user in it.
         let reloadCalls = 0;
         server.use(
+            mockRefreshSuccess('token-456'),
             http.get(RELOAD_URL, () => {
                 reloadCalls += 1;
                 return HttpResponse.json(FULL_PROFILE);
             })
         );
 
-        // Simulate the post-login state: token set + login user stored, but no location.
         store.dispatch(setToken('token-123'));
         store.dispatch(setUser(LOGIN_USER));
         expect(store.getState().user.user?.location).toBeUndefined();
@@ -86,9 +101,10 @@ describe('useReloadUser', () => {
         expect(reloadCalls).toBeGreaterThan(0);
     });
 
-    it('does not fetch when there is no token', async () => {
+    it('signs out cleanly when there is no session, without ever calling reload', async () => {
         let reloadCalls = 0;
         server.use(
+            mockRefreshFailure(),
             http.get(RELOAD_URL, () => {
                 reloadCalls += 1;
                 return HttpResponse.json(FULL_PROFILE);
